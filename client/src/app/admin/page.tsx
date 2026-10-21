@@ -214,13 +214,22 @@ export default function AdminDashboardPage() {
                       </span>
                     </div>
 
-                    <Link
-                      href={`/courses/${c._id}`}
-                      className="p-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
-                      title="View Batches"
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={`/admin/courses/${c._id}/edit`}
+                        className="p-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
+                        title="Edit Full Course Details"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        href={`/courses/${c._id}`}
+                        className="p-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
+                        title="View Public Course Page"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </div>
                 ))
               )}
