@@ -46,33 +46,33 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
             <GraduationCap className="w-5 h-5" />
           </div>
           <div>
-            <span className="font-bold text-slate-900 dark:text-white text-base tracking-tight block leading-tight">
-              Grav Academy
+            <span className="font-extrabold text-slate-900 dark:text-white text-base tracking-tight block leading-tight">
+              গ্র্যাভ একাডেমি
             </span>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-normal leading-tight">
-              Class 6 – 12 Coaching
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium leading-tight">
+              ক্লাস ৬ – ১২ একাডেমিক কেয়ার
             </span>
           </div>
         </Link>
 
         {/* Primary Navigation */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-200">
           <Link href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            Courses
+            সকল কোর্স
           </Link>
           <Link href="/live-classes" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            Live Classes
+            লাইভ ক্লাস
           </Link>
           <Link href="/exams/take" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            Exams
+            অনলাইন পরীক্ষা
           </Link>
           {user && (
             <Link href={getDashboardLink()} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              Dashboard
+              ড্যাশবোর্ড
             </Link>
           )}
         </nav>
@@ -86,7 +86,7 @@ export const Navbar: React.FC = () => {
             onClick={toggleTheme}
             className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700"
             aria-label="Toggle Theme"
-            title="Toggle Light / Dark Theme"
+            title="থিম পরিবর্তন করুন"
           >
             {mounted ? (
               theme === 'dark' ? (
@@ -102,17 +102,23 @@ export const Navbar: React.FC = () => {
           {mounted && user ? (
             <div className="flex items-center gap-3">
               <div className="hidden sm:block text-right">
-                <span className="text-sm font-semibold text-slate-900 dark:text-white block leading-tight">
+                <span className="text-sm font-bold text-slate-900 dark:text-white block leading-tight">
                   {user.name}
                 </span>
-                <span className="text-xs text-blue-600 dark:text-blue-400 uppercase font-medium block leading-tight">
-                  {user.role}
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold block leading-tight">
+                  {user.role === 'admin' || user.role === 'superadmin'
+                    ? 'এডমিন'
+                    : user.role === 'teacher'
+                    ? 'শিক্ষক'
+                    : user.role === 'guardian'
+                    ? 'অভিভাবক'
+                    : 'শিক্ষার্থী'}
                 </span>
               </div>
               <button
                 onClick={logout}
-                className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition-colors"
-                title="Sign Out"
+                className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+                title="লগআউট"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -121,15 +127,15 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors"
+                className="px-3.5 py-1.5 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors"
               >
-                Log In
+                লগইন
               </Link>
               <Link
                 href="/register"
-                className="px-3.5 py-1.5 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors"
+                className="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
               >
-                Enroll as Student
+                ভর্তি হোন
               </Link>
             </div>
           )}

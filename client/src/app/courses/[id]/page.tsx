@@ -7,65 +7,58 @@ import { useAuth } from '@/context/AuthContext';
 import {
   BookOpen,
   GraduationCap,
-  Layers,
-  Calendar,
   Users,
   Clock,
+  Layers,
+  CheckCircle2,
+  Calendar,
+  Sparkles,
   ArrowRight,
   ArrowLeft,
-  CheckCircle2,
-  Sparkles,
-  Info,
-  Check,
-  Award,
   Video,
   FileText,
-  HelpCircle,
-  Phone,
-  Mail,
-  ShieldCheck,
+  Award,
+  Check,
   Edit,
+  PhoneCall,
 } from 'lucide-react';
-
-interface Instructor {
-  _id: string;
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  phone?: string;
-  role: string;
-}
 
 interface Batch {
   _id: string;
   name: string;
-  status: string;
-  scheduleText?: string;
   capacity?: number;
-  students?: any[];
+  scheduleText?: string;
+  status: string;
+  startDate?: string;
 }
 
-interface Course {
+interface Teacher {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl?: string;
+}
+
+interface CourseDetail {
   _id: string;
   title: string;
+  slug: string;
   description: string;
   gradeLevel: string;
   subject: string;
   courseFee: number;
   duration?: string;
-  thumbnailUrl?: string;
   targetAudience?: string;
+  instructors?: Teacher[];
   curriculumHighlights?: string[];
   features?: string[];
-  instructors?: Instructor[];
 }
 
-export const dynamic = 'force-dynamic';
-
-export default function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function CourseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const { user } = useAuth();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseDetail | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,14 +69,20 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
   const fetchCourseAndBatches = async () => {
     setLoading(true);
     try {
-      const [cRes, bRes] = await Promise.all([
+      const [courseRes, batchesRes] = await Promise.all([
         api.get(`/courses/${resolvedParams.id}`),
-        api.get('/batches', { params: { courseId: resolvedParams.id } }),
+        api.get(`/courses/${resolvedParams.id}/batches`),
       ]);
-      if (cRes.data?.success) setCourse(cRes.data.data);
-      if (bRes.data?.success) setBatches(bRes.data.data);
+
+      if (courseRes.data?.success) {
+        setCourse(courseRes.data.data);
+      }
+
+      if (batchesRes.data?.success) {
+        setBatches(batchesRes.data.data);
+      }
     } catch (err) {
-      console.error('Error fetching course data', err);
+      console.error('Failed to load course details', err);
     } finally {
       setLoading(false);
     }
@@ -91,13 +90,10 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-64 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse mb-8" />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 h-96 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse" />
-            <div className="h-96 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse" />
-          </div>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-20 text-center">
+        <div className="max-w-md mx-auto px-4">
+          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">কোর্সের বিস্তারিত তথ্য লোড হচ্ছে...</p>
         </div>
       </div>
     );
@@ -108,15 +104,15 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-20 text-center">
         <div className="max-w-md mx-auto px-4">
           <BookOpen className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Course not found</h2>
+          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">কোর্সটি খুঁজে পাওয়া যায়নি</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6">
-            The course you are looking for may have been archived or removed.
+            এই কোর্সটি হয়তো সরিয়ে নেওয়া হয়েছে বা ঠিকানাটি সঠিক নয়।
           </p>
           <Link
             href="/courses"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Catalog
+            <ArrowLeft className="w-3.5 h-3.5" /> সকল কোর্সের তালিকায় ফিরুন
           </Link>
         </div>
       </div>
@@ -126,7 +122,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
   const isAdmin = user?.role === 'superadmin' || user?.role === 'admin';
 
   const defaultHighlights = [
-    'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বেসিক ক্লিয়ারিং ক্লাস',
+    'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বেসিক ক্লিয়ারিং ক্লাস',
     'বোর্ড প্রশ্ন বিশ্লেষণ ও বিগত বছরের টেস্ট পেপার সলভিং',
     'সাপ্তাহিক লাইভ ইন্টারঅ্যাক্টিভ ডাউট সলভিং ও রিভিশন সেশন',
     'গুগল ড্রাইভে প্রতিটি ক্লাসের পূর্ণাঙ্গ লেকচার শিট ও ফর্মুলা বুকলেট',
@@ -144,25 +140,25 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
         
         {/* Navigation Breadcrumb & Admin Edit Quick Link */}
         <div className="flex items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
             <Link
               href="/courses"
               className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to Courses
+              <ArrowLeft className="w-3.5 h-3.5" /> সকল কোর্স
             </Link>
             <span>/</span>
-            <span className="text-slate-900 dark:text-slate-200 font-semibold">{course.gradeLevel}</span>
+            <span className="text-slate-900 dark:text-slate-200">{course.gradeLevel}</span>
             <span>/</span>
-            <span className="text-blue-600 dark:text-blue-400 font-semibold">{course.subject}</span>
+            <span className="text-blue-600 dark:text-blue-400">{course.subject}</span>
           </div>
 
           {isAdmin && (
             <Link
               href={`/admin/courses/${course._id}/edit`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/80 dark:border-blue-700/50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 transition-colors"
             >
-              <Edit className="w-3.5 h-3.5" /> Edit This Course in Admin
+              <Edit className="w-3.5 h-3.5" /> এডমিন প্যানেলে এডিট করুন
             </Link>
           )}
         </div>
@@ -172,58 +168,58 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
           <div className="relative z-10 max-w-4xl">
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2.5 mb-4">
-              <span className="px-3.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-bold border border-white/20">
+              <span className="px-3.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-extrabold border border-white/20">
                 {course.gradeLevel}
               </span>
-              <span className="px-3.5 py-1 rounded-full bg-blue-500/30 backdrop-blur-md text-blue-100 text-xs font-semibold border border-blue-400/30 flex items-center gap-1.5">
+              <span className="px-3.5 py-1 rounded-full bg-blue-500/30 backdrop-blur-md text-blue-100 text-xs font-bold border border-blue-400/30 flex items-center gap-1.5">
                 <GraduationCap className="w-3.5 h-3.5" />
                 {course.subject}
               </span>
-              <span className="px-3.5 py-1 rounded-full bg-emerald-500/30 backdrop-blur-md text-emerald-200 text-xs font-bold border border-emerald-400/30">
-                Admissions Open
+              <span className="px-3.5 py-1 rounded-full bg-emerald-500/30 backdrop-blur-md text-emerald-200 text-xs font-extrabold border border-emerald-400/30">
+                ভর্তি চলছে
               </span>
             </div>
 
-            {/* Course Big Title */}
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+            {/* Course Title */}
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.28]">
               {course.title}
             </h1>
 
             {/* Overview text */}
             <p className="mt-4 text-slate-200 text-sm sm:text-base leading-relaxed max-w-3xl">
               {course.description ||
-                'Comprehensive academic coaching curriculum structured with high-yield concepts, board question analysis, lecture notes, and active mentoring.'}
+                'সম্পূর্ণ সিলেবাস কভার করে বেসিক টু অ্যাডভান্সড লেভেলের পাঠদান, টেস্ট পেপার সলভিং এবং সার্বক্ষণিক মেন্টরশিপ।'}
             </p>
 
             {/* Highlights Bar */}
             <div className="mt-8 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs">
               <div>
-                <span className="text-slate-300 block mb-0.5">Duration Scope</span>
-                <span className="text-white font-bold text-sm sm:text-base flex items-center gap-1.5">
+                <span className="text-slate-300 block mb-1">কোর্সের মেয়াদ</span>
+                <span className="text-white font-extrabold text-sm sm:text-base flex items-center gap-1.5">
                   <Clock className="w-4 h-4 text-blue-300" />
-                  {course.duration || 'Full Session'}
+                  {course.duration || 'পূর্ণাঙ্গ সেশন'}
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-300 block mb-0.5">Total Batches</span>
-                <span className="text-white font-bold text-sm sm:text-base flex items-center gap-1.5">
+                <span className="text-slate-300 block mb-1">চলতি ব্যাচ</span>
+                <span className="text-white font-extrabold text-sm sm:text-base flex items-center gap-1.5">
                   <Layers className="w-4 h-4 text-indigo-300" />
-                  {batches.length} Active {batches.length === 1 ? 'Batch' : 'Batches'}
+                  {batches.length} টি ব্যাচ সক্রিয়
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-300 block mb-0.5">Subject Stream</span>
-                <span className="text-white font-bold text-sm sm:text-base">
+                <span className="text-slate-300 block mb-1">বিষয়</span>
+                <span className="text-white font-extrabold text-sm sm:text-base">
                   {course.subject}
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-300 block mb-0.5">Standard Fee</span>
-                <span className="text-emerald-300 font-extrabold text-base sm:text-xl">
-                  {course.courseFee === 0 ? 'Free' : `৳ ${course.courseFee.toLocaleString()}`}
+                <span className="text-slate-300 block mb-1">কোর্স ফি</span>
+                <span className="text-emerald-300 font-black text-base sm:text-xl">
+                  {course.courseFee === 0 ? 'ফ্রি' : `৳ ${course.courseFee.toLocaleString()}`}
                 </span>
               </div>
             </div>
@@ -242,14 +238,14 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
             
             {/* Target Audience Banner */}
             {course.targetAudience && (
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200/80 dark:border-blue-900/60 rounded-2xl p-5 shadow-xs">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-900 rounded-2xl p-5 shadow-xs">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                      Who Is This Course Designed For?
+                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                      এই কোর্সটি কাদের জন্য?
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
                       {course.targetAudience}
@@ -261,12 +257,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
 
             {/* What Students Will Learn (Syllabus Highlights) */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xs">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                What You Will Learn in This Course
+                এই কোর্সে যা যা শেখানো হবে
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Comprehensive syllabus outline guaranteed to build rock-solid fundamentals for board exams.
+                বোর্ড পরীক্ষায় শতভাগ সাফল্যের নিশ্চয়তায় সাজানো পূর্ণাঙ্গ সিলেবাস রূপরেখা।
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -278,7 +274,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                     <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
-                    <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                    <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-semibold leading-relaxed">
                       {h}
                     </span>
                   </div>
@@ -289,18 +285,18 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
             {/* FACULTY TEACHERS SECTION */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xs">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                   <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  Course Faculty & Instructors
+                  কোর্সের নিবেদিত শিক্ষকবৃন্দ
                 </h2>
-                <span className="text-xs font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-xl">
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-xl">
                   {course.instructors && course.instructors.length > 0
-                    ? `${course.instructors.length} Instructors`
-                    : 'Grav Academic Faculty'}
+                    ? `${course.instructors.length} জন শিক্ষক`
+                    : 'গ্র্যাভ একাডেমি শিক্ষক প্যানেল'}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Classes and live problem-solving sessions are conducted by top educators in this subject.
+                শীর্ষ বিশ্ববিদ্যালয়ের অভিজ্ঞ শিক্ষকদের তত্ত্বাবধানে লাইভ ক্লাস ও নিয়মিত ডাউট সলভ সেশন।
               </p>
 
               {course.instructors && course.instructors.length > 0 ? (
@@ -308,38 +304,38 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                   {course.instructors.map((t) => (
                     <div
                       key={t._id}
-                      className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex items-center gap-4 hover:border-blue-300 dark:hover:border-slate-700 transition-all shadow-2xs"
+                      className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center gap-4 hover:border-blue-300 dark:hover:border-slate-700 transition-all shadow-2xs"
                     >
                       <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white font-extrabold text-base flex items-center justify-center shrink-0 shadow-md">
                         {t.avatarUrl ? (
                           <img src={t.avatarUrl} alt={t.name} className="w-full h-full rounded-2xl object-cover" />
                         ) : (
-                          t.name.slice(0, 2).toUpperCase()
+                          t.name.slice(0, 2)
                         )}
                       </div>
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                          {course.subject} Specialist
+                          {course.subject} স্পেশালিস্ট
                         </span>
                         <h4 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-0.5">
                           {t.name}
                         </h4>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          Grav Academy Academic Faculty
+                          গ্র্যাভ একাডেমি ফ্যাকাল্টি মেম্বার
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex items-center gap-4">
+                <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
                     GA
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">Grav Academy Senior Faculty</h4>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">গ্র্যাভ একাডেমি সিনিয়র ফ্যাকাল্টি</h4>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      Assigned subject specialist instructors manage batches and live interactive sessions.
+                      বিষয়ভিত্তিক দক্ষ শিক্ষকদের মাধ্যমে ব্যাচসমূহে লাইভ ক্লাস পরিচালিত হচ্ছে।
                     </p>
                   </div>
                 </div>
@@ -352,9 +348,9 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                 <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
                   <Video className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Live & Recorded</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Attend real-time Google Meet/Zoom classes with instant access to recorded archives.
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">লাইভ ও রেকর্ডেড ক্লাস</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  লাইভ ক্লাসে অংশ নেওয়ার পাশাপাশি যেকোনো সময় রেকর্ডেড ভিডিও দেখে রিভিশনের সুবিধা।
                 </p>
               </div>
 
@@ -362,9 +358,9 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                 <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3">
                   <FileText className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Google Drive Notes</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  High-resolution formula sheets and lecture notes synced straight to Drive.
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">প্রিমিয়াম লেকচার শিট</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  অধ্যায়ভিত্তিক সূত্র, হ্যান্ডনোট ও প্রশ্নোত্তরের নিখুঁত পিডিএফ সরাসরি ডাউনলোডের সুযোগ।
                 </p>
               </div>
 
@@ -372,9 +368,9 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                 <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
                   <Award className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Chapter Assessments</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Server-side auto-graded MCQ tests with instant rank lists and performance analytics.
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">মডেল টেস্ট ও মূল্যায়ন</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  অটোমেটেড অনলাইন পরীক্ষা, মেধাতালিকা এবং সাথে সাথেই সঠিক উত্তরের বিশ্লেষণ।
                 </p>
               </div>
             </div>
@@ -389,19 +385,19 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                    Live Schedules
+                    রুটিন ও সময়সূচি
                   </span>
                   <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mt-0.5">
-                    Available Batches
+                    চলতি ব্যাচসমূহ
                   </h3>
                 </div>
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
-                  {batches.length} {batches.length === 1 ? 'Batch' : 'Batches'}
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-xl">
+                  {batches.length} টি ব্যাচ
                 </span>
               </div>
 
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-                Choose an active batch below to access its live lecture schedule, classroom notes, and student enrollment:
+                পছন্দের যেকোনো সক্রিয় ব্যাচ নির্বাচন করে ক্লাসরুমে প্রবেশ করুন ও পড়াশোনা শুরু করুন:
               </p>
 
               {/* Batches List */}
@@ -409,10 +405,10 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                 <div className="text-center py-10 px-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800">
                   <Layers className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                   <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    No active batches scheduled yet
+                    বর্তমানে কোনো সক্রিয় ব্যাচ নেই
                   </h4>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Please check back shortly or contact our desk for upcoming admission dates.
+                    নতুন ব্যাচের রুটিন খুব শীঘ্রই যুক্ত করা হবে। যেকোনো তথ্যের জন্য আমাদের কল করুন।
                   </p>
                 </div>
               ) : (
@@ -420,29 +416,29 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                   {batches.map((batch) => (
                     <div
                       key={batch._id}
-                      className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 hover:border-blue-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
+                      className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60">
-                            {batch.status}
+                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                            {batch.status === 'active' ? 'সক্রিয়' : batch.status}
                           </span>
-                          <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-                            <Users className="w-3 h-3" /> Max {batch.capacity || 40} Seats
+                          <span className="text-[11px] text-slate-500 font-semibold flex items-center gap-1">
+                            <Users className="w-3.5 h-3.5" /> আসন: {batch.capacity || 40} জন
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
+                        <h4 className="text-sm font-extrabold text-slate-900 dark:text-white mb-2">
                           {batch.name}
                         </h4>
 
                         {batch.scheduleText ? (
-                          <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 mb-4">
+                          <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 mb-4">
                             <Calendar className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                            <span className="text-[11px] font-medium leading-tight">{batch.scheduleText}</span>
+                            <span className="text-[11px] font-semibold leading-tight">{batch.scheduleText}</span>
                           </div>
                         ) : (
-                          <div className="text-[11px] text-slate-400 italic mb-4">Flexible regular syllabus</div>
+                          <div className="text-[11px] text-slate-400 italic mb-4">নিয়মিত ক্লাসের সময়সূচি</div>
                         )}
                       </div>
 
@@ -450,7 +446,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
                         href={`/learn/${batch._id}`}
                         className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors"
                       >
-                        <span>Enter Learning Room</span>
+                        <span>ক্লাসরুমে প্রবেশ করুন</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
@@ -461,10 +457,10 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
               {/* Assistance Box */}
               <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
                 <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">
-                  Have questions regarding batch timings?
+                  ব্যাচ ও ভর্তি সংক্রান্ত যেকোনো সহায়তায়:
                 </span>
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                  Call Support: +880 1700-000000
+                <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 flex items-center justify-center gap-1.5">
+                  <PhoneCall className="w-3.5 h-3.5" /> ১৬৯১০ / ০১৭০০-০০০০০০
                 </span>
               </div>
 
