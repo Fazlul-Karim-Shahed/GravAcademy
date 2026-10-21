@@ -345,7 +345,7 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-              {filteredCourses.map((c) => {
+              {filteredCourses.map((c, idx) => {
                 const instructorName =
                   c.instructors && c.instructors.length > 0
                     ? typeof c.instructors[0] === 'object'
@@ -355,6 +355,42 @@ export default function HomePage() {
 
                 const regularPrice = c.courseFee ? Math.round(c.courseFee * 1.35) : null;
 
+                // Modern EdTech tailored vibrant gradient palettes
+                const cardThemes = [
+                  {
+                    gradient: 'from-violet-600 via-indigo-600 to-purple-800',
+                    tag: 'text-violet-200',
+                    blob1: 'bg-white/15',
+                    blob2: 'bg-indigo-300/25',
+                  },
+                  {
+                    gradient: 'from-emerald-600 via-teal-600 to-cyan-800',
+                    tag: 'text-teal-200',
+                    blob1: 'bg-white/15',
+                    blob2: 'bg-emerald-300/25',
+                  },
+                  {
+                    gradient: 'from-blue-600 via-indigo-600 to-sky-900',
+                    tag: 'text-sky-200',
+                    blob1: 'bg-white/15',
+                    blob2: 'bg-sky-300/25',
+                  },
+                  {
+                    gradient: 'from-rose-600 via-pink-600 to-purple-900',
+                    tag: 'text-rose-200',
+                    blob1: 'bg-white/15',
+                    blob2: 'bg-pink-300/25',
+                  },
+                  {
+                    gradient: 'from-amber-600 via-orange-600 to-rose-900',
+                    tag: 'text-amber-200',
+                    blob1: 'bg-white/15',
+                    blob2: 'bg-amber-300/25',
+                  },
+                ];
+
+                const currentTheme = cardThemes[idx % cardThemes.length];
+
                 return (
                   <Link
                     key={c._id}
@@ -362,11 +398,11 @@ export default function HomePage() {
                     className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
                   >
                     <div>
-                      {/* Top Thumbnail Banner with Subject Theme Accent */}
-                      <div className="relative h-44 bg-gradient-to-br from-blue-700 via-indigo-700 to-slate-900 p-5 flex flex-col justify-between overflow-hidden">
+                      {/* Top Thumbnail Banner with Vibrant EdTech Gradient */}
+                      <div className={`relative h-44 bg-gradient-to-br ${currentTheme.gradient} p-5 flex flex-col justify-between overflow-hidden`}>
                         {/* Decorative background geometry */}
-                        <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
-                        <div className="absolute right-4 top-4 w-20 h-20 rounded-full bg-blue-400/20 blur-lg pointer-events-none" />
+                        <div className={`absolute -right-8 -bottom-8 w-36 h-36 rounded-full ${currentTheme.blob1} blur-xl pointer-events-none`} />
+                        <div className={`absolute right-4 top-4 w-20 h-20 rounded-full ${currentTheme.blob2} blur-lg pointer-events-none`} />
 
                         {/* Badges on Thumbnail */}
                         <div className="relative z-10 flex items-center justify-between">
@@ -374,18 +410,19 @@ export default function HomePage() {
                             {c.gradeLevel}
                           </span>
 
-                          <span className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-[11px] font-extrabold shadow-sm flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                          <span className="px-3 py-1 rounded-full bg-white/95 text-slate-900 text-[11px] font-extrabold shadow-sm flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 -ml-2.5" />
                             লাইভ ব্যাচ
                           </span>
                         </div>
 
                         {/* Subject & Title Overlay */}
                         <div className="relative z-10">
-                          <span className="text-xs font-bold text-blue-200 uppercase tracking-wider block mb-1">
+                          <span className={`text-xs font-bold ${currentTheme.tag} uppercase tracking-wider block mb-1 drop-shadow-xs`}>
                             {c.subject} স্পেশাল
                           </span>
-                          <h4 className="text-white text-base sm:text-lg font-black leading-snug line-clamp-1 drop-shadow-sm group-hover:text-blue-100 transition-colors">
+                          <h4 className="text-white text-base sm:text-lg font-black leading-snug line-clamp-1 drop-shadow-sm group-hover:underline transition-colors">
                             {c.title}
                           </h4>
                         </div>
