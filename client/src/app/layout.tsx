@@ -1,20 +1,21 @@
-import { Inter, Anek_Bangla } from 'next/font/google';
+import { Baloo_Da_2, DM_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Navbar } from '@/components/navigation/Navbar';
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
-  variable: '--font-sans',
+  variable: '--font-dm-sans',
 });
 
-const anekBangla = Anek_Bangla({
+const balooDa2 = Baloo_Da_2({
   subsets: ['bengali'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
-  variable: '--font-bengali',
+  variable: '--font-baloo-da',
 });
 
 export const metadata: Metadata = {
@@ -28,10 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="bn" suppressHydrationWarning className={`${inter.variable} ${anekBangla.variable}`}>
+    <html lang="bn" suppressHydrationWarning className={`${dmSans.variable} ${balooDa2.variable}`}>
       <body
         suppressHydrationWarning
-        className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white font-sans transition-colors duration-150"
+        className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white font-bangla transition-colors duration-150"
       >
         <ThemeProvider>
           <AuthProvider>
