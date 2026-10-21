@@ -1,18 +1,18 @@
-import { Plus_Jakarta_Sans, Hind_Siliguri } from 'next/font/google';
+import { Inter, Anek_Bangla } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Navbar } from '@/components/navigation/Navbar';
 
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
 });
 
-const hindSiliguri = Hind_Siliguri({
+const anekBangla = Anek_Bangla({
   subsets: ['bengali'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   display: 'swap',
   variable: '--font-bengali',
 });
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="bn" suppressHydrationWarning className={`${jakarta.variable} ${hindSiliguri.variable}`}>
+    <html lang="bn" suppressHydrationWarning className={`${inter.variable} ${anekBangla.variable}`}>
       <body
         suppressHydrationWarning
         className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white font-sans transition-colors duration-150"

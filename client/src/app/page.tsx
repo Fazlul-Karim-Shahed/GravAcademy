@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { api } from '@/lib/api';
 import {
   BookOpen,
@@ -25,7 +24,6 @@ import {
   Check,
   Calendar,
   MessageCircle,
-  ExternalLink,
 } from 'lucide-react';
 
 interface Course {
@@ -99,31 +97,34 @@ export default function HomePage() {
     {
       name: 'মাহমুদুল হাসান',
       title: 'হেড অফ একাডেমিক কেয়ার',
-      exp: 'বুয়েট (CSE) • ৮+ বছরের শিক্ষকতা অভিজ্ঞতা',
+      exp: 'বুয়েট (CSE) • ৮+ বছর শিক্ষকতা',
       subject: 'উচ্চতর গণিত ও পদার্থবিজ্ঞান',
       badge: 'মাস্টার ট্রেইনার',
+      color: 'from-blue-600 to-indigo-600',
     },
     {
       name: 'রফিকুল ইসলাম',
       title: 'সিনিয়র ইনস্ট্রাক্টর',
-      exp: 'ঢাকা বিশ্ববিদ্যালয় (রসায়ন বিভাগ) • ৬+ বছর অভিজ্ঞতা',
+      exp: 'ঢাকা বিশ্ববিদ্যালয় • ৬+ বছর শিক্ষকতা',
       subject: 'রসায়ন ও সাধারণ বিজ্ঞান',
       badge: 'বোর্ড স্পেশালিস্ট',
+      color: 'from-emerald-600 to-teal-600',
     },
     {
       name: 'তানভীর আহমেদ',
       title: 'সিনিয়র ফ্যাকাল্টি',
-      exp: 'মেডিকেল ব্যাকগ্রাউন্ড • ৫+ বছর শিক্ষকতা অভিজ্ঞতা',
+      exp: 'মেডিকেল ব্যাকগ্রাউন্ড • ৫+ বছর শিক্ষকতা',
       subject: 'জীববিজ্ঞান ও আইসিটি',
       badge: 'মেন্টর',
+      color: 'from-purple-600 to-pink-600',
     },
   ];
 
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
       
-      {/* 1. TOP NOTICE / ADMISSION ANNOUNCEMENT */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white text-xs sm:text-sm py-2.5 px-4 text-center font-medium shadow-inner flex items-center justify-center gap-2">
+      {/* 1. TOP ANNOUNCEMENT STRIP */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium shadow-inner flex items-center justify-center gap-2">
         <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 font-extrabold text-[11px] uppercase tracking-wide">
           ভর্তি চলছে
         </span>
@@ -133,20 +134,20 @@ export default function HomePage() {
         </Link>
       </div>
 
-      {/* 2. HERO SECTION WITH AUTHENTIC BANGLADESHI STUDENT PHOTO */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50/60 via-slate-50/30 to-white dark:from-slate-900/60 dark:via-slate-950 dark:to-slate-950 pt-10 pb-16 lg:pt-16 lg:pb-20 border-b border-slate-100 dark:border-slate-800/80">
+      {/* 2. HERO SECTION */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50/70 via-slate-50/20 to-white dark:from-slate-900/60 dark:via-slate-950 dark:to-slate-950 pt-12 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-100 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             
             {/* Left Content Column */}
             <div className="lg:col-span-7 text-center lg:text-left">
               
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/70 text-blue-800 dark:text-blue-300 text-xs sm:text-sm font-semibold mb-5 shadow-2xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/70 text-blue-800 dark:text-blue-300 text-xs sm:text-sm font-semibold mb-6 shadow-2xs">
                 <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>ক্লাস ৬ থেকে ১২ শ্রেণির সম্পূর্ণ অনলাইন একাডেমিক কেয়ার</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-[46px] font-extrabold text-slate-900 dark:text-white leading-[1.28] tracking-tight">
+              <h1 className="text-3xl sm:text-5xl lg:text-[44px] font-extrabold text-slate-900 dark:text-white leading-[1.32] tracking-tight">
                 পড়ালেখার পূর্ণাঙ্গ প্রস্তুতি হোক{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:to-indigo-300">
                   দেশসেরা শিক্ষকদের
@@ -154,21 +155,21 @@ export default function HomePage() {
                 নিবিড় সান্নিধ্যে
               </h1>
 
-              <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
-                লাইভ ক্লাস, অধ্যায়ভিত্তিক প্রিমিয়াম লেকচার শিট, নিয়মিত মডেল টেস্ট এবং তাৎক্ষণিক ডাউট সলভ দিয়ে নিশ্চিত করো তোমার বোর্ড পরীক্ষার জিপিএ-৫।
+              <p className="mt-5 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-[1.8] max-w-2xl mx-auto lg:mx-0">
+                অভিজ্ঞ শিক্ষকবৃন্দের লাইভ ক্লাস, অধ্যায়ভিত্তিক লেকচার শিট, নিয়মিত মডেল টেস্ট ও সার্বক্ষণিক ডাউট সলভ দিয়ে নিশ্চিত করো তোমার বোর্ড পরীক্ষার সেরা ফলাফল।
               </p>
 
-              {/* Class Selectors Quick Pills (10 Minute School Style) */}
-              <div className="mt-7 pt-6 border-t border-slate-200/90 dark:border-slate-800/90">
-                <div className="flex items-center justify-between mb-3">
+              {/* Class Selectors Quick Pills */}
+              <div className="mt-8 pt-6 border-t border-slate-200/90 dark:border-slate-800/90">
+                <div className="flex items-center justify-between mb-3.5">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                     তোমার শ্রেণি নির্বাচন করো:
                   </span>
                   <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold hidden sm:inline">
-                    ক্লিক করে কোর্স দেখুন
+                    এক ক্লিকে কোর্স দেখুন
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
                   {classList.map((cls) => (
                     <button
                       key={cls}
@@ -190,7 +191,7 @@ export default function HomePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
+              <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4">
                 <Link
                   href="/courses"
                   className="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/25 transition-all flex items-center gap-2 group"
@@ -207,29 +208,12 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="mt-8 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-500 dark:text-slate-400 pt-4 border-t border-slate-100 dark:border-slate-800/60">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>বোর্ড সিলেবাস ১০০% কভার</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>রেকর্ডেড ব্যাকআপ ক্লাস</span>
-                </div>
-                <div className="flex items-center gap-1.5 hidden sm:flex">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>প্রিমিয়াম হ্যান্ডনোটস</span>
-                </div>
-              </div>
-
             </div>
 
-            {/* Right Visual Image Card (Real Student Photography with Overlay Stats) */}
+            {/* Right Visual Image Card */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-lg lg:max-w-none">
                 
-                {/* Decorative border frame */}
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-800 aspect-[4/3] sm:aspect-[16/11]">
                   <img
                     src="/images/hero-student.jpg"
@@ -238,8 +222,7 @@ export default function HomePage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
                   
-                  {/* Photo Caption Overlay */}
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <div className="absolute bottom-5 left-5 right-5 text-white">
                     <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-[11px] font-bold tracking-wide uppercase shadow-xs">
                       সফলতার গল্প
                     </span>
@@ -249,7 +232,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: Live Interactive Badge */}
+                {/* Floating Badge 1 */}
                 <div className="absolute -top-4 -left-3 sm:-left-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-xl flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold shrink-0">
                     <PlayCircle className="w-5 h-5 animate-pulse" />
@@ -260,7 +243,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Badge 2: PDF Notes Badge */}
+                {/* Floating Badge 2 */}
                 <div className="absolute -bottom-4 -right-2 sm:-right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-xl flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center font-bold shrink-0">
                     <FileText className="w-5 h-5" />
@@ -302,30 +285,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. FEATURED COURSES SECTION (Direct Clickable Cards with Rich Details) */}
-      <section id="featured-courses" className="py-16 sm:py-20 bg-slate-50/70 dark:bg-slate-950/70 border-b border-slate-100 dark:border-slate-800/80">
+      {/* 4. FEATURED COURSES SECTION */}
+      <section id="featured-courses" className="py-20 sm:py-24 bg-slate-50/70 dark:bg-slate-950/70 border-b border-slate-100 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold mb-2.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold mb-3">
                 <BookOpen className="w-3.5 h-3.5" /> কোর্সের তালিকা
               </div>
               <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 জনপ্রিয় কোর্স ও ব্যাচসমূহ
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-xl">
-                তোমার পছন্দের ক্লাসের কোর্সে ক্লিক করে বিস্তারিত সিলেবাস, শিক্ষক পরিচিতি ও চলতি ব্যাচের তালিকা দেখে নাও।
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-xl">
+                তোমার পছন্দের কোর্সে ক্লিক করে বিস্তারিত সিলেবাস ও চলতি ব্যাচের সময়সূচি দেখে নাও।
               </p>
             </div>
 
             {/* Class Switcher Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
               {classList.slice(0, 6).map((cls) => (
                 <button
                   key={cls}
                   onClick={() => setSelectedClass(cls)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-2xs ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-2xs ${
                     selectedClass === cls
                       ? 'bg-blue-600 text-white'
                       : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -356,7 +339,7 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCourses.map((c) => (
                 <Link
                   key={c._id}
@@ -365,51 +348,51 @@ export default function HomePage() {
                 >
                   <div>
                     {/* Header Banner */}
-                    <div className="p-5 bg-gradient-to-br from-blue-50/50 via-slate-50 to-white dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/20 border-b border-slate-100 dark:border-slate-800">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-blue-600 text-white shadow-2xs">
+                    <div className="p-6 bg-gradient-to-br from-blue-50/50 via-slate-50 to-white dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/20 border-b border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between mb-3.5">
+                        <span className="px-3 py-1 rounded-lg text-xs font-extrabold bg-blue-600 text-white shadow-2xs">
                           {c.gradeLevel}
                         </span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 px-3 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
                           {c.subject}
                         </span>
                       </div>
                       
-                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 leading-snug">
+                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 leading-snug">
                         {c.title}
                       </h3>
                       
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-[1.7]">
                         {c.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রশ্ন বিশ্লেষণ কোর্স।'}
                       </p>
                     </div>
 
                     {/* Features Snippet */}
-                    <div className="p-5 space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+                    <div className="p-6 space-y-3 text-xs text-slate-600 dark:text-slate-300">
                       <div className="flex items-center gap-2.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>ইন্টারঅ্যাক্টিভ লাইভ ও ব্যাকআপ ক্লাস</span>
+                        <span>লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
                       </div>
                       <div className="flex items-center gap-2.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>অধ্যায়ভিত্তিক লেকচার শিট ও ফর্মুলা বুক</span>
+                        <span>লেকচার শিট ও বোর্ড প্রশ্ন সমাধান</span>
                       </div>
                       <div className="flex items-center gap-2.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>সাপ্তাহিক মডেল টেস্ট ও অটোমেটেড মূল্যায়ন</span>
+                        <span>অধ্যায়ভিত্তিক মডেল টেস্ট ও লিডারবোর্ড</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Card Bottom Bar */}
-                  <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between">
+                  <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">কোর্স ফি</span>
                       <span className="text-base font-extrabold text-blue-600 dark:text-blue-400">
                         ৳ {c.courseFee ? c.courseFee.toLocaleString() : 'ফ্রি'}
                       </span>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold group-hover:bg-blue-700 transition-colors shadow-2xs">
+                    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold group-hover:bg-blue-700 transition-colors shadow-2xs">
                       <span>বিস্তারিত ও ভর্তি</span>
                       <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </span>
@@ -420,7 +403,7 @@ export default function HomePage() {
           )}
 
           {/* Catalog CTA */}
-          <div className="mt-12 text-center">
+          <div className="mt-14 text-center">
             <Link
               href="/courses"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 text-slate-900 dark:text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
@@ -433,10 +416,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. VISUAL SECTION 1: LIVE CLASS EXPERIENCE (Interactive Digital Studio) */}
-      <section className="py-16 sm:py-24 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+      {/* 5. VISUAL SECTION 1: LIVE CLASS (Spacious, Clean & Minimal Text) */}
+      <section className="py-20 sm:py-28 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Image on Left */}
             <div className="lg:col-span-6 order-2 lg:order-1">
@@ -453,57 +436,66 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Text on Right */}
+            {/* Text on Right (Crisp, spacious 3 bullet points) */}
             <div className="lg:col-span-6 order-1 lg:order-2">
-              <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold">
+              <span className="px-3.5 py-1.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold inline-block mb-4">
                 আধুনিক পাঠদান পদ্ধতি
               </span>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-3 leading-snug">
+              
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-[1.35] tracking-tight">
                 ডিজিটাল স্মার্টবোর্ডে জীবন্ত ও প্রাণবন্ত ক্লাস
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">
-                বইয়ের কঠিন বিষয়গুলো সহজভাবে বোঝাতে ব্যবহার করা হয় ডিজিটাল গ্রাফিক্স, থ্রিডি অ্যানিমেশন এবং বাস্তব উদাহরণ। ক্লাসেই শিক্ষকের সাথে সরাসরি প্রশ্ন করে সব দ্বিধা দূর করার সুযোগ রয়েছে।
+              
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-4 leading-[1.8]">
+                বইয়ের কঠিন বিষয়গুলো সহজ গ্রাফিক্স ও বাস্তব উদাহরণের মাধ্যমে ক্লাসেই বুঝিয়ে দেওয়া হয়।
               </p>
 
-              <div className="mt-6 space-y-3.5">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+              {/* 3 Spacious Clean Feature Points */}
+              <div className="mt-8 space-y-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center shrink-0 font-bold text-sm shadow-2xs">
                     ১
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">রিয়েল-টাইম ডাউট সলভিং</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">লাইভ ক্লাসেই অডিও বা চ্যাটের মাধ্যমে শিক্ষককে সরাসরি প্রশ্ন করে সমাধান পাওয়ার সুযোগ।</p>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">রিয়েল-টাইম ডাউট সলভিং</h3>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-[1.6]">
+                      লাইভ ক্লাসেই সরাসরি প্রশ্ন করে যেকোনো দ্বিধা সমাধান করার সুযোগ।
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0 font-bold text-sm shadow-2xs">
                     ২
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">বোর্ড পরীক্ষার টেস্ট পেপার সলভিং</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">বিগত ১০ বছরের শীর্ষস্থানীয় স্কুল ও কলেজের প্রশ্ন ও ক্রিয়েটিভ প্রশ্নের নিখুঁত সলিউশন।</p>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">বোর্ড প্রশ্ন ও টেস্ট পেপার সলভিং</h3>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-[1.6]">
+                      শীর্ষস্থানীয় কলেজ ও স্কুলের বিগত বছরের প্রশ্নের বিশেষ সমাধান।
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0 font-bold text-sm shadow-2xs">
                     ৩
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">আনলিমিটেড রেকর্ডেড রিভিশন</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">পরীক্ষার আগের দিন রাতেও সম্পূর্ণ ক্লাসের হাই-কোয়ালিটি ভিডিও দেখে রিভিশন দেওয়া যায়।</p>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">আনলিমিটেড রেকর্ডেড ক্লাস</h3>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-[1.6]">
+                      পরীক্ষার আগে রিভিশনের জন্য যতবার খুশি ক্লাস দেখার সুযোগ।
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-7">
+              <div className="mt-8 pt-2">
                 <Link
                   href="/live-classes"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all"
                 >
                   <span>আজকের লাইভ ক্লাস শিডিউল দেখুন</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
@@ -514,47 +506,54 @@ export default function HomePage() {
       </section>
 
       {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS */}
-      <section className="py-16 sm:py-24 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
+      <section className="py-20 sm:py-28 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Text on Left */}
             <div className="lg:col-span-6">
-              <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+              <span className="px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold inline-block mb-4">
                 শিক্ষার্থী বান্ধব পরিবেশ
               </span>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-3 leading-snug">
-                একসাথে প্রস্তুতি, নিয়মিত এক্সাম ও আত্মবিশ্বাস বৃদ্ধি
+              
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-[1.35] tracking-tight">
+                একসাথে প্রস্তুতি, নিয়মিত পরীক্ষা ও আত্মবিশ্বাস বৃদ্ধি
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">
-                শুধু পড়া শুনলেই হয় না, নিজে কতটুকু শিখতে পারলে তা যাচাই করা সবচেয়ে জরুরি। আমাদের প্ল্যাটফর্মে রয়েছে নিয়মিত সাপ্তাহিক মডেল টেস্ট, চ্যাপ্টার কুইজ এবং লিডারবোর্ড।
+              
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-4 leading-[1.8]">
+                নিয়মিত সাপ্তাহিক মডেল টেস্ট ও মূল্যায়ন দিয়ে যাচাই করো তোমার প্রস্তুতি।
               </p>
 
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
-                  <Award className="w-6 h-6 text-amber-500 mb-2" />
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">রিয়েলটাইম লিডারবোর্ড</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    অনলাইন পরীক্ষার পর সারা দেশের সহপাঠীদের মাঝে তোমার মেধার অবস্থান যাচাই।
+              {/* 2 Big Spacious Highlight Cards */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-500 flex items-center justify-center font-bold mb-3">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white">রিয়েলটাইম লিডারবোর্ড</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-[1.6]">
+                    পরীক্ষার পর সারাদেশে সহপাঠীদের মাঝে নিজের মেধার অবস্থান দেখার সুবিধা।
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
-                  <ShieldCheck className="w-6 h-6 text-emerald-500 mb-2" />
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">অভিভাবক ট্র্যাকিং</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    শিক্ষার্থীর উপস্থিতি, ক্লাসের অগ্রগতি ও পরীক্ষার ফলাফল অভিভাবকরা দেখতে পারবেন।
+                <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center font-bold mb-3">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white">অভিভাবক ট্র্যাকিং</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-[1.6]">
+                    ক্লাসের উপস্থিতি ও পরীক্ষার ফলাফল অভিভাবকরা সহজে ট্র্যাক করতে পারেন।
                   </p>
                 </div>
               </div>
 
-              <div className="mt-7">
+              <div className="mt-8 pt-2">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs shadow-md transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs sm:text-sm shadow-md transition-all"
                 >
                   <span>ফ্রি স্টুডেন্ট অ্যাকাউন্ট খুলুন</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -567,9 +566,9 @@ export default function HomePage() {
                   alt="Students happily collaborating and checking high exam scores"
                   className="w-full h-full object-cover object-center"
                 />
-                <div className="absolute bottom-4 right-4 bg-emerald-600 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-                  <Check className="w-3.5 h-3.5" />
-                  <span>৯৮% সন্তুষ্ট অভিভাবক ও শিক্ষার্থী</span>
+                <div className="absolute bottom-5 right-5 bg-emerald-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+                  <Check className="w-4 h-4" />
+                  <span>৯৮% সন্তুষ্ট শিক্ষার্থী ও অভিভাবক</span>
                 </div>
               </div>
             </div>
@@ -578,44 +577,44 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. TEACHERS / FACULTY SECTION */}
-      <section className="py-16 sm:py-20 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+      {/* 7. TEACHERS / FACULTY SECTION (Redesigned with Premium Badges & Clean Spacing) */}
+      <section className="py-20 sm:py-24 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold inline-block mb-3">
               দক্ষ শিক্ষক প্যানেল
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-3">
-              যাদের সান্নিধ্যে তোমার স্বপ্নপূরণ
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              যাদের নিবিড় সান্নিধ্যে তোমার স্বপ্নপূরণ
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">
-              বুয়েট, ঢাবি এবং শীর্ষ বিশ্ববিদ্যালয়ের অভিজ্ঞ শিক্ষকেরা নিবিড় যত্ন দিয়ে গড়ে তুলবেন তোমার প্রতিটি বিষয়ের ভিত্তি।
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+              বুয়েট ও ঢাকা বিশ্ববিদ্যালয়ের অভিজ্ঞ শিক্ষকদের তত্ত্বাবধানে প্রতিটি বিষয়ের সহজ পাঠদান।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {instructorsList.map((teacher, idx) => (
               <div
                 key={idx}
-                className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-600 transition-all shadow-xs"
+                className="p-7 rounded-3xl bg-slate-50/70 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-xl transition-all duration-300"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-md">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${teacher.color} text-white font-extrabold text-lg flex items-center justify-center shadow-md`}>
                       {teacher.name.slice(0, 2)}
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-[11px] font-bold border border-blue-200 dark:border-blue-800">
+                    <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-200 dark:border-blue-800">
                       {teacher.badge}
                     </span>
                   </div>
                   
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">{teacher.name}</h3>
-                  <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-0.5">{teacher.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">{teacher.exp}</p>
+                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">{teacher.name}</h3>
+                  <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-1">{teacher.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed font-medium">{teacher.exp}</p>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
+                <div className="mt-6 pt-4 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
                   <span className="text-slate-500">বিষয়:</span>
                   <span className="font-bold text-slate-800 dark:text-slate-200">{teacher.subject}</span>
                 </div>
@@ -627,10 +626,10 @@ export default function HomePage() {
       </section>
 
       {/* 8. 3-STEP ADMISSION PROCESS */}
-      <section className="py-16 sm:py-20 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
+      <section className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-xl mx-auto mb-12">
+          <div className="text-center max-w-xl mx-auto mb-14">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
               ভর্তি হতে মাত্র ৩টি ধাপ
             </h2>
@@ -639,32 +638,32 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-extrabold text-base flex items-center justify-center mx-auto mb-4 shadow-md shadow-blue-500/20">
                 ১
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">রেজিস্ট্রেশন করুন</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">রেজিস্ট্রেশন করুন</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 নাম ও মোবাইল নম্বর দিয়ে বিনামূল্যে একটি স্টুডেন্ট অ্যাকাউন্ট খুলুন।
               </p>
             </div>
 
-            <div className="text-center p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="text-center p-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-indigo-600 text-white font-extrabold text-base flex items-center justify-center mx-auto mb-4 shadow-md shadow-indigo-500/20">
                 ২
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">কোর্স ও ব্যাচ পছন্দ করুন</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">কোর্স ও ব্যাচ পছন্দ করুন</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 তোমার পছন্দের শ্রেণি অনুযায়ী কোর্স নির্বাচন করে ব্যাচে ভর্তি সম্পন্ন করুন।
               </p>
             </div>
 
-            <div className="text-center p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div className="text-center p-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
               <div className="w-12 h-12 rounded-full bg-emerald-600 text-white font-extrabold text-base flex items-center justify-center mx-auto mb-4 shadow-md shadow-emerald-500/20">
                 ৩
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">ক্লাস শুরু করুন</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">ক্লাস শুরু করুন</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 ড্যাশবোর্ড থেকে লাইভ ক্লাস করুন, নোট ডাউনলোড করুন ও নিয়মিত মডেল টেস্ট দিন।
               </p>
@@ -675,22 +674,22 @@ export default function HomePage() {
       </section>
 
       {/* 9. FREQUENTLY ASKED QUESTIONS (FAQ) */}
-      <section className="py-16 sm:py-20 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+      <section className="py-20 sm:py-24 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-xl mx-auto mb-12">
-            <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800">
+          <div className="text-center max-w-xl mx-auto mb-14">
+            <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 inline-block mb-3">
               জিজ্ঞাসা
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-3">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
               সচরাচর জিজ্ঞাসিত প্রশ্ন (FAQ)
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">
               গ্র্যাভ একাডেমিতে ক্লাস, পরীক্ষা এবং ভর্তি সংক্রান্ত যেকোনো তথ্য।
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {faqs.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
@@ -701,7 +700,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
@@ -711,7 +710,7 @@ export default function HomePage() {
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-0 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 mt-1 pt-3">
+                    <div className="px-5 pb-5 pt-0 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-[1.8] border-t border-slate-100 dark:border-slate-800/80 mt-1 pt-3.5">
                       {faq.a}
                     </div>
                   )}
@@ -724,7 +723,7 @@ export default function HomePage() {
       </section>
 
       {/* 10. BOTTOM BANNER */}
-      <section className="py-14 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white text-center">
+      <section className="py-16 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
             আজই শুরু হোক তোমার সেরা প্রস্তুতি!
