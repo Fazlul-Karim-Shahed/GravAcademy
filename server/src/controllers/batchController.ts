@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import mongoose from 'mongoose';
 import { Batch } from '../models/Batch';
+import { Course } from '../models/Course';
 import { Module, Section, Lesson } from '../models/ContentHierarchy';
 import { FileAsset } from '../models/FileAsset';
 import { AuditLog } from '../models/AuditLog';
