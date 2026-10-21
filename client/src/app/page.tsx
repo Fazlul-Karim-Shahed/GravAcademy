@@ -103,8 +103,7 @@ export default function HomePage() {
       badge: 'মাস্টার ট্রেইনার',
       studentsCount: '১৫,০০০+',
       classesCount: '৪৫০+ লাইভ ক্লাস',
-      avatarColor: 'from-blue-600 via-indigo-600 to-blue-700',
-      initials: 'MH',
+      photo: '/images/teacher-2.jpg',
     },
     {
       name: 'রফিকুল ইসলাম',
@@ -115,8 +114,7 @@ export default function HomePage() {
       badge: 'বোর্ড স্পেশালিস্ট',
       studentsCount: '১২,০০০+',
       classesCount: '৩৮০+ লাইভ ক্লাস',
-      avatarColor: 'from-emerald-600 via-teal-600 to-cyan-700',
-      initials: 'RI',
+      photo: '/images/teacher-3.jpg',
     },
     {
       name: 'তানভীর আহমেদ',
@@ -127,8 +125,7 @@ export default function HomePage() {
       badge: 'সিনিয়র মেন্টর',
       studentsCount: '১০,০০০+',
       classesCount: '৩২০+ লাইভ ক্লাস',
-      avatarColor: 'from-purple-600 via-indigo-600 to-rose-600',
-      initials: 'TA',
+      photo: '/images/teacher-1.jpg',
     },
   ];
 
@@ -662,13 +659,17 @@ export default function HomePage() {
                 className="group relative bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
               >
                 <div>
-                  {/* Top Header with Avatar & Badge */}
+                  {/* Top Header with Photo Avatar & Badge */}
                   <div className="flex items-start justify-between gap-4 mb-5">
                     <div className="relative">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${teacher.avatarColor} text-white font-extrabold text-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300`}>
-                        {teacher.initials}
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-lg shadow-slate-200/50 dark:shadow-none group-hover:scale-105 transition-transform duration-300 bg-slate-100 dark:bg-slate-800">
+                        <img
+                          src={teacher.photo}
+                          alt={teacher.name}
+                          className="w-full h-full object-cover object-center"
+                        />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-white" title="ভেরিফায়েড শিক্ষক">
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-white shadow-xs" title="ভেরিফায়েড শিক্ষক">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </div>
                     </div>
