@@ -29,7 +29,19 @@ export const getBatches = async (req: Request, res: Response) => {
     const { courseId, status } = req.query;
     const filter: any = {};
 
-    if (courseId) filter.courseId = courseId;
+    if (courseId) {
+      if (mongoose.Types.ObjectId.isValid(courseId as string)) {
+        filter.courseId = courseId;
+      } else {
+        // Find course by slug first
+        const foundCourse = await Course.findOne({ slug: courseId });
+        if (foundCourse) {
+          filter.courseId = foundCourse._id;
+        } else {
+          return res.status(200).json({ success: true, count: 0, data: [] });
+        }
+      }
+    }
     if (status) filter.status = status;
 
     const batches = await Batch.find(filter)

@@ -70,20 +70,22 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const fetchCourseAndBatches = async () => {
     setLoading(true);
     try {
-      // 1. Fetch course details
+      // 1. Fetch course details (supports both slug and _id)
       const courseRes = await api.get(`/courses/${resolvedParams.id}`);
       if (courseRes.data?.success) {
-        setCourse(courseRes.data.data);
-      }
+        const loadedCourse = courseRes.data.data;
+        setCourse(loadedCourse);
 
-      // 2. Fetch batches for this course
-      try {
-        const batchesRes = await api.get(`/batches?courseId=${resolvedParams.id}`);
-        if (batchesRes.data?.success) {
-          setBatches(batchesRes.data.data || []);
+        // 2. Fetch batches using the actual course MongoDB _id (since backend expects ObjectId for courseId)
+        try {
+          const actualCourseId = loadedCourse._id || resolvedParams.id;
+          const batchesRes = await api.get(`/batches?courseId=${actualCourseId}`);
+          if (batchesRes.data?.success) {
+            setBatches(batchesRes.data.data || []);
+          }
+        } catch (batchErr) {
+          console.warn('Batches not loaded for course:', batchErr);
         }
-      } catch (batchErr) {
-        console.warn('Batches not loaded for course:', batchErr);
       }
     } catch (err) {
       console.error('Failed to load course details', err);
