@@ -102,6 +102,19 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
           typeof ins === 'object' ? ins._id : ins
         );
 
+        const defaultHighlights = [
+          'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বেসিক ক্লিয়ারিং ক্লাস',
+          'বোর্ড প্রশ্ন বিশ্লেষণ ও বিগত বছরের টেস্ট পেপার সলভিং',
+          'সাপ্তাহিক লাইভ ইন্টারঅ্যাক্টিভ ডাউট সলভিং ও রিভিশন সেশন',
+          'গুগল ড্রাইভে প্রতিটি ক্লাসের পূর্ণাঙ্গ লেকচার শিট ও ফর্মুলা বুকলেট',
+          'টাইমড অনলাইন এমসিকিউ (MCQ) ও রিটেন প্র্যাকটিস এক্সাম',
+        ];
+
+        const initialHighlights =
+          Array.isArray(c.curriculumHighlights) && c.curriculumHighlights.length > 0
+            ? c.curriculumHighlights
+            : defaultHighlights;
+
         setForm({
           title: c.title || '',
           description: c.description || '',
@@ -112,7 +125,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
           targetAudience: c.targetAudience || '',
           isPublished: c.isPublished ?? true,
           instructors: currentInstructorIds,
-          curriculumHighlights: Array.isArray(c.curriculumHighlights) ? c.curriculumHighlights : [],
+          curriculumHighlights: initialHighlights,
           features: Array.isArray(c.features) ? c.features : [],
         });
       }
