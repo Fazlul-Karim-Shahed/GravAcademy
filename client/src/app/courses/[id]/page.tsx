@@ -144,31 +144,36 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. PROFESSIONAL EDITORIAL HERO SECTION */}
-      <section className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 pt-7 pb-10 sm:pb-12 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 1. PROFESSIONAL EDITORIAL HERO WITH RICH GRADIENT TEXTURE */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 text-white pt-8 pb-12 sm:pb-14 border-b border-slate-800 shadow-lg">
+        {/* Subtle Geometric Background Lighting & Grid Texture */}
+        <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Breadcrumb Navigation */}
           <div className="flex items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
               <Link
                 href="/courses"
-                className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> সকল কোর্স
+                <ArrowLeft className="w-3.5 h-3.5 text-blue-400" /> সকল কোর্স
               </Link>
-              <span>/</span>
-              <span className="text-slate-800 dark:text-slate-300 font-bold">{course.gradeLevel}</span>
-              <span>/</span>
-              <span className="text-blue-600 dark:text-blue-400 font-bold">{course.subject}</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-slate-200 font-bold">{course.gradeLevel}</span>
+              <span className="text-slate-600">/</span>
+              <span className="text-blue-400 font-bold">{course.subject}</span>
             </div>
 
             {isAdmin && (
               <Link
                 href={`/admin/courses/${course._id}/edit`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 backdrop-blur-md transition-colors"
               >
-                <Edit className="w-3.5 h-3.5" /> কোর্স এডিট করুন
+                <Edit className="w-3.5 h-3.5 text-blue-300" /> কোর্স এডিট করুন
               </Link>
             )}
           </div>
@@ -177,38 +182,38 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           <div className="max-w-4xl">
             {/* Meta Category Indicator */}
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-blue-600" />
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-300">
                 {course.gradeLevel} • {course.subject} স্পেশাল প্রোগ্রাম
               </span>
             </div>
 
             {/* Course Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight text-slate-900 dark:text-white leading-[1.28]">
+            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black tracking-tight text-white leading-[1.28]">
               {course.title}
             </h1>
 
             {/* Overview description */}
-            <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-[1.8] max-w-3xl">
+            <p className="mt-4 text-base sm:text-lg text-slate-200/90 leading-[1.8] max-w-3xl">
               {course.description ||
                 'সম্পূর্ণ সিলেবাস কভার করে বেসিক টু অ্যাডভান্সড লেভেলের পাঠদান, টেস্ট পেপার সলভিং এবং বোর্ড পরীক্ষার চূড়ান্ত প্রস্তুতি।'}
             </p>
 
-            {/* Micro Metadata Strip (Human-styled cleanly) */}
-            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-7 pt-6 border-t border-slate-100 dark:border-slate-800 text-xs sm:text-sm">
-              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span>মেয়াদ: <strong className="text-slate-900 dark:text-white font-extrabold">{course.duration || 'পূর্ণাঙ্গ সেশন'}</strong></span>
+            {/* Micro Metadata Strip with Glass Elements */}
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-7 pt-6 border-t border-white/10 text-xs sm:text-sm">
+              <div className="flex items-center gap-2 text-slate-200">
+                <Clock className="w-4 h-4 text-blue-400 shrink-0" />
+                <span>মেয়াদ: <strong className="text-white font-extrabold">{course.duration || 'পূর্ণাঙ্গ সেশন'}</strong></span>
               </div>
 
-              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                <Layers className="w-4 h-4 text-indigo-500 shrink-0" />
-                <span>সক্রিয় ব্যাচ: <strong className="text-slate-900 dark:text-white font-extrabold">{batches.length} টি</strong></span>
+              <div className="flex items-center gap-2 text-slate-200">
+                <Layers className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span>সক্রিয় ব্যাচ: <strong className="text-white font-extrabold">{batches.length} টি</strong></span>
               </div>
 
-              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                <GraduationCap className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>ফ্যাকাল্টি: <strong className="text-slate-900 dark:text-white font-extrabold">{course.instructors?.length || 1} জন শিক্ষক</strong></span>
+              <div className="flex items-center gap-2 text-slate-200">
+                <GraduationCap className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>ফ্যাকাল্টি: <strong className="text-white font-extrabold">{course.instructors?.length || 1} জন শিক্ষক</strong></span>
               </div>
             </div>
 
