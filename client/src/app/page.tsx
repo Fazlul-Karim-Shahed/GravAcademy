@@ -410,10 +410,10 @@ export default function HomePage() {
                             {c.gradeLevel}
                           </span>
 
-                          <span className="px-3 py-1 rounded-full bg-white/95 text-slate-900 text-[11px] font-extrabold shadow-sm flex items-center gap-2">
-                            <span className="relative flex h-2.5 w-2.5 items-center justify-center">
-                              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)] live-glow-dot" />
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 text-slate-900 dark:text-white text-[11px] font-black shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md">
+                            <span className="relative flex h-2 w-2">
+                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
+                              <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.9)]" />
                             </span>
                             লাইভ ব্যাচ
                           </span>
