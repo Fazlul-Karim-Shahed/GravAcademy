@@ -69,17 +69,20 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const fetchCourseAndBatches = async () => {
     setLoading(true);
     try {
-      const [courseRes, batchesRes] = await Promise.all([
-        api.get(`/courses/${resolvedParams.id}`),
-        api.get(`/courses/${resolvedParams.id}/batches`),
-      ]);
-
+      // 1. Fetch course details
+      const courseRes = await api.get(`/courses/${resolvedParams.id}`);
       if (courseRes.data?.success) {
         setCourse(courseRes.data.data);
       }
 
-      if (batchesRes.data?.success) {
-        setBatches(batchesRes.data.data);
+      // 2. Fetch batches for this course (batches endpoint accepts query param courseId)
+      try {
+        const batchesRes = await api.get(`/batches?courseId=${resolvedParams.id}`);
+        if (batchesRes.data?.success) {
+          setBatches(batchesRes.data.data || []);
+        }
+      } catch (batchErr) {
+        console.warn('Batches not loaded for course:', batchErr);
       }
     } catch (err) {
       console.error('Failed to load course details', err);
