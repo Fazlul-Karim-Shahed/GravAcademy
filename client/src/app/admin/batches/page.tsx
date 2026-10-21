@@ -143,9 +143,11 @@ export default function AdminBatchesPage() {
           >
             Manage Courses
           </Link>
-          <Button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 shrink-0">
-            <PlusCircle className="w-4 h-4" /> Create New Batch
-          </Button>
+          <Link href="/admin/batches/new">
+            <Button className="flex items-center gap-2 shrink-0">
+              <PlusCircle className="w-4 h-4" /> Create New Batch
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -176,9 +178,11 @@ export default function AdminBatchesPage() {
           <p className="text-xs text-slate-400 mt-1 mb-4">
             Create your first batch or clone an existing curriculum to get started.
           </p>
-          <Button size="sm" onClick={() => setShowCreateModal(true)}>
-            Create Batch
-          </Button>
+          <Link href="/admin/batches/new">
+            <Button size="sm">
+              Create Batch
+            </Button>
+          </Link>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

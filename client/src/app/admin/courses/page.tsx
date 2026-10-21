@@ -169,12 +169,12 @@ export default function AdminCoursesPage() {
             </p>
           </div>
 
-          <button
-            onClick={handleOpenCreate}
+          <Link
+            href="/admin/courses/new"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
           >
             <PlusCircle className="w-4 h-4" /> Add New Course
-          </button>
+          </Link>
         </div>
 
         {message && (

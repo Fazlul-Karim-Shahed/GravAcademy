@@ -103,12 +103,12 @@ export default function LiveClassesPage() {
             </p>
           </div>
 
-          <button
-            onClick={() => setShowModal(true)}
+          <Link
+            href="/live-classes/new"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
           >
             <PlusCircle className="w-4 h-4" /> Schedule Live Class
-          </button>
+          </Link>
         </div>
 
         {/* Classes Grid */}
@@ -125,12 +125,12 @@ export default function LiveClassesPage() {
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-5">
               Schedule a Zoom or Google Meet interactive session for any active batch.
             </p>
-            <button
-              onClick={() => setShowModal(true)}
+            <Link
+              href="/live-classes/new"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs"
             >
               <PlusCircle className="w-4 h-4" /> Schedule First Class
-            </button>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
