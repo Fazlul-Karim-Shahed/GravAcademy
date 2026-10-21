@@ -24,9 +24,12 @@ export default function GuardianPortalPage() {
       {/* Welcome Banner */}
       <div className="glass-panel rounded-3xl p-8 mb-8 border border-slate-800 bg-gradient-to-r from-emerald-950/40 via-teal-950/20 to-slate-900/60">
         <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
-            <ShieldCheck className="w-3.5 h-3.5" /> Parent & Guardian Portal
-          </span>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+              Parent & Guardian Portal
+            </span>
+          </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
             Academic Progress Monitor
           </h1>

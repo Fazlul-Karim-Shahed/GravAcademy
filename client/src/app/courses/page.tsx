@@ -136,12 +136,9 @@ export default function CoursesCatalogPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 text-[11px] font-extrabold border border-blue-200/70 dark:border-blue-800/70">
-                  <Sparkles className="w-3 h-3 text-blue-600" />
-                  একাডেমিক প্রোগ্রাম
-                </span>
-                <span className="text-xs text-slate-400 font-semibold">
-                  (মোট {courses.length}টি লাইভ কোর্স)
+                <span className="w-2 h-2 rounded-full bg-blue-600" />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  একাডেমিক প্রোগ্রাম • মোট {courses.length}টি কোর্স
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">

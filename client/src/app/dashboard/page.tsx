@@ -24,8 +24,11 @@ export default function StudentDashboard() {
       {/* Welcome Banner */}
       <div className="glass-panel rounded-3xl p-8 mb-8 border border-slate-800 relative overflow-hidden bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-slate-900/60">
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-4">
-            <Sparkles className="w-3.5 h-3.5" /> Student Learning Portal
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 rounded-full bg-blue-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-300">
+              Student Learning Portal
+            </span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
             Welcome back, {user?.name || 'Student'}!

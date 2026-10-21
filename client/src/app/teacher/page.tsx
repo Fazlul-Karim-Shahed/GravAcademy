@@ -83,9 +83,12 @@ export default function TeacherPanelPage() {
       {/* Header Banner */}
       <div className="glass-panel rounded-3xl p-8 mb-8 border border-slate-800 bg-gradient-to-r from-indigo-950/40 via-blue-950/20 to-slate-900/60">
         <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-3">
-            <GraduationCap className="w-3.5 h-3.5" /> Instructor Workspace
-          </span>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 rounded-full bg-indigo-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-300">
+              Instructor Workspace
+            </span>
+          </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
             Teacher Operations Panel
           </h1>
