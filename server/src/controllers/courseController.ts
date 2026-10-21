@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { Course } from '../models/Course';
@@ -51,7 +52,13 @@ export const getCourses = async (req: Request, res: Response) => {
 export const getCourseById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const course = await Course.findById(id).populate('instructors', 'name email avatarUrl phone role');
+
+    // Check if parameter is a valid 24-character hexadecimal ObjectId or human-readable slug
+    const query = mongoose.Types.ObjectId.isValid(id)
+      ? { $or: [{ _id: id }, { slug: id }] }
+      : { slug: id };
+
+    const course = await Course.findOne(query).populate('instructors', 'name email avatarUrl phone role');
 
     if (!course) {
       return res.status(404).json({ success: false, message: 'Course not found' });

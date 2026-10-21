@@ -224,7 +224,7 @@ export default function AdminDashboardPage() {
                         <Edit className="w-4 h-4" />
                       </Link>
                       <Link
-                        href={`/courses/${c._id}`}
+                        href={`/courses/${c.slug || c._id}`}
                         className="p-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
                         title="View Public Course Page"
                       >

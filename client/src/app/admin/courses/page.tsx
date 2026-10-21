@@ -308,7 +308,7 @@ export default function AdminCoursesPage() {
                 {/* Action Buttons */}
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                   <Link
-                    href={`/courses/${course._id}`}
+                    href={`/courses/${course.slug || course._id}`}
                     className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200/80 dark:border-blue-700/40 flex items-center gap-1.5 transition-colors"
                   >
                     <Layers className="w-3.5 h-3.5" />

@@ -394,7 +394,7 @@ export default function HomePage() {
                 return (
                   <Link
                     key={c._id}
-                    href={`/courses/${c._id}`}
+                    href={`/courses/${c.slug || c._id}`}
                     className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
                   >
                     <div>

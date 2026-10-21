@@ -237,7 +237,7 @@ export default function CoursesCatalogPage() {
             {filteredCourses.map((course) => (
               <Link
                 key={course._id}
-                href={`/courses/${course._id}`}
+                href={`/courses/${course.slug || course._id}`}
                 className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between cursor-pointer"
               >
                 <div>
