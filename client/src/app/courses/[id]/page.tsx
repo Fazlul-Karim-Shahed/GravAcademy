@@ -251,31 +251,46 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
             {/* Syllabus & Highlights */}
             <div className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  সিলেবাস ও পাঠ পরিকল্পনা
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    সিলেবাস ও পাঠ পরিকল্পনা
+                  </span>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200/60 dark:border-emerald-900/60 px-3 py-1 rounded-full">
+                  {highlights.length} টি বিশেষ মডিউল
                 </span>
               </div>
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
+
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 এই কোর্সে যা যা শেখানো হবে
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">
-                বোর্ড পরীক্ষায় সেরা ফলাফলের জন্য সম্পূর্ণ সিলেবাসের সুবিন্যস্ত কাঠামো।
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 mb-7 leading-relaxed">
+                বোর্ড পরীক্ষায় শতভাগ সাফল্যের জন্য কনসেপ্ট, প্র্যাকটিস এবং পরীক্ষার সুবিন্যস্ত রোডম্যাপ।
               </p>
 
-              <div className="space-y-3.5">
+              <div className="grid grid-cols-1 gap-3.5">
                 {highlights.map((h, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800/80"
+                    className="group relative flex items-start gap-4 p-4 sm:p-4.5 rounded-2xl bg-slate-50/70 dark:bg-slate-950/50 border border-slate-200/70 dark:border-slate-800/80 hover:border-blue-500/60 dark:hover:border-blue-500/60 hover:bg-white dark:hover:bg-slate-900 hover:shadow-md transition-all duration-200"
                   >
-                    <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    {/* Index Number Badge */}
+                    <div className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs shrink-0 shadow-2xs group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
+                      {String(i + 1).padStart(2, '0')}
                     </div>
-                    <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 font-semibold leading-relaxed">
-                      {h}
-                    </span>
+
+                    <div className="flex-1 pt-0.5">
+                      <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-bold leading-[1.7]">
+                        {h}
+                      </p>
+                    </div>
+
+                    {/* Verified Icon Accent */}
+                    <div className="shrink-0 pt-1 text-slate-400 group-hover:text-emerald-500 transition-colors">
+                      <Check className="w-4 h-4 stroke-[2.5]" />
+                    </div>
                   </div>
                 ))}
               </div>
