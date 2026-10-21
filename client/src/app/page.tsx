@@ -153,12 +153,6 @@ export default function HomePage() {
             
             {/* Left Content Column */}
             <div className="lg:col-span-7 text-center lg:text-left">
-              
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/70 text-blue-800 dark:text-blue-300 text-xs sm:text-sm font-semibold mb-6 shadow-2xs">
-                <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span>ক্লাস ৬ থেকে ১২ শ্রেণির সম্পূর্ণ অনলাইন একাডেমিক কেয়ার</span>
-              </div>
-
               <h1 className="text-3xl sm:text-5xl lg:text-[44px] font-extrabold text-slate-900 dark:text-white leading-[1.32] tracking-tight">
                 পড়ালেখার পূর্ণাঙ্গ প্রস্তুতি হোক{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:to-indigo-300">
