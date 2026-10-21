@@ -29,7 +29,7 @@ export default function EmployeePanelPage() {
             Operational Support Portal
           </h1>
           <p className="mt-2 text-slate-300 text-sm sm:text-base leading-relaxed">
-            Manage student enrollment verifications, verify document submissions, and coordinate cohort logistics according to your assigned permissions.
+            Manage student enrollment verifications, verify document submissions, and coordinate batch logistics according to your assigned permissions.
           </p>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function EmployeePanelPage() {
             <Clock className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl font-bold text-white">2 Open</div>
-          <span className="text-xs text-slate-500 mt-1 block">Class 10 Physics cohort</span>
+          <span className="text-xs text-slate-500 mt-1 block">Class 10 Physics batch</span>
         </Card>
 
         <Card className="border border-slate-800">

@@ -132,7 +132,7 @@ export default function AdminBatchesPage() {
             <Layers className="w-7 h-7 text-blue-500" /> Batch Management & Duplication
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Organize student cohorts, schedule classes, and clone batch content hierarchies with zero coupling.
+            Organize student batches, schedule classes, and clone batch content hierarchies with zero coupling.
           </p>
         </div>
 

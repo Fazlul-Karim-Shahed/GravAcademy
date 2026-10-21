@@ -27,7 +27,7 @@ export default function Home() {
         </h1>
 
         <p className="mt-5 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Manage courses, organize cohorts, duplicate batch curriculums with zero coupling,
+          Manage courses, organize batches, duplicate batch curriculums with zero coupling,
           conduct examinations, and synchronize notes directly to Google Drive.
         </p>
 
@@ -69,7 +69,7 @@ export default function Home() {
               Zero-Coupling Batch Duplication
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Clone any existing batch's modules, sections, and lessons into a new cohort. Cloned content is independently editable without modifying the source.
+              Clone any existing batch's modules, sections, and lessons into a new batch. Cloned content is independently editable without modifying the source.
             </p>
           </div>
 

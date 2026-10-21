@@ -351,7 +351,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             href="/admin/batches"
             className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Cohorts & Batches
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Batches
           </Link>
           <span>/</span>
           <span className="text-slate-900 dark:text-slate-200 font-semibold">{hierarchy.batch.name}</span>

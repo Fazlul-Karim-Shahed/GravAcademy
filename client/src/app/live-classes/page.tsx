@@ -99,7 +99,7 @@ export default function LiveClassesPage() {
               <Video className="w-7 h-7 text-indigo-600 dark:text-indigo-400" /> Live Classes & Meetings
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Zoom and Google Meet scheduled online sessions for coaching cohorts.
+              Zoom and Google Meet scheduled online sessions for coaching batches.
             </p>
           </div>
 
@@ -159,7 +159,7 @@ export default function LiveClassesPage() {
                     {cls.title}
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 font-medium">
-                    Cohort: <strong className="text-slate-800 dark:text-slate-200">{cls.batchId?.name || 'All Batches'}</strong>
+                    Batch: <strong className="text-slate-800 dark:text-slate-200">{cls.batchId?.name || 'All Batches'}</strong>
                   </p>
 
                   <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800 mb-6">
@@ -204,7 +204,7 @@ export default function LiveClassesPage() {
               <form onSubmit={handleCreate} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Batch Cohort *
+                    Select Batch *
                   </label>
                   <select
                     required

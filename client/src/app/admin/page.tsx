@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
               Admin Dashboard
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Manage courses, batch cohorts, students, and live classes.
+              Manage courses, batches, students, and live classes.
             </p>
           </div>
 
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Batch Cohorts
+                Total Batches
               </span>
               <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                 <Layers className="w-4 h-4" />
@@ -217,7 +217,7 @@ export default function AdminDashboardPage() {
                     <Link
                       href={`/courses/${c._id}`}
                       className="p-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
-                      title="View Cohorts"
+                      title="View Batches"
                     >
                       <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -231,7 +231,7 @@ export default function AdminDashboardPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
             <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Active Cohorts & Syllabus
+                <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Active Batches & Syllabus
               </h3>
               <Link
                 href="/admin/batches"
@@ -256,7 +256,7 @@ export default function AdminDashboardPage() {
                       </span>
                       <h4 className="text-sm font-semibold text-slate-900 dark:text-white mt-1.5">{b.name}</h4>
                       <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                        {b.courseId?.title || 'General Cohort'}
+                        {b.courseId?.title || 'General Batch'}
                       </span>
                     </div>
 

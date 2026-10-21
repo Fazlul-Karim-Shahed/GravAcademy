@@ -70,7 +70,7 @@ export default function TeacherPanelPage() {
       });
       setShowModuleModal(false);
       setModuleTitle('');
-      alert('Module added to cohort curriculum successfully!');
+      alert('Module added to batch curriculum successfully!');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to add module');
     } finally {
@@ -90,7 +90,7 @@ export default function TeacherPanelPage() {
             Teacher Operations Panel
           </h1>
           <p className="mt-2 text-slate-300 text-sm sm:text-base leading-relaxed">
-            Manage your assigned cohorts, upload lesson notes and worksheets, schedule live sessions, and review student progress.
+            Manage your assigned batches, upload lesson notes and worksheets, schedule live sessions, and review student progress.
           </p>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function TeacherPanelPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <Card className="border border-slate-800">
           <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Assigned Cohorts</span>
+            <span>Assigned Batches</span>
             <Layers className="w-4 h-4 text-blue-400" />
           </div>
           <div className="text-2xl font-bold text-white">{batches.length} Batches</div>
@@ -134,7 +134,7 @@ export default function TeacherPanelPage() {
         </Card>
       </div>
 
-      {/* Cohorts Management */}
+      {/* Batches Management */}
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
@@ -202,7 +202,7 @@ export default function TeacherPanelPage() {
           <div className="w-full max-w-md glass-panel rounded-2xl p-6 border border-slate-700">
             <h3 className="text-lg font-bold text-white mb-2">Add Educational Module</h3>
             <p className="text-xs text-slate-400 mb-4">
-              Add a chapter or topic block to the selected cohort.
+              Add a chapter or topic block to the selected batch.
             </p>
 
             <form onSubmit={handleCreateModule} className="space-y-4">
