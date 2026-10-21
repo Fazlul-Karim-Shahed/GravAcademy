@@ -392,106 +392,119 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           {/* RIGHT COLUMN: Modern Enrollment & Batch Selection Card (5 Cols Sticky) */}
           <div className="lg:col-span-5 sticky top-20 space-y-6">
             
-            {/* Enrollment Summary Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-7 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none">
+            {/* Premium Enrollment & Batches Card */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
               
-              {/* Pricing Box */}
-              <div className="pb-6 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">কোর্স ফি</span>
-                <div className="flex items-baseline gap-3 mt-1">
-                  <span className="text-3xl sm:text-4xl font-black text-blue-600 dark:text-blue-400">
-                    {course.courseFee ? `৳ ${course.courseFee.toLocaleString()}` : 'ফ্রি'}
+              {/* Top Pricing Card Banner */}
+              <div className="p-7 sm:p-8 bg-gradient-to-b from-blue-50/60 to-white dark:from-slate-800/50 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    কোর্স ফি ও ভর্তি
                   </span>
                   {regularPrice && (
-                    <span className="text-sm text-slate-400 line-through font-semibold">
-                      ৳ {regularPrice.toLocaleString()}
-                    </span>
-                  )}
-                  {regularPrice && (
-                    <span className="px-2.5 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-xs font-black border border-rose-200/80 dark:border-rose-900/60 ml-auto">
-                      ২৬% ছাড়
+                    <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[11px] font-black shadow-xs tracking-wide">
+                      ২৬% মেগা ছাড়
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
-                  একবার ফি পরিশোধে পুরো কোর্সের সকল লাইভ ক্লাস ও নোট উন্মুক্ত হবে।
+
+                <div className="flex items-baseline gap-3 mt-1">
+                  <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {course.courseFee ? `৳ ${course.courseFee.toLocaleString()}` : 'ফ্রি'}
+                  </span>
+                  {regularPrice && (
+                    <span className="text-base text-slate-400 line-through font-semibold">
+                      ৳ {regularPrice.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2.5 font-medium leading-relaxed">
+                  একবার ফি পরিশোধে পুরো কোর্সের সকল লাইভ ক্লাস, রেকর্ডেড ব্যাকআপ ও লেকচার শিট আজীবন উন্মুক্ত থাকবে।
                 </p>
               </div>
 
-              {/* Batches Header */}
-              <div className="py-6 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    চলতি ব্যাচ ও সময়সূচি
-                  </h3>
-                  <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 px-2.5 py-0.5 rounded-lg">
+              {/* Batches Section */}
+              <div className="p-7 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-600" />
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                      চলতি ব্যাচ ও শিডিউল
+                    </h3>
+                  </div>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                     {batches.length}টি ব্যাচ
                   </span>
                 </div>
 
                 {batches.length === 0 ? (
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 text-center border border-slate-100 dark:border-slate-800">
-                    <p className="text-xs text-slate-500 font-medium">
-                      নতুন ব্যাচের শিডিউল শীঘ্রই যুক্ত হচ্ছে।
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 text-center border border-slate-100 dark:border-slate-800">
+                    <p className="text-xs text-slate-500 font-semibold">
+                      নতুন ব্যাচের শিডিউল খুব শীঘ্রই যুক্ত করা হচ্ছে।
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-3 mt-3">
+                  <div className="space-y-4">
                     {batches.map((batch) => (
                       <div
                         key={batch._id}
-                        className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800"
+                        className="group/b p-5 rounded-2xl bg-slate-50/90 dark:bg-slate-950/80 border border-slate-200/80 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-200"
                       >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-black text-slate-900 dark:text-white">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover/b:text-blue-600 dark:group-hover/b:text-blue-400 transition-colors">
                             {batch.name}
-                          </span>
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            সক্রিয়
+                          </h4>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[11px] font-black border border-emerald-200/80 dark:border-emerald-800/80 shrink-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            সক্রিয়
                           </span>
                         </div>
 
                         {batch.scheduleText && (
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
-                            <Calendar className="w-3.5 h-3.5 text-blue-600" />
-                            <span>{batch.scheduleText}</span>
+                          <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-4 bg-white dark:bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-800/80">
+                            <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                            <span className="font-semibold text-[11px]">{batch.scheduleText}</span>
                           </div>
                         )}
 
                         <Link
                           href={`/learn/${batch._id}`}
-                          className="mt-3 w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 transition-colors"
+                          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
                         >
-                          <span>এই ব্যাচে ক্লাস করুন</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <span>এই ব্যাচে ক্লাস শুরু করুন</span>
+                          <ArrowRight className="w-4 h-4" />
                         </Link>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
 
-              {/* Guarantees List */}
-              <div className="pt-6 space-y-2.5 text-xs text-slate-600 dark:text-slate-300 font-medium">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>নিরাপদ বিকাশ / নগদ অনলাইন পেমেন্ট</span>
+                {/* Trust Badges */}
+                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <span className="font-medium">নিরাপদ অনলাইন ভর্তি (বিকাশ / নগদ / কার্ড)</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <span className="font-medium">মিস হওয়া ক্লাসের সার্বক্ষণিক রেকর্ডেড ব্যাকআপ</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>লাইভ ক্লাসের সার্বক্ষণিক রেকর্ডেড ব্যাকআপ</span>
-                </div>
-              </div>
 
-              {/* Support Call */}
-              <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
-                <span className="text-xs text-slate-400 block mb-1">
-                  ভর্তি সংক্রান্ত যেকোনো প্রয়োজনে কল করুন:
-                </span>
-                <span className="text-xs font-black text-blue-600 dark:text-blue-400 flex items-center justify-center gap-1.5">
-                  <PhoneCall className="w-3.5 h-3.5" /> ১৬৯১০ / ০১৭০০-০০০০০০
-                </span>
+                {/* Direct Helpline */}
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
+                  <span className="text-xs text-slate-400 block mb-1 font-medium">
+                    ভর্তি সংক্রান্ত তথ্যের জন্য সরাসরি কথা বলুন:
+                  </span>
+                  <a
+                    href="tel:16910"
+                    className="inline-flex items-center gap-2 text-sm font-black text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" /> ১৬৯১০ (সকাল ৮টা - রাত ১০টা)
+                  </a>
+                </div>
+
               </div>
 
             </div>
