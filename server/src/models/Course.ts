@@ -12,6 +12,10 @@ export interface ICourse extends Document {
   duration?: string;
   courseFee: number;
   prerequisites?: string[];
+  instructors: mongoose.Types.ObjectId[];
+  curriculumHighlights?: string[];
+  features?: string[];
+  targetAudience?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -65,6 +69,15 @@ const CourseSchema = new Schema<ICourse>(
       min: 0,
     },
     prerequisites: [{ type: String }],
+    instructors: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    curriculumHighlights: [{ type: String }],
+    features: [{ type: String }],
+    targetAudience: { type: String, default: '' },
   },
   {
     timestamps: true,

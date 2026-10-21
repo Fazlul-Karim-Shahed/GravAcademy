@@ -31,7 +31,9 @@ export const getCourses = async (req: Request, res: Response) => {
       filter.$text = { $search: search as string };
     }
 
-    const courses = await Course.find(filter).sort({ createdAt: -1 });
+    const courses = await Course.find(filter)
+      .populate('instructors', 'name email avatarUrl phone role')
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -49,7 +51,7 @@ export const getCourses = async (req: Request, res: Response) => {
 export const getCourseById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const course = await Course.findById(id);
+    const course = await Course.findById(id).populate('instructors', 'name email avatarUrl phone role');
 
     if (!course) {
       return res.status(404).json({ success: false, message: 'Course not found' });
