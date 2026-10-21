@@ -693,71 +693,71 @@ export default function HomePage() {
             {instructorsList.map((teacher, idx) => (
               <div
                 key={idx}
-                className="group relative bg-white dark:bg-slate-900/90 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
+                className="group relative bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-2 flex flex-col"
               >
-                <div>
-                  {/* Top Header with Photo Avatar & Badge */}
-                  <div className="flex items-start justify-between gap-4 mb-5">
-                    <div className="relative">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-lg shadow-slate-200/50 dark:shadow-none group-hover:scale-105 transition-transform duration-300 bg-slate-100 dark:bg-slate-800">
-                        <img
-                          src={teacher.photo}
-                          alt={teacher.name}
-                          className="w-full h-full object-cover object-center"
-                        />
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-white shadow-xs" title="ভেরিফায়েড শিক্ষক">
-                        <Check className="w-3 h-3 stroke-[3]" />
-                      </div>
-                    </div>
+                {/* Large Portrait Photo Container with subtle gradient vignette */}
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  <img
+                    src={teacher.photo}
+                    alt={teacher.name}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                  
+                  {/* Subtle gradient vignette at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
 
-                    <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 text-[11px] font-bold border border-blue-200/80 dark:border-blue-800/80 shrink-0">
+                  {/* Top Floating Badge */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                    <span className="px-3 py-1 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-extrabold shadow-sm border border-white/20">
                       {teacher.badge}
                     </span>
+                    <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md" title="ভেরিফায়েড শিক্ষক">
+                      <Check className="w-4 h-4 stroke-[3]" />
+                    </div>
                   </div>
 
-                  {/* Teacher Name & Elite Academic Institution */}
-                  <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {teacher.name}
-                  </h3>
-
-                  {/* Institution Highlight (Shikho Signature Tag) */}
-                  <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200/60 dark:border-slate-700/60">
-                    <GraduationCap className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                    <span>{teacher.institution}</span>
+                  {/* Overlaid Institution on bottom of photo */}
+                  <div className="absolute bottom-3.5 left-4 right-4 z-10">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-900 dark:text-slate-100 text-xs font-bold shadow-md">
+                      <GraduationCap className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                      <span>{teacher.institution}</span>
+                    </div>
                   </div>
+                </div>
 
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
-                    {teacher.department} • {teacher.exp}
-                  </p>
+                {/* Clean, Simple & Modern Information Card Body */}
+                <div className="p-6 flex flex-col justify-between flex-1">
+                  <div>
+                    <h3 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {teacher.name}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                      {teacher.department}
+                    </p>
 
-                  {/* Taught Subjects Pills */}
-                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
-                      পাঠদানের বিষয়:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
+                    {/* Subjects Taught */}
+                    <div className="flex flex-wrap gap-1.5 mt-3.5">
                       {teacher.subjects.map((sub, sIdx) => (
                         <span
                           key={sIdx}
-                          className="px-2.5 py-1 rounded-lg bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200/50 dark:border-blue-900/50"
+                          className="px-2.5 py-1 rounded-lg bg-blue-50/80 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-900/60"
                         >
                           {sub}
                         </span>
                       ))}
                     </div>
                   </div>
-                </div>
 
-                {/* Bottom Stats Footer (Shikho / 10MS Credibility Metric) */}
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <div className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    <span>{teacher.studentsCount} শিক্ষার্থী</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <PlayCircle className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>{teacher.classesCount}</span>
+                  {/* Simple Clean Stats Footer */}
+                  <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-semibold">
+                    <div className="flex items-center gap-1.5">
+                      <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <span>{teacher.studentsCount} শিক্ষার্থী</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                      <PlayCircle className="w-4 h-4" />
+                      <span>{teacher.classesCount}</span>
+                    </div>
                   </div>
                 </div>
               </div>
