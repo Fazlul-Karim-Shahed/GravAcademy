@@ -112,16 +112,13 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
           targetAudience: c.targetAudience || '',
           isPublished: c.isPublished ?? true,
           instructors: currentInstructorIds,
-          curriculumHighlights: c.curriculumHighlights || [
-            'Complete Chapter Breakdown with Mathematical Concept Solvers',
-            'Dedicated Board Exam Question Analysis & Test Papers',
-            'Weekly Live Interactive Problem Solving Sessions',
-          ],
-          features: c.features || [],
+          curriculumHighlights: Array.isArray(c.curriculumHighlights) ? c.curriculumHighlights : [],
+          features: Array.isArray(c.features) ? c.features : [],
         });
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load course details.');
+      console.error('Failed to load course details:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load course details.');
     } finally {
       setLoading(false);
       setLoadingTeachers(false);
@@ -130,21 +127,22 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
   const toggleTeacher = (teacherId: string) => {
     setForm((prev) => {
-      const exists = prev.instructors.includes(teacherId);
+      const exists = prev.instructors.some((id) => String(id) === String(teacherId));
       return {
         ...prev,
         instructors: exists
-          ? prev.instructors.filter((id) => id !== teacherId)
+          ? prev.instructors.filter((id) => String(id) !== String(teacherId))
           : [...prev.instructors, teacherId],
       };
     });
   };
 
   const addHighlight = () => {
-    if (!newHighlight.trim()) return;
+    const trimmed = newHighlight.trim();
+    if (!trimmed) return;
     setForm((prev) => ({
       ...prev,
-      curriculumHighlights: [...(prev.curriculumHighlights || []), newHighlight.trim()],
+      curriculumHighlights: [...(prev.curriculumHighlights || []), trimmed],
     }));
     setNewHighlight('');
   };
@@ -152,7 +150,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   const removeHighlight = (idx: number) => {
     setForm((prev) => ({
       ...prev,
-      curriculumHighlights: prev.curriculumHighlights.filter((_, i) => i !== idx),
+      curriculumHighlights: (prev.curriculumHighlights || []).filter((_, i) => i !== idx),
     }));
   };
 
@@ -163,7 +161,14 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     setSuccess('');
 
     try {
-      const res = await api.put(`/courses/${resolvedParams.id}`, form);
+      const payload = {
+        ...form,
+        courseFee: Number(form.courseFee) || 0,
+        instructors: form.instructors || [],
+        curriculumHighlights: form.curriculumHighlights || [],
+      };
+      console.log('Submitting updated course payload:', payload);
+      const res = await api.put(`/courses/${resolvedParams.id}`, payload);
       if (res.data?.success) {
         setSuccess(`Course "${form.title}" updated successfully! Redirecting...`);
         setTimeout(() => {
@@ -171,7 +176,12 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         }, 1200);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update course.');
+      console.error('Update course error:', err);
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Failed to update course. Make sure you are signed in as an Admin.';
+      setError(errorMsg);
     } finally {
       setSubmitting(false);
     }
