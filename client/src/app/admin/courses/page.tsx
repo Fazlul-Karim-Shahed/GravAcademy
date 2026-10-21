@@ -316,13 +316,13 @@ export default function AdminCoursesPage() {
                   </Link>
 
                   <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handleOpenEdit(course)}
+                    <Link
+                      href={`/admin/courses/${course._id}/edit`}
                       className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
                       title="Edit Course Details"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDelete(course._id, course.title)}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors"

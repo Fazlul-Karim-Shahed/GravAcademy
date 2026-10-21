@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -12,8 +12,21 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
-  Layers,
+  Users,
+  Check,
+  Plus,
+  Trash2,
+  Sparkles,
 } from 'lucide-react';
+
+interface TeacherUser {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl?: string;
+  phone?: string;
+}
 
 export default function CreateCoursePage() {
   const router = useRouter();
@@ -22,6 +35,10 @@ export default function CreateCoursePage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Available teachers from database
+  const [teachers, setTeachers] = useState<TeacherUser[]>([]);
+  const [loadingTeachers, setLoadingTeachers] = useState(true);
+
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -29,8 +46,24 @@ export default function CreateCoursePage() {
     subject: 'Physics',
     courseFee: 2500,
     duration: '1 Year',
+    targetAudience: 'Designed for SSC candidates and Class 10 students aiming for GPA 5.',
     isPublished: true,
+    instructors: [] as string[],
+    curriculumHighlights: [
+      'Complete Chapter Breakdown with Mathematical Concept Solvers',
+      'Dedicated Board Exam Question Analysis & Test Papers',
+      'Weekly Live Interactive Problem Solving Sessions',
+      'Downloadable Hand Notes and Formula Sheets via Google Drive',
+    ],
+    features: [
+      'Recorded Class Archive with Unlimited Replays',
+      'Online Timed MCQ and Written Assessment System',
+      'Direct Mentor Support and Doubt Clearance Batches',
+    ],
   });
+
+  const [newHighlight, setNewHighlight] = useState('');
+  const [newFeature, setNewFeature] = useState('');
 
   const gradeOptions = [
     'Class 6',
@@ -54,6 +87,72 @@ export default function CreateCoursePage() {
     'General Science',
   ];
 
+  useEffect(() => {
+    fetchTeachers();
+  }, []);
+
+  const fetchTeachers = async () => {
+    setLoadingTeachers(true);
+    try {
+      // Fetch users who are teachers or admins
+      const res = await api.get('/users');
+      if (res.data?.success) {
+        const staff = res.data.data.filter(
+          (u: TeacherUser) => u.role === 'teacher' || u.role === 'admin' || u.role === 'superadmin'
+        );
+        setTeachers(staff);
+      }
+    } catch (err) {
+      console.error('Failed to load teachers:', err);
+    } finally {
+      setLoadingTeachers(false);
+    }
+  };
+
+  const toggleTeacher = (teacherId: string) => {
+    setForm((prev) => {
+      const exists = prev.instructors.includes(teacherId);
+      return {
+        ...prev,
+        instructors: exists
+          ? prev.instructors.filter((id) => id !== teacherId)
+          : [...prev.instructors, teacherId],
+      };
+    });
+  };
+
+  const addHighlight = () => {
+    if (!newHighlight.trim()) return;
+    setForm((prev) => ({
+      ...prev,
+      curriculumHighlights: [...(prev.curriculumHighlights || []), newHighlight.trim()],
+    }));
+    setNewHighlight('');
+  };
+
+  const removeHighlight = (idx: number) => {
+    setForm((prev) => ({
+      ...prev,
+      curriculumHighlights: prev.curriculumHighlights.filter((_, i) => i !== idx),
+    }));
+  };
+
+  const addFeature = () => {
+    if (!newFeature.trim()) return;
+    setForm((prev) => ({
+      ...prev,
+      features: [...(prev.features || []), newFeature.trim()],
+    }));
+    setNewFeature('');
+  };
+
+  const removeFeature = (idx: number) => {
+    setForm((prev) => ({
+      ...prev,
+      features: prev.features.filter((_, i) => i !== idx),
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -69,7 +168,7 @@ export default function CreateCoursePage() {
         }, 1200);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create course. Ensure you have admin permissions.');
+      setError(err.response?.data?.message || 'Failed to create course. Ensure valid permissions.');
     } finally {
       setSubmitting(false);
     }
@@ -92,13 +191,13 @@ export default function CreateCoursePage() {
         {/* Page Title */}
         <div className="mb-8">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 text-blue-700 dark:text-blue-400 text-xs font-semibold mb-3">
-            <BookOpen className="w-3.5 h-3.5" /> Curriculum Authoring
+            <BookOpen className="w-3.5 h-3.5" /> Full Course Creator
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Create New Course
+            Create Comprehensive Course
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Establish an overarching curriculum subject with standard fee and academic grade level.
+            Build a rich course profile with assigned faculty teachers, syllabus features, learning outcomes, and fee settings.
           </p>
         </div>
 
@@ -134,9 +233,6 @@ export default function CreateCoursePage() {
                 placeholder="e.g. Class 10 Physics Masterclass"
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
-                Make it descriptive and attractive for public course browsing.
-              </p>
             </div>
 
             {/* Academic Level & Subject */}
@@ -179,14 +275,28 @@ export default function CreateCoursePage() {
             {/* Description */}
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Course Syllabus & Overview Description
+                Detailed Course Description
               </label>
               <textarea
                 rows={4}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Describe what students will learn, curriculum scope, target exams, etc."
+                placeholder="Explain the concepts covered, board syllabus scope, and benefits for students..."
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
+              />
+            </div>
+
+            {/* Target Audience */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Target Audience / Who is this course for?
+              </label>
+              <input
+                type="text"
+                value={form.targetAudience}
+                onChange={(e) => setForm({ ...form, targetAudience: e.target.value })}
+                placeholder="e.g. Class 10 candidates preparing for board finals and GPA-5 aspirants"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
 
@@ -194,7 +304,7 @@ export default function CreateCoursePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Standard Fee (৳ BDT)
+                  Course Fee (৳ BDT)
                 </label>
                 <input
                   type="number"
@@ -208,7 +318,7 @@ export default function CreateCoursePage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Duration Scope
+                  Course Duration Scope
                 </label>
                 <input
                   type="text"
@@ -217,6 +327,128 @@ export default function CreateCoursePage() {
                   placeholder="e.g. 1 Year, 6 Months, or Full Session"
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                 />
+              </div>
+            </div>
+
+            {/* FACULTY TEACHERS PICKER */}
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                    Select Course Teachers (Faculty)
+                  </span>
+                </div>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold">
+                  {form.instructors.length} Selected
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                Choose the teachers from your registered database who conduct classes for this course. Their photos, names, and titles will appear prominently on the course landing page.
+              </p>
+
+              {loadingTeachers ? (
+                <div className="text-xs text-slate-400 italic py-3">Loading teachers list...</div>
+              ) : teachers.length === 0 ? (
+                <div className="text-xs text-slate-400 italic py-3">
+                  No teachers found in user accounts. You can create accounts with &quot;teacher&quot; role in User Management.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                  {teachers.map((t) => {
+                    const isSelected = form.instructors.includes(t._id);
+                    return (
+                      <div
+                        key={t._id}
+                        onClick={() => toggleTeacher(t._id)}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                          isSelected
+                            ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-400 dark:border-blue-600'
+                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                            {t.avatarUrl ? (
+                              <img src={t.avatarUrl} alt={t.name} className="w-full h-full rounded-full object-cover" />
+                            ) : (
+                              t.name.slice(0, 2).toUpperCase()
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                              {t.name}
+                            </h4>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 capitalize">
+                              {t.role} • {t.email}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div
+                          className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${
+                            isSelected
+                              ? 'bg-blue-600 border-blue-600 text-white'
+                              : 'border-slate-300 dark:border-slate-700'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* CURRICULUM HIGHLIGHTS & OUTCOMES */}
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-2 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-indigo-500" />
+                <span>What Students Will Learn (Syllabus Highlights)</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                Add bullet points highlighting the chapters, topics, and key takeaways taught in this course.
+              </p>
+
+              <div className="space-y-2 mb-3">
+                {form.curriculumHighlights.map((hl, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                      {hl}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeHighlight(idx)}
+                      className="text-slate-400 hover:text-rose-500 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newHighlight}
+                  onChange={(e) => setNewHighlight(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addHighlight();
+                    }
+                  }}
+                  placeholder="e.g. Chapter 5: Pressure and States of Matter Mastery"
+                  className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                />
+                <Button type="button" size="sm" onClick={addHighlight} variant="secondary">
+                  <Plus className="w-3.5 h-3.5 mr-1" /> Add
+                </Button>
               </div>
             </div>
 

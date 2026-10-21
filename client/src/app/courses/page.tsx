@@ -239,9 +239,10 @@ export default function CoursesCatalogPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => (
-              <div
+              <Link
                 key={course._id}
-                className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:border-blue-300 dark:hover:border-slate-700 hover:shadow-md transition-all flex flex-col justify-between"
+                href={`/courses/${course._id}`}
+                className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:border-blue-300 dark:hover:border-slate-700 hover:shadow-lg transition-all flex flex-col justify-between cursor-pointer"
               >
                 <div>
                   {/* Badges Bar */}
@@ -275,15 +276,12 @@ export default function CoursesCatalogPage() {
                     </span>
                   </div>
 
-                  <Link
-                    href={`/courses/${course._id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
-                  >
-                    <span>View Batches</span>
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors">
+                    <span>View Course Details</span>
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
