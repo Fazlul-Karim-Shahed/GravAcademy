@@ -240,24 +240,24 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: Top Left - pushed further top and left */}
-                <div className="absolute -top-7 -left-3 sm:-top-8 sm:-left-8 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex items-center gap-3 z-20">
-                  <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                {/* Floating Wave Pill 1: Top Left - Organic Wave / Blob Shape */}
+                <div className="absolute -top-7 -left-3 sm:-top-8 sm:-left-8 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-rose-200/60 dark:border-rose-900/40 rounded-[28px_14px_32px_18px] px-4 py-3 shadow-[0_12px_30px_-8px_rgba(225,29,72,0.18)] dark:shadow-none flex items-center gap-3.5 z-20 hover:scale-105 transition-transform duration-300">
+                  <div className="w-10 h-10 rounded-[16px_8px_16px_8px] bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-bold shrink-0 shadow-md shadow-rose-500/25">
                     <PlayCircle className="w-5 h-5 animate-pulse" />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">প্রতি সপ্তাহে</span>
+                    <span className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-wider block">প্রতি সপ্তাহে</span>
                     <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">১২+ লাইভ ক্লাস</span>
                   </div>
                 </div>
 
-                {/* Floating Badge 2: Bottom Right - pushed further bottom and right */}
-                <div className="absolute -bottom-8 -right-3 sm:-bottom-9 sm:-right-8 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex items-center gap-3 z-20">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                {/* Floating Wave Pill 2: Bottom Right - Organic Wave / Blob Shape */}
+                <div className="absolute -bottom-8 -right-3 sm:-bottom-9 sm:-right-8 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-blue-200/60 dark:border-blue-900/40 rounded-[16px_30px_14px_28px] px-4 py-3 shadow-[0_12px_30px_-8px_rgba(37,99,235,0.22)] dark:shadow-none flex items-center gap-3.5 z-20 hover:scale-105 transition-transform duration-300">
+                  <div className="w-10 h-10 rounded-[8px_16px_8px_16px] bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shrink-0 shadow-md shadow-blue-500/25">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">লেকচার শিট</span>
+                    <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider block">লেকচার শিট</span>
                     <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">ফ্রি হ্যান্ডনোট পিডিএফ</span>
                   </div>
                 </div>
