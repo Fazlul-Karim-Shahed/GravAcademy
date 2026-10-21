@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Baloo_Da_2, DM_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
