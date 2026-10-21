@@ -6,16 +6,14 @@ import { api } from '@/lib/api';
 import {
   BookOpen,
   GraduationCap,
-  Sparkles,
-  ArrowRight,
   Search,
   Filter,
-  CheckCircle2,
   X,
   ChevronRight,
   PlayCircle,
   FileText,
   Award,
+  Sparkles,
 } from 'lucide-react';
 
 interface Teacher {
@@ -43,7 +41,16 @@ export default function CoursesCatalogPage() {
   const [selectedGrade, setSelectedGrade] = useState<string>('all');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
 
-  const gradeLevels = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+  const gradeLevels = [
+    { label: 'সকল কোর্স', value: 'all' },
+    { label: '৬ষ্ঠ শ্রেণি', value: 'Class 6' },
+    { label: '৭ম শ্রেণি', value: 'Class 7' },
+    { label: '৮ম শ্রেণি', value: 'Class 8' },
+    { label: '৯ম শ্রেণি', value: 'Class 9' },
+    { label: '১০ম শ্রেণি (SSC)', value: 'Class 10' },
+    { label: 'একাদশ-দ্বাদশ (HSC)', value: 'Class 11' },
+  ];
+
   const subjects = ['Bangla', 'English', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'ICT'];
 
   useEffect(() => {
@@ -121,75 +128,77 @@ export default function CoursesCatalogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 sm:py-14 text-slate-900 dark:text-slate-100 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Modern Clean Header */}
-        <div className="relative mb-12 text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold mb-4 shadow-2xs">
-            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <span>ক্লাস ৬ থেকে ১২ শ্রেণির সিলেবাসভিত্তিক কোর্সসমূহ</span>
-          </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.28]">
-            সকল কোর্স ও লাইভ ব্যাচ
-          </h1>
-          <p className="mt-3 text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-            তোমার প্রয়োজনীয় শ্রেণি ও বিষয় নির্বাচন করে সাজানো সিলেবাস, লাইভ ও রেকর্ডেড ক্লাস, হ্যান্ডনোট এবং নিয়মিত মডেল টেস্টের রুটিন দেখে নাও।
-          </p>
-        </div>
-
-        {/* Filter and Search Bar */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 mb-10 shadow-xs">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+      
+      {/* 1. COMPACT & CLEAN HEADER STRIP */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 py-6 sm:py-8 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 text-[11px] font-extrabold border border-blue-200/70 dark:border-blue-800/70">
+                  <Sparkles className="w-3 h-3 text-blue-600" />
+                  একাডেমিক প্রোগ্রাম
+                </span>
+                <span className="text-xs text-slate-400 font-semibold">
+                  (মোট {courses.length}টি লাইভ কোর্স)
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                সকল কোর্স ও ব্যাচ
+              </h1>
+            </div>
+
+            {/* Smart Search Bar Inline in Header */}
+            <div className="w-full md:w-80 relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="কোর্সের নাম, শ্রেণি বা বিষয় দিয়ে খুঁজুন..."
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl pl-10 pr-4 py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                placeholder="কোর্সের নাম বা বিষয় দিয়ে খুঁজুন..."
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9.5 pr-8 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
+          </div>
 
-            {/* Dropdown Filters */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                <Filter className="w-3.5 h-3.5" /> ফিল্টার:
-              </div>
+          {/* Horizontal Class Selector Tabs (Shikho/10MS Style) */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-5 mt-4 border-t border-slate-100 dark:border-slate-800/80">
+            {gradeLevels.map((g) => {
+              const active = selectedGrade === g.value;
+              return (
+                <button
+                  key={g.value}
+                  type="button"
+                  onClick={() => setSelectedGrade(g.value)}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                    active
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                      : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  {g.label}
+                </button>
+              );
+            })}
 
-              {/* Grade Dropdown */}
-              <select
-                value={selectedGrade}
-                onChange={(e) => setSelectedGrade(e.target.value)}
-                className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
-              >
-                <option value="all">সকল শ্রেণি (৬ষ্ঠ – ১২শ)</option>
-                {gradeLevels.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-
-              {/* Subject Dropdown */}
+            {/* Subject Filter Dropdown Pill */}
+            <div className="ml-auto pl-2 shrink-0 flex items-center gap-2">
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
+                className="bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer"
               >
-                <option value="all">সকল বিষয়</option>
+                <option value="all">বিষয়: সব</option>
                 {subjects.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -201,49 +210,41 @@ export default function CoursesCatalogPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="px-3.5 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors"
+                  className="px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors whitespace-nowrap"
+                  title="ফিল্টার রিসেট করুন"
                 >
                   রিসেট
                 </button>
               )}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Quick Filter Chips */}
-          <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80">
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mr-1">জনপ্রিয় শ্রেণি:</span>
-            {['Class 9', 'Class 10', 'Class 11', 'Class 12'].map((g) => {
-              const active = selectedGrade === g;
-              return (
-                <button
-                  key={g}
-                  type="button"
-                  onClick={() => setSelectedGrade(active ? 'all' : g)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    active
-                      ? 'bg-blue-600 text-white shadow-2xs'
-                      : 'bg-slate-100 dark:bg-slate-800/70 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
-                  }`}
-                >
-                  {g}
-                </button>
-              );
-            })}
-            <div className="ml-auto text-xs font-semibold text-slate-500 dark:text-slate-400">
-              মোট <strong className="text-slate-900 dark:text-white font-extrabold">{filteredCourses.length}</strong> টি কোর্স রয়েছে
-            </div>
+      {/* 2. MAIN CONTENT BODY */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        
+        {/* Course Count / Active Filter Status */}
+        <div className="flex items-center justify-between mb-6 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+          <div>
+            দেখাচ্ছে: <span className="text-slate-900 dark:text-white font-extrabold">{filteredCourses.length}</span> টি কোর্স
           </div>
+          {searchQuery && (
+            <div>
+              অনুসন্ধান: <span className="text-blue-600 font-bold">"{searchQuery}"</span>
+            </div>
+          )}
         </div>
 
         {/* Course Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-96 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse overflow-hidden"
+                className="h-80 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse overflow-hidden"
               >
-                <div className="h-44 bg-slate-200 dark:bg-slate-800" />
+                <div className="h-40 bg-slate-200 dark:bg-slate-800" />
                 <div className="p-6 space-y-3">
                   <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
                   <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
@@ -253,24 +254,24 @@ export default function CoursesCatalogPage() {
             ))}
           </div>
         ) : filteredCourses.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-center py-20 px-4 shadow-xs max-w-lg mx-auto">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-center py-16 px-4 shadow-xs max-w-md mx-auto my-6">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-3.5">
+              <BookOpen className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">কোনো কোর্স খুঁজে পাওয়া যায়নি</h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1.5 mb-6">
-              আপনার ফিল্টার অনুযায়ী কোনো কোর্স পাওয়া যায়নি। ফিল্টার রিসেট করে পুনরায় চেষ্টা করুন।
+            <h3 className="text-base font-extrabold text-slate-900 dark:text-white">কোনো কোর্স পাওয়া যায়নি</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-5 leading-relaxed">
+              আপনার ফিল্টারের সাথে মিলে এমন কোনো কোর্স পাওয়া যায়নি। ফিল্টার রিসেট করে সব কোর্স দেখতে পারেন।
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
             >
               সকল কোর্স দেখুন
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {filteredCourses.map((course, idx) => {
               const currentTheme = cardThemes[idx % cardThemes.length];
               const regularPrice = course.courseFee ? Math.round(course.courseFee * 1.35) : null;
