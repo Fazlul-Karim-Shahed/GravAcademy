@@ -347,66 +347,120 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCourses.map((c) => (
-                <Link
-                  key={c._id}
-                  href={`/courses/${c._id}`}
-                  className="group block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200 transform hover:-translate-y-1 flex flex-col justify-between"
-                >
-                  <div>
-                    {/* Header Banner */}
-                    <div className="p-6 bg-gradient-to-br from-blue-50/50 via-slate-50 to-white dark:from-slate-900 dark:via-slate-900 dark:to-blue-950/20 border-b border-slate-100 dark:border-slate-800">
-                      <div className="flex items-center justify-between mb-3.5">
-                        <span className="px-3 py-1 rounded-lg text-xs font-extrabold bg-blue-600 text-white shadow-2xs">
-                          {c.gradeLevel}
-                        </span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 px-3 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
-                          {c.subject}
-                        </span>
-                      </div>
-                      
-                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 leading-snug">
-                        {c.title}
-                      </h3>
-                      
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-[1.7]">
-                        {c.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রশ্ন বিশ্লেষণ কোর্স।'}
-                      </p>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+              {filteredCourses.map((c) => {
+                const instructorName =
+                  c.instructors && c.instructors.length > 0
+                    ? typeof c.instructors[0] === 'object'
+                      ? c.instructors[0].name
+                      : 'ফ্যাকাল্টি মেন্টর'
+                    : 'গ্র্যাভ একাডেমি শিক্ষক প্যানেল';
 
-                    {/* Features Snippet */}
-                    <div className="p-6 space-y-3 text-xs text-slate-600 dark:text-slate-300">
-                      <div className="flex items-center gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>লেকচার শিট ও বোর্ড প্রশ্ন সমাধান</span>
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>অধ্যায়ভিত্তিক মডেল টেস্ট ও লিডারবোর্ড</span>
-                      </div>
-                    </div>
-                  </div>
+                const regularPrice = c.courseFee ? Math.round(c.courseFee * 1.35) : null;
 
-                  {/* Card Bottom Bar */}
-                  <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between">
+                return (
+                  <Link
+                    key={c._id}
+                    href={`/courses/${c._id}`}
+                    className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
+                  >
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">কোর্স ফি</span>
-                      <span className="text-base font-extrabold text-blue-600 dark:text-blue-400">
-                        ৳ {c.courseFee ? c.courseFee.toLocaleString() : 'ফ্রি'}
-                      </span>
+                      {/* Top Thumbnail Banner with Subject Theme Accent */}
+                      <div className="relative h-44 bg-gradient-to-br from-blue-700 via-indigo-700 to-slate-900 p-5 flex flex-col justify-between overflow-hidden">
+                        {/* Decorative background geometry */}
+                        <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
+                        <div className="absolute right-4 top-4 w-20 h-20 rounded-full bg-blue-400/20 blur-lg pointer-events-none" />
+
+                        {/* Badges on Thumbnail */}
+                        <div className="relative z-10 flex items-center justify-between">
+                          <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-extrabold border border-white/25 shadow-xs">
+                            {c.gradeLevel}
+                          </span>
+
+                          <span className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-[11px] font-extrabold shadow-sm flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                            লাইভ ব্যাচ
+                          </span>
+                        </div>
+
+                        {/* Subject & Title Overlay */}
+                        <div className="relative z-10">
+                          <span className="text-xs font-bold text-blue-200 uppercase tracking-wider block mb-1">
+                            {c.subject} স্পেশাল
+                          </span>
+                          <h4 className="text-white text-base sm:text-lg font-black leading-snug line-clamp-1 drop-shadow-sm group-hover:text-blue-100 transition-colors">
+                            {c.title}
+                          </h4>
+                        </div>
+                      </div>
+
+                      {/* Card Content Body */}
+                      <div className="p-6">
+                        {/* Instructor Credit Line */}
+                        <div className="flex items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300 mb-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                          <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-[10px]">
+                            <GraduationCap className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            মেন্টর: {instructorName}
+                          </span>
+                        </div>
+
+                        {/* Short Description */}
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-[1.7] mb-4">
+                          {c.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড পরীক্ষার জন্য চূড়ান্ত প্রস্তুতিমূলক কোর্স।'}
+                        </p>
+
+                        {/* Features Micro-List */}
+                        <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                          <div className="flex items-center gap-2">
+                            <PlayCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                            <span>লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                            <span>অধ্যায়ভিত্তিক লেকচার শিট ও ফর্মুলা বুক</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Award className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                            <span>অনলাইন মডেল টেস্ট ও লিডারবোর্ড</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold group-hover:bg-blue-700 transition-colors shadow-2xs">
-                      <span>বিস্তারিত ও ভর্তি</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </span>
-                  </div>
-                </Link>
-              ))}
+
+                    {/* Card Bottom: Strikethrough Pricing & High-Conversion CTA */}
+                    <div className="p-6 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60">
+                      <div className="flex items-baseline justify-between mb-3.5">
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">কোর্স ফি</span>
+                          <div className="flex items-baseline gap-2 mt-0.5">
+                            <span className="text-xl font-black text-blue-600 dark:text-blue-400">
+                              {c.courseFee ? `৳ ${c.courseFee.toLocaleString()}` : 'ফ্রি'}
+                            </span>
+                            {regularPrice && (
+                              <span className="text-xs text-slate-400 line-through font-semibold">
+                                ৳ {regularPrice.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {regularPrice && (
+                          <span className="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-[11px] font-extrabold border border-rose-200/80 dark:border-rose-900/60">
+                            ২৬% ছাড়
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="w-full py-2.5 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white font-bold text-xs sm:text-sm text-center shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+                        <span>কোর্সটি দেখুন</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
 
