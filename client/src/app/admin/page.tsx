@@ -18,7 +18,8 @@ import {
   Sparkles,
   ChevronRight,
   ShieldCheck,
-  FolderOpen
+  FolderOpen,
+  Edit
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
