@@ -1,0 +1,87 @@
+import { Request, Response } from 'express';
+import { z } from 'zod';
+import { LiveClass } from '../models/LiveClass';
+import { Enrollment } from '../models/Enrollment';
+import { AuthenticatedRequest } from '../middleware/auth';
+import { ROLES } from '../types/roles';
+
+export const createLiveClassSchema = z.object({
+  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
+  title: z.string().min(3),
+  provider: z.enum(['zoom', 'google_meet']),
+  meetingUrl: z.string().url('Invalid meeting URL'),
+  meetingPassword: z.string().optional(),
+  startTime: z.string().datetime(),
+  durationMinutes: z.number().min(15).default(60),
+  instructions: z.string().optional(),
+});
+
+/**
+ * List live classes for a batch (or all assigned for teacher/admin)
+ */
+export const getLiveClasses = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { batchId } = req.query;
+    const filter: any = {};
+
+    if (batchId) filter.batchId = batchId;
+
+    const liveClasses = await LiveClass.find(filter)
+      .populate('batchId', 'name courseId')
+      .populate('teacherId', 'name email')
+      .sort({ startTime: 1 });
+
+    return res.status(200).json({ success: true, count: liveClasses.length, data: liveClasses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch live classes' });
+  }
+};
+
+/**
+ * Schedule a new Live Class (Teacher, Admin, Superadmin)
+ */
+export const createLiveClass = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const data = req.body;
+    const teacherId = req.user?._id;
+
+    const liveClass = await LiveClass.create({
+      ...data,
+      teacherId,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Live class scheduled successfully',
+      data: liveClass,
+    });
+  } catch (error: any) {
+    console.error('Create live class error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to schedule live class' });
+  }
+};
+
+/**
+ * Get Student's Upcoming Live Classes (verifying active batch enrollments)
+ */
+export const getStudentLiveClasses = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const studentId = req.user?._id;
+
+    // Get batches student is enrolled in
+    const enrollments = await Enrollment.find({ studentId, status: 'enrolled' }).select('batchId');
+    const batchIds = enrollments.map((e) => e.batchId);
+
+    const liveClasses = await LiveClass.find({
+      batchId: { $in: batchIds },
+      isPublished: true,
+    })
+      .populate('batchId', 'name')
+      .populate('teacherId', 'name')
+      .sort({ startTime: 1 });
+
+    return res.status(200).json({ success: true, count: liveClasses.length, data: liveClasses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch student live classes' });
+  }
+};

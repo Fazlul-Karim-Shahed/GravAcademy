@@ -1,0 +1,15 @@
+{
+  "name": "grav-academy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Grav Academy - Production-oriented LMS for Class 6 to 12 coaching center",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build"
+  },
+  "keywords": ["lms", "edtech", "grav-academy", "nextjs", "express", "mongodb"],
+  "author": "Grav Academy",
+  "license": "ISC"
+}

@@ -1,0 +1,106 @@
+export const ROLES = {
+  SUPERADMIN: 'superadmin',
+  ADMIN: 'admin',
+  TEACHER: 'teacher',
+  STUDENT: 'student',
+  GUARDIAN: 'guardian',
+  EMPLOYEE: 'employee',
+} as const;
+
+export type UserRole = (typeof ROLES)[keyof typeof ROLES];
+
+export const PERMISSIONS = {
+  // Course & Batch Permissions
+  COURSES_VIEW: 'courses.view',
+  COURSES_CREATE: 'courses.create',
+  COURSES_UPDATE: 'courses.update',
+  COURSES_DELETE: 'courses.delete',
+  COURSES_PUBLISH: 'courses.publish',
+
+  BATCHES_MANAGE: 'batches.manage',
+  BATCHES_DUPLICATE: 'batches.duplicate',
+  LESSONS_MANAGE: 'lessons.manage',
+
+  // Documents & Media
+  DOCUMENTS_UPLOAD: 'documents.upload',
+  DOCUMENTS_VIEW: 'documents.view',
+  DOCUMENTS_DELETE: 'documents.delete',
+
+  // Exams & Assignments
+  EXAMS_MANAGE: 'exams.manage',
+  EXAMS_TAKE: 'exams.take',
+  RESULTS_VIEW_SELF: 'results.view.self',
+  RESULTS_VIEW_ALL: 'results.view.all',
+  ASSIGNMENTS_MANAGE: 'assignments.manage',
+  ASSIGNMENTS_SUBMIT: 'assignments.submit',
+
+  // Live Classes & Attendance
+  LIVE_CLASSES_MANAGE: 'live_classes.manage',
+  LIVE_CLASSES_JOIN: 'live_classes.join',
+  ATTENDANCE_MANAGE: 'attendance.manage',
+  ATTENDANCE_VIEW: 'attendance.view',
+
+  // Users & Administration
+  USERS_MANAGE: 'users.manage',
+  PERMISSIONS_MANAGE: 'permissions.manage',
+  AUDIT_LOGS_VIEW: 'audit_logs.view',
+  SETTINGS_MANAGE: 'settings.manage',
+} as const;
+
+export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+
+// Default baseline permissions per role
+export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
+  [ROLES.SUPERADMIN]: Object.values(PERMISSIONS),
+  [ROLES.ADMIN]: [
+    PERMISSIONS.COURSES_VIEW,
+    PERMISSIONS.COURSES_CREATE,
+    PERMISSIONS.COURSES_UPDATE,
+    PERMISSIONS.COURSES_PUBLISH,
+    PERMISSIONS.BATCHES_MANAGE,
+    PERMISSIONS.BATCHES_DUPLICATE,
+    PERMISSIONS.LESSONS_MANAGE,
+    PERMISSIONS.DOCUMENTS_UPLOAD,
+    PERMISSIONS.DOCUMENTS_VIEW,
+    PERMISSIONS.DOCUMENTS_DELETE,
+    PERMISSIONS.EXAMS_MANAGE,
+    PERMISSIONS.RESULTS_VIEW_ALL,
+    PERMISSIONS.ASSIGNMENTS_MANAGE,
+    PERMISSIONS.LIVE_CLASSES_MANAGE,
+    PERMISSIONS.ATTENDANCE_MANAGE,
+    PERMISSIONS.ATTENDANCE_VIEW,
+    PERMISSIONS.USERS_MANAGE,
+  ],
+  [ROLES.TEACHER]: [
+    PERMISSIONS.COURSES_VIEW,
+    PERMISSIONS.LESSONS_MANAGE,
+    PERMISSIONS.DOCUMENTS_UPLOAD,
+    PERMISSIONS.DOCUMENTS_VIEW,
+    PERMISSIONS.EXAMS_MANAGE,
+    PERMISSIONS.RESULTS_VIEW_ALL,
+    PERMISSIONS.ASSIGNMENTS_MANAGE,
+    PERMISSIONS.LIVE_CLASSES_MANAGE,
+    PERMISSIONS.ATTENDANCE_MANAGE,
+    PERMISSIONS.ATTENDANCE_VIEW,
+  ],
+  [ROLES.STUDENT]: [
+    PERMISSIONS.COURSES_VIEW,
+    PERMISSIONS.DOCUMENTS_VIEW,
+    PERMISSIONS.EXAMS_TAKE,
+    PERMISSIONS.RESULTS_VIEW_SELF,
+    PERMISSIONS.ASSIGNMENTS_SUBMIT,
+    PERMISSIONS.LIVE_CLASSES_JOIN,
+    PERMISSIONS.ATTENDANCE_VIEW,
+  ],
+  [ROLES.GUARDIAN]: [
+    PERMISSIONS.COURSES_VIEW,
+    PERMISSIONS.RESULTS_VIEW_SELF,
+    PERMISSIONS.ATTENDANCE_VIEW,
+  ],
+  [ROLES.EMPLOYEE]: [
+    PERMISSIONS.COURSES_VIEW,
+    PERMISSIONS.ATTENDANCE_MANAGE,
+    PERMISSIONS.ATTENDANCE_VIEW,
+    PERMISSIONS.DOCUMENTS_VIEW,
+  ],
+};
