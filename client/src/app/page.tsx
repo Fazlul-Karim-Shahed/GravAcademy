@@ -226,19 +226,21 @@ export default function HomePage() {
                     alt="Bangladeshi student preparing with Grav Academy"
                     className="w-full h-full object-cover object-center transform hover:scale-102 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                  {/* High contrast gradient backdrop for crystal clear text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
                   
-                  <div className="absolute bottom-5 left-5 right-5 text-white">
-                    <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-[11px] font-bold tracking-wide uppercase shadow-xs">
+                  {/* Clear Glassmorphism Card for Text Contrast */}
+                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5 p-3.5 sm:p-4 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-white/15 text-white shadow-xl">
+                    <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-[11px] font-extrabold tracking-wide uppercase shadow-xs inline-block mb-1 text-white">
                       সফলতার গল্প
                     </span>
-                    <h3 className="text-base font-bold text-white mt-1.5 drop-shadow-sm leading-snug">
+                    <h3 className="text-sm sm:text-base font-extrabold text-white leading-snug drop-shadow-md">
                       নিয়মিত অধ্যবসায় ও সেরা গাইডলাইনে অর্জন করো সর্বোচ্চ ফলাফল
                     </h3>
                   </div>
                 </div>
 
-                {/* Floating Badge 1 */}
+                {/* Floating Badge 1: Top Left */}
                 <div className="absolute -top-4 -left-3 sm:-left-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-xl flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold shrink-0">
                     <PlayCircle className="w-5 h-5 animate-pulse" />
@@ -249,8 +251,8 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Badge 2 */}
-                <div className="absolute -bottom-4 -right-2 sm:-right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-xl flex items-center gap-3">
+                {/* Floating Badge 2: Lower Bottom Right (Shifted down so it does not block the photo text) */}
+                <div className="absolute -bottom-7 -right-2 sm:-right-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex items-center gap-3 z-10">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center font-bold shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
