@@ -240,8 +240,8 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Badge 1: Top Left - perfectly anchored hugging the top-left boundary */}
-                <div className="absolute -top-5 left-2 sm:-left-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-xl flex items-center gap-3 z-10">
+                {/* Floating Badge 1: Top Left - pushed further top and left */}
+                <div className="absolute -top-7 -left-3 sm:-top-8 sm:-left-8 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex items-center gap-3 z-20">
                   <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold shrink-0 shadow-2xs">
                     <PlayCircle className="w-5 h-5 animate-pulse" />
                   </div>
@@ -251,8 +251,8 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating Badge 2: Bottom Right - cleanly positioned at the bottom right corner with slight overlap */}
-                <div className="absolute -bottom-5 right-2 sm:-right-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex items-center gap-3 z-10">
+                {/* Floating Badge 2: Bottom Right - pushed further bottom and right */}
+                <div className="absolute -bottom-8 -right-3 sm:-bottom-9 sm:-right-8 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-3 sm:p-3.5 shadow-2xl flex items-center gap-3 z-20">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center font-bold shrink-0 shadow-2xs">
                     <FileText className="w-5 h-5" />
                   </div>
