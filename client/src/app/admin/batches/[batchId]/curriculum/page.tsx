@@ -384,7 +384,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
       setMessage({ type: 'success', text: 'Lesson deleted.' });
       loadHierarchy();
     } catch (err: any) {
-      setMessage({ type: 'error', text: 'Failed to delete lesson' });
+      setMessage({ type: 'error', text: err.response?.data?.message || err.message || 'Failed to delete lesson' });
     }
   };
 

@@ -139,8 +139,9 @@ export const deleteLesson = async (req: AuthenticatedRequest, res: Response) => 
     const { id } = req.params;
     await Lesson.findByIdAndDelete(id);
     return res.status(200).json({ success: true, message: 'Lesson deleted successfully' });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: 'Failed to delete lesson' });
+  } catch (error: any) {
+    console.error('deleteLesson error:', error);
+    return res.status(500).json({ success: false, message: error?.message || 'Failed to delete lesson' });
   }
 };
 
