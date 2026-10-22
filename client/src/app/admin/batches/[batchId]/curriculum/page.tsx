@@ -606,14 +606,13 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                         <span>Section</span>
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => setLessonModal({ open: true, moduleId: mod._id, parentTitle: mod.title })}
+                      <Link
+                        href={`/admin/batches/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&parent=${encodeURIComponent(mod.title)}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200/80 dark:border-blue-700/40 shadow-2xs transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Lesson</span>
-                      </button>
+                      </Link>
 
                       <button
                         type="button"
@@ -648,23 +647,13 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                     <h4 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white leading-tight">
                                       {lesson.title}
                                     </h4>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        setEditLessonModal({
-                                          open: true,
-                                          id: lesson._id,
-                                          title: lesson.title,
-                                          youtubeVideoId: lesson.youtubeVideoId || '',
-                                          description: lesson.description || '',
-                                          resources: lesson.resources || [],
-                                        })
-                                      }
+                                    <Link
+                                      href={`/admin/batches/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
                                       className="opacity-60 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
                                       title="Edit Lesson"
                                     >
                                       <Pencil className="w-3 h-3" />
-                                    </button>
+                                    </Link>
                                   </div>
                                   {lesson.youtubeVideoId ? (
                                     <div className="flex items-center gap-1.5 mt-1">
@@ -726,20 +715,12 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                               </div>
 
                               <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setLessonModal({
-                                      open: true,
-                                      moduleId: mod._id,
-                                      sectionId: sec._id,
-                                      parentTitle: `${mod.title} → ${sec.title}`,
-                                    })
-                                  }
+                                <Link
+                                  href={`/admin/batches/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&sectionId=${sec._id}&parent=${encodeURIComponent(`${mod.title} → ${sec.title}`)}`}
                                   className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                                 >
                                   <Plus className="w-3.5 h-3.5" /> Add Lesson
-                                </button>
+                                </Link>
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteSection(sec._id, sec.title)}
@@ -768,23 +749,13 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                           <p className="text-xs font-medium text-slate-900 dark:text-slate-200">
                                             {lesson.title}
                                           </p>
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              setEditLessonModal({
-                                                open: true,
-                                                id: lesson._id,
-                                                title: lesson.title,
-                                                youtubeVideoId: lesson.youtubeVideoId || '',
-                                                description: lesson.description || '',
-                                                resources: lesson.resources || [],
-                                              })
-                                            }
+                                          <Link
+                                            href={`/admin/batches/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
                                             className="opacity-50 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
                                             title="Edit Lesson"
                                           >
                                             <Pencil className="w-3 h-3" />
-                                          </button>
+                                          </Link>
                                         </div>
                                         {lesson.youtubeVideoId && (
                                           <div className="flex items-center gap-1 mt-0.5">
