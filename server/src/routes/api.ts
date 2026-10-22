@@ -13,6 +13,7 @@ import * as docCtrl from '../controllers/documentController';
 import * as examCtrl from '../controllers/examController';
 import * as liveCtrl from '../controllers/liveClassController';
 import * as userAdminCtrl from '../controllers/userAdminController';
+import * as academicClassCtrl from '../controllers/academicClassController';
 
 const router = Router();
 const upload = multer({
@@ -24,6 +25,29 @@ const upload = multer({
 router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl.register);
 router.post('/auth/login', validateRequest(authCtrl.loginSchema), authCtrl.login);
 router.get('/auth/me', authenticate, authCtrl.getMe);
+
+// --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
+router.get('/classes', academicClassCtrl.getAcademicClasses);
+router.post(
+  '/classes',
+  authenticate,
+  requirePermission(PERMISSIONS.COURSES_CREATE),
+  validateRequest(academicClassCtrl.createClassSchema),
+  academicClassCtrl.createAcademicClass
+);
+router.put(
+  '/classes/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.COURSES_UPDATE),
+  validateRequest(academicClassCtrl.updateClassSchema),
+  academicClassCtrl.updateAcademicClass
+);
+router.delete(
+  '/classes/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.COURSES_DELETE),
+  academicClassCtrl.deleteAcademicClass
+);
 
 // --- COURSE ROUTES ---
 router.get('/courses', courseCtrl.getCourses);
@@ -50,6 +74,7 @@ router.delete(
 
 // --- BATCH ROUTES (Including Copy-from-batch workflow) ---
 router.get('/batches', batchCtrl.getBatches);
+router.get('/batches/:id', batchCtrl.getBatchById);
 router.get('/batches/:batchId/hierarchy', batchCtrl.getBatchHierarchy);
 router.post(
   '/batches',
@@ -57,6 +82,18 @@ router.post(
   requirePermission(PERMISSIONS.BATCHES_MANAGE),
   validateRequest(batchCtrl.createBatchSchema),
   batchCtrl.createBatch
+);
+router.put(
+  '/batches/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.BATCHES_MANAGE),
+  batchCtrl.updateBatch
+);
+router.delete(
+  '/batches/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.BATCHES_MANAGE),
+  batchCtrl.deleteBatch
 );
 
 // --- CONTENT HIERARCHY ROUTES ---

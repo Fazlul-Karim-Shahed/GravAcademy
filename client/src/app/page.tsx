@@ -25,12 +25,14 @@ import {
   Calendar,
   MessageCircle,
 } from 'lucide-react';
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 
 interface Course {
   _id: string;
   title: string;
   slug: string;
   description: string;
+  thumbnailUrl?: string;
   gradeLevel: string;
   subject: string;
   courseFee: number;
@@ -46,11 +48,18 @@ export default function HomePage() {
   const [selectedClass, setSelectedClass] = useState<string>('All');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const classList = ['All', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+  const [dynamicClasses, setDynamicClasses] = useState<AcademicClassItem[]>([]);
+  const classList = ['All', ...dynamicClasses.map((c) => c.name)];
 
   useEffect(() => {
     fetchFeaturedCourses();
+    fetchDynamicClasses();
   }, []);
+
+  const fetchDynamicClasses = async () => {
+    const list = await getSharedAcademicClasses();
+    setDynamicClasses(list);
+  };
 
   const fetchFeaturedCourses = async () => {
     try {
@@ -398,48 +407,46 @@ export default function HomePage() {
                     className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
                   >
                     <div>
-                      {/* Top Thumbnail Banner with Vibrant EdTech Gradient */}
-                      <div className={`relative h-44 bg-gradient-to-br ${currentTheme.gradient} p-5 flex flex-col justify-between overflow-hidden`}>
-                        {/* Decorative background geometry */}
-                        <div className={`absolute -right-8 -bottom-8 w-36 h-36 rounded-full ${currentTheme.blob1} blur-xl pointer-events-none`} />
-                        <div className={`absolute right-4 top-4 w-20 h-20 rounded-full ${currentTheme.blob2} blur-lg pointer-events-none`} />
+                      {/* Top Thumbnail Banner with Image / Fallback Vibrant Gradient */}
+                      <div className={`relative w-full aspect-video ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`} overflow-hidden`}>
+                        {c.thumbnailUrl ? (
+                          /* Pure 100% opacity full-bleed image */
+                          <img
+                            src={c.thumbnailUrl}
+                            alt={c.title}
+                            className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <>
+                            {/* Decorative background geometry fallback */}
+                            <div className={`absolute -right-8 -bottom-8 w-36 h-36 rounded-full ${currentTheme.blob1} blur-xl pointer-events-none`} />
+                            <div className={`absolute right-4 top-4 w-20 h-20 rounded-full ${currentTheme.blob2} blur-lg pointer-events-none`} />
+                          </>
+                        )}
 
-                        {/* Badges on Thumbnail */}
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-extrabold border border-white/25 shadow-xs">
+                        {/* Badges on Thumbnail - Absolute overlay */}
+                        <div className="absolute top-0 left-0 right-0 z-20 p-3.5 flex items-center justify-between pointer-events-none">
+                          <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-extrabold border border-white/20 shadow-md">
                             {c.gradeLevel}
                           </span>
 
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 text-slate-900 dark:text-white text-[11px] font-black shadow-sm border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-md">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-900 dark:bg-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200 dark:border-slate-700">
                             <span className="relative flex h-2 w-2">
-                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-60" />
+                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
                               <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.9)]" />
                             </span>
                             লাইভ ব্যাচ
                           </span>
                         </div>
-
-                        {/* Subject & Title Overlay */}
-                        <div className="relative z-10">
-                          <span className={`text-xs font-bold ${currentTheme.tag} uppercase tracking-wider block mb-1 drop-shadow-xs`}>
-                            {c.subject} স্পেশাল
-                          </span>
-                          <h4 className="text-white text-base sm:text-lg font-black leading-snug line-clamp-1 drop-shadow-sm group-hover:underline transition-colors">
-                            {c.title}
-                          </h4>
-                        </div>
                       </div>
 
                       {/* Card Content Body */}
                       <div className="p-6">
-                        {/* Instructor Credit Line */}
-                        <div className="flex items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300 mb-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-                          <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-[10px]">
-                            <GraduationCap className="w-3.5 h-3.5" />
-                          </div>
-                          <span className="font-semibold text-slate-800 dark:text-slate-200">
-                            মেন্টর: {instructorName}
-                          </span>
+                        {/* Course Name */}
+                        <div className="mb-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                          <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                            {c.title}
+                          </h3>
                         </div>
 
                         {/* Short Description */}
@@ -465,33 +472,18 @@ export default function HomePage() {
                       </div>
                     </div>
 
-                    {/* Card Bottom: Strikethrough Pricing & High-Conversion CTA */}
-                    <div className="p-6 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60">
-                      <div className="flex items-baseline justify-between mb-3.5">
-                        <div>
-                          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">কোর্স ফি</span>
-                          <div className="flex items-baseline gap-2 mt-0.5">
-                            <span className="text-xl font-black text-blue-600 dark:text-blue-400">
-                              {c.courseFee ? `৳ ${c.courseFee.toLocaleString()}` : 'ফ্রি'}
-                            </span>
-                            {regularPrice && (
-                              <span className="text-xs text-slate-400 line-through font-semibold">
-                                ৳ {regularPrice.toLocaleString()}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {regularPrice && (
-                          <span className="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-[11px] font-extrabold border border-rose-200/80 dark:border-rose-900/60">
-                            ২৬% ছাড়
-                          </span>
-                        )}
+                    {/* Card Bottom: Batch Enrollment CTA */}
+                    <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between gap-3">
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">এনরোলমেন্ট</span>
+                        <span className="text-xs font-black text-slate-800 dark:text-slate-200">
+                          ব্যাচভিত্তিক ভর্তি
+                        </span>
                       </div>
 
-                      <div className="w-full py-2.5 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white font-bold text-xs sm:text-sm text-center shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
-                        <span>কোর্সটি দেখুন</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <div className="py-2 px-4 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5">
+                        <span>ব্যাচ দেখুন</span>
+                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </div>
                     </div>
                   </Link>
@@ -923,7 +915,6 @@ export default function HomePage() {
               <ul className="space-y-2">
                 <li><Link href="/login" className="hover:text-white transition-colors">লগইন</Link></li>
                 <li><Link href="/register" className="hover:text-white transition-colors">রেজিস্ট্রেশন</Link></li>
-                <li><Link href="/exams/take" className="hover:text-white transition-colors">অনলাইন এক্সাম</Link></li>
                 <li><Link href="/courses" className="hover:text-white transition-colors">সকল ব্যাচ</Link></li>
               </ul>
             </div>

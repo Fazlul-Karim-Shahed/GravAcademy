@@ -12,6 +12,7 @@ export const createBatchSchema = z.object({
   name: z.string().min(2).max(120),
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Course ID'),
   status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).default('draft'),
+  fee: z.number().min(0).default(0),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   enrollmentOpenDate: z.string().datetime().optional(),
@@ -53,6 +54,26 @@ export const getBatches = async (req: Request, res: Response) => {
     return res.status(200).json({ success: true, count: batches.length, data: batches });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch batches' });
+  }
+};
+
+/**
+ * Get Single Batch Details
+ */
+export const getBatchById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const batch = await Batch.findById(id)
+      .populate('courseId', 'title slug gradeLevel subject')
+      .populate('assignedTeachers', 'name email');
+
+    if (!batch) {
+      return res.status(404).json({ success: false, message: 'Batch not found' });
+    }
+
+    return res.status(200).json({ success: true, data: batch });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch batch details' });
   }
 };
 
@@ -116,6 +137,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       name,
       courseId,
       status,
+      fee,
       startDate,
       endDate,
       enrollmentOpenDate,
@@ -130,6 +152,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       name,
       courseId,
       status: status || 'draft',
+      fee: fee !== undefined ? Number(fee) : 0,
       startDate,
       endDate,
       enrollmentOpenDate,
@@ -249,5 +272,61 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
   } catch (error: any) {
     console.error('Batch creation error:', error);
     return res.status(500).json({ success: false, message: 'Failed to create batch' });
+  }
+};
+
+/**
+ * Update Batch (Name, Schedule, Fee, Capacity, Status, CourseId)
+ */
+export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, courseId, status, fee, scheduleText, capacity } = req.body;
+
+    const batch = await Batch.findById(id);
+    if (!batch) {
+      return res.status(404).json({ success: false, message: 'Batch not found' });
+    }
+
+    if (name !== undefined) batch.name = name;
+    if (courseId !== undefined) batch.courseId = courseId;
+    if (status !== undefined) batch.status = status;
+    if (fee !== undefined) batch.fee = Number(fee);
+    if (scheduleText !== undefined) batch.scheduleText = scheduleText;
+    if (capacity !== undefined) batch.capacity = Number(capacity);
+
+    await batch.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Batch updated successfully',
+      data: batch,
+    });
+  } catch (error: any) {
+    console.error('Batch update error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update batch' });
+  }
+};
+
+/**
+ * Delete Batch
+ */
+export const deleteBatch = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const batch = await Batch.findById(id);
+    if (!batch) {
+      return res.status(404).json({ success: false, message: 'Batch not found' });
+    }
+
+    await Batch.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Batch deleted successfully',
+    });
+  } catch (error: any) {
+    console.error('Batch delete error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete batch' });
   }
 };

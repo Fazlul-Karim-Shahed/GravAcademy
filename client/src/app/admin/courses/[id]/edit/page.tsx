@@ -18,6 +18,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+
 interface TeacherUser {
   _id: string;
   name: string;
@@ -41,6 +43,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
   const [form, setForm] = useState({
     title: '',
+    thumbnailUrl: '',
     description: '',
     gradeLevel: 'Class 10',
     subject: 'Physics',
@@ -55,27 +58,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
   const [newHighlight, setNewHighlight] = useState('');
 
-  const gradeOptions = [
-    'Class 6',
-    'Class 7',
-    'Class 8',
-    'Class 9',
-    'Class 10',
-    'Class 11',
-    'Class 12',
-  ];
-
-  const subjectOptions = [
-    'Bangla',
-    'English',
-    'Mathematics',
-    'Physics',
-    'Chemistry',
-    'Biology',
-    'ICT',
-    'Higher Math',
-    'General Science',
-  ];
+  const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
+  const gradeOptions = academicClasses.map((ac) => ac.name);
 
   useEffect(() => {
     loadCourseAndTeachers();
@@ -84,10 +68,13 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   const loadCourseAndTeachers = async () => {
     setLoading(true);
     try {
-      const [courseRes, usersRes] = await Promise.all([
+      const [courseRes, usersRes, classList] = await Promise.all([
         api.get(`/courses/${resolvedParams.id}`),
         api.get('/users'),
+        getSharedAcademicClasses(),
       ]);
+
+      setAcademicClasses(classList);
 
       if (usersRes.data?.success) {
         const staff = usersRes.data.data.filter(
@@ -117,6 +104,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
         setForm({
           title: c.title || '',
+          thumbnailUrl: c.thumbnailUrl || '',
           description: c.description || '',
           gradeLevel: c.gradeLevel || 'Class 10',
           subject: c.subject || 'Physics',
@@ -273,41 +261,39 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
               />
             </div>
 
-            {/* Academic Level & Subject */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Academic Grade / Class *
-                </label>
-                <select
-                  value={form.gradeLevel}
-                  onChange={(e) => setForm({ ...form, gradeLevel: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
-                >
-                  {gradeOptions.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* Course Header Picture / Thumbnail URL */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Course Header Picture Link (Thumbnail URL)
+              </label>
+              <input
+                type="url"
+                value={form.thumbnailUrl}
+                onChange={(e) => setForm({ ...form, thumbnailUrl: e.target.value })}
+                placeholder="https://images.unsplash.com/... or https://i.imgur.com/..."
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                Displays as the course banner image in the &ldquo;জনপ্রিয় কোর্স ও ব্যাচসমূহ&rdquo; grid and course catalog.
+              </p>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Subject *
-                </label>
-                <select
-                  value={form.subject}
-                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
-                >
-                  {subjectOptions.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* Academic Level */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Academic Grade / Class *
+              </label>
+              <select
+                value={form.gradeLevel}
+                onChange={(e) => setForm({ ...form, gradeLevel: e.target.value })}
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                {gradeOptions.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Description */}
@@ -337,34 +323,18 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
               />
             </div>
 
-            {/* Fee & Duration */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Course Fee (৳ BDT)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="50"
-                  value={form.courseFee}
-                  onChange={(e) => setForm({ ...form, courseFee: Number(e.target.value) })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Course Duration Scope
-                </label>
-                <input
-                  type="text"
-                  value={form.duration}
-                  onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                  placeholder="e.g. 1 Year, 6 Months"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
-                />
-              </div>
+            {/* Duration Scope */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Course Duration Scope
+              </label>
+              <input
+                type="text"
+                value={form.duration}
+                onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                placeholder="e.g. 1 Year, 6 Months"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
+              />
             </div>
 
             {/* FACULTY TEACHERS PICKER */}

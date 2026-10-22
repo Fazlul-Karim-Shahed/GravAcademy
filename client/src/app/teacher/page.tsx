@@ -25,7 +25,7 @@ interface Batch {
   courseId: {
     title: string;
     gradeLevel: string;
-    subject: string;
+    subject?: string;
   };
   scheduleText?: string;
   capacity?: number;

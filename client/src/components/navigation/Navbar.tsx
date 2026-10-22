@@ -67,9 +67,6 @@ export const Navbar: React.FC = () => {
           <Link href="/live-classes" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
             লাইভ ক্লাস
           </Link>
-          <Link href="/exams/take" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            অনলাইন পরীক্ষা
-          </Link>
           {user && (
             <Link href={getDashboardLink()} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               ড্যাশবোর্ড

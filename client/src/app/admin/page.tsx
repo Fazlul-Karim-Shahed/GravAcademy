@@ -81,6 +81,12 @@ export default function AdminDashboardPage() {
 
           <div className="flex items-center gap-2.5">
             <Link
+              href="/admin/classes"
+              className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
+            >
+              <FolderOpen className="w-3.5 h-3.5" /> Classes
+            </Link>
+            <Link
               href="/admin/courses"
               className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
             >

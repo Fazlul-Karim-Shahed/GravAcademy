@@ -119,7 +119,7 @@ export default function StudentDashboard() {
               {loading ? '...' : `${batches.length} টি সক্রিয়`}
             </div>
             <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 block">
-              {primaryBatch ? `${primaryBatch.courseId?.gradeLevel || ''} ${primaryBatch.courseId?.subject || ''}` : 'কোনো সক্রিয় ব্যাচ নেই'}
+              {primaryBatch ? `${primaryBatch.courseId?.gradeLevel || ''}` : 'কোনো সক্রিয় ব্যাচ নেই'}
             </span>
           </div>
 

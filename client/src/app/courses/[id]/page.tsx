@@ -30,6 +30,7 @@ interface Batch {
   capacity?: number;
   scheduleText?: string;
   status: string;
+  fee?: number;
   startDate?: string;
 }
 
@@ -46,6 +47,7 @@ interface CourseDetail {
   title: string;
   slug: string;
   description: string;
+  thumbnailUrl?: string;
   gradeLevel: string;
   subject: string;
   courseFee: number;
@@ -146,12 +148,25 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. PROFESSIONAL EDITORIAL HERO WITH RICH GRADIENT TEXTURE */}
+      {/* 1. PROFESSIONAL EDITORIAL HERO WITH RICH GRADIENT TEXTURE OR PICTURE BANNER */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 text-white pt-8 pb-12 sm:pb-14 border-b border-slate-800 shadow-lg">
-        {/* Subtle Geometric Background Lighting & Grid Texture */}
-        <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
+        {course.thumbnailUrl ? (
+          <>
+            <img
+              src={course.thumbnailUrl}
+              alt={course.title}
+              className="absolute inset-0 w-full h-full object-cover opacity-20 blur-[1px]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/90 to-slate-950/98" />
+          </>
+        ) : (
+          <>
+            {/* Subtle Geometric Background Lighting & Grid Texture */}
+            <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
+            <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
+          </>
+        )}
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -167,7 +182,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
               <span className="text-slate-600">/</span>
               <span className="text-slate-200 font-bold">{course.gradeLevel}</span>
               <span className="text-slate-600">/</span>
-              <span className="text-blue-400 font-bold">{course.subject}</span>
+              <span className="text-blue-400 font-bold">{course.title}</span>
             </div>
 
             {isAdmin && (
@@ -186,7 +201,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
               <span className="text-xs font-bold uppercase tracking-wider text-blue-300">
-                {course.gradeLevel} • {course.subject} স্পেশাল প্রোগ্রাম
+                {course.gradeLevel} • স্পেশাল একাডেমিক প্রোগ্রাম
               </span>
             </div>
 
@@ -395,32 +410,25 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             {/* Premium Enrollment & Batches Card */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
               
-              {/* Top Pricing Card Banner */}
+              {/* Top Card Banner: Batch Admission Focus */}
               <div className="p-7 sm:p-8 bg-gradient-to-b from-blue-50/60 to-white dark:from-slate-800/50 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    কোর্স ফি ও ভর্তি
+                    ব্যাচ নির্বাচন ও ভর্তি
                   </span>
-                  {regularPrice && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[11px] font-black shadow-xs tracking-wide">
-                      ২৬% মেগা ছাড়
-                    </span>
-                  )}
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black border border-emerald-500/20 tracking-wide">
+                    {course.gradeLevel}
+                  </span>
                 </div>
 
-                <div className="flex items-baseline gap-3 mt-1">
-                  <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                    {course.courseFee ? `৳ ${course.courseFee.toLocaleString()}` : 'ফ্রি'}
-                  </span>
-                  {regularPrice && (
-                    <span className="text-base text-slate-400 line-through font-semibold">
-                      ৳ {regularPrice.toLocaleString()}
-                    </span>
-                  )}
+                <div className="mt-1">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    নিচের ব্যাচ নির্বাচন করুন
+                  </h3>
                 </div>
 
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2.5 font-medium leading-relaxed">
-                  একবার ফি পরিশোধে পুরো কোর্সের সকল লাইভ ক্লাস, রেকর্ডেড ব্যাকআপ ও লেকচার শিট আজীবন উন্মুক্ত থাকবে।
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium leading-relaxed">
+                  আপনার সুবিধাজনক ব্যাচ ও ক্লাসের শিডিউল নির্বাচন করে সরাসরি ক্লাসে যুক্ত হতে পারেন।
                 </p>
               </div>
 
@@ -462,11 +470,19 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                         </div>
 
                         {batch.scheduleText && (
-                          <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-4 bg-white dark:bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-800/80">
+                          <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-3 bg-white dark:bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-800/80">
                             <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                             <span className="font-semibold text-[11px]">{batch.scheduleText}</span>
                           </div>
                         )}
+
+                        {/* Batch Fee Display */}
+                        <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 mb-4">
+                          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">ব্যাচ ভর্তি ফি</span>
+                          <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                            {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি'}
+                          </span>
+                        </div>
 
                         <Link
                           href={`/learn/${batch._id}`}

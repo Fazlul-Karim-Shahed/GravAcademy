@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -16,14 +17,19 @@ import {
   AlertCircle,
   Search,
   Filter,
-  X
+  X,
+  ExternalLink,
+  Clock,
+  Sparkles,
 } from 'lucide-react';
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 
 interface Course {
   _id: string;
   title: string;
   slug: string;
   description: string;
+  thumbnailUrl?: string;
   gradeLevel: string;
   subject: string;
   courseFee: number;
@@ -32,12 +38,30 @@ interface Course {
   createdAt: string;
 }
 
+interface BatchInfo {
+  _id: string;
+  name: string;
+  courseId: string | { _id: string };
+  status: string;
+}
+
 export default function AdminCoursesPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const gradeQuery = searchParams.get('grade') || 'all';
+
   const [courses, setCourses] = useState<Course[]>([]);
+  const [batches, setBatches] = useState<BatchInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedGrade, setSelectedGrade] = useState(gradeQuery);
+
+  // Sync selectedGrade if URL query parameter changes
+  useEffect(() => {
+    if (gradeQuery) {
+      setSelectedGrade(gradeQuery);
+    }
+  }, [gradeQuery]);
 
   // Modal State for Create & Edit
   const [showModal, setShowModal] = useState(false);
@@ -47,6 +71,7 @@ export default function AdminCoursesPage() {
 
   const [form, setForm] = useState({
     title: '',
+    thumbnailUrl: '',
     description: '',
     gradeLevel: 'Class 6',
     subject: 'Bangla',
@@ -55,23 +80,40 @@ export default function AdminCoursesPage() {
     isPublished: true,
   });
 
-  const gradeOptions = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
-  const subjectOptions = ['Bangla', 'English', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'ICT', 'Higher Math', 'General Science'];
+  const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
+
+  const gradeOptions = academicClasses.map((ac) => ac.name);
 
   useEffect(() => {
-    fetchCourses();
+    fetchAcademicClasses();
+  }, []);
+
+  const fetchAcademicClasses = async () => {
+    const list = await getSharedAcademicClasses();
+    setAcademicClasses(list);
+  };
+
+  useEffect(() => {
+    fetchCoursesAndBatches();
   }, [selectedGrade]);
 
-  const fetchCourses = async () => {
+  const fetchCoursesAndBatches = async () => {
     setLoading(true);
     try {
       const params: any = {};
       if (selectedGrade !== 'all') params.gradeLevel = selectedGrade;
       if (search) params.search = search;
 
-      const res = await api.get('/courses', { params });
-      if (res.data?.success) {
-        setCourses(res.data.data);
+      const [courseRes, batchRes] = await Promise.allSettled([
+        api.get('/courses', { params }),
+        api.get('/batches'),
+      ]);
+
+      if (courseRes.status === 'fulfilled' && courseRes.value.data?.success) {
+        setCourses(courseRes.value.data.data);
+      }
+      if (batchRes.status === 'fulfilled' && batchRes.value.data?.success) {
+        setBatches(batchRes.value.data.data);
       }
     } catch (err: any) {
       console.error('Fetch courses error:', err);
@@ -80,10 +122,13 @@ export default function AdminCoursesPage() {
     }
   };
 
+  const fetchCourses = fetchCoursesAndBatches;
+
   const handleOpenCreate = () => {
     setEditingCourse(null);
     setForm({
       title: '',
+      thumbnailUrl: '',
       description: '',
       gradeLevel: 'Class 6',
       subject: 'Bangla',
@@ -98,6 +143,7 @@ export default function AdminCoursesPage() {
     setEditingCourse(course);
     setForm({
       title: course.title,
+      thumbnailUrl: course.thumbnailUrl || '',
       description: course.description || '',
       gradeLevel: course.gradeLevel,
       subject: course.subject,
@@ -169,12 +215,20 @@ export default function AdminCoursesPage() {
             </p>
           </div>
 
-          <Link
-            href="/admin/courses/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
-          >
-            <PlusCircle className="w-4 h-4" /> Add New Course
-          </Link>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Link
+              href="/admin/classes"
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-800 shadow-2xs transition-colors"
+            >
+              <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" /> Manage Classes
+            </Link>
+            <Link
+              href="/admin/courses/new"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
+            >
+              <PlusCircle className="w-4 h-4" /> Add New Course
+            </Link>
+          </div>
         </div>
 
         {message && (
@@ -229,6 +283,19 @@ export default function AdminCoursesPage() {
             >
               Filter
             </button>
+            {selectedGrade !== 'all' && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold">
+                <span>Class: {selectedGrade}</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedGrade('all')}
+                  className="p-0.5 hover:text-rose-500 rounded"
+                  title="ফিল্টার ক্লিয়ার করুন"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
           <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
@@ -258,82 +325,189 @@ export default function AdminCoursesPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <div
-                key={course._id}
-                className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 flex flex-col justify-between transition-all"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/40 border border-blue-200/60 dark:border-blue-700/50 text-blue-700 dark:text-blue-300 text-xs font-bold">
-                      {course.gradeLevel}
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${
-                        course.isPublished
-                          ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60'
-                          : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60'
-                      }`}
-                    >
-                      {course.isPublished ? 'Published' : 'Draft'}
-                    </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {courses.map((course, idx) => {
+              // Curated glowing gradients with refined hues
+              const cardThemes = [
+                {
+                  gradient: 'from-blue-600 via-indigo-600 to-violet-800',
+                  accent: 'blue',
+                  tagBg: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/20',
+                  glow: 'group-hover:shadow-blue-500/10',
+                },
+                {
+                  gradient: 'from-violet-600 via-purple-600 to-fuchsia-700',
+                  accent: 'purple',
+                  tagBg: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/20',
+                  glow: 'group-hover:shadow-purple-500/10',
+                },
+                {
+                  gradient: 'from-emerald-600 via-teal-600 to-cyan-800',
+                  accent: 'emerald',
+                  tagBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                  glow: 'group-hover:shadow-emerald-500/10',
+                },
+                {
+                  gradient: 'from-amber-500 via-orange-600 to-rose-600',
+                  accent: 'amber',
+                  tagBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/20',
+                  glow: 'group-hover:shadow-amber-500/10',
+                },
+                {
+                  gradient: 'from-cyan-600 via-sky-600 to-indigo-700',
+                  accent: 'sky',
+                  tagBg: 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/20',
+                  glow: 'group-hover:shadow-sky-500/10',
+                },
+              ];
+              const theme = cardThemes[idx % cardThemes.length];
+
+              return (
+                <div
+                  key={course._id}
+                  className={`group relative bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs hover:shadow-2xl ${theme.glow} hover:-translate-y-1 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between overflow-hidden backdrop-blur-xs`}
+                >
+                  {/* Subtle Top Accent Ambient Line */}
+                  <div className={`h-1 w-full bg-gradient-to-r ${theme.gradient} opacity-90`} />
+
+                  <div className="flex flex-col flex-1">
+                    {/* Thumbnail & Badges Container */}
+                    <div className="relative w-full aspect-[16/9.5] bg-slate-900 overflow-hidden">
+                      {course.thumbnailUrl ? (
+                        <>
+                          <img
+                            src={course.thumbnailUrl}
+                            alt={course.title}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30 pointer-events-none" />
+                        </>
+                      ) : (
+                        <div className={`w-full h-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center relative p-6 overflow-hidden`}>
+                          {/* Geometric Ambient Circles */}
+                          <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
+                          <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-black/20 blur-lg pointer-events-none" />
+                          
+                          <div className="relative text-center text-white z-10">
+                            <div className="w-13 h-13 mx-auto mb-2.5 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                              <BookOpen className="w-6 h-6 text-white drop-shadow-md" />
+                            </div>
+                            <span className="text-[11px] font-black tracking-widest uppercase opacity-90">
+                              {course.gradeLevel}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Floating Header Badges */}
+                      <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 pointer-events-none">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-950/75 backdrop-blur-md text-white text-[11px] font-black tracking-wide border border-white/15 shadow-md">
+                          <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
+                          {course.gradeLevel}
+                        </span>
+
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-xl shadow-md backdrop-blur-md border ${
+                            course.isPublished
+                              ? 'bg-emerald-500/90 text-white border-emerald-400/40 shadow-emerald-500/20'
+                              : 'bg-amber-500/90 text-white border-amber-400/40 shadow-amber-500/20'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${course.isPublished ? 'bg-white animate-pulse' : 'bg-white/80'}`} />
+                          {course.isPublished ? 'Published' : 'Draft'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Content Body */}
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="flex-1">
+                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
+                          {course.title}
+                        </h3>
+
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                          {course.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট, লেকচার ও প্র্যাকটিস সমৃদ্ধ স্পেশাল কোর্স।'}
+                        </p>
+                      </div>
+
+                      {/* Meta Information Cards */}
+                      {(() => {
+                        const courseBatches = batches.filter((b) => {
+                          const cId = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId._id : b.courseId;
+                          return String(cId) === String(course._id);
+                        });
+                        const batchCount = courseBatches.length;
+
+                        return (
+                          <div className="grid grid-cols-2 gap-2.5 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80 mb-1">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-xl bg-blue-500/10 dark:bg-blue-400/10 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                <Clock className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">মেয়াদকাল</span>
+                                <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate block">
+                                  {course.duration || '১ বছর'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <Link
+                              href="/admin/batches"
+                              className="group/batch flex items-center justify-between p-1 -m-1 rounded-xl hover:bg-white dark:hover:bg-slate-900/80 transition-colors"
+                              title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-8 h-8 rounded-xl bg-purple-500/10 dark:bg-purple-400/10 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0 group-hover/batch:bg-purple-500 group-hover/batch:text-white transition-colors">
+                                  <Layers className="w-4 h-4" />
+                                </div>
+                                <div className="min-w-0">
+                                  <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">মোট ব্যাচ</span>
+                                  <span className="text-xs font-black text-purple-600 dark:text-purple-400 truncate block">
+                                    {batchCount} টি ব্যাচ
+                                  </span>
+                                </div>
+                              </div>
+                              <ArrowRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 group-hover/batch:text-purple-500 group-hover/batch:translate-x-0.5 transition-all shrink-0 ml-1" />
+                            </Link>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">{course.title}</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
-                    {course.description || 'Comprehensive curriculum with video lectures, lecture notes, and tests.'}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400 mb-4 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">Subject</span>
-                      <span className="text-slate-800 dark:text-slate-200 font-bold">{course.subject}</span>
-                    </div>
-                    <div className="h-6 w-px bg-slate-200 dark:border-slate-800" />
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">Fee</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">
-                        {course.courseFee === 0 ? 'Free' : `৳ ${course.courseFee.toLocaleString()}`}
-                      </span>
-                    </div>
-                    <div className="h-6 w-px bg-slate-200 dark:border-slate-800" />
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase font-semibold">Duration</span>
-                      <span className="text-slate-800 dark:text-slate-200 font-medium">{course.duration || 'Flexible'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                  <Link
-                    href={`/courses/${course.slug || course._id}`}
-                    className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200/80 dark:border-blue-700/40 flex items-center gap-1.5 transition-colors"
-                  >
-                    <Layers className="w-3.5 h-3.5" />
-                    <span>Batches</span>
-                  </Link>
-
-                  <div className="flex items-center gap-1.5">
+                  {/* Card Action Footer */}
+                  <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
                     <Link
-                      href={`/admin/courses/${course._id}/edit`}
-                      className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
-                      title="Edit Course Details"
+                      href={`/courses/${course.slug || course._id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/90 dark:border-slate-700/80 transition-all shadow-2xs hover:shadow-xs group/btn"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>ভিউ পেজ</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-blue-500 transition-colors" />
                     </Link>
-                    <button
-                      onClick={() => handleDelete(course._id, course.title)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors"
-                      title="Delete Course"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={`/admin/courses/${course._id}/edit`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors"
+                        title="Edit Course Details"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>এডিট</span>
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(course._id, course.title)}
+                        className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                        title="Delete Course"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -369,40 +543,34 @@ export default function AdminCoursesPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Grade / Class Level
-                    </label>
-                    <select
-                      value={form.gradeLevel}
-                      onChange={(e) => setForm({ ...form, gradeLevel: e.target.value })}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                    >
-                      {gradeOptions.map((g) => (
-                        <option key={g} value={g}>
-                          {g}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Course Header Picture Link (Thumbnail URL)
+                  </label>
+                  <input
+                    type="url"
+                    value={form.thumbnailUrl}
+                    onChange={(e) => setForm({ ...form, thumbnailUrl: e.target.value })}
+                    placeholder="https://images.unsplash.com/... or picture link"
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Subject
-                    </label>
-                    <select
-                      value={form.subject}
-                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                    >
-                      {subjectOptions.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Grade / Class Level *
+                  </label>
+                  <select
+                    value={form.gradeLevel}
+                    onChange={(e) => setForm({ ...form, gradeLevel: e.target.value })}
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
+                  >
+                    {gradeOptions.map((g) => (
+                      <option key={g} value={g}>
+                        {g}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -418,32 +586,17 @@ export default function AdminCoursesPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Course Fee (BDT ৳)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={form.courseFee}
-                      onChange={(e) => setForm({ ...form, courseFee: Number(e.target.value) })}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Duration
-                    </label>
-                    <input
-                      type="text"
-                      value={form.duration}
-                      onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                      placeholder="e.g. 6 Months, 1 Year"
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Duration Scope
+                  </label>
+                  <input
+                    type="text"
+                    value={form.duration}
+                    onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                    placeholder="e.g. 6 Months, 1 Year"
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
+                  />
                 </div>
 
                 <div className="flex items-center gap-2 pt-2">

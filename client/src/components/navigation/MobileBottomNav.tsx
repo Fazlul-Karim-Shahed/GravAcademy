@@ -54,12 +54,6 @@ export const MobileBottomNav: React.FC = () => {
       isActive: pathname.startsWith('/live-classes'),
     },
     {
-      label: 'পরীক্ষা',
-      href: '/exams/take',
-      icon: FileCheck2,
-      isActive: pathname.startsWith('/exams'),
-    },
-    {
       label: user ? 'ড্যাশবোর্ড' : 'একাউন্ট',
       href: getDashboardLink(),
       icon: user ? LayoutDashboard : User,

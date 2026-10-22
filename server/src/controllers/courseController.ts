@@ -9,7 +9,7 @@ export const createCourseSchema = z.object({
   title: z.string().min(3).max(150),
   description: z.string().optional(),
   gradeLevel: z.string().min(1, 'Grade/Class level is required (e.g. Class 6, Class 10)'),
-  subject: z.string().min(1, 'Subject is required (e.g. Bangla, Physics)'),
+  subject: z.string().optional().default(''),
   thumbnailUrl: z.string().url().optional().or(z.literal('')),
   courseFee: z.number().min(0).default(0),
   duration: z.string().optional(),

@@ -12,21 +12,38 @@ import {
   AlertCircle,
   Copy,
   Info,
+  GraduationCap,
+  BookOpen,
 } from 'lucide-react';
+
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+
+interface CourseItem {
+  _id: string;
+  title: string;
+  gradeLevel?: string;
+  subject?: string;
+}
 
 export default function CreateBatchPage() {
   const router = useRouter();
-  const [courses, setCourses] = useState<{ _id: string; title: string }[]>([]);
+  const [courses, setCourses] = useState<CourseItem[]>([]);
+  const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
   const [existingBatches, setExistingBatches] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Hierarchical Filter State
+  const [selectedClass, setSelectedClass] = useState<string>('All');
+  const [selectedSubject, setSelectedSubject] = useState<string>('All');
+
   const [form, setForm] = useState({
     name: '',
     courseId: '',
     status: 'draft',
+    fee: 0,
     scheduleText: '',
     capacity: 40,
     copyFromBatchId: '',
@@ -39,16 +56,19 @@ export default function CreateBatchPage() {
   const fetchPrerequisites = async () => {
     setLoading(true);
     try {
-      const [coursesRes, batchesRes] = await Promise.all([
+      const [coursesRes, batchesRes, classList] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
+        getSharedAcademicClasses(),
       ]);
       if (coursesRes.data?.success) {
-        setCourses(coursesRes.data.data);
-        if (coursesRes.data.data.length > 0) {
-          setForm((prev) => ({ ...prev, courseId: coursesRes.data.data[0]._id }));
+        const loadedCourses: CourseItem[] = coursesRes.data.data;
+        setCourses(loadedCourses);
+        if (loadedCourses.length > 0) {
+          setForm((prev) => ({ ...prev, courseId: loadedCourses[0]._id }));
         }
       }
+      setAcademicClasses(classList);
       if (batchesRes.data?.success) {
         setExistingBatches(batchesRes.data.data);
       }
@@ -58,6 +78,30 @@ export default function CreateBatchPage() {
       setLoading(false);
     }
   };
+
+  // Compute available classes from classes list or courses
+  const availableClasses = academicClasses.length > 0
+    ? academicClasses.map((ac) => ac.name)
+    : Array.from(new Set(courses.map((c) => c.gradeLevel).filter(Boolean))) as string[];
+
+  // Filtered courses based strictly on Class
+  const filteredCourses = React.useMemo(() => {
+    return courses.filter((c) => {
+      return selectedClass === 'All' || (c.gradeLevel || '').toLowerCase() === selectedClass.toLowerCase();
+    });
+  }, [courses, selectedClass]);
+
+  // When filtered courses change, ensure form.courseId is valid
+  useEffect(() => {
+    if (filteredCourses.length > 0) {
+      const exists = filteredCourses.some((c) => c._id === form.courseId);
+      if (!exists) {
+        setForm((prev) => ({ ...prev, courseId: filteredCourses[0]._id }));
+      }
+    } else {
+      setForm((prev) => ({ ...prev, courseId: '' }));
+    }
+  }, [filteredCourses]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +114,7 @@ export default function CreateBatchPage() {
         name: form.name,
         courseId: form.courseId,
         status: form.status,
+        fee: Number(form.fee) || 0,
         scheduleText: form.scheduleText,
         capacity: Number(form.capacity),
       };
@@ -157,45 +202,103 @@ export default function CreateBatchPage() {
               />
             </div>
 
-            {/* Parent Course & Status */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Parent Course Subject *
-                </label>
-                <select
-                  required
-                  value={form.courseId}
-                  onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
-                >
-                  <option value="">Select course...</option>
-                  {courses.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.title}
-                    </option>
-                  ))}
-                </select>
+            {/* Academic Hierarchy Selection: Class -> Course */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 space-y-4">
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  ১. শ্রেণি ও কোর্স নির্বাচন (Class &rarr; Course)
+                </span>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Enrollment Status *
-                </label>
-                <select
-                  value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
-                >
-                  <option value="draft">Draft (Private setup)</option>
-                  <option value="active">Active (Open for Admissions)</option>
-                  <option value="completed">Completed (Archived)</option>
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* 1. Class / Grade */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">
+                    শ্রেণি / Class
+                  </label>
+                  <select
+                    value={selectedClass}
+                    onChange={(e) => setSelectedClass(e.target.value)}
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+                  >
+                    <option value="All">All Classes (সব শ্রেণি)</option>
+                    {availableClasses.map((ac) => (
+                      <option key={ac} value={ac}>
+                        {ac}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 2. Course */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">
+                    কোর্স / Target Course *
+                  </label>
+                  <select
+                    required
+                    value={form.courseId}
+                    onChange={(e) => setForm({ ...form, courseId: e.target.value })}
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+                  >
+                    <option value="">কোর্স নির্বাচন করুন ({filteredCourses.length})</option>
+                    {filteredCourses.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.title} {c.gradeLevel ? `(${c.gradeLevel})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
+
+              {filteredCourses.length === 0 && (
+                <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                  নির্বাচিত শ্রেণির অধীনস্থ কোনো কোর্স পাওয়া যায়নি। অনুগ্রহ করে অন্য শ্রেণি নির্বাচন করুন অথবা নতুন কোর্স তৈরি করুন।
+                </p>
+              )}
             </div>
 
-            {/* Schedule & Capacity */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Enrollment Status */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                Enrollment Status *
+              </label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+              >
+                <option value="draft">Draft (Private setup)</option>
+                <option value="active">Active (Open for Admissions)</option>
+                <option value="completed">Completed (Archived)</option>
+              </select>
+            </div>
+
+            {/* Fee, Schedule & Capacity */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                  Batch Fee (৳ BDT) *
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm pointer-events-none">
+                    ৳
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="50"
+                    required
+                    value={form.fee}
+                    onChange={(e) => setForm({ ...form, fee: Number(e.target.value) })}
+                    placeholder="0"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-8 pr-4 py-3 text-sm text-slate-900 dark:text-white font-bold focus:outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+                <span className="text-[10px] text-slate-400 block mt-1">০ হলে ফ্রি ব্যাচ হিসেবে গণ্য হবে</span>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   Weekly Class Schedule Text
@@ -204,7 +307,7 @@ export default function CreateBatchPage() {
                   type="text"
                   value={form.scheduleText}
                   onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
-                  placeholder="e.g. Mon, Wed, Fri 7:00 PM - 8:30 PM"
+                  placeholder="e.g. Mon, Wed, Fri 7:00 PM"
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
                 />
               </div>

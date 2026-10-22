@@ -7,7 +7,7 @@ export interface ICourse extends Document {
   description: string;
   thumbnailUrl?: string;
   gradeLevel: string; // e.g., 'Class 6', 'Class 10', 'HSC'
-  subject: string;    // e.g., 'Bangla', 'Mathematics', 'Physics'
+  subject?: string;
   isPublished: boolean;
   duration?: string;
   courseFee: number;
@@ -51,7 +51,7 @@ const CourseSchema = new Schema<ICourse>(
     },
     subject: {
       type: String,
-      required: [true, 'Subject is required'],
+      default: '',
       trim: true,
       index: true,
     },
