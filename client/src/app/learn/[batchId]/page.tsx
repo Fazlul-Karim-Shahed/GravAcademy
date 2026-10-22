@@ -287,9 +287,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
                   {activeLesson.description ? (
                     <div
-                      className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-normal prose prose-slate dark:prose-invert max-w-none"
+                      className="rendered-lesson-content text-xs sm:text-sm text-slate-700 dark:text-slate-200 text-left"
                       dangerouslySetInnerHTML={{
-                        __html: formatMarkdownContent(activeLesson.description),
+                        __html: activeLesson.description,
                       }}
                     />
                   ) : (

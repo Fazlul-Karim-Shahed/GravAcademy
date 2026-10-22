@@ -1,19 +1,35 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import Link from '@tiptap/extension-link';
+import TextAlign from '@tiptap/extension-text-align';
+import Highlight from '@tiptap/extension-highlight';
+import Placeholder from '@tiptap/extension-placeholder';
 import {
   Bold,
   Italic,
-  Underline,
-  List,
-  ListOrdered,
+  Underline as UnderlineIcon,
+  Strikethrough,
+  Heading1,
   Heading2,
   Heading3,
+  List,
+  ListOrdered,
   Quote,
-  Link as LinkIcon,
   Code,
-  Eye,
-  Edit3,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Link as LinkIcon,
+  Unlink,
+  Highlighter,
+  Undo,
+  Redo,
+  Minus,
 } from 'lucide-react';
 
 interface TextEditorProps {
@@ -26,264 +42,372 @@ interface TextEditorProps {
 export default function TextEditor({
   value,
   onChange,
-  placeholder = 'এখানে লেসনের বিস্তারিত নোট, কনসেপ্ট বা গাইডলাইন লিখুন...',
-  minHeight = '220px',
+  placeholder = 'এখানে ক্লাসের পাঠ্য বিষয়, প্রয়োজনীয় সূত্রাবলী ও নির্দেশনা লিখুন...',
+  minHeight = '240px',
 }: TextEditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [mode, setMode] = useState<'write' | 'preview'>('write');
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-5 my-2 space-y-1',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal pl-5 my-2 space-y-1',
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'leading-normal',
+          },
+        },
+        blockquote: {
+          HTMLAttributes: {
+            class: 'border-l-4 border-blue-500 pl-4 py-1 my-2 italic text-slate-600 dark:text-slate-300 bg-blue-50/40 dark:bg-blue-950/20 rounded-r-xl',
+          },
+        },
+        heading: {
+          levels: [1, 2, 3],
+        },
+        codeBlock: {
+          HTMLAttributes: {
+            class: 'p-3 bg-slate-900 text-slate-100 rounded-xl font-mono text-xs my-2',
+          },
+        },
+      }),
+      Underline,
+      Highlight.configure({
+        multicolor: true,
+      }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-blue-600 dark:text-blue-400 underline font-medium hover:text-blue-800 transition-colors',
+        },
+      }),
+      Placeholder.configure({
+        placeholder,
+      }),
+    ],
+    content: value || '',
+    editorProps: {
+      attributes: {
+        class:
+          'tiptap-content focus:outline-none p-4 text-sm text-slate-900 dark:text-white leading-relaxed max-w-none text-left',
+        style: `min-height: ${minHeight};`,
+      },
+    },
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      onChange(html === '<p></p>' ? '' : html);
+    },
+    immediatelyRender: false,
+  });
 
-  // Helper to wrap selected text with markdown or HTML tag
-  const applyFormat = (prefix: string, suffix: string = prefix, defaultPlaceholder: string = '') => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  // Sync content when external value updates initially or on reset
+  useEffect(() => {
+    if (!editor) return;
+    if (value !== editor.getHTML() && !editor.isFocused) {
+      editor.commands.setContent(value || '', { emitUpdate: false });
+    }
+  }, [value, editor]);
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const currentText = textarea.value;
+  if (!editor) {
+    return (
+      <div
+        style={{ minHeight }}
+        className="w-full border border-slate-300 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-950 p-4 animate-pulse flex items-center justify-center text-xs text-slate-400"
+      >
+        এডিটর লোড হচ্ছে...
+      </div>
+    );
+  }
 
-    const selectedText = currentText.substring(start, end) || defaultPlaceholder;
-    const replacement = `${prefix}${selectedText}${suffix}`;
-
-    const newText =
-      currentText.substring(0, start) + replacement + currentText.substring(end);
-
-    onChange(newText);
-
-    // Reposition cursor inside or after formatted text
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(
-        start + prefix.length,
-        start + prefix.length + selectedText.length
-      );
-    }, 0);
-  };
-
-  const addLinePrefix = (prefix: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const currentText = textarea.value;
-
-    const lineStart = currentText.lastIndexOf('\n', start - 1) + 1;
-    const newText =
-      currentText.substring(0, lineStart) +
-      prefix +
-      ' ' +
-      currentText.substring(lineStart);
-
-    onChange(newText);
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefix.length + 1, end + prefix.length + 1);
-    }, 0);
-  };
-
-  const insertLink = () => {
-    const url = prompt('Enter link URL (e.g. https://...):');
-    if (!url) return;
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const currentText = textarea.value;
-    const selectedText = currentText.substring(start, end) || 'এখানে লিংক টেক্সট লিখুন';
-
-    const markdownLink = `[${selectedText}](${url})`;
-    const newText = currentText.substring(0, start) + markdownLink + currentText.substring(end);
-    onChange(newText);
+  const setLink = () => {
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL লিংক লিখুন:', previousUrl || 'https://');
+    if (url === null) return;
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   };
 
   return (
     <div className="w-full border border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden bg-white dark:bg-slate-950 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all shadow-2xs">
-      {/* Editor Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-1 p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex flex-wrap items-center gap-1">
-          <button
-            type="button"
-            onClick={() => applyFormat('**', '**', 'বোল্ড টেক্সট')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Bold (**text**)"
-          >
-            <Bold className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => applyFormat('*', '*', 'ইটালিক টেক্সট')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Italic (*text*)"
-          >
-            <Italic className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => applyFormat('<u>', '</u>', 'আন্ডারলাইন টেক্সট')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Underline (<u>text</u>)"
-          >
-            <Underline className="w-4 h-4" />
-          </button>
+      {/* Comprehensive Rich Toolbar */}
+      <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        {/* Headings */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          className={`p-1.5 rounded-lg text-xs font-bold transition-colors ${
+            editor.isActive('heading', { level: 1 })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Heading 1"
+        >
+          <Heading1 className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={`p-1.5 rounded-lg text-xs font-bold transition-colors ${
+            editor.isActive('heading', { level: 2 })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Heading 2"
+        >
+          <Heading2 className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={`p-1.5 rounded-lg text-xs font-bold transition-colors ${
+            editor.isActive('heading', { level: 3 })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Heading 3"
+        >
+          <Heading3 className="w-4 h-4" />
+        </button>
 
-          <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
+        <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
 
-          <button
-            type="button"
-            onClick={() => addLinePrefix('##')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Heading 2 (## Title)"
-          >
-            <Heading2 className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => addLinePrefix('###')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Heading 3 (### Title)"
-          >
-            <Heading3 className="w-4 h-4" />
-          </button>
+        {/* Basic Styles */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('bold')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Bold (Ctrl+B)"
+        >
+          <Bold className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('italic')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Italic (Ctrl+I)"
+        >
+          <Italic className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('underline')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Underline (Ctrl+U)"
+        >
+          <UnderlineIcon className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('strike')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Strikethrough"
+        >
+          <Strikethrough className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHighlight({ color: '#fef08a' }).run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('highlight')
+              ? 'bg-amber-400 text-slate-900 shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Highlight Text"
+        >
+          <Highlighter className="w-4 h-4" />
+        </button>
 
-          <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
+        <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
 
-          <button
-            type="button"
-            onClick={() => addLinePrefix('-')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Bullet List (- item)"
-          >
-            <List className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => addLinePrefix('1.')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Numbered List (1. item)"
-          >
-            <ListOrdered className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => addLinePrefix('>')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Quote (> note)"
-          >
-            <Quote className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => applyFormat('`', '`', 'code')}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Code (`code`)"
-          >
-            <Code className="w-4 h-4" />
-          </button>
+        {/* Alignment */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive({ textAlign: 'left' })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Align Left"
+        >
+          <AlignLeft className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive({ textAlign: 'center' })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Align Center"
+        >
+          <AlignCenter className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive({ textAlign: 'right' })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Align Right"
+        >
+          <AlignRight className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive({ textAlign: 'justify' })
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Justify"
+        >
+          <AlignJustify className="w-4 h-4" />
+        </button>
 
-          <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
+        <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
 
-          <button
-            type="button"
-            onClick={insertLink}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-            title="Insert Link [Text](url)"
-          >
-            <LinkIcon className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Lists & Block Elements */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('bulletList')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Bullet List (বুলেন্ট পয়েন্ট)"
+        >
+          <List className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('orderedList')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Numbered List (নম্বর লিস্ট)"
+        >
+          <ListOrdered className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('blockquote')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Quote / Note Box"
+        >
+          <Quote className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('codeBlock')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Code Block"
+        >
+          <Code className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+          title="Divider Line (বিভাজক রেখা)"
+        >
+          <Minus className="w-4 h-4" />
+        </button>
 
-        {/* Write / Preview Tab Switcher */}
-        <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-xl">
+        <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
+
+        {/* Link Tools */}
+        <button
+          type="button"
+          onClick={setLink}
+          className={`p-1.5 rounded-lg transition-colors ${
+            editor.isActive('link')
+              ? 'bg-blue-600 text-white shadow-2xs'
+              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
+          }`}
+          title="Insert Link"
+        >
+          <LinkIcon className="w-4 h-4" />
+        </button>
+        {editor.isActive('link') && (
           <button
             type="button"
-            onClick={() => setMode('write')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-              mode === 'write'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
+            onClick={() => editor.chain().focus().unsetLink().run()}
+            className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+            title="Remove Link"
           >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>লিখুন (Write)</span>
+            <Unlink className="w-4 h-4" />
           </button>
-          <button
-            type="button"
-            onClick={() => setMode('preview')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-              mode === 'preview'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>প্রিভিউ (Preview)</span>
-          </button>
-        </div>
+        )}
+
+        <span className="w-px h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
+
+        {/* History */}
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().undo().run()}
+          disabled={!editor.can().undo()}
+          className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors"
+          title="Undo (Ctrl+Z)"
+        >
+          <Undo className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().redo().run()}
+          disabled={!editor.can().redo()}
+          className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors"
+          title="Redo (Ctrl+Y)"
+        >
+          <Redo className="w-4 h-4" />
+        </button>
       </div>
 
-      {/* Editor Content Area */}
-      {mode === 'write' ? (
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          style={{ minHeight }}
-          dir="ltr"
-          className="w-full p-4 text-sm text-slate-900 dark:text-white bg-transparent outline-none resize-y placeholder:text-slate-400 font-normal leading-relaxed text-left focus:outline-none"
-        />
-      ) : (
-        <div
-          style={{ minHeight }}
-          className="p-4 text-sm text-slate-800 dark:text-slate-200 overflow-y-auto whitespace-pre-wrap leading-relaxed"
-        >
-          {value ? (
-            <div
-              className="prose prose-slate dark:prose-invert max-w-none text-left"
-              dangerouslySetInnerHTML={{
-                __html: formatMarkdownPreview(value),
-              }}
-            />
-          ) : (
-            <p className="text-slate-400 italic">প্রিভিউ দেখার জন্য কিছু টেক্সট লিখুন...</p>
-          )}
-        </div>
-      )}
+      {/* TipTap WYSIWYG Content Area */}
+      <EditorContent editor={editor} />
     </div>
   );
-}
-
-// Simple and safe markdown to html preview converter
-function formatMarkdownPreview(text: string): string {
-  let html = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  // Headings
-  html = html.replace(/^### (.*$)/gim, '<h3 class="text-base font-bold my-2 text-blue-600 dark:text-blue-400">$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2 class="text-lg font-bold my-2 text-slate-900 dark:text-white">$1</h2>');
-
-  // Bold & Italic
-  html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-  html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-
-  // Underline
-  html = html.replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/gim, '<u>$1</u>');
-
-  // Quotes
-  html = html.replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-3 my-2 text-slate-600 dark:text-slate-300 italic">$1</blockquote>');
-
-  // Links
-  html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" class="text-blue-600 underline font-medium">$1</a>');
-
-  // Lists
-  html = html.replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>');
-  html = html.replace(/^([0-9]+)\. (.*$)/gim, '<li class="ml-4 list-decimal">$2</li>');
-
-  // Code
-  html = html.replace(/`([^`]+)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-xs text-rose-500 font-mono">$1</code>');
-
-  return html.replace(/\n/g, '<br />');
 }
