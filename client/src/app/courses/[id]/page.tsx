@@ -149,7 +149,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-      
+
       {/* 1. PROFESSIONAL EDITORIAL HERO WITH RICH GRADIENT TEXTURE OR PICTURE BANNER */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 text-white pt-8 pb-12 sm:pb-14 border-b border-slate-800 shadow-lg">
         {course.thumbnailUrl ? (
@@ -171,7 +171,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
         )}
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Breadcrumb Navigation */}
           <div className="flex items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
@@ -244,10 +244,10 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       {/* 2. MAIN 2-COLUMN SECTION: Content on Left, Sticky Enrollment Card on Right */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
+
           {/* LEFT COLUMN: Curriculum, Teachers & Highlights (7 Cols) */}
           <div className="lg:col-span-7 space-y-8">
-            
+
             {/* Target Audience */}
             {course.targetAudience && (
               <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
@@ -408,10 +408,10 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
           {/* RIGHT COLUMN: Modern Enrollment & Batch Selection Card (5 Cols Sticky) */}
           <div className="lg:col-span-5 sticky top-20 space-y-6">
-            
+
             {/* Premium Enrollment & Batches Card */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
-              
+
               {/* Top Card Banner: Batch Admission Focus */}
               <div className="p-7 sm:p-8 bg-gradient-to-b from-blue-50/60 to-white dark:from-slate-800/50 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between mb-2">
@@ -550,3 +550,5 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
     </div>
   );
 }
+
+// hii
