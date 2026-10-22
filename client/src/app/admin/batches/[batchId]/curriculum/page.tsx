@@ -30,6 +30,7 @@ import {
   Loader2,
   Download
 } from 'lucide-react';
+import TextEditor from '@/components/ui/TextEditor';
 
 interface Resource {
   _id?: string;
@@ -1089,9 +1090,9 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 3: ADD LESSON
            ======================================================== */}
         {lessonModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+            <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
+              <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                     <Video className="w-4 h-4" />
@@ -1146,38 +1147,34 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Lesson Notes / Instructions (Optional)
+                    লেসন নোট ও নির্দেশনাসমূহ (Lesson Notes / Instructions)
                   </label>
-                  <textarea
-                    rows={2}
+                  <TextEditor
                     value={lessonForm.description}
-                    onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-                    placeholder="Key concepts, homework references or guidance for students..."
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(val) => setLessonForm({ ...lessonForm, description: val })}
+                    placeholder="এখানে লেসনের বিস্তারিত নোট, কনসেপ্ট বা গাইডলাইন লিখুন..."
+                    minHeight="140px"
                   />
                 </div>
 
-                {/* Google Drive Lecture Material Upload Section */}
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                {/* Lecture Material Upload Section */}
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                      লেকচার ম্যাটেরিয়াল ও স্টাডি ফাইল (PDF / Sheet / ইমেজ)
+                      সংযুক্ত লেকচার শিট ও ফাইল (PDF / Sheet / Image)
                     </label>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> সরাসরি গুগল ড্রাইভে সংরক্ষিত হবে
-                    </span>
                   </div>
 
                   {/* Upload input button */}
-                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {uploadingFile ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                      ) : (
-                        <Upload className="w-4 h-4 text-blue-600" />
-                      )}
-                      <span>{uploadingFile ? 'গুগল ড্রাইভে আপলোড হচ্ছে...' : 'ফাইল আপলোড করুন (PDF, DOCX, JPG/PNG)'}</span>
-                    </div>
+                  <label className="flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+                    {uploadingFile ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-blue-600" />
+                    )}
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {uploadingFile ? 'আপলোড হচ্ছে...' : 'ফাইল যুক্ত করুন (PDF, DOCX, JPG/PNG)'}
+                    </span>
                     <p className="text-[10px] text-slate-400 mt-0.5">সর্বোচ্চ ২৫ মেগাবাইট পর্যন্ত ফাইল সমর্থন করে</p>
                     <input
                       type="file"
@@ -1263,86 +1260,78 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 3B: EDIT LESSON
            ======================================================== */}
         {editLessonModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+            <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
+              <div className="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                     <Edit2 className="w-4 h-4" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Edit Lesson & Materials</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">লেসন সম্পাদনা (Edit Lesson)</h3>
                 </div>
                 <button
                   onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] })}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleUpdateLesson} className="space-y-4">
+              <form onSubmit={handleUpdateLesson} className="space-y-5">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Lesson Title *
+                    লেসন শিরোনাম *
                   </label>
                   <input
                     type="text"
                     required
                     value={editLessonModal.title}
                     onChange={(e) => setEditLessonModal({ ...editLessonModal, title: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    YouTube Video ID or Full Link
+                    YouTube ভিডিও লিংক বা আইডি
                   </label>
                   <input
                     type="text"
                     value={editLessonModal.youtubeVideoId}
                     onChange={(e) => setEditLessonModal({ ...editLessonModal, youtubeVideoId: e.target.value })}
-                    placeholder="e.g. dQw4w9WgXcQ or https://youtu.be/..."
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="dQw4w9WgXcQ অথবা https://youtu.be/..."
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
                   />
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                    Accepts either clean 11-char ID or full YouTube video URL.
-                  </p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Lesson Notes / Instructions
+                    লেসন নোট ও নির্দেশনাসমূহ
                   </label>
-                  <textarea
-                    rows={2}
+                  <TextEditor
                     value={editLessonModal.description}
-                    onChange={(e) => setEditLessonModal({ ...editLessonModal, description: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(val) => setEditLessonModal({ ...editLessonModal, description: val })}
+                    placeholder="এখানে লেসনের বিস্তারিত নোট, কনসেপ্ট বা গাইডলাইন লিখুন..."
+                    minHeight="140px"
                   />
                 </div>
 
-                {/* Google Drive Lecture Material Upload Section in Edit Modal */}
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                      লেকচার ম্যাটেরিয়াল ও স্টাডি ফাইল (PDF / Sheet / ইমেজ)
-                    </label>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> সরাসরি গুগল ড্রাইভে সংরক্ষিত হবে
-                    </span>
-                  </div>
+                {/* Materials Section in Edit Modal */}
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
+                    সংযুক্ত লেকচার শিট ও ফাইল (PDF / Sheet / Image)
+                  </label>
 
                   {/* Upload input button */}
-                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {uploadingFile ? (
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                      ) : (
-                        <Upload className="w-4 h-4 text-blue-600" />
-                      )}
-                      <span>{uploadingFile ? 'গুগল ড্রাইভে আপলোড হচ্ছে...' : 'ফাইল আপলোড করুন (PDF, DOCX, JPG/PNG)'}</span>
-                    </div>
+                  <label className="flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+                    {uploadingFile ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                    ) : (
+                      <Upload className="w-4 h-4 text-blue-600" />
+                    )}
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {uploadingFile ? 'আপলোড হচ্ছে...' : 'ফাইল যুক্ত করুন (PDF, DOCX, JPG/PNG)'}
+                    </span>
                     <p className="text-[10px] text-slate-400 mt-0.5">সর্বোচ্চ ২৫ মেগাবাইট পর্যন্ত ফাইল সমর্থন করে</p>
                     <input
                       type="file"
@@ -1409,14 +1398,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] })}
                     className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
-                    Cancel
+                    বাতিল
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || uploadingFile}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-6 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
                   >
-                    {submitting ? 'Saving...' : 'Update Lesson'}
+                    {submitting ? 'সংরক্ষণ হচ্ছে...' : 'আপডেট সম্পন্ন করুন'}
                   </button>
                 </div>
               </form>

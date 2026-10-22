@@ -285,9 +285,16 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                     {activeLesson.title}
                   </h2>
 
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                    {activeLesson.description || 'এই ক্লাসের জন্য কোনো বিশেষ অতিরিক্ত নির্দেশনা দেওয়া হয়নি।'}
-                  </p>
+                  {activeLesson.description ? (
+                    <div
+                      className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-normal prose prose-slate dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{ __html: activeLesson.description }}
+                    />
+                  ) : (
+                    <p className="text-xs sm:text-sm text-slate-400 italic">
+                      এই ক্লাসের জন্য কোনো বিশেষ অতিরিক্ত নির্দেশনা দেওয়া হয়নি।
+                    </p>
+                  )}
 
                   {/* Attached Documents / Google Drive Resources */}
                   <div className="mt-7 pt-6 border-t border-slate-100 dark:border-slate-800/80">
@@ -320,43 +327,26 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                             </div>
 
                             {res.fileAssetId ? (
-                              <div className="flex items-center gap-1.5 w-full">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const driveId = res.fileAssetId?.googleDriveFileId;
-                                    const previewUrl = driveId && !driveId.startsWith('stub_')
-                                      ? `https://drive.google.com/file/d/${driveId}/preview`
-                                      : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/documents/${res.fileAssetId?._id}/stream`;
-                                    const directDriveUrl = driveId && !driveId.startsWith('stub_')
-                                      ? `https://drive.google.com/file/d/${driveId}/view`
-                                      : undefined;
-                                    setDocLoading(true);
-                                    setPreviewDoc({
-                                      open: true,
-                                      title: res.title,
-                                      url: previewUrl,
-                                      directDriveUrl,
-                                      isFullScreen: false,
-                                    });
-                                  }}
-                                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-                                >
-                                  <Eye className="w-3.5 h-3.5" />
-                                  <span>ডকুমেন্ট দেখুন</span>
-                                </button>
-                                {res.fileAssetId.googleDriveFileId && !res.fileAssetId.googleDriveFileId.startsWith('stub_') && (
-                                  <a
-                                    href={`https://drive.google.com/file/d/${res.fileAssetId.googleDriveFileId}/view`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    title="গুগল ড্রাইভে আলাদা ট্যাবে খুলুন"
-                                    className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-                                  >
-                                    <ExternalLink className="w-3.5 h-3.5" />
-                                  </a>
-                                )}
-                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const driveId = res.fileAssetId?.googleDriveFileId;
+                                  const previewUrl = driveId && !driveId.startsWith('stub_')
+                                    ? `https://drive.google.com/file/d/${driveId}/preview`
+                                    : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1'}/documents/${res.fileAssetId?._id}/stream`;
+                                  setDocLoading(true);
+                                  setPreviewDoc({
+                                    open: true,
+                                    title: res.title,
+                                    url: previewUrl,
+                                    isFullScreen: false,
+                                  });
+                                }}
+                                className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>ডকুমেন্ট দেখুন</span>
+                              </button>
                             ) : res.externalUrl ? (
                               <button
                                 type="button"
@@ -540,24 +530,12 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                     {previewDoc.title}
                   </h3>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                    ইন-অ্যাপ প্রিভিউ ও স্টাডি মোড
+                    লেকচার নোট ও স্টাডি ফাইল
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
-                {previewDoc.directDriveUrl && (
-                  <a
-                    href={previewDoc.directDriveUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    title="গুগল ড্রাইভে আলাদা ট্যাবে খুলুন"
-                    className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
-
                 <button
                   type="button"
                   onClick={() =>
