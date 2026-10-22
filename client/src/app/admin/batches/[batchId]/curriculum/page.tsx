@@ -24,12 +24,24 @@ import {
   X,
   BookOpen,
   Edit2,
-  Pencil
+  Pencil,
+  Upload,
+  Paperclip,
+  Loader2,
+  Download
 } from 'lucide-react';
 
 interface Resource {
+  _id?: string;
   title: string;
   type: string;
+  fileAssetId?: {
+    _id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    googleDriveFileId: string;
+  } | string;
   externalUrl?: string;
 }
 
@@ -95,25 +107,74 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
     title: string;
     youtubeVideoId: string;
     description: string;
+    resources: Resource[];
   }>({
     open: false,
     id: '',
     title: '',
     youtubeVideoId: '',
     description: '',
+    resources: [],
   });
 
   // Forms: Add
   const [moduleTitle, setModuleTitle] = useState('');
   const [sectionTitle, setSectionTitle] = useState('');
-  const [lessonForm, setLessonForm] = useState({
+  const [lessonForm, setLessonForm] = useState<{
+    title: string;
+    description: string;
+    youtubeVideoId: string;
+    resources: Resource[];
+  }>({
     title: '',
     description: '',
     youtubeVideoId: '',
+    resources: [],
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // File Upload to Google Drive via backend
+  const handleUploadFile = async (
+    file: File,
+    onSuccess: (resource: Resource) => void
+  ) => {
+    if (!file) return;
+    setUploadingFile(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await api.post('/documents/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      if (res.data?.success && res.data?.data) {
+        const fileAsset = res.data.data;
+        let inferredType = 'pdf';
+        if (file.type.includes('image')) inferredType = 'worksheet';
+        else if (file.type.includes('word') || file.type.includes('officedocument')) inferredType = 'worksheet';
+
+        const newResource: Resource = {
+          title: file.name.replace(/\.[^/.]+$/, ''),
+          type: inferredType,
+          fileAssetId: fileAsset,
+        };
+
+        onSuccess(newResource);
+        setMessage({ type: 'success', text: `"${file.name}" সফলভাবে গুগল ড্রাইভে আপলোড হয়েছে!` });
+      } else {
+        setMessage({ type: 'error', text: res.data?.message || 'Upload failed.' });
+      }
+    } catch (err: any) {
+      console.error(err);
+      setMessage({ type: 'error', text: err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে।' });
+    } finally {
+      setUploadingFile(false);
+    }
+  };
 
   useEffect(() => {
     loadHierarchy();
@@ -257,6 +318,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
     setSubmitting(true);
     try {
       const cleanYtId = cleanYouTubeInput(lessonForm.youtubeVideoId);
+      // Format resources payload (extract fileAssetId if object)
+      const formattedResources = lessonForm.resources.map((r) => ({
+        title: r.title,
+        type: r.type,
+        fileAssetId: typeof r.fileAssetId === 'object' ? r.fileAssetId?._id : r.fileAssetId,
+        externalUrl: r.externalUrl,
+      }));
+
       await api.post('/lessons', {
         batchId: resolvedParams.batchId,
         moduleId: lessonModal.moduleId,
@@ -264,9 +333,10 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
         title: lessonForm.title.trim(),
         description: lessonForm.description.trim(),
         youtubeVideoId: cleanYtId,
+        resources: formattedResources,
       });
       setLessonModal({ open: false, moduleId: '' });
-      setLessonForm({ title: '', description: '', youtubeVideoId: '' });
+      setLessonForm({ title: '', description: '', youtubeVideoId: '', resources: [] });
       setMessage({ type: 'success', text: 'Lesson added successfully!' });
       loadHierarchy();
     } catch (err: any) {
@@ -283,12 +353,20 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
     setSubmitting(true);
     try {
       const cleanYtId = cleanYouTubeInput(editLessonModal.youtubeVideoId);
+      const formattedResources = editLessonModal.resources.map((r) => ({
+        title: r.title,
+        type: r.type,
+        fileAssetId: typeof r.fileAssetId === 'object' ? r.fileAssetId?._id : r.fileAssetId,
+        externalUrl: r.externalUrl,
+      }));
+
       await api.put(`/lessons/${editLessonModal.id}`, {
         title: editLessonModal.title.trim(),
         youtubeVideoId: cleanYtId,
         description: editLessonModal.description.trim(),
+        resources: formattedResources,
       });
-      setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '' });
+      setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] });
       setMessage({ type: 'success', text: 'Lesson updated!' });
       loadHierarchy();
     } catch (err: any) {
@@ -578,6 +656,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                           title: lesson.title,
                                           youtubeVideoId: lesson.youtubeVideoId || '',
                                           description: lesson.description || '',
+                                          resources: lesson.resources || [],
                                         })
                                       }
                                       className="opacity-60 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
@@ -697,6 +776,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                                 title: lesson.title,
                                                 youtubeVideoId: lesson.youtubeVideoId || '',
                                                 description: lesson.description || '',
+                                                resources: lesson.resources || [],
                                               })
                                             }
                                             className="opacity-50 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
@@ -1077,6 +1157,87 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   />
                 </div>
 
+                {/* Google Drive Lecture Material Upload Section */}
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                      লেকচার ম্যাটেরিয়াল ও স্টাডি ফাইল (PDF / Sheet / ইমেজ)
+                    </label>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> সরাসরি গুগল ড্রাইভে সংরক্ষিত হবে
+                    </span>
+                  </div>
+
+                  {/* Upload input button */}
+                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {uploadingFile ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                      ) : (
+                        <Upload className="w-4 h-4 text-blue-600" />
+                      )}
+                      <span>{uploadingFile ? 'গুগল ড্রাইভে আপলোড হচ্ছে...' : 'ফাইল আপলোড করুন (PDF, DOCX, JPG/PNG)'}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-0.5">সর্বোচ্চ ২৫ মেগাবাইট পর্যন্ত ফাইল সমর্থন করে</p>
+                    <input
+                      type="file"
+                      disabled={uploadingFile}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleUploadFile(file, (newRes) => {
+                            setLessonForm((prev) => ({
+                              ...prev,
+                              resources: [...prev.resources, newRes],
+                            }));
+                          });
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </label>
+
+                  {/* List of Attached Resources */}
+                  {lessonForm.resources && lessonForm.resources.length > 0 && (
+                    <div className="mt-3 space-y-1.5">
+                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
+                        সংযুক্ত ম্যাটেরিয়ালসমূহ ({lessonForm.resources.length}):
+                      </span>
+                      {lessonForm.resources.map((res, rIdx) => (
+                        <div
+                          key={rIdx}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 pr-2">
+                            <Paperclip className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                              {res.title}
+                            </span>
+                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-slate-900 px-1.5 py-0.2 rounded">
+                              {res.type}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLessonForm((prev) => ({
+                                ...prev,
+                                resources: prev.resources.filter((_, idx) => idx !== rIdx),
+                              }));
+                            }}
+                            className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors shrink-0"
+                            title="মুছে ফেলুন"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
@@ -1087,7 +1248,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   </button>
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || uploadingFile}
                     className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Save Lesson'}
@@ -1109,10 +1270,10 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                     <Edit2 className="w-4 h-4" />
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Edit Lesson & Video</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Edit Lesson & Materials</h3>
                 </div>
                 <button
-                  onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '' })}
+                  onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] })}
                   className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                   <X className="w-5 h-5" />
@@ -1161,17 +1322,98 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   />
                 </div>
 
+                {/* Google Drive Lecture Material Upload Section in Edit Modal */}
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                      লেকচার ম্যাটেরিয়াল ও স্টাডি ফাইল (PDF / Sheet / ইমেজ)
+                    </label>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> সরাসরি গুগল ড্রাইভে সংরক্ষিত হবে
+                    </span>
+                  </div>
+
+                  {/* Upload input button */}
+                  <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {uploadingFile ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                      ) : (
+                        <Upload className="w-4 h-4 text-blue-600" />
+                      )}
+                      <span>{uploadingFile ? 'গুগল ড্রাইভে আপলোড হচ্ছে...' : 'ফাইল আপলোড করুন (PDF, DOCX, JPG/PNG)'}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-0.5">সর্বোচ্চ ২৫ মেগাবাইট পর্যন্ত ফাইল সমর্থন করে</p>
+                    <input
+                      type="file"
+                      disabled={uploadingFile}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleUploadFile(file, (newRes) => {
+                            setEditLessonModal((prev) => ({
+                              ...prev,
+                              resources: [...prev.resources, newRes],
+                            }));
+                          });
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </label>
+
+                  {/* List of Attached Resources */}
+                  {editLessonModal.resources && editLessonModal.resources.length > 0 && (
+                    <div className="mt-3 space-y-1.5">
+                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
+                        সংযুক্ত ম্যাটেরিয়ালসমূহ ({editLessonModal.resources.length}):
+                      </span>
+                      {editLessonModal.resources.map((res, rIdx) => (
+                        <div
+                          key={rIdx}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 pr-2">
+                            <Paperclip className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
+                              {res.title}
+                            </span>
+                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-slate-900 px-1.5 py-0.2 rounded">
+                              {res.type}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditLessonModal((prev) => ({
+                                ...prev,
+                                resources: prev.resources.filter((_, idx) => idx !== rIdx),
+                              }));
+                            }}
+                            className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors shrink-0"
+                            title="মুছে ফেলুন"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
-                    onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '' })}
+                    onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] })}
                     className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || uploadingFile}
                     className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Update Lesson'}

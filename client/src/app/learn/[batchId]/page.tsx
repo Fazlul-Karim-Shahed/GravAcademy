@@ -163,82 +163,73 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
   const courseLink = `/courses/${data.batch.courseId?.slug || data.batch.courseId?._id}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. TOP HEADER & BREADCRUMB */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 py-4 sm:py-5 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 1. TOP HEADER - Sleek, Minimalist & Focused */}
+      <div className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              {/* Breadcrumbs */}
-              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-1">
-                <Link href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                  কোর্সসমূহ
-                </Link>
-                <span>/</span>
-                <Link href={courseLink} className="hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors">
-                  {data.batch.courseId?.title}
-                </Link>
-                <span>/</span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">{data.batch.name}</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard"
+                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+                title="ড্যাশবোর্ডে ফিরে যান"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
 
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                {activeLesson ? activeLesson.title : data.batch.name}
-              </h1>
+              <div>
+                {/* Breadcrumbs */}
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  <Link href="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    ড্যাশবোর্ড
+                  </Link>
+                  <span>/</span>
+                  <Link href={courseLink} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate max-w-[150px] sm:max-w-xs">
+                    {data.batch.courseId?.title}
+                  </Link>
+                  <span>/</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-bold truncate max-w-[150px]">
+                    {data.batch.name}
+                  </span>
+                </div>
+
+                <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5 line-clamp-1">
+                  {activeLesson ? activeLesson.title : data.batch.name}
+                </h1>
+              </div>
             </div>
 
-            {/* Batch Routine Pill / Day Badges & Direct Google Meet Join */}
-            <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {/* Quick Live Classroom Action Button */}
+            <div className="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
               {data.batch.meetingUrl && (
                 <a
                   href={data.batch.meetingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all shrink-0"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-95 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-all"
+                  title="Google Meet-এ লাইভ ক্লাসরুমে প্রবেশ করুন"
                 >
                   <Video className="w-4 h-4" />
-                  <span>ক্লাসে যোগ দিন (Google Meet)</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>ক্লাসরুমে প্রবেশ (Google Meet)</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
                 </a>
               )}
-
-              {data.batch.weeklySchedule && data.batch.weeklySchedule.length > 0 ? (
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {data.batch.weeklySchedule.map((slot, sIdx) => {
-                    const dInfo = getDayInfo(slot.day);
-                    return (
-                      <span
-                        key={sIdx}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/60 text-xs text-blue-700 dark:text-blue-300 font-bold"
-                      >
-                        <Calendar className="w-3 h-3 text-blue-500" />
-                        <span>{dInfo.shortBn} ({formatTo12Hour(slot.startTime)}{slot.endTime ? ` - ${formatTo12Hour(slot.endTime)}` : ''})</span>
-                      </span>
-                    );
-                  })}
-                </div>
-              ) : data.batch.scheduleText ? (
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 font-semibold">
-                  <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                  <span>{data.batch.scheduleText}</span>
-                </div>
-              ) : null}
             </div>
           </div>
         </div>
       </div>
 
       {/* 2. MAIN 2-COLUMN LEARNING WORKSPACE */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
           {/* LEFT 8 COLS: Video Player & Educational Notes */}
           <div className="lg:col-span-8 space-y-6">
             {activeLesson ? (
               <>
                 {/* Embedded Video Container */}
-                <div className="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800 bg-black aspect-video relative shadow-xl">
+                <div className="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800/90 bg-slate-950 aspect-video relative shadow-lg">
                   {activeLesson.youtubeVideoId ? (
                     <iframe
                       className="w-full h-full"
@@ -248,74 +239,99 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                       allowFullScreen
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 p-6 text-center">
-                      <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-3">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 p-8 text-center bg-radial from-slate-900 to-slate-950">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-900/90 border border-slate-800 text-slate-400 flex items-center justify-center mb-3 shadow-inner">
                         <Video className="w-7 h-7 text-slate-500" />
                       </div>
-                      <p className="text-sm font-semibold text-slate-300">এই ক্লাসের কোনো রেকর্ডেড ভিডিও নেই</p>
-                      <p className="text-xs text-slate-500 mt-1">লাইভ ক্লাসের সময় জুমে অংশ নিন অথবা লেকচার শিট পড়ে প্রস্তুতি নিন।</p>
+                      <p className="text-sm font-bold text-slate-200">এই ক্লাসের কোনো রেকর্ডেড ভিডিও নেই</p>
+                      <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                        লাইভ ক্লাসের সময় সরাসরি ক্লাসরুমে অংশ নিন অথবা নিচের লেকচার শিট পড়ে প্রস্তুতি সম্পন্ন করুন।
+                      </p>
                     </div>
                   )}
                 </div>
 
                 {/* Lesson Notes & Overview */}
-                <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-600" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                      ক্লাস বিবরণী ও নোট
+                <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                      <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                        ক্লাস বিবরণী ও রিসোর্স
+                      </span>
+                    </div>
+
+                    <span className="text-xs font-semibold text-slate-400">
+                      {activeLesson.resources?.length || 0} টি সংযুক্ত ফাইল
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-3">
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">
                     {activeLesson.title}
-                  </h3>
+                  </h2>
 
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                     {activeLesson.description || 'এই ক্লাসের জন্য কোনো বিশেষ অতিরিক্ত নির্দেশনা দেওয়া হয়নি।'}
                   </p>
 
                   {/* Attached Documents / Google Drive Resources */}
-                  <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <div className="mt-7 pt-6 border-t border-slate-100 dark:border-slate-800/80">
+                    <div className="flex items-center gap-2 mb-3.5">
+                      <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         সংযুক্ত লেকচার শিট ও হ্যান্ডনোট
-                      </h4>
+                      </h3>
                     </div>
 
                     {activeLesson.resources && activeLesson.resources.length > 0 ? (
-                      <div className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {activeLesson.resources.map((res, i) => (
                           <div
                             key={i}
-                            className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 hover:border-blue-500/60 dark:hover:border-blue-500/60 transition-colors"
+                            className="group flex flex-col justify-between p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 hover:border-blue-400/80 dark:hover:border-blue-500/80 transition-all shadow-2xs hover:shadow-xs"
                           >
-                            <div className="flex items-center gap-3.5">
-                              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                <FileText className="w-5 h-5" />
+                            <div className="flex items-start gap-3 mb-3">
+                              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center shrink-0">
+                                <FileText className="w-4 h-4" />
                               </div>
-                              <div>
-                                <span className="text-sm font-bold text-slate-900 dark:text-white block">
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1 block">
                                   {res.title}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-slate-400 uppercase font-semibold">
-                                  {res.type} • গুগল ড্রাইভ স্টোরেজ
+                                <span className="text-[10px] text-slate-400 font-semibold uppercase">
+                                  {res.type}
                                 </span>
                               </div>
                             </div>
 
                             {res.fileAssetId ? (
                               <a
-                                href={`http://localhost:5000/api/v1/documents/${res.fileAssetId._id}/stream`}
+                                href={
+                                  res.fileAssetId.googleDriveFileId && !res.fileAssetId.googleDriveFileId.startsWith('stub_')
+                                    ? `https://drive.google.com/file/d/${res.fileAssetId.googleDriveFileId}/view`
+                                    : `http://localhost:5000/api/v1/documents/${res.fileAssetId._id}/stream`
+                                }
                                 target="_blank"
                                 rel="noreferrer"
-                                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center gap-1.5 transition-colors"
+                                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
                               >
-                                <Download className="w-3.5 h-3.5" /> ওপেন / ডাউনলোড
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                <span>গুগল ড্রাইভে দেখুন / ডাউনলোড</span>
+                              </a>
+                            ) : res.externalUrl ? (
+                              <a
+                                href={res.externalUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                <span>লিংক ওপেন করুন</span>
                               </a>
                             ) : (
-                              <span className="text-xs text-slate-400 italic">রেফারেন্স ফাইল</span>
+                              <span className="text-[11px] text-slate-400 italic text-center py-1">
+                                রেফারেন্স ফাইল
+                              </span>
                             )}
                           </div>
                         ))}
@@ -329,46 +345,56 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
             ) : (
               <div className="p-16 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center shadow-xs">
                 <BookOpen className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">ক্লাস শুরু করতে ডানপাশের তালিকা থেকে নির্বাচন করুন</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">ক্লাস শুরু করতে তালিকা থেকে নির্বাচন করুন</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">ডানদিকের সিলেবাস মডিউল থেকে যেকোনো অধ্যায়ের পাঠে ক্লিক করুন।</p>
               </div>
             )}
           </div>
 
-          {/* RIGHT 4 COLS: Curriculum Hierarchy Tree */}
-          <div className="lg:col-span-4 sticky top-6 space-y-4">
-            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+          {/* RIGHT 4 COLS: Modern Playlist Style Curriculum Hierarchy */}
+          <div className="lg:col-span-4 sticky top-20 space-y-4">
+            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+              
+              {/* Card Header */}
+              <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                  <span className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+                    <BookOpen className="w-3.5 h-3.5" />
+                  </span>
+                  <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
                     কোর্স কারিকুলাম
                   </h2>
                 </div>
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                <span className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
                   {data.modules.length} টি অধ্যায়
                 </span>
               </div>
 
+              {/* Module Accordions with Internal Scroll */}
               {data.modules.length === 0 ? (
                 <div className="py-8 text-center">
                   <p className="text-xs text-slate-400 font-semibold">কোনো অধ্যায় পাওয়া যায়নি</p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {data.modules.map((mod) => (
+                <div className="space-y-2.5 max-h-[calc(100vh-210px)] overflow-y-auto pr-1 scrollbar-thin">
+                  {data.modules.map((mod, mIdx) => (
                     <div
                       key={mod._id}
-                      className="rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden bg-slate-50/50 dark:bg-slate-950/40"
+                      className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden bg-slate-50/60 dark:bg-slate-950/40"
                     >
                       {/* Module Title Button */}
                       <button
                         onClick={() => toggleModule(mod._id)}
-                        className="w-full p-3.5 flex items-center justify-between text-left hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors"
+                        className="w-full p-3 flex items-center justify-between text-left hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors"
                       >
-                        <span className="text-xs font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
-                          {mod.title}
-                        </span>
+                        <div className="flex items-center gap-2 min-w-0 pr-2">
+                          <span className="w-5 h-5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-black text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
+                            {mIdx + 1}
+                          </span>
+                          <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                            {mod.title}
+                          </span>
+                        </div>
                         {expandedModules[mod._id] ? (
                           <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
                         ) : (
@@ -378,53 +404,59 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
                       {/* Lessons in Module */}
                       {expandedModules[mod._id] && (
-                        <div className="px-3 pb-3 pt-1 space-y-1.5 border-t border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900">
+                        <div className="px-2.5 pb-2.5 pt-1 space-y-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900">
                           {/* Direct Lessons */}
-                          {mod.directLessons?.map((lesson) => (
-                            <button
-                              key={lesson._id}
-                              onClick={() => setActiveLesson(lesson)}
-                              className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-colors ${
-                                activeLesson?._id === lesson._id
-                                  ? 'bg-blue-600 text-white font-bold shadow-xs'
-                                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2 truncate">
-                                <PlayCircle className="w-3.5 h-3.5 shrink-0" />
-                                <span className="truncate">{lesson.title}</span>
-                              </div>
-                              {activeLesson?._id === lesson._id && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 ml-1" />
-                              )}
-                            </button>
-                          ))}
+                          {mod.directLessons?.map((lesson) => {
+                            const isSelected = activeLesson?._id === lesson._id;
+                            return (
+                              <button
+                                key={lesson._id}
+                                onClick={() => setActiveLesson(lesson)}
+                                className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-all ${
+                                  isSelected
+                                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 truncate">
+                                  <PlayCircle className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                                  <span className="truncate">{lesson.title}</span>
+                                </div>
+                                {isSelected && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 ml-1.5" />
+                                )}
+                              </button>
+                            );
+                          })}
 
                           {/* Nested Sections */}
                           {mod.sections?.map((sec) => (
-                            <div key={sec._id} className="mt-2 pl-2 border-l-2 border-slate-200 dark:border-slate-800 space-y-1">
-                              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block py-1">
+                            <div key={sec._id} className="mt-2 pl-2 border-l-2 border-blue-500/30 dark:border-blue-400/20 space-y-1">
+                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block py-0.5">
                                 {sec.title}
                               </span>
-                              {sec.lessons?.map((lesson) => (
-                                <button
-                                  key={lesson._id}
-                                  onClick={() => setActiveLesson(lesson)}
-                                  className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-colors ${
-                                    activeLesson?._id === lesson._id
-                                      ? 'bg-blue-600 text-white font-bold shadow-xs'
-                                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-2 truncate">
-                                    <PlayCircle className="w-3.5 h-3.5 shrink-0" />
-                                    <span className="truncate">{lesson.title}</span>
-                                  </div>
-                                  {activeLesson?._id === lesson._id && (
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 ml-1" />
-                                  )}
-                                </button>
-                              ))}
+                              {sec.lessons?.map((lesson) => {
+                                const isSelected = activeLesson?._id === lesson._id;
+                                return (
+                                  <button
+                                    key={lesson._id}
+                                    onClick={() => setActiveLesson(lesson)}
+                                    className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-all ${
+                                      isSelected
+                                        ? 'bg-blue-600 text-white font-bold shadow-xs'
+                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 truncate">
+                                      <PlayCircle className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                                      <span className="truncate">{lesson.title}</span>
+                                    </div>
+                                    {isSelected && (
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 ml-1.5" />
+                                    )}
+                                  </button>
+                                );
+                              })}
                             </div>
                           ))}
                         </div>

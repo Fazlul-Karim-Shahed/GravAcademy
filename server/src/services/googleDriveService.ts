@@ -48,8 +48,23 @@ export const uploadFileToDrive = async (
     throw new Error('Google Drive upload failed to return file ID');
   }
 
+  const fileId = response.data.id;
+
+  // Make the file readable by anyone with the link so students can view it seamlessly
+  try {
+    await drive.permissions.create({
+      fileId,
+      requestBody: {
+        role: 'reader',
+        type: 'anyone',
+      },
+    });
+  } catch (permErr) {
+    console.warn('Could not set public permission on Drive file:', permErr);
+  }
+
   return {
-    fileId: response.data.id,
+    fileId,
     webViewLink: response.data.webViewLink || undefined,
   };
 };

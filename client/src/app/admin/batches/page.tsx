@@ -135,13 +135,6 @@ export default function AdminBatchesPage() {
           </div>
         )}
 
-        {/* Live Daily & Weekly Schedule Overview */}
-        <DailyScheduleView
-          role="admin"
-          title="সকল ব্যাচের দৈনিক ক্লাস সূচী"
-          subtitle="দিন ও সময়ভিত্তিক ফিল্টারিং—কোন দিন কয়টার সময় কোন ব্যাচের ক্লাস রয়েছে"
-        />
-
         {/* Batch Cards Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

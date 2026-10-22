@@ -38,6 +38,12 @@ desktop.ini
 *.sln
 *.sw?
 
+# Environment Files
+.env
+.env.*
+!.env.example
+*.env
+
 # Testing & Coverage
 coverage/
 .nyc_output/
