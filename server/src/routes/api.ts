@@ -209,6 +209,12 @@ router.get(
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.getUsers
 );
+router.get(
+  '/users/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  userAdminCtrl.getUserById
+);
 router.put(
   '/users/:id/role',
   authenticate,

@@ -56,6 +56,22 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 /**
+ * Get single user by ID (Superadmin, Admin)
+ */
+export const getUserById = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select('-passwordHash');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    return res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch user' });
+  }
+};
+
+/**
  * Update User Role or Custom Permissions (Superadmin or Admin with permissions.manage)
  */
 export const updateUserRole = async (req: AuthenticatedRequest, res: Response) => {

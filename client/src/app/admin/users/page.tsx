@@ -1,42 +1,20 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { Card, Button } from '@/components/ui';
+import { Button } from '@/components/ui';
 import {
-  ALL_PERMISSIONS_METADATA,
-  ROLE_DEFAULT_PERMISSIONS,
-  PermissionDefinition,
-  PermissionKey,
-  UserRole,
-  ROLES,
-} from '@/lib/permissions';
-import {
-  ShieldAlert,
-  UserCheck,
   Search,
-  Filter,
   CheckCircle,
   AlertCircle,
-  Clock,
   Shield,
   Key,
   Users,
-  GraduationCap,
   Sparkles,
   ArrowLeft,
-  X,
-  Mail,
-  Phone,
-  Settings,
-  Check,
-  Info,
-  BookOpen,
-  Video,
-  FileCheck2,
-  FolderOpen,
+  ChevronRight,
 } from 'lucide-react';
 
 interface UserRecord {
@@ -57,14 +35,6 @@ export default function UserManagementPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
-
-  // Permission Configuration Modal
-  const [editingUser, setEditingUser] = useState<UserRecord | null>(null);
-  const [newRole, setNewRole] = useState<UserRole>('student');
-  const [userCustomPermissions, setUserCustomPermissions] = useState<string[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
 
   useEffect(() => {
     fetchUsers();
@@ -87,69 +57,6 @@ export default function UserManagementPage() {
       setLoading(false);
     }
   };
-
-  const handleOpenConfig = (u: UserRecord) => {
-    setEditingUser(u);
-    setNewRole(u.role as UserRole);
-    setUserCustomPermissions(u.customPermissions || []);
-    setActiveCategory('all');
-  };
-
-  const toggleCustomPermission = (permKey: string) => {
-    setUserCustomPermissions((prev) => {
-      if (prev.includes(permKey)) {
-        return prev.filter((p) => p !== permKey);
-      } else {
-        return [...prev, permKey];
-      }
-    });
-  };
-
-  const handleSavePermissions = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingUser) return;
-    setSubmitting(true);
-    setMessage(null);
-
-    try {
-      const res = await api.put(`/users/${editingUser._id}/role`, {
-        role: newRole,
-        customPermissions: userCustomPermissions,
-      });
-
-      if (res.data.success) {
-        setMessage({
-          type: 'success',
-          text: `${editingUser.name} এর রোল (${newRole.toUpperCase()}) ও পারমিশন সফলভাবে আপডেট করা হয়েছে!`,
-        });
-        setEditingUser(null);
-        fetchUsers();
-      }
-    } catch (err: any) {
-      setMessage({
-        type: 'error',
-        text: err.response?.data?.message || 'পারমিশন আপডেট করতে ব্যর্থ হয়েছে।',
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // Group permissions by category
-  const categories = useMemo(() => {
-    const cats = Array.from(new Set(ALL_PERMISSIONS_METADATA.map((p) => p.category)));
-    return ['all', ...cats];
-  }, []);
-
-  const filteredPermissions = useMemo(() => {
-    if (activeCategory === 'all') return ALL_PERMISSIONS_METADATA;
-    return ALL_PERMISSIONS_METADATA.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
-
-  // Baseline permissions granted automatically by the currently selected role
-  const roleDefaultPerms = useMemo(() => {
-    return new Set(ROLE_DEFAULT_PERMISSIONS[newRole] || []);
-  }, [newRole]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
@@ -175,28 +82,10 @@ export default function UserManagementPage() {
               <Users className="w-7 h-7 text-blue-600 dark:text-blue-400" /> ব্যবহারকারী ও পারমিশন ম্যানেজমেন্ট
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              যেকোনো ব্যবহারকারীর রোল পরিবর্তন করুন এবং ডিফল্ট ফিচারের বাইরে অতিরিক্ত কাস্টম পারমিশন প্রদান করুন।
+              ব্যবহারকারীদের অ্যাকাউন্টের রোল পরিবর্তন এবং ডেডিকেটেড পেজে অতিরিক্ত কাস্টম পারমিশন কনফিগার করুন।
             </p>
           </div>
         </div>
-
-        {/* Notifications */}
-        {message && (
-          <div
-            className={`p-4 rounded-2xl mb-6 text-xs flex items-center gap-3 border shadow-xs transition-all ${
-              message.type === 'success'
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800'
-                : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200/80 dark:border-rose-800'
-            }`}
-          >
-            {message.type === 'success' ? (
-              <CheckCircle className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            ) : (
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400" />
-            )}
-            <span className="font-medium">{message.text}</span>
-          </div>
-        )}
 
         {/* Filter / Search Bar */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 mb-6 flex flex-wrap items-center justify-between gap-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
@@ -333,15 +222,16 @@ export default function UserManagementPage() {
                           {new Date(u.createdAt).toLocaleDateString()}
                         </td>
 
-                        {/* Actions */}
+                        {/* Actions - Dedicated Page Link */}
                         <td className="py-4 px-6 text-right">
-                          <button
-                            onClick={() => handleOpenConfig(u)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/80 dark:border-blue-800/60 transition-colors shadow-2xs"
+                          <Link
+                            href={`/admin/users/${u._id}/permissions`}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/80 dark:border-blue-800/60 transition-colors shadow-2xs group"
                           >
                             <Key className="w-3.5 h-3.5" />
                             <span>রোল ও পারমিশন সেট</span>
-                          </button>
+                            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </Link>
                         </td>
                       </tr>
                     );
@@ -351,171 +241,6 @@ export default function UserManagementPage() {
             </table>
           </div>
         </div>
-
-        {/* FULL GRANULAR PERMISSION CONFIGURATION MODAL */}
-        {editingUser && (
-          <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-            <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] flex flex-col">
-              
-              {/* Modal Header */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                    <Key className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-                      রোল ও কাস্টম পারমিশন কনফিগারেশন
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      ইউজার: <strong className="text-slate-900 dark:text-white">{editingUser.name}</strong> ({editingUser.email})
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setEditingUser(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Modal Scrollable Body */}
-              <form onSubmit={handleSavePermissions} className="flex-1 overflow-y-auto pr-1 space-y-6">
-                
-                {/* 1. Base Role Selection */}
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/90 dark:border-slate-800">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                    বেসিক প্ল্যাটফর্ম রোল (Primary Base Role)
-                  </label>
-                  <select
-                    value={newRole}
-                    onChange={(e) => setNewRole(e.target.value as UserRole)}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
-                  >
-                    <option value="student">Student (শিক্ষার্থী - সাধারণ লার্নিং অ্যাকাউন্ট)</option>
-                    <option value="teacher">Teacher (শিক্ষক - ক্লাস নেওয়া ও সিলেবাস সাজানো)</option>
-                    <option value="admin">Admin (অ্যাকাডেমিক এডমিনিস্ট্রেটর)</option>
-                    <option value="guardian">Guardian (অভিভাবক - স্টুডেন্ট প্রগ্রেস ট্র্যাকার)</option>
-                    <option value="employee">Employee (স্টাফ / সহায়তা কর্মী)</option>
-                    {currentUser?.role === 'superadmin' && (
-                      <option value="superadmin">Superadmin (পূর্ণ প্ল্যাটফর্ম অধিশীর্ষ ক্ষমতা)</option>
-                    )}
-                  </select>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5">
-                    <Info className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                    নির্বাচিত রোলের ডিফল্ট পারমিশনগুলো অটোমেটিক সক্রিয় থাকে। আপনি নিচে থেকে চাইলে আরও বিশেষ ফিচার যোগ করতে পারবেন।
-                  </p>
-                </div>
-
-                {/* 2. Granular Permission Matrix */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                        ফিচারভিত্তিক কাস্টম পারমিশন (Granular Feature Permissions)
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        সবুজ টিক = রোলের ডিফল্ট পারমিশন | নীল টিক = আপনার দেওয়া অতিরিক্ত পারমিশন
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Category Filter Pills */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setActiveCategory(cat)}
-                        className={`px-3 py-1 rounded-xl text-[11px] font-bold capitalize shrink-0 transition-colors ${
-                          activeCategory === cat
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        {cat === 'all' ? 'সকল ফিচার' : cat}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Permissions List */}
-                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                    {filteredPermissions.map((perm) => {
-                      const isDefaultByRole = roleDefaultPerms.has(perm.key);
-                      const isGrantedCustom = userCustomPermissions.includes(perm.key);
-                      const isEffective = isDefaultByRole || isGrantedCustom;
-
-                      return (
-                        <div
-                          key={perm.key}
-                          onClick={() => {
-                            if (!isDefaultByRole) {
-                              toggleCustomPermission(perm.key);
-                            }
-                          }}
-                          className={`p-3 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
-                            isDefaultByRole
-                              ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-800/50 opacity-90 cursor-default'
-                              : isGrantedCustom
-                              ? 'bg-blue-50/80 dark:bg-blue-950/30 border-blue-300 dark:border-blue-700 cursor-pointer shadow-xs'
-                              : 'bg-white dark:bg-slate-950/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer'
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold text-xs text-slate-900 dark:text-white">
-                                {perm.label}
-                              </span>
-                              {isDefaultByRole ? (
-                                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
-                                  ডিফল্ট রোল পারমিশন
-                                </span>
-                              ) : isGrantedCustom ? (
-                                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200">
-                                  + এক্সট্রা পারমিশন
-                                </span>
-                              ) : null}
-                            </div>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                              {perm.description}
-                            </p>
-                          </div>
-
-                          <div className="shrink-0 pt-0.5">
-                            {isDefaultByRole ? (
-                              <div className="w-5 h-5 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-xs">
-                                <Check className="w-3.5 h-3.5" />
-                              </div>
-                            ) : (
-                              <input
-                                type="checkbox"
-                                checked={isGrantedCustom}
-                                onChange={() => toggleCustomPermission(perm.key)}
-                                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
-                              />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Modal Action Buttons */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
-                  <Button type="button" variant="secondary" size="sm" onClick={() => setEditingUser(null)}>
-                    বাতিল (Cancel)
-                  </Button>
-                  <Button type="submit" size="sm" isLoading={submitting}>
-                    পারমিশন সেভ করুন
-                  </Button>
-                </div>
-              </form>
-
-            </div>
-          </div>
-        )}
 
       </div>
     </div>
