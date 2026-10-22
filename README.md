@@ -69,3 +69,4 @@ From the root directory:
 - **Protected Roles**: `superadmin`, `admin`, `teacher`, `guardian`, `employee` can only be configured by authorized administrative roles.
 - **Batch Duplication**: The batch cloner deep-copies the entire hierarchy (`Module` $\to$ `Section` $\to$ `Lesson`) creating distinct MongoDB documents, preserving order indices while maintaining zero mutation risks on the source batch.
 - **File Security**: Raw Google Drive links are never exposed to students. Access is strictly proxied through `/api/v1/documents/:id/stream` which verifies enrollment.
+
