@@ -17,6 +17,8 @@ import {
   Save,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+import WeeklyScheduleBuilder from '@/components/schedule/WeeklyScheduleBuilder';
+import { ScheduleSlot, formatScheduleSlots } from '@/lib/schedule';
 
 interface CourseItem {
   _id: string;
@@ -46,6 +48,7 @@ export default function EditBatchPage() {
     status: 'draft',
     fee: 0,
     scheduleText: '',
+    weeklySchedule: [] as ScheduleSlot[],
     capacity: 40,
   });
 
@@ -84,6 +87,7 @@ export default function EditBatchPage() {
           status: b.status || 'draft',
           fee: b.fee || 0,
           scheduleText: b.scheduleText || '',
+          weeklySchedule: Array.isArray(b.weeklySchedule) ? b.weeklySchedule : [],
           capacity: b.capacity || 40,
         });
       }
@@ -114,12 +118,17 @@ export default function EditBatchPage() {
     setSuccess('');
 
     try {
+      const finalScheduleText = form.scheduleText.trim()
+        ? form.scheduleText.trim()
+        : formatScheduleSlots(form.weeklySchedule);
+
       const payload: any = {
         name: form.name,
         courseId: form.courseId,
         status: form.status,
         fee: Number(form.fee) || 0,
-        scheduleText: form.scheduleText,
+        scheduleText: finalScheduleText,
+        weeklySchedule: form.weeklySchedule,
         capacity: Number(form.capacity),
       };
 
@@ -309,19 +318,6 @@ export default function EditBatchPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Weekly Class Schedule
-                </label>
-                <input
-                  type="text"
-                  value={form.scheduleText}
-                  onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
-                  placeholder="e.g. Mon, Wed, Fri 7:00 PM"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   Student Seat Capacity
                 </label>
                 <input
@@ -331,6 +327,33 @@ export default function EditBatchPage() {
                   value={form.capacity}
                   onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Structured Weekly Class Schedule Builder */}
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-950/70 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+              <WeeklyScheduleBuilder
+                slots={form.weeklySchedule}
+                onChange={(newSlots) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    weeklySchedule: newSlots,
+                    scheduleText: formatScheduleSlots(newSlots),
+                  }));
+                }}
+              />
+
+              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  Generated / Custom Schedule Summary Text
+                </label>
+                <input
+                  type="text"
+                  value={form.scheduleText}
+                  onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
+                  placeholder="e.g. শনি (19:00 - 20:30), রবি (20:00 - 21:30)"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>

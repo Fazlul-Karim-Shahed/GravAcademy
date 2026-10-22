@@ -21,6 +21,7 @@ import {
   FolderOpen,
   Edit
 } from 'lucide-react';
+import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
@@ -184,6 +185,13 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
         </div>
+
+        {/* Global Daily & Weekly Class Schedule Overview */}
+        <DailyScheduleView
+          role="admin"
+          title="অ্যাকাডেমির দৈনিক ও সাপ্তাহিক ক্লাস মনিটরিং"
+          subtitle="আজকে কোন কোন সময়ে কোন ব্যাচের ক্লাস রয়েছে এবং পুরো সপ্তাহের লাইভ ক্লাসের সূচী এক নজরে দেখুন"
+        />
 
         {/* Grid: Courses Overview & Active Batches */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

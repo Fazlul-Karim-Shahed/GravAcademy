@@ -17,6 +17,7 @@ import {
   CheckCircle,
   ArrowRight,
 } from 'lucide-react';
+import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
 interface Batch {
   _id: string;
@@ -138,6 +139,13 @@ export default function TeacherPanelPage() {
             <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">Auto-Sync Enabled</span>
           </div>
         </div>
+
+        {/* Teacher Daily & Weekly Schedule Overview */}
+        <DailyScheduleView
+          role="teacher"
+          title="শিক্ষক ক্লাস শিডিউল ও ব্যাচ রুটিন"
+          subtitle="আজকে আপনার কোন কোন ব্যাচের ক্লাস আছে এবং সারা সপ্তাহের বিস্তারিত সময়সূচী"
+        />
 
         {/* Batches Management */}
         <div className="mb-6 flex items-center justify-between">

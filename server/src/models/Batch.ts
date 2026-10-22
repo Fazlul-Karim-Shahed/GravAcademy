@@ -2,6 +2,15 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export type BatchStatus = 'draft' | 'upcoming' | 'active' | 'completed' | 'archived';
 
+export type DayOfWeek = 'saturday' | 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday';
+
+export interface IScheduleSlot {
+  day: DayOfWeek;
+  startTime: string; // e.g. "18:00" or "07:30 PM"
+  endTime?: string;   // e.g. "19:30" or "09:00 PM"
+  topic?: string;     // optional topic or note
+}
+
 export interface IBatch extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
@@ -15,6 +24,7 @@ export interface IBatch extends Document {
   capacity?: number;
   assignedTeachers: mongoose.Types.ObjectId[];
   scheduleText?: string;
+  weeklySchedule?: IScheduleSlot[];
   sourceBatchId?: mongoose.Types.ObjectId; // Tracking provenance if copied
   createdAt: Date;
   updatedAt: Date;
@@ -52,6 +62,18 @@ const BatchSchema = new Schema<IBatch>(
     capacity: { type: Number, min: 0 },
     assignedTeachers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     scheduleText: { type: String, trim: true },
+    weeklySchedule: [
+      {
+        day: {
+          type: String,
+          enum: ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+          required: true,
+        },
+        startTime: { type: String, required: true, trim: true },
+        endTime: { type: String, trim: true },
+        topic: { type: String, trim: true },
+      },
+    ],
     sourceBatchId: { type: Schema.Types.ObjectId, ref: 'Batch' },
   },
   {

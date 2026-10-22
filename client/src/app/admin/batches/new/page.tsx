@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
 import {
@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+import WeeklyScheduleBuilder from '@/components/schedule/WeeklyScheduleBuilder';
+import { ScheduleSlot, formatScheduleSlots } from '@/lib/schedule';
 
 interface CourseItem {
   _id: string;
@@ -27,6 +29,9 @@ interface CourseItem {
 
 export default function CreateBatchPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const cloneFromId = searchParams.get('cloneFrom') || '';
+
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
   const [existingBatches, setExistingBatches] = useState<{ _id: string; name: string }[]>([]);
@@ -45,8 +50,9 @@ export default function CreateBatchPage() {
     status: 'draft',
     fee: 0,
     scheduleText: '',
+    weeklySchedule: [] as ScheduleSlot[],
     capacity: 40,
-    copyFromBatchId: '',
+    copyFromBatchId: cloneFromId,
   });
 
   useEffect(() => {
@@ -65,12 +71,34 @@ export default function CreateBatchPage() {
         const loadedCourses: CourseItem[] = coursesRes.data.data;
         setCourses(loadedCourses);
         if (loadedCourses.length > 0) {
-          setForm((prev) => ({ ...prev, courseId: loadedCourses[0]._id }));
+          setForm((prev) => ({ ...prev, courseId: prev.courseId || loadedCourses[0]._id }));
         }
       }
       setAcademicClasses(classList);
       if (batchesRes.data?.success) {
-        setExistingBatches(batchesRes.data.data);
+        const list = batchesRes.data.data;
+        setExistingBatches(list);
+
+        // If cloneFromId is given, pre-fill form from source batch
+        if (cloneFromId) {
+          const source = list.find((b: any) => b._id === cloneFromId);
+          if (source) {
+            const cId = typeof source.courseId === 'object' && source.courseId !== null ? source.courseId._id : source.courseId;
+            const cGrade = typeof source.courseId === 'object' && source.courseId !== null ? source.courseId.gradeLevel : '';
+            if (cGrade) setSelectedClass(cGrade);
+
+            setForm({
+              name: `${source.name} (Copy)`,
+              courseId: cId || '',
+              status: 'draft',
+              fee: source.fee || 0,
+              scheduleText: source.scheduleText || '',
+              weeklySchedule: Array.isArray(source.weeklySchedule) ? source.weeklySchedule : [],
+              capacity: source.capacity || 40,
+              copyFromBatchId: cloneFromId,
+            });
+          }
+        }
       }
     } catch (err: any) {
       console.error('Failed to load courses or batches:', err);
@@ -110,12 +138,18 @@ export default function CreateBatchPage() {
     setSuccess('');
 
     try {
+      // Auto compute schedule text if empty but slots provided
+      const finalScheduleText = form.scheduleText.trim()
+        ? form.scheduleText.trim()
+        : formatScheduleSlots(form.weeklySchedule);
+
       const payload: any = {
         name: form.name,
         courseId: form.courseId,
         status: form.status,
         fee: Number(form.fee) || 0,
-        scheduleText: form.scheduleText,
+        scheduleText: finalScheduleText,
+        weeklySchedule: form.weeklySchedule,
         capacity: Number(form.capacity),
       };
 
@@ -158,13 +192,16 @@ export default function CreateBatchPage() {
         {/* Page Title */}
         <div className="mb-8">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-400 text-xs font-semibold mb-3">
-            <Layers className="w-3.5 h-3.5" /> Batch Configuration
+            {cloneFromId ? <Copy className="w-3.5 h-3.5" /> : <Layers className="w-3.5 h-3.5" />}
+            {cloneFromId ? 'Batch Cloning & Duplication' : 'Batch Configuration'}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Create New Batch
+            {cloneFromId ? 'Duplicate & Create New Batch' : 'Create New Batch'}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Establish a distinct classroom roster, live schedule, and syllabus hierarchy for student enrollments.
+            {cloneFromId
+              ? 'Clone the full curriculum, structure, and configuration from the selected batch into a new dedicated batch.'
+              : 'Establish a distinct classroom roster, live schedule, and syllabus hierarchy for student enrollments.'}
           </p>
         </div>
 
@@ -301,19 +338,6 @@ export default function CreateBatchPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Weekly Class Schedule Text
-                </label>
-                <input
-                  type="text"
-                  value={form.scheduleText}
-                  onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
-                  placeholder="e.g. Mon, Wed, Fri 7:00 PM"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   Student Seat Capacity
                 </label>
                 <input
@@ -323,6 +347,33 @@ export default function CreateBatchPage() {
                   value={form.capacity}
                   onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Structured Weekly Class Schedule Builder */}
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-950/70 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+              <WeeklyScheduleBuilder
+                slots={form.weeklySchedule}
+                onChange={(newSlots) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    weeklySchedule: newSlots,
+                    scheduleText: formatScheduleSlots(newSlots),
+                  }));
+                }}
+              />
+
+              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  Generated / Custom Schedule Summary Text
+                </label>
+                <input
+                  type="text"
+                  value={form.scheduleText}
+                  onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
+                  placeholder="e.g. শনি (19:00 - 20:30), রবি (20:00 - 21:30)"
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>

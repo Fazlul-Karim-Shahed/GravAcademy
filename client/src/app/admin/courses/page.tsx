@@ -63,22 +63,7 @@ export default function AdminCoursesPage() {
     }
   }, [gradeQuery]);
 
-  // Modal State for Create & Edit
-  const [showModal, setShowModal] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  const [form, setForm] = useState({
-    title: '',
-    thumbnailUrl: '',
-    description: '',
-    gradeLevel: 'Class 6',
-    subject: 'Bangla',
-    courseFee: 0,
-    duration: '6 Months',
-    isPublished: true,
-  });
 
   const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
 
@@ -123,65 +108,6 @@ export default function AdminCoursesPage() {
   };
 
   const fetchCourses = fetchCoursesAndBatches;
-
-  const handleOpenCreate = () => {
-    setEditingCourse(null);
-    setForm({
-      title: '',
-      thumbnailUrl: '',
-      description: '',
-      gradeLevel: 'Class 6',
-      subject: 'Bangla',
-      courseFee: 0,
-      duration: '6 Months',
-      isPublished: true,
-    });
-    setShowModal(true);
-  };
-
-  const handleOpenEdit = (course: Course) => {
-    setEditingCourse(course);
-    setForm({
-      title: course.title,
-      thumbnailUrl: course.thumbnailUrl || '',
-      description: course.description || '',
-      gradeLevel: course.gradeLevel,
-      subject: course.subject,
-      courseFee: course.courseFee || 0,
-      duration: course.duration || '6 Months',
-      isPublished: course.isPublished,
-    });
-    setShowModal(true);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setMessage(null);
-
-    try {
-      if (editingCourse) {
-        const res = await api.put(`/courses/${editingCourse._id}`, form);
-        if (res.data?.success) {
-          setMessage({ type: 'success', text: `Course "${form.title}" updated successfully!` });
-        }
-      } else {
-        const res = await api.post('/courses', form);
-        if (res.data?.success) {
-          setMessage({ type: 'success', text: `New Course "${form.title}" created successfully!` });
-        }
-      }
-      setShowModal(false);
-      fetchCourses();
-    } catch (err: any) {
-      setMessage({
-        type: 'error',
-        text: err.response?.data?.message || 'Failed to save course. Ensure valid permissions.',
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`Are you sure you want to delete "${title}"? This cannot be undone.`)) return;
@@ -317,12 +243,12 @@ export default function AdminCoursesPage() {
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
               Click &apos;Add New Course&apos; to create your first dynamic curriculum.
             </p>
-            <button
-              onClick={handleOpenCreate}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs"
+            <Link
+              href="/admin/courses/new"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
             >
-              Add Course
-            </button>
+              <PlusCircle className="w-4 h-4" /> Add Course
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
@@ -508,128 +434,6 @@ export default function AdminCoursesPage() {
                 </div>
               );
             })}
-          </div>
-        )}
-
-        {/* CREATE & EDIT MODAL */}
-        {showModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  {editingCourse ? 'Edit Course' : 'Create New Course'}
-                </h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Course Title *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    placeholder="e.g. Class 10 Higher Mathematics Masterclass"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Course Header Picture Link (Thumbnail URL)
-                  </label>
-                  <input
-                    type="url"
-                    value={form.thumbnailUrl}
-                    onChange={(e) => setForm({ ...form, thumbnailUrl: e.target.value })}
-                    placeholder="https://images.unsplash.com/... or picture link"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Grade / Class Level *
-                  </label>
-                  <select
-                    value={form.gradeLevel}
-                    onChange={(e) => setForm({ ...form, gradeLevel: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                  >
-                    {gradeOptions.map((g) => (
-                      <option key={g} value={g}>
-                        {g}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Course Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    placeholder="Brief syllabus overview, learning objectives, and details..."
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Duration Scope
-                  </label>
-                  <input
-                    type="text"
-                    value={form.duration}
-                    onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                    placeholder="e.g. 6 Months, 1 Year"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                  />
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <input
-                    type="checkbox"
-                    id="isPublishedCheck"
-                    checked={form.isPublished}
-                    onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
-                    className="rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-0"
-                  />
-                  <label htmlFor="isPublishedCheck" className="text-xs text-slate-700 dark:text-slate-300 font-medium">
-                    Publish immediately (visible in public catalog)
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-50"
-                  >
-                    {submitting ? 'Saving...' : editingCourse ? 'Update Course' : 'Create Course'}
-                  </button>
-                </div>
-              </form>
-            </div>
           </div>
         )}
       </div>

@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Compass,
 } from 'lucide-react';
+import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
 interface BatchInfo {
   _id: string;
@@ -178,6 +179,13 @@ export default function StudentDashboard() {
           </div>
 
         </div>
+
+        {/* Daily & Weekly Interactive Class Schedule */}
+        <DailyScheduleView
+          role="student"
+          title="আজকের ও সাপ্তাহিক ক্লাস রুটিন"
+          subtitle="প্রতিদিনের নির্দিষ্ট ক্লাস সময় ও বিষয়ভিত্তিক রুটিন অনুযায়ী সময়মতো ক্লাসে উপস্থিত থাকুন"
+        />
 
         {/* Main Content Areas */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

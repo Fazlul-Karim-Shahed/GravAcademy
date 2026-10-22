@@ -17,8 +17,9 @@ import {
   ArrowRight,
   Edit3,
   Trash2,
-  X,
 } from 'lucide-react';
+import DailyScheduleView from '@/components/schedule/DailyScheduleView';
+import { ScheduleSlot } from '@/lib/schedule';
 
 interface Batch {
   _id: string;
@@ -32,6 +33,7 @@ interface Batch {
     subject: string;
   };
   scheduleText?: string;
+  weeklySchedule?: ScheduleSlot[];
   capacity?: number;
 }
 
@@ -48,19 +50,6 @@ export default function AdminBatchesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal / Form state
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingBatch, setEditingBatch] = useState<Batch | null>(null);
-  const [form, setForm] = useState({
-    name: '',
-    courseId: '',
-    status: 'draft',
-    fee: 0,
-    scheduleText: '',
-    capacity: 40,
-    copyFromBatchId: '',
-  });
-  const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -80,92 +69,6 @@ export default function AdminBatchesPage() {
       console.error('Error fetching admin data', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOpenCreateBatch = () => {
-    setEditingBatch(null);
-    setForm({
-      name: '',
-      courseId: courses.length > 0 ? courses[0]._id : '',
-      status: 'draft',
-      fee: 0,
-      scheduleText: '',
-      capacity: 40,
-      copyFromBatchId: '',
-    });
-    setShowCreateModal(true);
-  };
-
-  const handleOpenEditBatch = (batch: Batch) => {
-    setEditingBatch(batch);
-    setForm({
-      name: batch.name,
-      courseId: typeof batch.courseId === 'object' && batch.courseId !== null ? batch.courseId._id : (batch.courseId || ''),
-      status: batch.status || 'draft',
-      fee: batch.fee || 0,
-      scheduleText: batch.scheduleText || '',
-      capacity: batch.capacity || 40,
-      copyFromBatchId: '',
-    });
-    setShowCreateModal(true);
-  };
-
-  const handleSaveBatch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setMessage(null);
-
-    try {
-      const payload: any = {
-        name: form.name,
-        courseId: form.courseId,
-        status: form.status,
-        fee: Number(form.fee) || 0,
-        scheduleText: form.scheduleText,
-        capacity: Number(form.capacity),
-      };
-
-      if (!editingBatch && form.copyFromBatchId) {
-        payload.copyFromBatchId = form.copyFromBatchId;
-      }
-
-      let res;
-      if (editingBatch) {
-        res = await api.put(`/batches/${editingBatch._id}`, payload);
-      } else {
-        res = await api.post('/batches', payload);
-      }
-
-      if (res.data?.success) {
-        setMessage({
-          type: 'success',
-          text: editingBatch
-            ? `✅ Batch "${form.name}" updated successfully!`
-            : form.copyFromBatchId
-            ? '✅ Batch created with cloned content hierarchy successfully!'
-            : '✅ Batch created successfully!',
-        });
-        setShowCreateModal(false);
-        setEditingBatch(null);
-        setForm({
-          name: '',
-          courseId: '',
-          status: 'draft',
-          fee: 0,
-          scheduleText: '',
-          capacity: 40,
-          copyFromBatchId: '',
-        });
-        loadData();
-      }
-    } catch (err: any) {
-      setMessage({
-        type: 'error',
-        text: err.response?.data?.message || `Failed to ${editingBatch ? 'update' : 'create'} batch.`,
-      });
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -231,6 +134,13 @@ export default function AdminBatchesPage() {
             <span className="font-medium">{message.text}</span>
           </div>
         )}
+
+        {/* Live Daily & Weekly Schedule Overview */}
+        <DailyScheduleView
+          role="admin"
+          title="সকল ব্যাচের দৈনিক ক্লাস সূচী"
+          subtitle="দিন ও সময়ভিত্তিক ফিল্টারিং—কোন দিন কয়টার সময় কোন ব্যাচের ক্লাস রয়েছে"
+        />
 
         {/* Batch Cards Grid */}
         {loading ? (
@@ -358,25 +268,13 @@ export default function AdminBatchesPage() {
                         <Edit3 className="w-4 h-4" />
                       </Link>
 
-                      <button
-                        onClick={() => {
-                          setEditingBatch(null);
-                          setForm({
-                            name: `${batch.name} (Copy)`,
-                            courseId: typeof batch.courseId === 'object' && batch.courseId !== null ? batch.courseId._id : (batch.courseId || ''),
-                            status: 'draft',
-                            fee: batch.fee || 0,
-                            scheduleText: batch.scheduleText || '',
-                            capacity: batch.capacity || 40,
-                            copyFromBatchId: batch._id,
-                          });
-                          setShowCreateModal(true);
-                        }}
+                      <Link
+                        href={`/admin/batches/new?cloneFrom=${batch._id}`}
                         className="p-2 rounded-xl text-slate-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-slate-800 transition-colors"
-                        title="Clone this batch content to a new batch"
+                        title="Duplicate & Create New Batch"
                       >
                         <Copy className="w-4 h-4" />
-                      </button>
+                      </Link>
 
                       <button
                         onClick={() => handleDeleteBatch(batch._id, batch.name)}
@@ -393,184 +291,6 @@ export default function AdminBatchesPage() {
           </div>
         )}
 
-        {/* CREATE / EDIT / DUPLICATE BATCH MODAL */}
-        {showCreateModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  {editingBatch ? (
-                    <>
-                      <Edit3 className="w-5 h-5 text-blue-600 dark:text-blue-500" />
-                      Edit Batch Details
-                    </>
-                  ) : form.copyFromBatchId ? (
-                    <>
-                      <Copy className="w-5 h-5 text-purple-600 dark:text-purple-500" />
-                      Duplicate & Create New Batch
-                    </>
-                  ) : (
-                    <>
-                      <PlusCircle className="w-5 h-5 text-blue-600 dark:text-blue-500" />
-                      Create New Batch
-                    </>
-                  )}
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                {editingBatch
-                  ? 'Update batch title, admission fee, classroom capacity, and live schedule.'
-                  : 'Configure batch details. Cloned batches receive an independent copy of all modules and lessons.'}
-              </p>
-
-              <form onSubmit={handleSaveBatch} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                    Batch Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="e.g. Class 10 Physics - Special Batch 2"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                    Associated Course *
-                  </label>
-                  <select
-                    required
-                    value={form.courseId}
-                    onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 cursor-pointer"
-                  >
-                    <option value="">Select a Course...</option>
-                    {courses.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.gradeLevel} - {c.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* CRITICAL FEATURE: Copy content setting (Only visible when creating new) */}
-                {!editingBatch && (
-                  <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60">
-                    <label className="block text-xs font-semibold text-blue-800 dark:text-blue-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <Copy className="w-3.5 h-3.5" /> Copy Content From Existing Batch? (Optional)
-                    </label>
-                    <select
-                      value={form.copyFromBatchId}
-                      onChange={(e) => setForm({ ...form, copyFromBatchId: e.target.value })}
-                      className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 cursor-pointer"
-                    >
-                      <option value="">Start with an empty batch</option>
-                      {batches.map((b) => (
-                        <option key={b._id} value={b._id}>
-                          Clone from: {b.name} ({b.courseId?.title})
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
-                      Copies all modules, sections, lessons, YouTube video IDs, and PDF references into an isolated tree. Modifying the new batch will not affect the source.
-                    </p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                      Batch Fee (৳ BDT)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="50"
-                      value={form.fee}
-                      onChange={(e) => setForm({ ...form, fee: Number(e.target.value) })}
-                      placeholder="0"
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                      Status
-                    </label>
-                    <select
-                      value={form.status}
-                      onChange={(e) => setForm({ ...form, status: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white cursor-pointer"
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="upcoming">Upcoming</option>
-                      <option value="active">Active</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                      Student Capacity
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={form.capacity}
-                      onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                    Schedule Text
-                  </label>
-                  <input
-                    type="text"
-                    value={form.scheduleText}
-                    onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
-                    placeholder="e.g. Mon, Wed, Fri 8:00 PM"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateModal(false)}
-                    className="px-4 py-2 text-xs font-semibold rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors disabled:opacity-50"
-                  >
-                    {submitting
-                      ? 'Saving...'
-                      : editingBatch
-                      ? 'Update Batch'
-                      : form.copyFromBatchId
-                      ? 'Duplicate & Create'
-                      : 'Create Batch'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

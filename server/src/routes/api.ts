@@ -72,8 +72,9 @@ router.delete(
   courseCtrl.deleteCourse
 );
 
-// --- BATCH ROUTES (Including Copy-from-batch workflow) ---
+// --- BATCH ROUTES (Including Copy-from-batch workflow & Weekly Schedule System) ---
 router.get('/batches', batchCtrl.getBatches);
+router.get('/batches/schedule/overview', batchCtrl.getScheduleOverview);
 router.get('/batches/:id', batchCtrl.getBatchById);
 router.get('/batches/:batchId/hierarchy', batchCtrl.getBatchHierarchy);
 router.post(

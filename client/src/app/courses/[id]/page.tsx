@@ -23,12 +23,14 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import { ScheduleSlot, getDayInfo, formatTo12Hour } from '@/lib/schedule';
 
 interface Batch {
   _id: string;
   name: string;
   capacity?: number;
   scheduleText?: string;
+  weeklySchedule?: ScheduleSlot[];
   status: string;
   fee?: number;
   startDate?: string;
@@ -469,12 +471,27 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                           </span>
                         </div>
 
-                        {batch.scheduleText && (
+                        {batch.weeklySchedule && batch.weeklySchedule.length > 0 ? (
+                          <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                            {batch.weeklySchedule.map((slot, sIdx) => {
+                              const dInfo = getDayInfo(slot.day);
+                              return (
+                                <span
+                                  key={sIdx}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-[11px] text-blue-700 dark:text-blue-300 font-bold"
+                                >
+                                  <Calendar className="w-3 h-3 text-blue-500" />
+                                  <span>{dInfo.shortBn} ({formatTo12Hour(slot.startTime)}{slot.endTime ? ` - ${formatTo12Hour(slot.endTime)}` : ''})</span>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        ) : batch.scheduleText ? (
                           <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-3 bg-white dark:bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-800/80">
                             <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                             <span className="font-semibold text-[11px]">{batch.scheduleText}</span>
                           </div>
-                        )}
+                        ) : null}
 
                         {/* Batch Fee Display */}
                         <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 mb-4">

@@ -8,6 +8,13 @@ import { FileAsset } from '../models/FileAsset';
 import { AuditLog } from '../models/AuditLog';
 import { AuthenticatedRequest } from '../middleware/auth';
 
+export const scheduleSlotSchema = z.object({
+  day: z.enum(['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']),
+  startTime: z.string().min(1),
+  endTime: z.string().optional(),
+  topic: z.string().optional(),
+});
+
 export const createBatchSchema = z.object({
   name: z.string().min(2).max(120),
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Course ID'),
@@ -19,6 +26,7 @@ export const createBatchSchema = z.object({
   enrollmentCloseDate: z.string().datetime().optional(),
   capacity: z.number().min(0).optional(),
   scheduleText: z.string().optional(),
+  weeklySchedule: z.array(scheduleSlotSchema).optional(),
   // CRITICAL FEATURE: Copy content from an existing batch
   copyFromBatchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Source Batch ID').optional(),
 });
@@ -144,6 +152,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       enrollmentCloseDate,
       capacity,
       scheduleText,
+      weeklySchedule,
       copyFromBatchId,
     } = req.body;
 
@@ -159,6 +168,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       enrollmentCloseDate,
       capacity,
       scheduleText,
+      weeklySchedule: Array.isArray(weeklySchedule) ? weeklySchedule : [],
       sourceBatchId: copyFromBatchId ? new mongoose.Types.ObjectId(copyFromBatchId) : undefined,
     });
 
@@ -281,7 +291,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
 export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, courseId, status, fee, scheduleText, capacity } = req.body;
+    const { name, courseId, status, fee, scheduleText, weeklySchedule, capacity } = req.body;
 
     const batch = await Batch.findById(id);
     if (!batch) {
@@ -293,6 +303,9 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
     if (status !== undefined) batch.status = status;
     if (fee !== undefined) batch.fee = Number(fee);
     if (scheduleText !== undefined) batch.scheduleText = scheduleText;
+    if (weeklySchedule !== undefined && Array.isArray(weeklySchedule)) {
+      batch.weeklySchedule = weeklySchedule;
+    }
     if (capacity !== undefined) batch.capacity = Number(capacity);
 
     await batch.save();
@@ -328,5 +341,110 @@ export const deleteBatch = async (req: AuthenticatedRequest, res: Response) => {
   } catch (error: any) {
     console.error('Batch delete error:', error);
     return res.status(500).json({ success: false, message: 'Failed to delete batch' });
+  }
+};
+
+/**
+ * Get Comprehensive Schedule Overview (organized by Day of Week & Today's classes)
+ * Usable by Admin, Teachers, and Students
+ */
+export const getScheduleOverview = async (req: Request, res: Response) => {
+  try {
+    const { day, batchId, status } = req.query;
+
+    const filter: any = {};
+    if (status) {
+      filter.status = status;
+    } else {
+      filter.status = { $in: ['active', 'upcoming'] };
+    }
+    if (batchId && mongoose.Types.ObjectId.isValid(batchId as string)) {
+      filter._id = batchId;
+    }
+
+    const batches = await Batch.find(filter)
+      .populate('courseId', 'title slug gradeLevel subject')
+      .populate('assignedTeachers', 'name email');
+
+    // Day mapping in order
+    const daysOrder = ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+    
+    // Day names in English & Bengali
+    const dayLabels: Record<string, { en: string; bn: string }> = {
+      saturday: { en: 'Saturday', bn: 'শনিবার' },
+      sunday: { en: 'Sunday', bn: 'রবিবার' },
+      monday: { en: 'Monday', bn: 'সোমবার' },
+      tuesday: { en: 'Tuesday', bn: 'মঙ্গলবার' },
+      wednesday: { en: 'Wednesday', bn: 'বুধবার' },
+      thursday: { en: 'Thursday', bn: 'বৃহস্পতিবার' },
+      friday: { en: 'Friday', bn: 'শুক্রবার' },
+    };
+
+    // Aggregate into daily schedule buckets
+    const scheduleByDay: Record<string, any[]> = {
+      saturday: [],
+      sunday: [],
+      monday: [],
+      tuesday: [],
+      wednesday: [],
+      thursday: [],
+      friday: [],
+    };
+
+    batches.forEach((b) => {
+      if (Array.isArray(b.weeklySchedule) && b.weeklySchedule.length > 0) {
+        b.weeklySchedule.forEach((slot) => {
+          const d = slot.day.toLowerCase();
+          if (scheduleByDay[d]) {
+            scheduleByDay[d].push({
+              batchId: b._id,
+              batchName: b.name,
+              status: b.status,
+              course: b.courseId,
+              assignedTeachers: b.assignedTeachers,
+              day: slot.day,
+              startTime: slot.startTime,
+              endTime: slot.endTime || '',
+              topic: slot.topic || '',
+            });
+          }
+        });
+      }
+    });
+
+    // Sort each day's slots by startTime
+    Object.keys(scheduleByDay).forEach((d) => {
+      scheduleByDay[d].sort((a, b) => a.startTime.localeCompare(b.startTime));
+    });
+
+    // Detect Today's day
+    const jsDayMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const todayName = jsDayMap[new Date().getDay()];
+
+    const todayClasses = scheduleByDay[todayName] || [];
+
+    if (day && typeof day === 'string' && scheduleByDay[day.toLowerCase()]) {
+      return res.status(200).json({
+        success: true,
+        selectedDay: day.toLowerCase(),
+        classes: scheduleByDay[day.toLowerCase()],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      today: {
+        day: todayName,
+        label: dayLabels[todayName],
+        classesCount: todayClasses.length,
+        classes: todayClasses,
+      },
+      scheduleByDay,
+      dayLabels,
+      daysOrder,
+    });
+  } catch (error: any) {
+    console.error('Schedule overview error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch schedule overview' });
   }
 };
