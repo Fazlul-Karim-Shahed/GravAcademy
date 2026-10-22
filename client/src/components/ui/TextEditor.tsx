@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Bold,
   Italic,
@@ -10,7 +10,6 @@ import {
   Heading2,
   Heading3,
   Quote,
-  Code,
   Link as LinkIcon,
   Undo,
   Redo,
@@ -27,37 +26,54 @@ export default function TextEditor({
   value,
   onChange,
   placeholder = 'এখানে লেসনের বিস্তারিত নোট, কনসেপ্ট বা গাইডলাইন লিখুন...',
-  minHeight = '180px',
+  minHeight = '200px',
 }: TextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const isUpdatingFromInternalRef = useRef(false);
 
-  const format = (command: string, val: string | undefined = undefined) => {
-    document.execCommand(command, false, val);
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+  // Initialize and synchronize with external value without resetting caret on every keystroke
+  useEffect(() => {
+    if (!editorRef.current) return;
+    if (isUpdatingFromInternalRef.current) {
+      isUpdatingFromInternalRef.current = false;
+      return;
     }
+    if (editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value || '';
+    }
+  }, [value]);
+
+  const exec = (command: string, val: string | undefined = undefined) => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+    document.execCommand(command, false, val);
+    isUpdatingFromInternalRef.current = true;
+    onChange(editorRef.current.innerHTML);
   };
 
   const handleInput = () => {
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
+    if (!editorRef.current) return;
+    isUpdatingFromInternalRef.current = true;
+    onChange(editorRef.current.innerHTML);
   };
 
   const addLink = () => {
-    const url = prompt('Enter URL:');
+    const url = prompt('Enter URL (e.g. https://...):');
     if (url) {
-      format('createLink', url);
+      exec('createLink', url);
     }
   };
 
   return (
     <div className="w-full border border-slate-300 dark:border-slate-700 rounded-2xl overflow-hidden bg-white dark:bg-slate-950 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all shadow-2xs">
       {/* Editor Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <button
           type="button"
-          onClick={() => format('bold')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('bold');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Bold"
         >
@@ -65,7 +81,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('italic')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('italic');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Italic"
         >
@@ -73,7 +92,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('underline')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('underline');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Underline"
         >
@@ -84,7 +106,10 @@ export default function TextEditor({
 
         <button
           type="button"
-          onClick={() => format('formatBlock', '<h2>')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('formatBlock', '<h2>');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Heading 2"
         >
@@ -92,7 +117,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('formatBlock', '<h3>')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('formatBlock', '<h3>');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Heading 3"
         >
@@ -103,7 +131,10 @@ export default function TextEditor({
 
         <button
           type="button"
-          onClick={() => format('insertUnorderedList')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('insertUnorderedList');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Bullet List"
         >
@@ -111,7 +142,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('insertOrderedList')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('insertOrderedList');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Numbered List"
         >
@@ -119,7 +153,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('formatBlock', '<blockquote>')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('formatBlock', '<blockquote>');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Quote"
         >
@@ -130,7 +167,10 @@ export default function TextEditor({
 
         <button
           type="button"
-          onClick={addLink}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            addLink();
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Insert Link"
         >
@@ -138,7 +178,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('undo')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('undo');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Undo"
         >
@@ -146,7 +189,10 @@ export default function TextEditor({
         </button>
         <button
           type="button"
-          onClick={() => format('redo')}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            exec('redo');
+          }}
           className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           title="Redo"
         >
@@ -158,10 +204,10 @@ export default function TextEditor({
       <div
         ref={editorRef}
         contentEditable
+        dir="ltr"
         onInput={handleInput}
-        dangerouslySetInnerHTML={{ __html: value }}
         style={{ minHeight }}
-        className="p-4 text-sm text-slate-900 dark:text-white outline-none prose prose-slate dark:prose-invert max-w-none focus:outline-none"
+        className="p-4 text-sm text-slate-900 dark:text-white outline-none prose prose-slate dark:prose-invert max-w-none focus:outline-none text-left"
         data-placeholder={placeholder}
       />
     </div>

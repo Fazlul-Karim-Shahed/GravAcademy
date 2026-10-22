@@ -209,7 +209,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
 
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
-                লেসন নোট ও নির্দেশনাসমূহ (Rich Text Notes)
+                লেসন নোট ও নির্দেশনাসমূহ
               </label>
               <TextEditor
                 value={description}
