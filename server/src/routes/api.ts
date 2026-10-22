@@ -198,6 +198,12 @@ router.post(
 
 // --- USER & AUDIT MANAGEMENT ROUTES ---
 router.get(
+  '/users/permissions-catalog',
+  authenticate,
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  userAdminCtrl.getPermissionsCatalog
+);
+router.get(
   '/users',
   authenticate,
   requirePermission(PERMISSIONS.USERS_MANAGE),
@@ -206,7 +212,7 @@ router.get(
 router.put(
   '/users/:id/role',
   authenticate,
-  requireRole(ROLES.SUPERADMIN),
+  requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.updateUserRole
 );
 router.get(

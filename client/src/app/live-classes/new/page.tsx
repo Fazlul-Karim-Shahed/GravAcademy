@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { PERMISSIONS, hasPermission } from '@/lib/permissions';
 import { Card, Button } from '@/components/ui';
 import {
   Video,
@@ -13,10 +15,14 @@ import {
   Calendar,
   Clock,
   Link2,
+  ShieldAlert,
 } from 'lucide-react';
 
 export default function ScheduleLiveClassPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const canManageLive = hasPermission(user, PERMISSIONS.LIVE_CLASSES_MANAGE);
+
   const [batches, setBatches] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -78,6 +84,30 @@ export default function ScheduleLiveClassPage() {
       setSubmitting(false);
     }
   };
+
+  if (!authLoading && !canManageLive) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 text-center shadow-lg">
+          <div className="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center mb-4">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            অনুমতি প্রয়োজন (Access Restricted)
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+            আপনার অ্যাকাউন্টে নতুন লাইভ ক্লাস শুরু বা শিডিউল করার অনুমতি নেই। শুধুমাত্র এডমিন অথবা অনুমোদিত শিক্ষকগণ লাইভ ক্লাস তৈরি করতে পারেন।
+          </p>
+          <Link
+            href="/live-classes"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> লাইভ ক্লাস তালিকায় ফিরে যান
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 transition-colors">

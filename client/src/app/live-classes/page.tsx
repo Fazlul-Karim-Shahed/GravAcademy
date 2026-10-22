@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { PERMISSIONS, hasPermission } from '@/lib/permissions';
 import {
   Video,
   Calendar,
@@ -14,7 +16,8 @@ import {
   X,
   Radio,
   Tv,
-  ArrowRight
+  ArrowRight,
+  ShieldAlert
 } from 'lucide-react';
 
 interface LiveClassItem {
@@ -33,6 +36,9 @@ interface LiveClassItem {
 }
 
 export default function LiveClassesPage() {
+  const { user } = useAuth();
+  const canManageLive = hasPermission(user, PERMISSIONS.LIVE_CLASSES_MANAGE);
+
   const [classes, setClasses] = useState<LiveClassItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -103,12 +109,14 @@ export default function LiveClassesPage() {
             </p>
           </div>
 
-          <Link
-            href="/live-classes/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
-          >
-            <PlusCircle className="w-4 h-4" /> Schedule Live Class
-          </Link>
+          {canManageLive && (
+            <Link
+              href="/live-classes/new"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
+            >
+              <PlusCircle className="w-4 h-4" /> Schedule Live Class
+            </Link>
+          )}
         </div>
 
         {/* Classes Grid */}
@@ -123,14 +131,18 @@ export default function LiveClassesPage() {
             <Video className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-900 dark:text-white">No upcoming live classes</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-5">
-              Schedule a Zoom or Google Meet interactive session for any active batch.
+              {canManageLive
+                ? 'Schedule a Zoom or Google Meet interactive session for any active batch.'
+                : 'বর্তমানে কোনো লাইভ ক্লাস নির্ধারিত নেই। নতুন ক্লাস শুরু হলে এখানে দেখতে পাবেন।'}
             </p>
-            <Link
-              href="/live-classes/new"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs"
-            >
-              <PlusCircle className="w-4 h-4" /> Schedule First Class
-            </Link>
+            {canManageLive && (
+              <Link
+                href="/live-classes/new"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs"
+              >
+                <PlusCircle className="w-4 h-4" /> Schedule First Class
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

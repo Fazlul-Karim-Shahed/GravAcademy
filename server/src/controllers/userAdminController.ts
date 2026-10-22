@@ -3,7 +3,31 @@ import { z } from 'zod';
 import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
 import { AuthenticatedRequest } from '../middleware/auth';
-import { ROLES, UserRole } from '../types/roles';
+import {
+  ROLES,
+  UserRole,
+  ALL_PERMISSIONS_METADATA,
+  ROLE_DEFAULT_PERMISSIONS,
+  PERMISSIONS,
+} from '../types/roles';
+
+/**
+ * Get system permissions catalog & default mappings
+ */
+export const getPermissionsCatalog = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      data: {
+        permissions: ALL_PERMISSIONS_METADATA,
+        roleDefaults: ROLE_DEFAULT_PERMISSIONS,
+        roles: Object.values(ROLES),
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch permissions catalog' });
+  }
+};
 
 /**
  * List all users with optional role and search filters (Superadmin, Admin)
@@ -32,26 +56,41 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 /**
- * Update User Role or Custom Permissions (Superadmin only)
+ * Update User Role or Custom Permissions (Superadmin or Admin with permissions.manage)
  */
 export const updateUserRole = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { role, customPermissions, status } = req.body;
 
-    // Security: Only Superadmin can promote or modify roles
-    if (req.user?.role !== ROLES.SUPERADMIN) {
+    const caller = req.user;
+    if (!caller) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+    // Permissions check: Superadmin, Admin, or user with PERMISSIONS_MANAGE
+    const isSuperAdmin = caller.role === ROLES.SUPERADMIN;
+    const isAdmin = caller.role === ROLES.ADMIN;
+    const hasPermManage = caller.customPermissions?.includes(PERMISSIONS.PERMISSIONS_MANAGE);
+
+    if (!isSuperAdmin && !isAdmin && !hasPermManage) {
       return res.status(403).json({
         success: false,
-        message: 'Only the Superadmin can modify user roles or assign permissions.',
+        message: 'Only Administrators can modify user roles or assign permissions.',
       });
     }
 
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
+    // Only Superadmin can promote to or alter Superadmin
+    if (role === ROLES.SUPERADMIN && !isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only a Superadmin can assign or modify the Superadmin role.',
+      });
+    }
+
     // Protect Superadmin self-deactivation
-    if (user._id.toString() === req.user?._id.toString() && role !== ROLES.SUPERADMIN) {
+    if (user._id.toString() === caller._id.toString() && role && role !== ROLES.SUPERADMIN && isSuperAdmin) {
       return res.status(400).json({
         success: false,
         message: 'Superadmin cannot revoke their own Superadmin status.',
@@ -60,25 +99,30 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
 
     const previousRole = user.role;
     if (role) user.role = role as UserRole;
-    if (customPermissions) user.customPermissions = customPermissions;
+    if (customPermissions !== undefined) user.customPermissions = customPermissions;
     if (status) user.status = status;
 
     await user.save();
 
     await AuditLog.create({
-      actorId: req.user?._id,
-      actorEmail: req.user?.email,
-      action: 'USER_ROLE_CHANGE',
+      actorId: caller._id,
+      actorEmail: caller.email,
+      action: 'USER_ROLE_AND_PERMISSIONS_CHANGE',
       resourceType: 'User',
       resourceId: user._id.toString(),
-      metadata: { previousRole, newRole: user.role, targetEmail: user.email },
+      metadata: {
+        previousRole,
+        newRole: user.role,
+        targetEmail: user.email,
+        customPermissions: user.customPermissions,
+      },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
     });
 
     return res.status(200).json({
       success: true,
-      message: 'User permissions updated successfully',
+      message: 'User role and permissions updated successfully',
       data: user,
     });
   } catch (error) {
