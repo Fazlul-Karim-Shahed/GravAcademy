@@ -2,10 +2,11 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ILiveClass extends Document {
   _id: mongoose.Types.ObjectId;
-  batchId: mongoose.Types.ObjectId;
+  batchId?: mongoose.Types.ObjectId;
   teacherId: mongoose.Types.ObjectId;
   title: string;
-  provider: 'zoom' | 'google_meet';
+  isFreePublic: boolean;
+  provider: 'google_meet' | 'zoom';
   meetingUrl: string;
   meetingPassword?: string;
   startTime: Date;
@@ -21,7 +22,7 @@ const LiveClassSchema = new Schema<ILiveClass>(
     batchId: {
       type: Schema.Types.ObjectId,
       ref: 'Batch',
-      required: true,
+      required: false,
       index: true,
     },
     teacherId: {
@@ -31,7 +32,8 @@ const LiveClassSchema = new Schema<ILiveClass>(
       index: true,
     },
     title: { type: String, required: true, trim: true },
-    provider: { type: String, enum: ['zoom', 'google_meet'], required: true },
+    isFreePublic: { type: Boolean, default: false, index: true },
+    provider: { type: String, enum: ['google_meet', 'zoom'], default: 'google_meet' },
     meetingUrl: { type: String, required: true, trim: true },
     meetingPassword: { type: String, trim: true },
     startTime: { type: Date, required: true, index: true },
@@ -42,6 +44,7 @@ const LiveClassSchema = new Schema<ILiveClass>(
   { timestamps: true }
 );
 
+LiveClassSchema.index({ isFreePublic: 1, startTime: 1 });
 LiveClassSchema.index({ batchId: 1, startTime: 1 });
 
 export const LiveClass = mongoose.model<ILiveClass>('LiveClass', LiveClassSchema);

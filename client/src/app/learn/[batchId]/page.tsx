@@ -64,6 +64,7 @@ interface BatchHierarchyData {
     name: string;
     scheduleText?: string;
     weeklySchedule?: ScheduleSlot[];
+    meetingUrl?: string;
     courseId: {
       _id: string;
       title: string;
@@ -187,28 +188,43 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
               </h1>
             </div>
 
-            {/* Batch Routine Pill / Day Badges */}
-            {data.batch.weeklySchedule && data.batch.weeklySchedule.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto">
-                {data.batch.weeklySchedule.map((slot, sIdx) => {
-                  const dInfo = getDayInfo(slot.day);
-                  return (
-                    <span
-                      key={sIdx}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/60 text-xs text-blue-700 dark:text-blue-300 font-bold"
-                    >
-                      <Calendar className="w-3 h-3 text-blue-500" />
-                      <span>{dInfo.shortBn} ({formatTo12Hour(slot.startTime)}{slot.endTime ? ` - ${formatTo12Hour(slot.endTime)}` : ''})</span>
-                    </span>
-                  );
-                })}
-              </div>
-            ) : data.batch.scheduleText ? (
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 font-semibold self-start sm:self-auto">
-                <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span>{data.batch.scheduleText}</span>
-              </div>
-            ) : null}
+            {/* Batch Routine Pill / Day Badges & Direct Google Meet Join */}
+            <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+              {data.batch.meetingUrl && (
+                <a
+                  href={data.batch.meetingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all shrink-0"
+                >
+                  <Video className="w-4 h-4" />
+                  <span>ক্লাসে যোগ দিন (Google Meet)</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+
+              {data.batch.weeklySchedule && data.batch.weeklySchedule.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {data.batch.weeklySchedule.map((slot, sIdx) => {
+                    const dInfo = getDayInfo(slot.day);
+                    return (
+                      <span
+                        key={sIdx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/60 text-xs text-blue-700 dark:text-blue-300 font-bold"
+                      >
+                        <Calendar className="w-3 h-3 text-blue-500" />
+                        <span>{dInfo.shortBn} ({formatTo12Hour(slot.startTime)}{slot.endTime ? ` - ${formatTo12Hour(slot.endTime)}` : ''})</span>
+                      </span>
+                    );
+                  })}
+                </div>
+              ) : data.batch.scheduleText ? (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 font-semibold">
+                  <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>{data.batch.scheduleText}</span>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -26,6 +26,7 @@ export const createBatchSchema = z.object({
   enrollmentCloseDate: z.string().datetime().optional(),
   capacity: z.number().min(0).optional(),
   scheduleText: z.string().optional(),
+  meetingUrl: z.string().optional(),
   weeklySchedule: z.array(scheduleSlotSchema).optional(),
   // CRITICAL FEATURE: Copy content from an existing batch
   copyFromBatchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Source Batch ID').optional(),
@@ -152,9 +153,20 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       enrollmentCloseDate,
       capacity,
       scheduleText,
+      meetingUrl,
       weeklySchedule,
       copyFromBatchId,
     } = req.body;
+
+    // Helper to generate a random 3-4-3 Google Meet room code (e.g. meet.google.com/abc-defg-hij)
+    const generateMeetUrl = () => {
+      const chars = 'abcdefghijklmnopqrstuvwxyz';
+      const randSeg = (len: number) =>
+        Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      return `https://meet.google.com/${randSeg(3)}-${randSeg(4)}-${randSeg(3)}`;
+    };
+
+    const finalMeetingUrl = meetingUrl && meetingUrl.trim().length > 0 ? meetingUrl.trim() : generateMeetUrl();
 
     // 1. Create the new destination Batch record
     const newBatch = await Batch.create({
@@ -168,6 +180,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       enrollmentCloseDate,
       capacity,
       scheduleText,
+      meetingUrl: finalMeetingUrl,
       weeklySchedule: Array.isArray(weeklySchedule) ? weeklySchedule : [],
       sourceBatchId: copyFromBatchId ? new mongoose.Types.ObjectId(copyFromBatchId) : undefined,
     });
@@ -303,6 +316,7 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
     if (status !== undefined) batch.status = status;
     if (fee !== undefined) batch.fee = Number(fee);
     if (scheduleText !== undefined) batch.scheduleText = scheduleText;
+    if (req.body.meetingUrl !== undefined) batch.meetingUrl = req.body.meetingUrl;
     if (weeklySchedule !== undefined && Array.isArray(weeklySchedule)) {
       batch.weeklySchedule = weeklySchedule;
     }
@@ -406,6 +420,7 @@ export const getScheduleOverview = async (req: Request, res: Response) => {
               startTime: slot.startTime,
               endTime: slot.endTime || '',
               topic: slot.topic || '',
+              meetingUrl: b.meetingUrl || '',
             });
           }
         });

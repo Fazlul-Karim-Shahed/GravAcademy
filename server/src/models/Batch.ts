@@ -25,6 +25,7 @@ export interface IBatch extends Document {
   assignedTeachers: mongoose.Types.ObjectId[];
   scheduleText?: string;
   weeklySchedule?: IScheduleSlot[];
+  meetingUrl?: string; // Auto-generated or custom Google Meet link for batch classes
   sourceBatchId?: mongoose.Types.ObjectId; // Tracking provenance if copied
   createdAt: Date;
   updatedAt: Date;
@@ -62,6 +63,7 @@ const BatchSchema = new Schema<IBatch>(
     capacity: { type: Number, min: 0 },
     assignedTeachers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     scheduleText: { type: String, trim: true },
+    meetingUrl: { type: String, trim: true },
     weeklySchedule: [
       {
         day: {

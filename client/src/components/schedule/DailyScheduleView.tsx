@@ -13,6 +13,8 @@ import {
   Sparkles,
   ChevronRight,
   Filter,
+  Video,
+  ExternalLink,
 } from 'lucide-react';
 
 interface ScheduleClassItem {
@@ -30,6 +32,7 @@ interface ScheduleClassItem {
   startTime: string;
   endTime?: string;
   topic?: string;
+  meetingUrl?: string;
 }
 
 interface DailyScheduleData {
@@ -219,36 +222,51 @@ export default function DailyScheduleView({
               </div>
 
               {/* Action Button */}
-              <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between text-xs mt-1">
+              <div className="pt-2.5 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between text-xs mt-1 gap-2">
                 <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
                   {item.day}
                 </span>
 
-                {role === 'student' ? (
-                  <Link
-                    href={`/learn/${item.batchId}`}
-                    className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    <span>ক্লাসরুমে যান</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                ) : role === 'teacher' ? (
-                  <Link
-                    href={`/admin/batches/${item.batchId}/curriculum`}
-                    className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-                  >
-                    <span>কারিকুলাম</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/admin/batches/${item.batchId}/edit`}
-                    className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    <span>ম্যানেজ করুন</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                )}
+                <div className="flex items-center gap-2">
+                  {item.meetingUrl && (
+                    <a
+                      href={item.meetingUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-xs transition-colors"
+                      title="সরাসরি Google Meet ক্লাসে যুক্ত হন"
+                    >
+                      <Video className="w-3 h-3" />
+                      <span>ক্লাসে যোগ দিন</span>
+                    </a>
+                  )}
+
+                  {role === 'student' ? (
+                    <Link
+                      href={`/learn/${item.batchId}`}
+                      className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline text-xs"
+                    >
+                      <span>ক্লাসরুম</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  ) : role === 'teacher' ? (
+                    <Link
+                      href={`/admin/batches/${item.batchId}/curriculum`}
+                      className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline text-xs"
+                    >
+                      <span>কারিকুলাম</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/admin/batches/${item.batchId}/edit`}
+                      className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline text-xs"
+                    >
+                      <span>ম্যানেজ</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           ))}

@@ -6,9 +6,10 @@ import { AuthenticatedRequest } from '../middleware/auth';
 import { ROLES } from '../types/roles';
 
 export const createLiveClassSchema = z.object({
-  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
   title: z.string().min(3),
-  provider: z.enum(['zoom', 'google_meet']),
+  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID').optional(),
+  isFreePublic: z.boolean().default(false),
+  provider: z.enum(['google_meet', 'zoom']).default('google_meet'),
   meetingUrl: z.string().url('Invalid meeting URL'),
   meetingPassword: z.string().optional(),
   startTime: z.string().datetime(),
@@ -17,14 +18,33 @@ export const createLiveClassSchema = z.object({
 });
 
 /**
- * List live classes for a batch (or all assigned for teacher/admin)
+ * Public endpoint to list all upcoming Free Public Masterclasses / Webinars
+ */
+export const getFreePublicClasses = async (req: Request, res: Response) => {
+  try {
+    const freeClasses = await LiveClass.find({
+      isFreePublic: true,
+      isPublished: true,
+    })
+      .populate('teacherId', 'name email avatarUrl')
+      .sort({ startTime: 1 });
+
+    return res.status(200).json({ success: true, count: freeClasses.length, data: freeClasses });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch free classes' });
+  }
+};
+
+/**
+ * List live classes (Teachers/Admins or filtered by batch)
  */
 export const getLiveClasses = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { batchId } = req.query;
+    const { batchId, isFreePublic } = req.query;
     const filter: any = {};
 
     if (batchId) filter.batchId = batchId;
+    if (isFreePublic !== undefined) filter.isFreePublic = isFreePublic === 'true';
 
     const liveClasses = await LiveClass.find(filter)
       .populate('batchId', 'name courseId')
@@ -38,7 +58,7 @@ export const getLiveClasses = async (req: AuthenticatedRequest, res: Response) =
 };
 
 /**
- * Schedule a new Live Class (Teacher, Admin, Superadmin)
+ * Schedule a new Class or Free Public Class (Teacher, Admin, Superadmin)
  */
 export const createLiveClass = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -52,12 +72,12 @@ export const createLiveClass = async (req: AuthenticatedRequest, res: Response) 
 
     return res.status(201).json({
       success: true,
-      message: 'Live class scheduled successfully',
+      message: data.isFreePublic ? 'Free Masterclass scheduled successfully' : 'Batch class scheduled successfully',
       data: liveClass,
     });
   } catch (error: any) {
     console.error('Create live class error:', error);
-    return res.status(500).json({ success: false, message: 'Failed to schedule live class' });
+    return res.status(500).json({ success: false, message: 'Failed to schedule class' });
   }
 };
 

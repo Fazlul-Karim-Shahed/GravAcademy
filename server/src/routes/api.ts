@@ -185,7 +185,8 @@ router.get('/batches/:batchId/exams', authenticate, examCtrl.getBatchExams);
 router.get('/exams/:examId/take', authenticate, examCtrl.getStudentExamQuestions);
 router.post('/exams/:examId/submit', authenticate, examCtrl.submitExam);
 
-// --- LIVE CLASS ROUTES ---
+// --- LIVE CLASS & FREE PUBLIC CLASSES ROUTES ---
+router.get('/free-classes', liveCtrl.getFreePublicClasses);
 router.get('/live-classes', authenticate, liveCtrl.getLiveClasses);
 router.get('/live-classes/my', authenticate, liveCtrl.getStudentLiveClasses);
 router.post(

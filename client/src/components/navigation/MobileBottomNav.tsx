@@ -48,10 +48,10 @@ export const MobileBottomNav: React.FC = () => {
       isActive: pathname.startsWith('/courses'),
     },
     {
-      label: 'লাইভ ক্লাস',
-      href: '/live-classes',
+      label: 'ফ্রি ক্লাস',
+      href: '/free-classes',
       icon: Video,
-      isActive: pathname.startsWith('/live-classes'),
+      isActive: pathname.startsWith('/free-classes') || pathname.startsWith('/live-classes'),
     },
     {
       label: user ? 'ড্যাশবোর্ড' : 'একাউন্ট',
