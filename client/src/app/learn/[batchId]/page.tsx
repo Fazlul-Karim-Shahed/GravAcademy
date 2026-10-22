@@ -288,7 +288,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                   {activeLesson.description ? (
                     <div
                       className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-normal prose prose-slate dark:prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{ __html: activeLesson.description }}
+                      dangerouslySetInnerHTML={{
+                        __html: formatMarkdownContent(activeLesson.description),
+                      }}
                     />
                   ) : (
                     <p className="text-xs sm:text-sm text-slate-400 italic">
@@ -587,4 +589,30 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
     </div>
   );
+}
+
+function formatMarkdownContent(text: string): string {
+  if (!text) return '';
+  // If already full HTML formatted
+  if (text.startsWith('<p>') || text.startsWith('<div>') || text.startsWith('<h2>')) {
+    return text;
+  }
+
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  html = html.replace(/^### (.*$)/gim, '<h3 class="text-base font-bold my-2 text-blue-600 dark:text-blue-400">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 class="text-lg font-bold my-2 text-slate-900 dark:text-white">$1</h2>');
+  html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
+  html = html.replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/gim, '<u>$1</u>');
+  html = html.replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-3 my-2 text-slate-600 dark:text-slate-300 italic">$1</blockquote>');
+  html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" class="text-blue-600 underline font-medium">$1</a>');
+  html = html.replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>');
+  html = html.replace(/^([0-9]+)\. (.*$)/gim, '<li class="ml-4 list-decimal">$2</li>');
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-xs text-rose-500 font-mono">$1</code>');
+
+  return html.replace(/\n/g, '<br />');
 }
