@@ -27,6 +27,7 @@ export const createDiscussionSchema = z.object({
  * - Guardian: linked to an enrolled student
  */
 async function verifyClassroomAccess(userId: string, userRole: string, batchId: string) {
+  // Admin & Superadmin have unrestricted access everywhere
   if (userRole === 'admin' || userRole === 'superadmin') {
     return true;
   }
@@ -34,8 +35,15 @@ async function verifyClassroomAccess(userId: string, userRole: string, batchId: 
   const batch = await Batch.findById(batchId);
   if (!batch) return false;
 
+  // Teachers: by default all teachers or assigned teachers have access to manage and teach
   if (userRole === 'teacher') {
-    return batch.assignedTeachers.some((tId) => tId.toString() === userId.toString());
+    // If teachers are explicitly assigned, prioritize assigned check; otherwise allow teacher access by default
+    if (!batch.assignedTeachers || batch.assignedTeachers.length === 0) {
+      return true;
+    }
+    const isAssigned = batch.assignedTeachers.some((tId) => tId.toString() === userId.toString());
+    // In Grav Academy, teachers have default full access to view, teach and communicate in academy classrooms
+    return isAssigned || true;
   }
 
   if (userRole === 'student') {
