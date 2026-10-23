@@ -183,12 +183,16 @@ export default function StudentDashboard() {
               {batches.map((batch) => (
                 <div
                   key={batch._id}
-                  className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-5 flex flex-col justify-between hover:border-blue-400/80 dark:hover:border-blue-500/80 hover:shadow-md transition-all duration-200"
+                  className="group relative overflow-hidden rounded-[28px] bg-white/90 dark:bg-slate-900/85 backdrop-blur-xl border-2 border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-6 flex flex-col justify-between hover:border-blue-400/80 dark:hover:border-blue-500/80 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 dark:hover:shadow-blue-500/10 transition-all duration-300"
                 >
-                  <div className="space-y-3">
+                  {/* Subtle cute ambient light inside card */}
+                  <div className="absolute -top-12 -right-12 w-28 h-28 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/15 transition-all" />
+                  <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-indigo-500/5 dark:bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                  <div className="relative z-10 space-y-3">
                     {/* Class Tag (Aligned Right) */}
                     <div className="flex items-center justify-end">
-                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200/70 dark:border-slate-700/70">
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800/90 px-3 py-1 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
                         {batch.courseId?.gradeLevel || 'একাডেমিক'}
                       </span>
                     </div>
@@ -198,9 +202,12 @@ export default function StudentDashboard() {
                       <h3 className="text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                         {batch.courseId?.title || batch.name}
                       </h3>
-                      <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                        ব্যাচ: <span className="font-bold">{batch.name}</span>
-                      </p>
+                      <div className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-md bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                          {batch.name}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
