@@ -138,9 +138,6 @@ export default function StudentDashboard() {
                 </div>
                 <span>আপনার সক্রিয় ব্যাচসমূহ</span>
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                ক্লাসরুম ও পাঠ্যক্রমের স্টাডি ম্যাটেরিয়ালে সরাসরি প্রবেশ করুন
-              </p>
             </div>
             <Link href="/courses" className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500 font-black hidden sm:flex items-center gap-1">
               <span>সকল কোর্স তালিকা</span>
