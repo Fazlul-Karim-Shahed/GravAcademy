@@ -17,8 +17,11 @@ import {
   CheckCircle,
   ArrowRight,
   MessageSquare,
+  RefreshCw,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
+
+import { usePathname } from 'next/navigation';
 
 interface Batch {
   _id: string;
@@ -34,7 +37,8 @@ interface Batch {
 }
 
 export default function TeacherPanelPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const pathname = usePathname();
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,21 +49,37 @@ export default function TeacherPanelPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    loadTeacherBatches();
-  }, [user]);
+    if (authLoading) return;
+    if (user?.id) {
+      loadTeacherBatches(user.id);
+    } else {
+      setBatches([]);
+      setLoading(false);
+    }
 
-  const loadTeacherBatches = async () => {
-    setLoading(true);
+    // Also auto-refresh when tab/window is refocused
+    const handleFocus = () => {
+      if (user?.id) {
+        loadTeacherBatches(user.id, false);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [user?.id, authLoading, pathname]);
+
+  const loadTeacherBatches = async (teacherId: string, showSpinner = true) => {
+    if (showSpinner) setLoading(true);
     try {
-      const url = user?.id ? `/batches?teacherId=${user.id}` : '/batches';
-      const res = await api.get(url);
+      // Add timestamp query parameter to bypass browser/axios cache on page switch
+      const res = await api.get(`/batches?teacherId=${teacherId}&_t=${Date.now()}`);
       if (res.data.success) {
-        setBatches(res.data.data);
+        setBatches(res.data.data || []);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching teacher batches:', err);
     } finally {
-      setLoading(false);
+      if (showSpinner) setLoading(false);
     }
   };
 
@@ -150,7 +170,7 @@ export default function TeacherPanelPage() {
         />
 
         {/* Batches Management */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Your Assigned Course Batches
@@ -159,6 +179,16 @@ export default function TeacherPanelPage() {
               Select a batch to inspect curriculum or add new educational modules.
             </p>
           </div>
+
+          <button
+            onClick={() => user?.id && loadTeacherBatches(user.id, true)}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+            title="রিফ্রেশ করুন"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 ${loading ? 'animate-spin' : ''}`} />
+            <span>আপডেট করুন</span>
+          </button>
         </div>
 
         {loading ? (
@@ -166,6 +196,16 @@ export default function TeacherPanelPage() {
             {[1, 2].map((i) => (
               <div key={i} className="h-44 rounded-2xl bg-slate-200/60 dark:bg-slate-900/60 animate-pulse border border-slate-200/80 dark:border-slate-800" />
             ))}
+          </div>
+        ) : batches.length === 0 ? (
+          <div className="rounded-3xl p-12 text-center bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+            <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
+              আপনাকে এখনো কোনো ব্যাচ বা কোর্সে অ্যাসাইন করা হয়নি
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+              অ্যাডমিন যখন আপনাকে কোনো কোর্স বা ব্যাচে শিক্ষক হিসেবে নিযুক্ত করবেন, তখন সেগুলো এখানে স্বয়ংক্রিয়ভাবে দৃশ্যমান হবে।
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

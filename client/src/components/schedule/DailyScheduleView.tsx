@@ -66,12 +66,19 @@ export default function DailyScheduleView({
 
   useEffect(() => {
     fetchScheduleOverview();
-  }, [user]);
 
-  const fetchScheduleOverview = async () => {
-    setLoading(true);
+    const handleFocus = () => {
+      fetchScheduleOverview(false);
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [user?.id]);
+
+  const fetchScheduleOverview = async (showSpinner = true) => {
+    if (showSpinner) setLoading(true);
     try {
-      const res = await api.get('/batches/schedule/overview');
+      const res = await api.get(`/batches/schedule/overview?_t=${Date.now()}`);
       if (res.data?.success) {
         setData(res.data);
         if (res.data.today?.day) {
@@ -81,7 +88,7 @@ export default function DailyScheduleView({
     } catch (err) {
       console.error('Failed to fetch schedule overview:', err);
     } finally {
-      setLoading(false);
+      if (showSpinner) setLoading(false);
     }
   };
 

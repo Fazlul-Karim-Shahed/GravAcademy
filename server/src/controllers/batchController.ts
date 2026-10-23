@@ -43,7 +43,15 @@ export const getBatches = async (req: Request, res: Response) => {
     const filter: any = {};
 
     if (teacherId && mongoose.Types.ObjectId.isValid(teacherId as string)) {
-      filter.assignedTeachers = teacherId;
+      const teacherObjId = new mongoose.Types.ObjectId(teacherId as string);
+      // Find all courses where this teacher is an assigned instructor
+      const teacherCourses = await Course.find({ instructors: teacherObjId }).select('_id');
+      const teacherCourseIds = teacherCourses.map((c) => c._id);
+
+      filter.$or = [
+        { assignedTeachers: teacherObjId },
+        { courseId: { $in: teacherCourseIds } },
+      ];
     }
 
     if (courseId) {
@@ -425,17 +433,23 @@ export const getScheduleOverview = async (req: AuthenticatedRequest, res: Respon
         const enrolledBatchIds = studentEnrollments.map((e) => e.batchId);
         filter._id = { $in: enrolledBatchIds };
       } else if (currentUser.role === 'teacher') {
-        // Find batches where this teacher is assigned
+        // Find batches where this teacher is assigned directly or via course instructors
+        const teacherCourses = await Course.find({ instructors: currentUser._id }).select('_id');
+        const teacherCourseIds = teacherCourses.map((c) => c._id);
+
         const teacherAssignedBatches = await Batch.find({
-          assignedTeachers: currentUser._id,
+          $or: [
+            { assignedTeachers: currentUser._id },
+            { courseId: { $in: teacherCourseIds } },
+          ],
           status: { $in: ['active', 'upcoming'] },
         }).select('_id');
 
         if (teacherAssignedBatches.length > 0) {
           filter._id = { $in: teacherAssignedBatches.map((b) => b._id) };
         } else {
-          // If teacher is not assigned to any specific batch yet, keep empty or show unassigned batches
-          filter.assignedTeachers = currentUser._id;
+          // If teacher is not assigned to any specific batch or course yet, return nothing for this teacher
+          filter._id = { $in: [] };
         }
       }
     }
