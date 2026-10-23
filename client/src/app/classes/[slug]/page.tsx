@@ -338,10 +338,10 @@ export default function DedicatedClassPage() {
               <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/60">
                 <Layers className="w-4 h-4" />
               </div>
-              <span>{className}-এর কোর্স ও ব্যাচসমূহ</span>
+              <span>{className}-এর কোর্সসমূহ</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-              আপনার পছন্দের কোর্সটি বেছে নিয়ে ক্লাসরুমে এনরোল করুন
+              আপনার পছন্দের কোর্সটি বেছে নিয়ে ক্লাসরুমে যুক্ত হোন
             </p>
           </div>
           <Link
