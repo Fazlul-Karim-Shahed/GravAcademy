@@ -39,8 +39,12 @@ export const createBatchSchema = z.object({
  */
 export const getBatches = async (req: Request, res: Response) => {
   try {
-    const { courseId, status } = req.query;
+    const { courseId, status, teacherId } = req.query;
     const filter: any = {};
+
+    if (teacherId && mongoose.Types.ObjectId.isValid(teacherId as string)) {
+      filter.assignedTeachers = teacherId;
+    }
 
     if (courseId) {
       if (mongoose.Types.ObjectId.isValid(courseId as string)) {
@@ -392,7 +396,7 @@ export const deleteBatch = async (req: AuthenticatedRequest, res: Response) => {
  * Get Comprehensive Schedule Overview (organized by Day of Week & Today's classes)
  * Usable by Admin, Teachers, and Students
  */
-export const getScheduleOverview = async (req: Request, res: Response) => {
+export const getScheduleOverview = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { day, batchId, status } = req.query;
 
@@ -404,6 +408,36 @@ export const getScheduleOverview = async (req: Request, res: Response) => {
     }
     if (batchId && mongoose.Types.ObjectId.isValid(batchId as string)) {
       filter._id = batchId;
+    }
+
+    // Role-based personalization:
+    // 1. Admin/Superadmin: sees all batches
+    // 2. Student: sees only batches they are actively enrolled in
+    // 3. Teacher: sees only batches they are assigned to (or if no batches specifically assigned, all active batches)
+    const currentUser = req.user;
+    if (currentUser) {
+      if (currentUser.role === 'student') {
+        const studentEnrollments = await Enrollment.find({
+          studentId: currentUser._id,
+          status: { $in: ['enrolled', 'completed'] },
+        }).select('batchId');
+
+        const enrolledBatchIds = studentEnrollments.map((e) => e.batchId);
+        filter._id = { $in: enrolledBatchIds };
+      } else if (currentUser.role === 'teacher') {
+        // Find batches where this teacher is assigned
+        const teacherAssignedBatches = await Batch.find({
+          assignedTeachers: currentUser._id,
+          status: { $in: ['active', 'upcoming'] },
+        }).select('_id');
+
+        if (teacherAssignedBatches.length > 0) {
+          filter._id = { $in: teacherAssignedBatches.map((b) => b._id) };
+        } else {
+          // If teacher is not assigned to any specific batch yet, keep empty or show unassigned batches
+          filter.assignedTeachers = currentUser._id;
+        }
+      }
     }
 
     const batches = await Batch.find(filter)

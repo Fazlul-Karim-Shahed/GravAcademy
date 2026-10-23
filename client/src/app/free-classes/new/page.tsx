@@ -16,7 +16,6 @@ import {
   Clock,
   Link2,
   ShieldAlert,
-  Sparkles,
 } from 'lucide-react';
 
 export default function ScheduleFreeClassPage() {
@@ -104,7 +103,7 @@ export default function ScheduleFreeClassPage() {
         {/* Page Title */}
         <div className="mb-8">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 text-xs font-semibold mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> পাবলিক ফ্রি ক্লাস ও মাস্টারক্লাস
+            <Video className="w-3.5 h-3.5" /> পাবলিক ফ্রি ক্লাস ও মাস্টারক্লাস
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             নতুন উন্মুক্ত ফ্রি ক্লাস শিডিউল করুন
@@ -166,16 +165,26 @@ export default function ScheduleFreeClassPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  সরাসরি জয়েন লিংক (Meeting URL) *
+                  সরাসরি জয়েন লিংক (Meeting URL)
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={form.meetingUrl}
-                  onChange={(e) => setForm({ ...form, meetingUrl: e.target.value })}
-                  placeholder="https://meet.google.com/xxx-yyyy-zzz"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={form.meetingUrl}
+                    onChange={(e) => setForm({ ...form, meetingUrl: e.target.value })}
+                    placeholder={
+                      form.provider === 'google_meet'
+                        ? 'e.g. https://meet.google.com/abc-defg-hij'
+                        : 'https://zoom.us/j/...'
+                    }
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+                {form.provider === 'google_meet' && (
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+                    খালি রাখলে সিস্টেম স্বয়ংক্রিয়ভাবে Google Meet লিংক তৈরি করবে।
+                  </p>
+                )}
               </div>
             </div>
 

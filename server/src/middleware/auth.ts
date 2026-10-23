@@ -52,6 +52,34 @@ export const authenticate = async (req: AuthenticatedRequest, res: Response, nex
 };
 
 /**
+ * Optional authentication: populates req.user if valid token provided, but doesn't block unauthenticated guests
+ */
+export const optionalAuthenticate = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    let token: string | undefined;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return next();
+    }
+
+    const secret = process.env.JWT_SECRET || 'grav_academy_jwt_secret_dev';
+    const decoded = jwt.verify(token, secret) as { userId: string };
+
+    const user = await User.findById(decoded.userId);
+    if (user && user.status !== 'suspended' && user.status !== 'deactivated') {
+      req.user = user;
+    }
+    return next();
+  } catch (error) {
+    // Soft ignore token failure for optional auth
+    return next();
+  }
+};
+
+/**
  * Require specific user role(s)
  */
 export const requireRole = (...roles: UserRole[]) => {

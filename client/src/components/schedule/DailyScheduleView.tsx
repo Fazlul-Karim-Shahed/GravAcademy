@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { DAYS_OF_WEEK, DayOfWeek, formatTo12Hour } from '@/lib/schedule';
 import {
   Calendar,
@@ -58,13 +59,14 @@ export default function DailyScheduleView({
   title = "আজকের ও সাপ্তাহিক ক্লাস শিডিউল",
   subtitle,
 }: DailyScheduleViewProps) {
+  const { user } = useAuth();
   const [data, setData] = useState<DailyScheduleData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<DayOfWeek>('saturday');
 
   useEffect(() => {
     fetchScheduleOverview();
-  }, []);
+  }, [user]);
 
   const fetchScheduleOverview = async () => {
     setLoading(true);

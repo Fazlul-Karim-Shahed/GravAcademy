@@ -46,12 +46,13 @@ export default function TeacherPanelPage() {
 
   useEffect(() => {
     loadTeacherBatches();
-  }, []);
+  }, [user]);
 
   const loadTeacherBatches = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/batches');
+      const url = user?.id ? `/batches?teacherId=${user.id}` : '/batches';
+      const res = await api.get(url);
       if (res.data.success) {
         setBatches(res.data.data);
       }

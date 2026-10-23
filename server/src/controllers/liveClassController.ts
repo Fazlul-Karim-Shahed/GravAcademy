@@ -10,7 +10,7 @@ export const createLiveClassSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID').optional(),
   isFreePublic: z.boolean().default(false),
   provider: z.enum(['google_meet', 'zoom']).default('google_meet'),
-  meetingUrl: z.string().url('Invalid meeting URL'),
+  meetingUrl: z.string().url('Invalid meeting URL').optional().or(z.literal('')),
   meetingPassword: z.string().optional(),
   startTime: z.string().datetime(),
   durationMinutes: z.number().min(15).default(60),
@@ -65,8 +65,22 @@ export const createLiveClass = async (req: AuthenticatedRequest, res: Response) 
     const data = req.body;
     const teacherId = req.user?._id;
 
+    // Helper to generate a random 3-4-3 Google Meet room code (e.g. meet.google.com/abc-defg-hij)
+    const generateMeetUrl = () => {
+      const chars = 'abcdefghijklmnopqrstuvwxyz';
+      const randSeg = (len: number) =>
+        Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      return `https://meet.google.com/${randSeg(3)}-${randSeg(4)}-${randSeg(3)}`;
+    };
+
+    let meetingUrl = data.meetingUrl?.trim();
+    if (!meetingUrl && data.provider === 'google_meet') {
+      meetingUrl = generateMeetUrl();
+    }
+
     const liveClass = await LiveClass.create({
       ...data,
+      meetingUrl,
       teacherId,
     });
 

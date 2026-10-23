@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { authenticate, requireRole, requirePermission } from '../middleware/auth';
+import { authenticate, optionalAuthenticate, requireRole, requirePermission } from '../middleware/auth';
 import { validateRequest } from '../middleware/validate';
 import { ROLES, PERMISSIONS } from '../types/roles';
 
@@ -76,7 +76,7 @@ router.delete(
 
 // --- BATCH ROUTES (Including Copy-from-batch workflow & Weekly Schedule System) ---
 router.get('/batches', batchCtrl.getBatches);
-router.get('/batches/schedule/overview', batchCtrl.getScheduleOverview);
+router.get('/batches/schedule/overview', optionalAuthenticate, batchCtrl.getScheduleOverview);
 router.get('/batches/:id', batchCtrl.getBatchById);
 router.get('/batches/:batchId/hierarchy', batchCtrl.getBatchHierarchy);
 router.post(
