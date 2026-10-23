@@ -21,6 +21,7 @@ import {
   Award,
   Video,
   FileText,
+  PlayCircle,
 } from 'lucide-react';
 import {
   getSharedAcademicClasses,
@@ -203,13 +204,10 @@ export default function DedicatedClassPage() {
 
           {/* Hero Content */}
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/80 text-blue-700 dark:text-blue-300 text-xs font-bold mb-4 shadow-xs">
-              <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              <span>একাডেমিক কেয়ার প্রোগ্রাম</span>
-            </div>
-
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
-              {className}: {subtitle}
+              {subtitle.toLowerCase().includes(className.toLowerCase())
+                ? subtitle
+                : `${className}: ${subtitle}`}
             </h1>
 
             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-6">
@@ -224,13 +222,6 @@ export default function DedicatedClassPage() {
                 <span>কোর্সসমূহ দেখুন</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
-              <Link
-                href="/free-classes"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border-2 border-slate-200/90 dark:border-slate-800/90 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold shadow-xs transition-all"
-              >
-                <Video className="w-4 h-4 text-emerald-500" />
-                <span>ফ্রি ডেমো ক্লাস</span>
-              </Link>
             </div>
           </div>
         </div>
@@ -384,82 +375,158 @@ export default function DedicatedClassPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <div
-                key={course._id}
-                className="group relative overflow-hidden rounded-[28px] bg-gradient-to-br from-blue-50/60 via-white/95 to-indigo-50/50 dark:from-slate-900/95 dark:via-[#0c1228]/95 dark:to-indigo-950/30 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500/70 shadow-md hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-indigo-500/10 transition-all duration-300"
-              >
-                {/* Ambient Color Glow Orbs */}
-                <div className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-blue-500/15 to-indigo-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-purple-500/10 to-teal-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {courses.map((c, idx) => {
+              const cardThemes = [
+                {
+                  gradient: 'from-violet-600 via-indigo-600 to-purple-800',
+                  tag: 'text-violet-200',
+                },
+                {
+                  gradient: 'from-emerald-600 via-teal-600 to-cyan-800',
+                  tag: 'text-teal-200',
+                },
+                {
+                  gradient: 'from-blue-600 via-indigo-600 to-sky-900',
+                  tag: 'text-sky-200',
+                },
+                {
+                  gradient: 'from-rose-600 via-pink-600 to-purple-900',
+                  tag: 'text-rose-200',
+                },
+                {
+                  gradient: 'from-amber-600 via-orange-600 to-rose-900',
+                  tag: 'text-amber-200',
+                },
+              ];
 
-                <div className="relative z-10 space-y-3">
-                  {/* Top Badges */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50/90 dark:bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs">
-                      {course.gradeLevel || className}
-                    </span>
-                    <div className="flex items-baseline gap-1.5">
-                      {course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice ? (
-                        <>
-                          <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400">
-                            ৳{course.discountPrice}
+              const currentTheme = cardThemes[idx % cardThemes.length];
+
+              return (
+                <Link
+                  key={c._id}
+                  href={`/courses/${c.slug || c._id}`}
+                  className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
+                >
+                  <div>
+                    {/* Top Thumbnail Banner with Smooth Curved Mask */}
+                    <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
+                      <div className={`relative w-full h-full ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`}`}>
+                        {c.thumbnailUrl ? (
+                          <img
+                            src={c.thumbnailUrl}
+                            alt={c.title}
+                            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                            <BookOpen className="w-12 h-12 text-white/80 drop-shadow-md mb-2 group-hover:scale-110 transition-transform duration-300" />
+                            <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3">
+                              {c.title}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Gloss Sheen Shine Across Thumbnail */}
+                        <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+
+                        {/* Top Badges Overlay */}
+                        <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
+                          {/* Grade Level Tag */}
+                          <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
+                            <Sparkles className="w-3 h-3 text-amber-300" />
+                            <span>{c.gradeLevel || className}</span>
                           </span>
-                          <span className="text-[10px] text-slate-400 line-through font-semibold">
-                            ৳{course.regularPrice}
+
+                          {/* Cute Live Indicator */}
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
+                            <span className="relative flex h-2 w-2">
+                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                              <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                            </span>
+                            <span>লাইভ ব্যাচ</span>
                           </span>
-                        </>
-                      ) : (
-                        <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400">
-                          {course.regularPrice || course.courseFee ? `৳${course.regularPrice || course.courseFee}` : 'ফ্রি'}
-                        </span>
-                      )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Content Body */}
+                    <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
+                      {/* Course Title */}
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {c.title}
+                      </h3>
+
+                      {/* Short Description */}
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
+                        {c.description
+                          ? c.description.length > 55
+                            ? c.description.slice(0, 55).trim() + '...'
+                            : c.description
+                          : 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রস্তুতির কোর্স।'}
+                      </p>
+
+                      {/* Cute Feature Micro-Badges */}
+                      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                            <PlayCircle className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="line-clamp-1">লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                            <FileText className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="line-clamp-1">অধ্যায়ভিত্তিক লেকচার শিট ও নোট</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                            <Award className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="line-clamp-1">অনলাইন উইকলি টেস্ট ও এনালাইসিস</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Course Title */}
-                  <h3 className="text-base font-black text-slate-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {course.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 font-medium leading-relaxed">
-                    {course.description}
-                  </p>
-
-                  {/* Highlights if any */}
-                  {course.curriculumHighlights && course.curriculumHighlights.length > 0 && (
-                    <div className="space-y-1 pt-1">
-                      {course.curriculumHighlights.slice(0, 2).map((item: string, i: number) => (
-                        <div key={i} className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300 font-medium">
-                          <CheckCircle className="w-3 h-3 text-emerald-500 shrink-0" />
-                          <span className="truncate">{item}</span>
-                        </div>
-                      ))}
+                  {/* Cute Card Bottom: Pricing & Course Details CTA */}
+                  <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                        ভর্তি চলছে
+                      </span>
+                      <div className="flex items-baseline gap-1.5 mt-0.5">
+                        {c.discountPrice && c.discountPrice > 0 && c.regularPrice && c.regularPrice > c.discountPrice ? (
+                          <>
+                            <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                              ৳{c.discountPrice}
+                            </span>
+                            <span className="text-[11px] text-slate-400 line-through font-semibold">
+                              ৳{c.regularPrice}
+                            </span>
+                          </>
+                        ) : c.regularPrice || c.courseFee ? (
+                          <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                            ৳{c.regularPrice || c.courseFee}
+                          </span>
+                        ) : (
+                          <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
+                            ব্যাচভিত্তিক ফি
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                {/* Bottom Actions */}
-                <div className="relative z-10 pt-4 mt-4 border-t border-slate-200/70 dark:border-slate-800/70 flex items-center justify-between">
-                  <Link
-                    href={`/courses/${course._id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-black text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    <span>কোর্স বিস্তারিত</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-
-                  <Link
-                    href={`/courses/${course._id}`}
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black shadow-xs transition-all"
-                  >
-                    এনরোল করুন
-                  </Link>
-                </div>
-              </div>
-            ))}
+                    {/* Cute Action Button: কোর্স বিস্তারিত */}
+                    <div className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102">
+                      <span>কোর্স বিস্তারিত</span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>
