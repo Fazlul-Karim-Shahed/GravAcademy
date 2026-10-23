@@ -51,7 +51,7 @@ export const MobileBottomNav: React.FC = () => {
       label: 'ফ্রি ক্লাস',
       href: '/free-classes',
       icon: Video,
-      isActive: pathname.startsWith('/free-classes') || pathname.startsWith('/live-classes'),
+      isActive: pathname.startsWith('/free-classes'),
     },
     {
       label: user ? 'ড্যাশবোর্ড' : 'একাউন্ট',

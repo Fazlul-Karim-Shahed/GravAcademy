@@ -50,21 +50,9 @@ export default function FreeClassesPage() {
       const res = await api.get('/free-classes');
       if (res.data?.success && Array.isArray(res.data.data)) {
         setClasses(res.data.data);
-      } else {
-        const fallbackRes = await api.get('/live-classes');
-        if (fallbackRes.data?.success) {
-          setClasses(fallbackRes.data.data);
-        }
       }
     } catch (e) {
-      try {
-        const fallbackRes = await api.get('/live-classes');
-        if (fallbackRes.data?.success) {
-          setClasses(fallbackRes.data.data);
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      console.error(e);
     } finally {
       setLoading(false);
     }

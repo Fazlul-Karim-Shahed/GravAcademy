@@ -189,9 +189,9 @@ export default function AdminDashboardPage() {
             </div>
           </Link>
 
-          {/* Card 4: Live Classes */}
+          {/* Card 4: Free Classes */}
           <Link
-            href="/live-classes"
+            href="/free-classes"
             className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300"
           >
             {/* Elegant Large Watermark Background Icon */}
@@ -200,7 +200,7 @@ export default function AdminDashboardPage() {
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-5">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Live Classes
+                  ফ্রি ক্লাস ও সেমিনার
                 </span>
                 <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                   <Video className="w-5 h-5" />
@@ -212,7 +212,7 @@ export default function AdminDashboardPage() {
                   {stats.liveClassesCount}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                  <span>Schedule Sessions</span>
+                  <span>ফ্রি ক্লাস পরিচালনা করুন</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>

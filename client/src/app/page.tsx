@@ -212,11 +212,11 @@ export default function HomePage() {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
-                  href="/live-classes"
+                  href="/free-classes"
                   className="px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-sm border border-slate-300 dark:border-slate-800 transition-all shadow-xs flex items-center gap-2"
                 >
-                  <Video className="w-4 h-4 text-rose-500" />
-                  <span>লাইভ ক্লাসের রুটিন</span>
+                  <Video className="w-4 h-4 text-emerald-500" />
+                  <span>ফ্রি ক্লাস দেখুন</span>
                 </Link>
               </div>
 
@@ -581,10 +581,10 @@ export default function HomePage() {
 
               <div className="mt-8 pt-2">
                 <Link
-                  href="/live-classes"
+                  href="/free-classes"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all"
                 >
-                  <span>আজকের লাইভ ক্লাস শিডিউল দেখুন</span>
+                  <span>ফ্রি ক্লাস ও সেমিনার দেখুন</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -906,7 +906,7 @@ export default function HomePage() {
                 <li><Link href="/courses" className="hover:text-white transition-colors">Class 6 - 8 Foundation</Link></li>
                 <li><Link href="/courses" className="hover:text-white transition-colors">Class 9 - 10 SSC Special</Link></li>
                 <li><Link href="/courses" className="hover:text-white transition-colors">Class 11 - 12 HSC Prep</Link></li>
-                <li><Link href="/live-classes" className="hover:text-white transition-colors">লাইভ ক্লাস শিডিউল</Link></li>
+                <li><Link href="/free-classes" className="hover:text-white transition-colors">ফ্রি ক্লাস ও সেমিনার</Link></li>
               </ul>
             </div>
 

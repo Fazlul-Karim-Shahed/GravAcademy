@@ -60,11 +60,42 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
+/**
+ * Self-ping Keep-Alive mechanism to prevent free hosting platforms
+ * (Render / Vercel Edge / Glitch) from spinning down or sleeping due to inactivity.
+ */
+const setupSelfPing = () => {
+  const SERVER_URL = process.env.SERVER_URL || 'https://gravacademy.onrender.com';
+  const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
+  // Initial delay of 1 minute before starting regular self-pings
+  setTimeout(() => {
+    console.log(`[Keep-Alive] Initializing self-ping monitor for ${SERVER_URL}/health`);
+    
+    setInterval(async () => {
+      try {
+        const pingUrl = `${SERVER_URL}/health`;
+        const res = await fetch(pingUrl, {
+          headers: { 'User-Agent': 'GravAcademy-KeepAlive-Bot/1.0' },
+        });
+        if (res.ok) {
+          console.log(`[Keep-Alive] Self ping success at ${new Date().toLocaleTimeString()} - Status: ${res.status}`);
+        } else {
+          console.warn(`[Keep-Alive] Self ping returned status ${res.status}`);
+        }
+      } catch (err: any) {
+        console.error(`[Keep-Alive] Ping warning:`, err?.message || err);
+      }
+    }, PING_INTERVAL_MS);
+  }, 60 * 1000);
+};
+
 // Start Server & Connect MongoDB Atlas
 const startServer = async () => {
   await connectDB();
   app.listen(PORT, () => {
     console.log(`🚀 Grav Academy API Server running on http://localhost:${PORT}`);
+    setupSelfPing();
   });
 };
 

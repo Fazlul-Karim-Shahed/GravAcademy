@@ -252,27 +252,16 @@ export default function DailyScheduleView({
                   </div>
                 )}
 
-                {/* Teacher / Admin Secondary Quick Links if applicable */}
-                {(role === 'teacher' || role === 'admin') && (
+                {/* Admin Secondary Quick Links if applicable */}
+                {role === 'admin' && (
                   <div className="flex items-center justify-end gap-3 pt-1 text-xs">
-                    {role === 'teacher' && (
-                      <Link
-                        href={`/admin/batches/${item.batchId}/curriculum`}
-                        className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline text-[11px]"
-                      >
-                        <span>কারিকুলাম</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </Link>
-                    )}
-                    {role === 'admin' && (
-                      <Link
-                        href={`/admin/batches/${item.batchId}/edit`}
-                        className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline text-[11px]"
-                      >
-                        <span>ম্যানেজ</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </Link>
-                    )}
+                    <Link
+                      href={`/admin/batches/${item.batchId}/edit`}
+                      className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline text-[11px]"
+                    >
+                      <span>ম্যানেজ</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 )}
               </div>
