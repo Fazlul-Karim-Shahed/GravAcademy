@@ -271,13 +271,13 @@ export default function AdminClassesPage() {
               <BookOpen className="w-4 h-4 text-slate-500" />
               <span>Courses</span>
             </Link>
-            <button
-              onClick={handleOpenCreateClass}
+            <Link
+              href="/admin/classes/new"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Add Class</span>
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -384,13 +384,13 @@ export default function AdminClassesPage() {
 
                       {/* Action buttons */}
                       <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => handleOpenEditClass(cls)}
+                        <Link
+                          href={`/admin/classes/${cls._id || cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/edit`}
                           className="p-2 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
-                          title="Edit Class & Subjects"
+                          title="Edit Class Details"
                         >
                           <Edit className="w-4 h-4" />
-                        </button>
+                        </Link>
                         <button
                           onClick={() => setDeleteConfirmClass(cls)}
                           className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition-all"
