@@ -3,6 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import {
   Layers,
   Plus,
@@ -72,6 +73,7 @@ interface Module {
 
 export default function BatchCurriculumBuilderPage({ params }: { params: Promise<{ batchId: string }> }) {
   const resolvedParams = use(params);
+  const { user } = useAuth();
   const [hierarchy, setHierarchy] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -427,10 +429,10 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 mb-6">
           <Link
-            href="/admin/batches"
+            href={user?.role === 'teacher' ? '/teacher' : '/admin/batches'}
             className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Batches
+            <ArrowLeft className="w-3.5 h-3.5" /> {user?.role === 'teacher' ? 'শিক্ষক প্যানেলে ফিরে যান' : 'Back to Batches'}
           </Link>
           <span>/</span>
           <span className="text-slate-900 dark:text-slate-200 font-semibold">{hierarchy.batch.name}</span>

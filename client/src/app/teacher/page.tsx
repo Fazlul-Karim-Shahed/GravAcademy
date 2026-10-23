@@ -42,12 +42,6 @@ export default function TeacherPanelPage() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Quick module creation modal state
-  const [showModuleModal, setShowModuleModal] = useState(false);
-  const [selectedBatchId, setSelectedBatchId] = useState('');
-  const [moduleTitle, setModuleTitle] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
   useEffect(() => {
     if (authLoading) return;
     if (user?.id) {
@@ -80,24 +74,6 @@ export default function TeacherPanelPage() {
       console.error('Error fetching teacher batches:', err);
     } finally {
       if (showSpinner) setLoading(false);
-    }
-  };
-
-  const handleCreateModule = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      await api.post('/modules', {
-        batchId: selectedBatchId,
-        title: moduleTitle,
-      });
-      setShowModuleModal(false);
-      setModuleTitle('');
-      alert('Module added to batch curriculum successfully!');
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to add module');
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -236,64 +212,17 @@ export default function TeacherPanelPage() {
                   </Link>
 
                   <Link
-                    href={`/learn/${batch._id}`}
-                    className="py-2.5 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                    href={`/admin/batches/${batch._id}/curriculum`}
+                    className="py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                    title="কারিকুলাম, লেকচার ও শিট ম্যানেজ করুন"
                   >
-                    <span>কারিকুলাম</span>
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>কারিকুলাম ও লেকচার</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
-
-                  <button
-                    onClick={() => {
-                      setSelectedBatchId(batch._id);
-                      setShowModuleModal(true);
-                    }}
-                    className="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-colors"
-                    title="Add new module to this batch"
-                  >
-                    <PlusCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    <span>মডিউল</span>
-                  </button>
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* QUICK ADD MODULE MODAL */}
-        {showModuleModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-md rounded-3xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Add Educational Module</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Add a chapter or topic block to the selected batch.
-              </p>
-
-              <form onSubmit={handleCreateModule} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                    Module Title
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={moduleTitle}
-                    onChange={(e) => setModuleTitle(e.target.value)}
-                    placeholder="e.g. Chapter 4: Quadratic Equations"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <Button type="button" variant="ghost" onClick={() => setShowModuleModal(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" isLoading={submitting}>
-                    Save Module
-                  </Button>
-                </div>
-              </form>
-            </div>
           </div>
         )}
 
