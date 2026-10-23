@@ -161,40 +161,59 @@ export default function DedicatedClassPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors pb-20">
       
-      {/* 1. Hero Section with Cosmic Glow Background */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pb-20 border-b border-slate-200/80 dark:border-slate-800/80">
-        {/* Subtle Ambient Radial Lighting */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 left-10 w-80 h-80 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+      {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home & Courses Cosmic Theme) */}
+      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16 mb-8 border-b border-white/10 shadow-lg">
+        {/* Deep space radial ambient lighting & celestial nebula glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-blue-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-purple-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+
+        {/* Twinkling Cosmic Stars & Shooting Star */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[12%] left-[8%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[22%] left-[16%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[10%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <div className="absolute top-[28%] right-[8%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
+          <div className="absolute top-[35%] left-[45%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+          <span className="shooting-star meteor-3" />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-6">
-            <Link href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 mb-5">
+            <Link
+              href="/courses"
+              className="hover:text-amber-300 flex items-center gap-1.5 transition-colors"
+            >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>সকল কোর্স</span>
             </Link>
             <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-slate-900 dark:text-white font-bold">{className}</span>
+            <span className="text-white font-bold">{className}</span>
           </div>
 
-          {/* Hero Content */}
-          <div className="max-w-3xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight mb-4">
-              {subtitle.toLowerCase().includes(className.toLowerCase())
-                ? subtitle
-                : `${className}: ${subtitle}`}
-            </h1>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-3xl">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
+                {className}:{' '}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
+                  {subtitle.toLowerCase().includes(className.toLowerCase())
+                    ? subtitle.replace(new RegExp(className, 'i'), '').replace(/^[:\-\s]+/, '')
+                    : subtitle}
+                </span>
+              </h1>
 
-            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-6">
-              {description}
-            </p>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl font-medium leading-relaxed">
+                {description}
+              </p>
+            </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               <a
                 href="#courses-section"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-600/25 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:scale-98 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-500/30 transition-all border border-white/20"
               >
                 <span>কোর্সসমূহ দেখুন</span>
                 <ArrowRight className="w-4 h-4" />
@@ -202,7 +221,7 @@ export default function DedicatedClassPage() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* 2. Curriculum Highlights & Syllabus Strategy */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
