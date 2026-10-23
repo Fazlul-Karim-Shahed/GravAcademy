@@ -146,9 +146,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 text-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-96 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse shadow-xs" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">পাঠ্যক্রম ও লেসন লোড হচ্ছে...</p>
         </div>
       </div>
     );

@@ -151,10 +151,10 @@ export default function EditBatchPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 transition-colors">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="h-8 w-44 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse mb-6" />
-          <div className="h-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl animate-pulse" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ব্যাচের তথ্য লোড হচ্ছে...</p>
         </div>
       </div>
     );

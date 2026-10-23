@@ -88,4 +88,5 @@ export const Button: React.FC<ButtonProps> = ({
 };
 
 export { DriveFileUpload } from './DriveFileUpload';
+export { LoadingSpinner, PageLoader } from './LoadingSpinner';
 

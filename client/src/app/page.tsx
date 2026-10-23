@@ -575,9 +575,9 @@ export default function HomePage() {
 
           {/* Courses Grid */}
           {loadingCourses ? (
-            <div className="py-24 text-center">
-              <div className="inline-block w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-sm text-slate-600 dark:text-slate-400 font-bold">কোর্সগুলো সাজানো হচ্ছে...</p>
+            <div className="py-24 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্সগুলো সাজানো হচ্ছে...</p>
             </div>
           ) : filteredCourses.length === 0 ? (
             <div className="text-center py-16 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-[32px] border border-slate-200/80 dark:border-slate-800 p-8 sm:p-12 max-w-md mx-auto shadow-sm">

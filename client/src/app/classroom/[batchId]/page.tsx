@@ -239,10 +239,10 @@ export default function BatchClassroomPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center py-20">
-        <div className="flex flex-col items-center gap-3 text-slate-500">
-          <div className="w-9 h-9 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-semibold">ক্লাসরুম লোড হচ্ছে...</p>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ক্লাসরুম লোড হচ্ছে...</p>
         </div>
       </div>
     );
