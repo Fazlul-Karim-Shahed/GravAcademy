@@ -40,12 +40,12 @@ export default function AdminClassesPage() {
   const [editingClass, setEditingClass] = useState<AcademicClass | null>(null);
   const [classNameInput, setClassNameInput] = useState('');
   const [classOrderInput, setClassOrderInput] = useState(0);
+  const [classSubtitleInput, setClassSubtitleInput] = useState('');
   const [classDescInput, setClassDescInput] = useState('');
+  const [classHighlightsInput, setClassHighlightsInput] = useState('');
+  const [classFeaturesInput, setClassFeaturesInput] = useState<string>('');
+  const [classFaqsInput, setClassFaqsInput] = useState<string>('');
   const [submittingClass, setSubmittingClass] = useState(false);
-
-  // Subject Input State (inside class modal or inline)
-  const [subjectList, setSubjectList] = useState<string[]>([]);
-  const [newSubjectName, setNewSubjectName] = useState('');
 
   // Delete modal state
   const [deleteConfirmClass, setDeleteConfirmClass] = useState<AcademicClass | null>(null);
@@ -79,8 +79,11 @@ export default function AdminClassesPage() {
     setEditingClass(null);
     setClassNameInput('');
     setClassOrderInput(classes.length + 1);
+    setClassSubtitleInput('');
     setClassDescInput('');
-    setSubjectList(['Bangla', 'English', 'Mathematics', 'General Science', 'ICT']);
+    setClassHighlightsInput('অধ্যায়ভিত্তিক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস\nস্ট্যান্ডার্ড লেকচার শিট ও স্মার্ট নোটস\nসাপ্তাহিক ও মাসিক মেগা মডেল টেস্ট');
+    setClassFeaturesInput('লাইভ ইন্টারঅ্যাক্টিভ ক্লাস | অভিজ্ঞ শিক্ষকদের সাথে সরাসরি প্রশ্নোত্তর\nডিজিটাল লেকচার নোটস | প্রতিটি অধ্যায়ের গোছানো পিডিএফ শিট\n২৪/৭ ডাউট ক্লিয়ারিং | সার্বক্ষণিক ফোরাম ও গ্রুপ সহায়তা');
+    setClassFaqsInput('ক্লাসগুলো কীভাবে অনুষ্ঠিত হবে? | সবগুলো ক্লাস গুগল মিট-এর মাধ্যমে সরাসরি লাইভে নেওয়া হবে।\nরেকর্ডেড ক্লাস পাওয়া যাবে কি? | হ্যাঁ, লাইভ ক্লাস শেষে ক্লাসরুমে সম্পূর্ণ রেকর্ডিং ও নোটস পাওয়া যাবে।');
     setShowClassModal(true);
   };
 
@@ -88,12 +91,22 @@ export default function AdminClassesPage() {
     setEditingClass(c);
     setClassNameInput(c.name);
     setClassOrderInput(c.order || 0);
+    setClassSubtitleInput(c.subtitle || '');
     setClassDescInput(c.description || '');
-    setSubjectList(c.subjects || []);
+    setClassHighlightsInput((c.curriculumHighlights || []).join('\n'));
+    
+    const formattedFeatures = (c.features || [])
+      .map((f) => `${f.title} | ${f.description}`)
+      .join('\n');
+    setClassFeaturesInput(formattedFeatures);
+
+    const formattedFaqs = (c.faqs || [])
+      .map((q) => `${q.question} | ${q.answer}`)
+      .join('\n');
+    setClassFaqsInput(formattedFaqs);
+
     setShowClassModal(true);
   };
-
-  // Subjects are no longer used in the simplified Class -> Course -> Batch hierarchy
 
   const handleSaveClass = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,18 +115,53 @@ export default function AdminClassesPage() {
     setMessage(null);
 
     try {
+      const highlightsArray = classHighlightsInput
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+
+      const featuresArray = classFeaturesInput
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const parts = line.split('|').map((s) => s.trim());
+          return {
+            title: parts[0] || '',
+            description: parts[1] || parts[0] || '',
+          };
+        });
+
+      const faqsArray = classFaqsInput
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const parts = line.split('|').map((s) => s.trim());
+          return {
+            question: parts[0] || '',
+            answer: parts[1] || '',
+          };
+        });
+
+      const slug = classNameInput.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
       const payload = {
         name: classNameInput.trim(),
+        slug,
         order: Number(classOrderInput) || 0,
-        description: classDescDescSafe(classDescInput),
-        subjects: subjectList,
+        subtitle: classSubtitleInput.trim(),
+        description: classDescInput.trim(),
+        curriculumHighlights: highlightsArray,
+        features: featuresArray,
+        faqs: faqsArray,
       };
 
       let updatedClasses = [...classes];
       if (editingClass) {
         updatedClasses = updatedClasses.map((c) =>
           c._id === editingClass._id || c.name === editingClass.name
-            ? { ...c, name: payload.name, order: payload.order, description: payload.description }
+            ? { ...c, ...payload }
             : c
         );
         api.put(`/classes/${editingClass._id}`, payload).catch(() => {});
@@ -124,9 +172,7 @@ export default function AdminClassesPage() {
       } else {
         const newClassItem: AcademicClass = {
           _id: `class-${Date.now()}`,
-          name: payload.name,
-          order: payload.order,
-          description: payload.description,
+          ...payload,
           subjects: [],
           createdAt: new Date().toISOString(),
         };
@@ -372,14 +418,20 @@ export default function AdminClassesPage() {
 
                   {/* Card Bottom CTA */}
                   <div className="px-6 py-4 bg-slate-50/70 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">
-                      মোট সক্রিয় কোর্স: <strong className="text-slate-900 dark:text-white font-bold">{classCourses.length}</strong>
-                    </span>
+                    <Link
+                      href={`/classes/${cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                      target="_blank"
+                      className="font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1.5 transition-colors"
+                      title="ওয়েবসাইটের লাইভ ডেডিকেটেড পেজটি দেখুন"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                      <span>লাইভ পেজ</span>
+                    </Link>
                     <Link
                       href={`/admin/courses?grade=${encodeURIComponent(cls.name)}`}
                       className="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
                     >
-                      <span>কোর্সগুলো দেখুন</span>
+                      <span>কোর্সগুলো দেখুন ({classCourses.length})</span>
                       <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
                     </Link>
                   </div>
@@ -425,10 +477,34 @@ export default function AdminClassesPage() {
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
                   />
                   {editingClass && (
-                    <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-1 font-medium">
-                      নাম পরিবর্তন করলে এই ক্লাসের অন্তর্ভুক্ত সব কোর্সে স্বয়ংক্রিয়ভাবে নতুন নামটি আপডেট হবে।
-                    </p>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium">
+                        নাম পরিবর্তন করলে এই ক্লাসের অন্তর্ভুক্ত সব কোর্সে স্বয়ংক্রিয়ভাবে আপডেট হবে।
+                      </p>
+                      <Link
+                        href={`/classes/${editingClass.slug || editingClass.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                        target="_blank"
+                        className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>লাইভ পেজ দেখুন</span>
+                        <ArrowLeft className="w-3 h-3 rotate-180" />
+                      </Link>
+                    </div>
                   )}
+                </div>
+
+                {/* Subtitle / Program Headline */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Headline / Subtitle (পেজের মূল শিরোনাম)
+                  </label>
+                  <input
+                    type="text"
+                    value={classSubtitleInput}
+                    onChange={(e) => setClassSubtitleInput(e.target.value)}
+                    placeholder="e.g. ১০ম শ্রেণির এসএসসি গোল্ডেন এ+ টার্গেট প্রোগ্রাম"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  />
                 </div>
 
                 {/* Display Order */}
@@ -448,14 +524,59 @@ export default function AdminClassesPage() {
                 {/* Description */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                    Short Description (Optional)
+                    Short Description (সংক্ষিপ্ত বিবরণ)
                   </label>
-                  <input
-                    type="text"
+                  <textarea
+                    rows={2}
                     value={classDescInput}
                     onChange={(e) => setClassDescInput(e.target.value)}
-                    placeholder="e.g. মাধ্যমিক সার্টিফিকেট প্রস্তুতি ব্যাচসমূহ"
+                    placeholder="e.g. টেস্ট পরীক্ষা ও বোর্ড পরীক্ষায় শতভাগ সফলতার জন্য টেস্ট পেপার সলভ ও মডেল টেস্ট।"
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Curriculum Highlights */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Curriculum Highlights (কারিকুলাম পয়েন্টসমূহ)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">প্রতি লাইনে ১টি পয়েন্ট</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={classHighlightsInput}
+                    onChange={(e) => setClassHighlightsInput(e.target.value)}
+                    placeholder="অধ্যায়ভিত্তিক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস&#10;স্ট্যান্ডার্ড লেকচার শিট ও নোটস&#10;সাপ্তাহিক মডেল টেস্ট"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                </div>
+
+                {/* Features (Title | Description) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Key Features (ফিচারসমূহ)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">শিরোনাম | বিবরণ (প্রতি লাইনে)</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={classFeaturesInput}
+                    onChange={(e) => setClassFeaturesInput(e.target.value)}
+                    placeholder="লাইভ ক্লাস | অভিজ্ঞ শিক্ষকদের সাথে সরাসরি প্রশ্নোত্তর&#10;ডিজিটাল নোটস | প্রতিটি অধ্যায়ের গোছানো পিডিএফ"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                </div>
+
+                {/* FAQs (Question | Answer) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>Class FAQs (সচরাচর জিজ্ঞাসা)</span>
+                    <span className="text-[10px] text-slate-400 font-normal">প্রশ্ন | উত্তর (প্রতি লাইনে)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={classFaqsInput}
+                    onChange={(e) => setClassFaqsInput(e.target.value)}
+                    placeholder="ক্লাস কীভাবে হবে? | গুগল মিটের মাধ্যমে লাইভে হবে।&#10;রেকর্ডিং থাকবে কি? | হ্যাঁ ক্লাসরুমে থাকবে।"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
                   />
                 </div>
 

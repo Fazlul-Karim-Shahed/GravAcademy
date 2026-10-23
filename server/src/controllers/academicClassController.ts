@@ -28,20 +28,46 @@ async function ensureDefaultClasses() {
 
 export const createClassSchema = z.object({
   name: z.string().min(1, 'Class name is required').max(80),
+  slug: z.string().optional(),
   order: z.number().optional().default(0),
   description: z.string().optional(),
+  subtitle: z.string().optional(),
+  heroBannerUrl: z.string().optional(),
+  curriculumHighlights: z.array(z.string()).optional().default([]),
+  features: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+    icon: z.string().optional(),
+  })).optional().default([]),
+  faqs: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })).optional().default([]),
   subjects: z.array(z.string().trim().min(1)).optional().default([]),
 });
 
 export const updateClassSchema = z.object({
   name: z.string().min(1, 'Class name is required').max(80).optional(),
+  slug: z.string().optional(),
   order: z.number().optional(),
   description: z.string().optional(),
+  subtitle: z.string().optional(),
+  heroBannerUrl: z.string().optional(),
+  curriculumHighlights: z.array(z.string()).optional(),
+  features: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+    icon: z.string().optional(),
+  })).optional(),
+  faqs: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })).optional(),
   subjects: z.array(z.string().trim().min(1)).optional(),
 });
 
 /**
- * List all classes with their subjects
+ * List all classes with their subjects & curriculum info
  */
 export const getAcademicClasses = async (req: Request, res: Response) => {
   try {
@@ -58,11 +84,65 @@ export const getAcademicClasses = async (req: Request, res: Response) => {
 };
 
 /**
+ * Get a single class by ID or Slug, along with its active courses
+ */
+export const getClassByIdOrSlug = async (req: Request, res: Response) => {
+  try {
+    const { idOrSlug } = req.params;
+    let academicClass = null;
+
+    if (idOrSlug.match(/^[0-9a-fA-F]{24}$/)) {
+      academicClass = await AcademicClass.findById(idOrSlug);
+    }
+    if (!academicClass) {
+      academicClass = await AcademicClass.findOne({
+        $or: [
+          { slug: idOrSlug.toLowerCase() },
+          { name: { $regex: new RegExp(`^${idOrSlug.replace(/-/g, ' ')}$`, 'i') } },
+          { name: { $regex: new RegExp(`^${idOrSlug}$`, 'i') } },
+        ],
+      });
+    }
+
+    if (!academicClass) {
+      return res.status(404).json({ success: false, message: 'Class not found' });
+    }
+
+    // Also fetch courses belonging to this class
+    const courses = await Course.find({
+      gradeLevel: academicClass.name,
+      isPublished: true,
+    }).populate('instructors', 'name email avatar');
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        academicClass,
+        courses,
+      },
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch class details' });
+  }
+};
+
+/**
  * Create a new Academic Class
  */
 export const createAcademicClass = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { name, order, description, subjects } = req.body;
+    const {
+      name,
+      slug,
+      order,
+      description,
+      subtitle,
+      heroBannerUrl,
+      curriculumHighlights,
+      features,
+      faqs,
+      subjects,
+    } = req.body;
 
     const trimmedName = name.trim();
     const existing = await AcademicClass.findOne({
@@ -72,11 +152,19 @@ export const createAcademicClass = async (req: AuthenticatedRequest, res: Respon
       return res.status(400).json({ success: false, message: `Class "${trimmedName}" already exists` });
     }
 
+    const generatedSlug = slug?.trim() || trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
     const academicClass = await AcademicClass.create({
       name: trimmedName,
+      slug: generatedSlug,
       order: order ?? 0,
       description: description || '',
-      subjects: Array.isArray(subjects) && subjects.length > 0 ? subjects : ['General'],
+      subtitle: subtitle || '',
+      heroBannerUrl: heroBannerUrl || '',
+      curriculumHighlights: Array.isArray(curriculumHighlights) ? curriculumHighlights : [],
+      features: Array.isArray(features) ? features : [],
+      faqs: Array.isArray(faqs) ? faqs : [],
+      subjects: Array.isArray(subjects) && subjects.length > 0 ? subjects : [],
     });
 
     await AuditLog.create({
@@ -85,7 +173,7 @@ export const createAcademicClass = async (req: AuthenticatedRequest, res: Respon
       action: 'CLASS_CREATE',
       resourceType: 'AcademicClass',
       resourceId: academicClass._id.toString(),
-      metadata: { name: academicClass.name, subjects: academicClass.subjects },
+      metadata: { name: academicClass.name, slug: academicClass.slug },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
     });
@@ -107,7 +195,18 @@ export const createAcademicClass = async (req: AuthenticatedRequest, res: Respon
 export const updateAcademicClass = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, order, description, subjects } = req.body;
+    const {
+      name,
+      slug,
+      order,
+      description,
+      subtitle,
+      heroBannerUrl,
+      curriculumHighlights,
+      features,
+      faqs,
+      subjects,
+    } = req.body;
 
     const currentClass = await AcademicClass.findById(id);
     if (!currentClass) {
@@ -129,8 +228,19 @@ export const updateAcademicClass = async (req: AuthenticatedRequest, res: Respon
     }
 
     currentClass.name = newName;
+    if (slug !== undefined) {
+      currentClass.slug = slug.trim() || newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    } else if (!currentClass.slug) {
+      currentClass.slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
     if (order !== undefined) currentClass.order = order;
     if (description !== undefined) currentClass.description = description;
+    if (subtitle !== undefined) currentClass.subtitle = subtitle;
+    if (heroBannerUrl !== undefined) currentClass.heroBannerUrl = heroBannerUrl;
+    if (Array.isArray(curriculumHighlights)) currentClass.curriculumHighlights = curriculumHighlights;
+    if (Array.isArray(features)) currentClass.features = features;
+    if (Array.isArray(faqs)) currentClass.faqs = faqs;
     if (Array.isArray(subjects)) currentClass.subjects = subjects;
 
     await currentClass.save();

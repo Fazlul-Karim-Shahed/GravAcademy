@@ -30,6 +30,7 @@ router.get('/auth/me', authenticate, authCtrl.getMe);
 
 // --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
 router.get('/classes', academicClassCtrl.getAcademicClasses);
+router.get('/classes/:idOrSlug', academicClassCtrl.getClassByIdOrSlug);
 router.post(
   '/classes',
   authenticate,

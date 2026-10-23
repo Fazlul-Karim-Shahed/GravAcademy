@@ -13,16 +13,51 @@ import {
   FileText,
   Sun,
   Moon,
+  ChevronDown,
+  Sparkles,
+  ArrowRight,
+  Compass,
 } from 'lucide-react';
+import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib/classes';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [classes, setClasses] = React.useState<AcademicClassItem[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const dropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
+    getSharedAcademicClasses().then((data) => setClasses(data || []));
+
+    const handleUpdate = () => {
+      getSharedAcademicClasses().then((data) => setClasses(data || []));
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('grav_classes_updated', handleUpdate);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('grav_classes_updated', handleUpdate);
+      }
+    };
   }, []);
+
+  const handleMouseEnter = () => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+      dropdownTimeoutRef.current = null;
+    }
+    setIsDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setIsDropdownOpen(false);
+    }, 200);
+  };
 
   const getDashboardLink = () => {
     if (!user) return '/login';
@@ -42,7 +77,7 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/90 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-2.5">
@@ -61,9 +96,100 @@ export const Navbar: React.FC = () => {
 
         {/* Primary Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-200">
-          <Link href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            সকল কোর্স
-          </Link>
+          {/* Courses with Mega Hover Dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Link
+              href="/courses"
+              className={`inline-flex items-center gap-1.5 py-2 px-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                isDropdownOpen ? 'text-blue-600 dark:text-blue-400' : ''
+              }`}
+            >
+              <span>সকল কোর্স</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
+                }`}
+              />
+            </Link>
+
+            {/* Hover Flyout Panel (নেভিগেশন কপাট) */}
+            {isDropdownOpen && (
+              <div
+                className="absolute top-full left-1/2 -translate-x-1/2 pt-2.5 w-[380px] sm:w-[440px] z-50 animate-in fade-in zoom-in-95 duration-150"
+              >
+                <div className="relative rounded-[24px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-2xl overflow-hidden p-4">
+                  {/* Subtle ambient lighting */}
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-indigo-500/10 dark:bg-indigo-400/10 rounded-full blur-2xl pointer-events-none" />
+
+                  {/* Header info */}
+                  <div className="relative z-10 flex items-center justify-between pb-3 mb-2.5 border-b border-slate-100 dark:border-slate-800 px-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/60">
+                        <GraduationCap className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                        শ্রেণি অনুযায়ী ব্রাউজ করুন
+                      </span>
+                    </div>
+                    <Link
+                      href="/courses"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                    >
+                      <span>সকল কোর্স</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  {/* Grid of Academic Classes */}
+                  <div className="relative z-10 grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-0.5">
+                    {classes.map((cls) => {
+                      const slug = getClassSlug(cls);
+                      return (
+                        <Link
+                          key={cls._id}
+                          href={`/classes/${slug}`}
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="group/item flex items-center justify-between p-2.5 rounded-2xl bg-slate-50/70 hover:bg-blue-50/80 dark:bg-slate-800/50 dark:hover:bg-blue-950/40 border border-slate-200/70 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-600/60 transition-all duration-200"
+                        >
+                          <div className="min-w-0 pr-2">
+                            <span className="block text-xs font-black text-slate-800 dark:text-slate-100 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors truncate">
+                              {cls.name}
+                            </span>
+                            <span className="block text-[10px] text-slate-400 font-medium truncate">
+                              {cls.subtitle || cls.description || 'কারিকুলাম ও ব্যাচ'}
+                            </span>
+                          </div>
+                          <div className="w-6 h-6 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:translate-x-0.5 transition-all shrink-0 border border-slate-200/60 dark:border-slate-700/60 shadow-2xs">
+                            <ArrowRight className="w-3 h-3" />
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer Action */}
+                  <div className="relative z-10 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] px-1 text-slate-500 dark:text-slate-400">
+                    <span>লাইভ ক্লাস, লেকচার শিট ও মেগা মডেল টেস্ট</span>
+                    <Link
+                      href="/free-classes"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>ফ্রি ডেমো</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <Link href="/free-classes" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>ফ্রি ক্লাস</span>
