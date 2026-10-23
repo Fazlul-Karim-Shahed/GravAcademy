@@ -14,6 +14,10 @@ import {
   Users,
   Search,
   Filter,
+  Sparkles,
+  PlayCircle,
+  Radio,
+  BookOpen,
 } from 'lucide-react';
 
 interface FreeClassItem {
@@ -67,45 +71,61 @@ export default function FreeClassesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. Header Bar */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 py-6 sm:py-8 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
+      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
+        
+        {/* Deep space radial ambient lighting & celestial nebula glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-blue-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-purple-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+
+        {/* Twinkling Cosmic Stars & Shooting Star */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[14%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[24%] left-[20%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[12%] right-[16%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
+          <span className="shooting-star meteor-1" />
+          <span className="shooting-star meteor-3" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  সবার জন্য উন্মুক্ত • {classes.length}টি ক্লাস
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
+                ফ্রি লাইভ ক্লাস ও{' '}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
+                  স্পেশাল সেমিনার
                 </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                ফ্রি ক্লাস ও সেমিনার
               </h1>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
+                কোনো রেজিস্ট্রেশন ফি ছাড়াই সরাসরি যুক্ত হয়ে ক্লাস যাচাই করো এবং বিষয়ভিত্তিক শিক্ষকদের সাথে পরামর্শ নাও।
+              </p>
             </div>
 
-            {/* Actions & Search */}
-            <div className="flex items-center gap-3">
-              <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {/* Actions & Cosmic Search */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative w-full sm:w-72">
+                <Search className="w-4 h-4 text-white/50 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="ক্লাস খুঁজুন..."
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3.5 py-2 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                  placeholder="ক্লাসের নাম বা শিক্ষক খুঁজুন..."
+                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-indigo-400 rounded-2xl pl-10 pr-9 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-400/30 transition-all font-medium shadow-inner"
                 />
               </div>
 
               {canManageLive && (
                 <Link
                   href="/free-classes/new"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors shrink-0"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-lg shadow-blue-500/25 hover:scale-102 transition-all shrink-0"
                 >
-                  <PlusCircle className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">নতুন ক্লাস</span>
-                  <span className="sm:hidden">যুক্ত করুন</span>
+                  <PlusCircle className="w-4 h-4" />
+                  <span>নতুন ক্লাস যোগ করুন</span>
                 </Link>
               )}
             </div>
@@ -114,35 +134,59 @@ export default function FreeClassesPage() {
       </div>
 
       {/* 2. Main Content Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         
+        {/* Classes Status Banner */}
+        <div className="flex items-center justify-between mb-8 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-bold">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>
+              চলতি সেশন: <span className="text-slate-900 dark:text-white font-extrabold">{filteredClasses.length}</span> টি ক্লাস
+            </span>
+          </div>
+          {searchQuery && (
+            <div className="px-3 py-1 rounded-lg bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-800 text-xs">
+              সার্চ ফিল্টার: <span className="text-blue-600 dark:text-blue-400 font-bold">"{searchQuery}"</span>
+            </div>
+          )}
+        </div>
+
         {/* Classes List */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 animate-pulse shadow-xs" />
+              <div
+                key={i}
+                className="h-64 rounded-[32px] bg-white/70 dark:bg-slate-900/70 border-2 border-slate-200/80 dark:border-slate-800/80 animate-pulse p-6 space-y-4"
+              >
+                <div className="h-5 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
+                <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
+                <div className="h-10 w-full bg-slate-200 dark:bg-slate-800 rounded-xl" />
+              </div>
             ))}
           </div>
         ) : filteredClasses.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl text-center py-14 px-4 border border-slate-200/90 dark:border-slate-800 shadow-xs max-w-lg mx-auto">
-            <Video className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">বর্তমানে কোনো ফ্রি ক্লাস নেই</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-5">
-              পরবর্তী ফ্রি সেশনের সময়সূচী এখানে আপডেট করা হবে।
+          <div className="bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl rounded-[34px] text-center py-16 px-6 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl max-w-lg mx-auto my-8">
+            <div className="w-16 h-16 rounded-2xl bg-blue-100/80 dark:bg-blue-950/60 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800">
+              <Video className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">বর্তমানে কোনো ফ্রি ক্লাস নেই</h3>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6 leading-relaxed">
+              পরবর্তী ফ্রি লাইভ সেশন ও সেমিনারের সময়সূচী খুব শীঘ্রই এখানে ঘোষণা করা হবে।
             </p>
             {canManageLive && (
               <Link
                 href="/free-classes/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 transition-all"
               >
-                <PlusCircle className="w-3.5 h-3.5" />
-                <span>ফ্রি ক্লাস তৈরি করুন</span>
+                <PlusCircle className="w-4 h-4" />
+                <span>নতুন ফ্রি ক্লাস তৈরি করুন</span>
               </Link>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredClasses.map((cls) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredClasses.map((cls, idx) => {
               const startDate = new Date(cls.startTime);
               const formattedDate = startDate.toLocaleDateString('bn-BD', {
                 weekday: 'short',
@@ -154,51 +198,123 @@ export default function FreeClassesPage() {
                 minute: '2-digit',
               });
 
+              // Vibrant gradient thumbnail themes matching home page
+              const cardThemes = [
+                {
+                  gradient: 'from-[#0284c7] via-[#2563eb] to-[#4f46e5]',
+                  accentColor: 'text-blue-500',
+                  glow: 'shadow-blue-500/20',
+                },
+                {
+                  gradient: 'from-[#059669] via-[#0d9488] to-[#0284c7]',
+                  accentColor: 'text-emerald-500',
+                  glow: 'shadow-emerald-500/20',
+                },
+                {
+                  gradient: 'from-[#4f46e5] via-[#7c3aed] to-[#c026d3]',
+                  accentColor: 'text-purple-500',
+                  glow: 'shadow-purple-500/20',
+                },
+                {
+                  gradient: 'from-[#ea580c] via-[#e11d48] to-[#c026d3]',
+                  accentColor: 'text-rose-500',
+                  glow: 'shadow-rose-500/20',
+                },
+              ];
+
+              const currentTheme = cardThemes[idx % cardThemes.length];
+
               return (
                 <div
                   key={cls._id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
                 >
                   <div>
-                    {/* Header: Platform & Duration */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span
-                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${
-                          cls.provider === 'google_meet'
-                            ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60'
-                            : 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60'
-                        }`}
-                      >
-                        {cls.provider === 'google_meet' ? 'Google Meet' : 'Zoom'}
-                      </span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        <span>{cls.durationMinutes} মি.</span>
-                      </span>
+                    {/* Top Thumbnail Banner with Curved Mask */}
+                    <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm bg-slate-900">
+                      <div className={`relative w-full h-full bg-gradient-to-br ${currentTheme.gradient}`}>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                          <div className="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white mb-2 shadow-lg group-hover:scale-110 transition-transform duration-300 border border-white/30">
+                            <Video className="w-7 h-7" />
+                          </div>
+                          <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3 line-clamp-1">
+                            {cls.batchId?.name || 'ফ্রি লাইভ সেশন'}
+                          </span>
+                        </div>
+
+                        {/* Gloss Sheen Shine Across Thumbnail */}
+                        <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+
+                        {/* Top Badges Overlay */}
+                        <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
+                          {/* Platform Tag */}
+                          <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
+                            <Sparkles className="w-3 h-3 text-amber-300" />
+                            <span>{cls.provider === 'google_meet' ? 'Google Meet' : 'Zoom'}</span>
+                          </span>
+
+                          {/* Live Free Badge */}
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
+                            <span className="relative flex h-2 w-2">
+                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                              <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                            </span>
+                            <span>ফ্রি এক্সেস</span>
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Class Title */}
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 mb-3">
-                      {cls.title}
-                    </h3>
+                    {/* Card Content Body */}
+                    <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
+                      {/* Class Title */}
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {cls.title}
+                      </h3>
 
-                    {/* Schedule Time */}
-                    <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-950/70 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/80 mb-4 font-medium">
-                      <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                      <span>{formattedDate} • {formattedTime}</span>
+                      {/* Teacher name if present */}
+                      <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                        <Users className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <span className="truncate">মেন্টর: {cls.teacherId?.name || 'অনলাইন ফ্যাকাল্টি'}</span>
+                      </div>
+
+                      {/* Cute Schedule & Duration Pills */}
+                      <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                            <Calendar className="w-3.5 h-3.5" />
+                          </div>
+                          <span>তারিখ: {formattedDate} • {formattedTime}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                            <Clock className="w-3.5 h-3.5" />
+                          </div>
+                          <span>সময়কাল: {cls.durationMinutes} মিনিট লাইভ সেশন</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Join Link */}
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  {/* Card Bottom: Direct Join CTA */}
+                  <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
+                        সম্পূর্ণ উন্মুক্ত
+                      </span>
+                      <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                        ফি: ১০০% ফ্রি
+                      </span>
+                    </div>
+
                     <a
                       href={cls.meetingUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 transition-colors"
+                      className="py-2.5 px-4.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102"
                     >
-                      <span>সরাসরি ক্লাসে যোগ দিন</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>ক্লাসে যোগ দিন</span>
+                      <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </a>
                   </div>
                 </div>

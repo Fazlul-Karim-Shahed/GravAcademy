@@ -135,48 +135,66 @@ export default function CoursesCatalogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. COMPACT & CLEAN HEADER STRIP */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 py-6 sm:py-8 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
+      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
+        
+        {/* Deep space radial ambient lighting & celestial nebula glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-blue-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-purple-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+
+        {/* Twinkling Cosmic Stars & Shooting Star */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[12%] left-[8%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[22%] left-[16%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[10%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <div className="absolute top-[28%] right-[8%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
+          <div className="absolute top-[35%] left-[45%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+          <span className="shooting-star meteor-3" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-2 h-2 rounded-full bg-blue-600" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  একাডেমিক প্রোগ্রাম • মোট {courses.length}টি কোর্স
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
+                সকল কোর্স ও{' '}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
+                  চলতি ব্যাচসমূহ
                 </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                সকল কোর্স ও ব্যাচ
               </h1>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
+                শ্রেণিভিত্তিক সেরা শিক্ষক ও লাইভ মেন্টরশিপের মাধ্যমে ঘরে বসেই শুরু করো পূর্ণাঙ্গ একাডেমিক ও বোর্ড প্রস্তুতি।
+              </p>
             </div>
 
-            {/* Smart Search Bar Inline in Header */}
-            <div className="w-full md:w-80 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {/* Smart Cosmic Glass Search Bar */}
+            <div className="w-full md:w-88 relative">
+              <Search className="w-4 h-4 text-white/50 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="কোর্সের নাম বা বিষয় দিয়ে খুঁজুন..."
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9.5 pr-8 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-indigo-400 rounded-2xl pl-10 pr-9 py-3 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-400/30 transition-all font-medium shadow-inner"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
           </div>
 
-          {/* Horizontal Class Selector Tabs (Shikho/10MS Style) */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-5 mt-4 border-t border-slate-100 dark:border-slate-800/80">
+          {/* Cute Frosted Pill Tabs for Grade Selection */}
+          <div className="pt-4 border-t border-white/10 flex items-center gap-2 overflow-x-auto no-scrollbar scrollbar-none py-3.5 px-1 -mx-1">
             {gradeLevels.map((g) => {
               const active = selectedGrade === g.value;
               return (
@@ -184,10 +202,10 @@ export default function CoursesCatalogPage() {
                   key={g.value}
                   type="button"
                   onClick={() => setSelectedGrade(g.value)}
-                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all duration-300 cursor-pointer flex items-center gap-1.5 shrink-0 ${
                     active
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                      : 'bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/40 border border-white/30'
+                      : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
                   }`}
                 >
                   {g.label}
@@ -200,7 +218,7 @@ export default function CoursesCatalogPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors whitespace-nowrap"
+                  className="px-3 py-1.5 text-xs font-black text-rose-300 hover:text-rose-200 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/30 rounded-xl transition-all whitespace-nowrap cursor-pointer"
                   title="ফিল্টার রিসেট করুন"
                 >
                   রিসেট
@@ -212,33 +230,36 @@ export default function CoursesCatalogPage() {
       </div>
 
       {/* 2. MAIN CONTENT BODY */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         
         {/* Course Count / Active Filter Status */}
-        <div className="flex items-center justify-between mb-6 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-          <div>
-            দেখাচ্ছে: <span className="text-slate-900 dark:text-white font-extrabold">{filteredCourses.length}</span> টি কোর্স
+        <div className="flex items-center justify-between mb-8 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-bold">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span>
+              উপলব্ধ কোর্স: <span className="text-slate-900 dark:text-white font-extrabold">{filteredCourses.length}</span> টি
+            </span>
           </div>
           {searchQuery && (
-            <div>
-              অনুসন্ধান: <span className="text-blue-600 font-bold">"{searchQuery}"</span>
+            <div className="px-3 py-1 rounded-lg bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-800 text-xs">
+              সার্চ ফিল্টার: <span className="text-blue-600 dark:text-blue-400 font-bold">"{searchQuery}"</span>
             </div>
           )}
         </div>
 
         {/* Course Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {[1, 2, 3].map((i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-80 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse overflow-hidden"
+                className="h-96 rounded-[34px] bg-white/70 dark:bg-slate-900/70 border-2 border-slate-200/80 dark:border-slate-800/80 animate-pulse overflow-hidden p-3"
               >
-                <div className="h-40 bg-slate-200 dark:bg-slate-800" />
-                <div className="p-6 space-y-3">
+                <div className="h-44 bg-slate-200 dark:bg-slate-800 rounded-[26px]" />
+                <div className="p-4 space-y-3">
                   <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
-                  <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
-                  <div className="h-4 w-full bg-slate-200 dark:bg-slate-800 rounded" />
+                  <div className="h-5 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
+                  <div className="h-3 w-full bg-slate-200 dark:bg-slate-800 rounded" />
                 </div>
               </div>
             ))}
@@ -261,101 +282,160 @@ export default function CoursesCatalogPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {filteredCourses.map((course, idx) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredCourses.map((c, idx) => {
+              // Cute vibrant card thumbnail gradients matching homepage
+              const cardThemes = [
+                {
+                  gradient: 'from-[#4f46e5] via-[#7c3aed] to-[#c026d3]',
+                  pillBg: 'from-purple-500 to-indigo-600',
+                  accentColor: 'text-purple-600 dark:text-purple-400',
+                  glow: 'shadow-purple-500/20',
+                },
+                {
+                  gradient: 'from-[#0284c7] via-[#2563eb] to-[#4f46e5]',
+                  pillBg: 'from-blue-500 to-indigo-600',
+                  accentColor: 'text-blue-600 dark:text-blue-400',
+                  glow: 'shadow-blue-500/20',
+                },
+                {
+                  gradient: 'from-[#059669] via-[#0d9488] to-[#0284c7]',
+                  pillBg: 'from-emerald-500 to-teal-600',
+                  accentColor: 'text-teal-600 dark:text-teal-400',
+                  glow: 'shadow-teal-500/20',
+                },
+                {
+                  gradient: 'from-[#ea580c] via-[#e11d48] to-[#c026d3]',
+                  pillBg: 'from-rose-500 to-orange-500',
+                  accentColor: 'text-rose-600 dark:text-rose-400',
+                  glow: 'shadow-rose-500/20',
+                },
+                {
+                  gradient: 'from-[#d97706] via-[#ea580c] to-[#e11d48]',
+                  pillBg: 'from-amber-500 to-orange-600',
+                  accentColor: 'text-amber-600 dark:text-amber-400',
+                  glow: 'shadow-amber-500/20',
+                },
+              ];
+
               const currentTheme = cardThemes[idx % cardThemes.length];
-              const regularPrice = course.courseFee ? Math.round(course.courseFee * 1.35) : null;
-              const instructorName =
-                course.instructors && course.instructors.length > 0
-                  ? typeof course.instructors[0] === 'object'
-                    ? course.instructors[0].name
-                    : 'ফ্যাকাল্টি মেন্টর'
-                  : 'গ্র্যাভ একাডেমি শিক্ষক প্যানেল';
 
               return (
                 <Link
-                  key={course._id}
-                  href={`/courses/${course.slug || course._id}`}
-                  className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between cursor-pointer"
+                  key={c._id}
+                  href={`/courses/${c.slug || c._id}`}
+                  className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
                 >
                   <div>
-                    {/* Top Thumbnail Banner with Image / Fallback Vibrant Gradient */}
-                    <div className={`relative w-full aspect-video ${course.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`} overflow-hidden`}>
-                      {course.thumbnailUrl ? (
-                        /* Pure 100% opacity full-bleed image */
-                        <img
-                          src={course.thumbnailUrl}
-                          alt={course.title}
-                          className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <>
-                          {/* Decorative background geometry fallback */}
-                          <div className={`absolute -right-8 -bottom-8 w-36 h-36 rounded-full ${currentTheme.blob1} blur-xl pointer-events-none`} />
-                          <div className={`absolute right-4 top-4 w-20 h-20 rounded-full ${currentTheme.blob2} blur-lg pointer-events-none`} />
-                        </>
-                      )}
+                    {/* Top Thumbnail Banner with Smooth Curved Mask */}
+                    <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
+                      <div className={`relative w-full h-full ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`}`}>
+                        {c.thumbnailUrl ? (
+                          <img
+                            src={c.thumbnailUrl}
+                            alt={c.title}
+                            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                            <BookOpen className="w-12 h-12 text-white/80 drop-shadow-md mb-2 group-hover:scale-110 transition-transform duration-300" />
+                            <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3">
+                              {c.title}
+                            </span>
+                          </div>
+                        )}
 
-                      {/* Badges on Thumbnail - Absolute overlay */}
-                      <div className="absolute top-0 left-0 right-0 z-20 p-3.5 flex items-center justify-between pointer-events-none">
-                        <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-extrabold border border-white/20 shadow-md">
-                          {course.gradeLevel}
-                        </span>
+                        {/* Gloss Sheen Shine Across Thumbnail */}
+                        <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
 
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-900 dark:bg-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200 dark:border-slate-700">
-                          <span className="relative flex h-2 w-2">
-                            <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
-                            <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.9)]" />
+                        {/* Top Badges Overlay */}
+                        <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
+                          {/* Grade Level Tag */}
+                          <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
+                            <Sparkles className="w-3 h-3 text-amber-300" />
+                            <span>{c.gradeLevel}</span>
                           </span>
-                          লাইভ ব্যাচ
-                        </span>
+
+                          {/* Cute Live Indicator */}
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
+                            <span className="relative flex h-2 w-2">
+                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                              <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                            </span>
+                            <span>লাইভ ব্যাচ</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Card Content Body */}
-                    <div className="p-6">
-                      {/* Course Name */}
-                      <div className="mb-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                          {course.title}
-                        </h3>
-                      </div>
+                    <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
+                      {/* Course Title */}
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {c.title}
+                      </h3>
 
-                      {/* Short Description */}
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-[1.7] mb-4">
-                        {course.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড পরীক্ষার জন্য চূড়ান্ত প্রস্তুতিমূলক কোর্স।'}
+                      {/* Short Description (Strictly max 1 line with ellipsis) */}
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
+                        {c.description
+                          ? c.description.length > 55
+                            ? c.description.slice(0, 55).trim() + '...'
+                            : c.description
+                          : 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রস্তুতির কোর্স।'}
                       </p>
 
-                      {/* Features Micro-List */}
-                      <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                      {/* Cute Feature Micro-Badges */}
+                      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
                         <div className="flex items-center gap-2">
-                          <PlayCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                          <span>লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
+                          <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                            <PlayCircle className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="line-clamp-1">লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FileText className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                          <span>অধ্যায়ভিত্তিক লেকচার শিট ও ফর্মুলা বুক</span>
+                          <div className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                            <FileText className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="line-clamp-1">অধ্যায়ভিত্তিক লেকচার শিট ও নোট</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Award className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                          <span>অনলাইন মডেল টেস্ট ও মূল্যায়ন</span>
+                          <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                            <Award className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="line-clamp-1">অনলাইন উইকলি টেস্ট ও এনালাইসিস</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Card Bottom: Batch Enrollment CTA */}
-                  <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between gap-3">
+                  {/* Cute Card Bottom: Enrollment CTA */}
+                  <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">এনরোলমেন্ট</span>
-                      <span className="text-xs font-black text-slate-800 dark:text-slate-200">
-                        ব্যাচভিত্তিক ভর্তি
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                        ভর্তি চলছে
                       </span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        {c.courseFee ? (
+                          <>
+                            <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                              ৳{c.courseFee}
+                            </span>
+                            <span className="text-[11px] text-slate-400 line-through font-semibold">
+                              ৳{Math.round(c.courseFee * 1.35)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
+                            ব্যাচভিত্তিক ফি
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="py-2 px-4 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5">
+                    {/* Cute Action Button */}
+                    <div className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102">
                       <span>ব্যাচ দেখুন</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>

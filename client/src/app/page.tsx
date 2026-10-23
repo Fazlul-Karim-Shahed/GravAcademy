@@ -24,6 +24,12 @@ import {
   Check,
   Calendar,
   MessageCircle,
+  Trophy,
+  Target,
+  Backpack,
+  ScrollText,
+  Tent,
+  BookOpenCheck,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 
@@ -139,144 +145,365 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
-      
-      {/* 1. TOP ANNOUNCEMENT STRIP */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium shadow-inner flex items-center justify-center gap-2">
-        <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 font-extrabold text-[11px] uppercase tracking-wide">
-          ভর্তি চলছে
-        </span>
-        <span>নতুন সেশনের সব ব্যাচে সীমিত আসনে ভর্তি নেওয়া হচ্ছে।</span>
-        <Link href="/courses" className="font-bold underline underline-offset-4 hover:text-amber-200 transition-colors ml-1 hidden sm:inline-flex items-center gap-1">
-          ব্যাচ রুটিন দেখুন <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
+    <div className="bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
 
-      {/* 2. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50/70 via-slate-50/20 to-white dark:from-slate-900/60 dark:via-slate-950 dark:to-slate-950 pt-12 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-100 dark:border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      {/* 2. COSMIC GLOWING HORIZON HERO SECTION (Inspired by 10 Minute School) */}
+      <section className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-20 lg:pt-16 lg:pb-28">
+        
+        {/* Deep space radial ambient lighting & celestial nebula glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[550px] bg-gradient-to-b from-rose-950/50 via-red-950/25 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-red-600/18 rounded-full blur-[120px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[400px] h-[300px] bg-blue-900/15 rounded-full blur-[100px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[400px] h-[300px] bg-purple-900/15 rounded-full blur-[100px] pointer-events-none -z-10" />
+
+        {/* 🌟 GLOWING & DIMMING STARS (Twinkling Cosmic Starfield) - Placed above base background */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          {/* Top-left star cluster */}
+          <div className="absolute top-[8%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[18%] left-[5%] w-1 h-1 rounded-full bg-rose-200 animate-star-twinkle-medium" style={{ animationDelay: '1.2s' }} />
+          <div className="absolute top-[28%] left-[18%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" style={{ animationDelay: '0.6s' }} />
+          <div className="absolute top-[12%] left-[24%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" style={{ animationDelay: '2.4s' }} />
+          
+          {/* Top-center star cluster */}
+          <div className="absolute top-[7%] left-[42%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" style={{ animationDelay: '1.8s' }} />
+          <div className="absolute top-[15%] left-[56%] w-1 h-1 rounded-full bg-rose-300 animate-star-twinkle-slow" style={{ animationDelay: '3.1s' }} />
+          <div className="absolute top-[10%] left-[66%] w-1.5 h-1.5 rounded-full bg-amber-200 animate-star-twinkle-fast" style={{ animationDelay: '0.9s' }} />
+          
+          {/* Top-right star cluster */}
+          <div className="absolute top-[11%] right-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute top-[24%] right-[7%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-fast" style={{ animationDelay: '2.7s' }} />
+          <div className="absolute top-[16%] right-[20%] w-1 h-1 rounded-full bg-rose-200 animate-star-twinkle-medium" style={{ animationDelay: '0.4s' }} />
+          <div className="absolute top-[32%] right-[15%] w-1 h-1 rounded-full bg-amber-100 animate-star-twinkle-slow" style={{ animationDelay: '3.8s' }} />
+          
+          {/* Mid & lower background stars */}
+          <div className="absolute top-[48%] left-[7%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" style={{ animationDelay: '2.1s' }} />
+          <div className="absolute top-[64%] left-[14%] w-1 h-1 rounded-full bg-rose-200 animate-star-twinkle-slow" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-[44%] right-[8%] w-1 h-1 rounded-full bg-white animate-star-twinkle-fast" style={{ animationDelay: '3.3s' }} />
+          <div className="absolute top-[70%] right-[16%] w-1.5 h-1.5 rounded-full bg-amber-200 animate-star-twinkle-medium" style={{ animationDelay: '1.7s' }} />
+
+          {/* 🌠 REALISTIC SHOOTING STARS / METEORS (Natural space streaks with varied speeds) */}
+          <span className="shooting-star meteor-1" />
+          <span className="shooting-star meteor-2" />
+          <span className="shooting-star meteor-3" />
+          <span className="shooting-star meteor-4" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          
+          {/* Glowing Planetary Horizon Half-Arch (Semi-circular atmospheric curvature) */}
+          <div className="relative mx-auto max-w-4xl pt-6 pb-6">
             
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 text-center lg:text-left">
-              <h1 className="text-3xl sm:text-5xl lg:text-[44px] font-extrabold text-slate-900 dark:text-white leading-[1.32] tracking-tight">
-                পড়ালেখার পূর্ণাঙ্গ প্রস্তুতি হোক{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:to-indigo-300">
-                  দেশসেরা শিক্ষকদের
-                </span>{' '}
-                নিবিড় সান্নিধ্যে
+            {/* The Half-Circle Horizon Curved Arc - Crowned elegantly OVER the top of the heading */}
+            <div 
+              style={{
+                maskImage: 'radial-gradient(ellipse 65% 65% at 50% 100%, black 40%, transparent 75%)',
+                WebkitMaskImage: 'radial-gradient(ellipse 65% 65% at 50% 100%, black 40%, transparent 75%)',
+              }}
+              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[15%] w-[120%] sm:w-[95%] h-[160px] rounded-t-[500px] pointer-events-none border-t-[3px] border-rose-400/90 shadow-[0_-14px_45px_12px_rgba(239,68,68,0.55),0_-2px_15px_rgba(255,255,255,0.95)] animate-horizon-glow" 
+            />
+            
+            {/* Atmospheric Red & Crimson Air Eclipse Glow Behind the Title (Seamless Radial Blend) */}
+            <div 
+              style={{
+                background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(225, 29, 72, 0.28) 0%, rgba(239, 68, 68, 0.15) 40%, transparent 75%)',
+              }}
+              className="absolute -inset-x-20 -inset-y-10 pointer-events-none blur-3xl animate-cosmic-air-1" 
+            />
+
+            {/* Secondary Soft Golden-Rose Luminous Air Wave */}
+            <div 
+              style={{
+                background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(245, 158, 11, 0.18) 0%, rgba(244, 63, 94, 0.12) 45%, transparent 70%)',
+              }}
+              className="absolute -inset-x-10 -inset-y-6 pointer-events-none blur-2xl animate-cosmic-air-2" 
+            />
+
+            {/* Hero Main Heading with Left-to-Right & Vice Versa Glowing Color Sweep */}
+            <div className="relative z-10 px-4">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.25] animate-glow-sweep-title">
+                লক্ষ্য এবার আকাশছোঁয়া!
               </h1>
 
-              <p className="mt-5 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-[1.8] max-w-2xl mx-auto lg:mx-0">
-                অভিজ্ঞ শিক্ষকবৃন্দের লাইভ ক্লাস, অধ্যায়ভিত্তিক লেকচার শিট, নিয়মিত মডেল টেস্ট ও সার্বক্ষণিক ডাউট সলভ দিয়ে নিশ্চিত করো তোমার বোর্ড পরীক্ষার সেরা ফলাফল।
+              <p className="mt-3.5 text-base sm:text-xl font-bold max-w-xl mx-auto drop-shadow-sm animate-glow-sweep-subtitle">
+                সেরা গাইডে নিশ্চিত করো তোমার সেরা ফলাফল!
               </p>
-
-              {/* Class Selectors Quick Pills */}
-              <div className="mt-8 pt-6 border-t border-slate-200/90 dark:border-slate-800/90">
-                <div className="flex items-center justify-between mb-3.5">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                    তোমার শ্রেণি নির্বাচন করো:
-                  </span>
-                  <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold hidden sm:inline">
-                    এক ক্লিকে কোর্স দেখুন
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
-                  {classList.map((cls) => (
-                    <button
-                      key={cls}
-                      onClick={() => {
-                        setSelectedClass(cls);
-                        const el = document.getElementById('featured-courses');
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-2xs ${
-                        selectedClass === cls
-                          ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105'
-                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/40 dark:hover:bg-slate-800/80'
-                      }`}
-                    >
-                      {cls === 'All' ? 'সকল কোর্স' : cls}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                <Link
-                  href="/courses"
-                  className="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/25 transition-all flex items-center gap-2 group"
-                >
-                  <span>কোর্স ও ব্যাচ তালিকা</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/free-classes"
-                  className="px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-sm border border-slate-300 dark:border-slate-800 transition-all shadow-xs flex items-center gap-2"
-                >
-                  <Video className="w-4 h-4 text-emerald-500" />
-                  <span>ফ্রি ক্লাস দেখুন</span>
-                </Link>
-              </div>
-
             </div>
-
-            {/* Right Visual Image Card */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative mx-auto max-w-lg lg:max-w-none">
-                
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-800 aspect-[4/3] sm:aspect-[16/11]">
-                  <img
-                    src="/images/hero-student.jpg"
-                    alt="Bangladeshi student preparing with Grav Academy"
-                    className="w-full h-full object-cover object-center transform hover:scale-102 transition-transform duration-500"
-                  />
-                  {/* High contrast gradient backdrop for crystal clear text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
-                  
-                  {/* Clear Glassmorphism Card for Text Contrast */}
-                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5 p-3.5 sm:p-4 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-white/15 text-white shadow-xl">
-                    <span className="px-2.5 py-0.5 rounded-md bg-emerald-600 text-[11px] font-extrabold tracking-wide uppercase shadow-xs inline-block mb-1 text-white">
-                      সফলতার গল্প
-                    </span>
-                    <h3 className="text-sm sm:text-base font-extrabold text-white leading-snug drop-shadow-md">
-                      নিয়মিত অধ্যবসায় ও সেরা গাইডলাইনে অর্জন করো সর্বোচ্চ ফলাফল
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Floating Wave Pill 1: Top Left - Organic Wave / Blob Shape */}
-                <div className="absolute -top-7 -left-3 sm:-top-8 sm:-left-8 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-rose-200/60 dark:border-rose-900/40 rounded-[28px_14px_32px_18px] px-4 py-3 shadow-[0_12px_30px_-8px_rgba(225,29,72,0.18)] dark:shadow-none flex items-center gap-3.5 z-20 hover:scale-105 transition-transform duration-300">
-                  <div className="w-10 h-10 rounded-[16px_8px_16px_8px] bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-bold shrink-0 shadow-md shadow-rose-500/25">
-                    <PlayCircle className="w-5 h-5 animate-pulse" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase tracking-wider block">প্রতি সপ্তাহে</span>
-                    <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">১২+ লাইভ ক্লাস</span>
-                  </div>
-                </div>
-
-                {/* Floating Wave Pill 2: Bottom Right - Organic Wave / Blob Shape */}
-                <div className="absolute -bottom-8 -right-3 sm:-bottom-9 sm:-right-8 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-blue-200/60 dark:border-blue-900/40 rounded-[16px_30px_14px_28px] px-4 py-3 shadow-[0_12px_30px_-8px_rgba(37,99,235,0.22)] dark:shadow-none flex items-center gap-3.5 z-20 hover:scale-105 transition-transform duration-300">
-                  <div className="w-10 h-10 rounded-[8px_16px_8px_16px] bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shrink-0 shadow-md shadow-blue-500/25">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider block">লেকচার শিট</span>
-                    <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">ফ্রি হ্যান্ডনোট পিডিএফ</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
           </div>
+
+          {/* GLOSSY CLASS CARDS ROW */}
+          <div className="mt-8 sm:mt-12">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-x-7 sm:gap-x-9 md:gap-x-12 lg:gap-x-14 gap-y-6 sm:gap-y-8 max-w-7xl mx-auto px-2 sm:px-6">
+              
+              {/* Card 1: HSC 26 */}
+              <div 
+                style={{ animationDelay: '100ms' }}
+                onClick={() => {
+                  setSelectedClass('Class 12');
+                  const el = document.getElementById('featured-courses');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="animate-card-in group cursor-pointer flex flex-col items-center"
+              >
+                <div className="w-full relative p-2 sm:p-3 rounded-[34px] sm:rounded-[42px] glossy-glass-card glow-card-amber aspect-[1/1.05] flex flex-col items-center justify-between border-2 border-amber-400/30 overflow-hidden">
+                  
+                  {/* Ultra-soft realistic feathered crystal sheen beam */}
+                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" />
+                  
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0369a1] p-2 sm:p-3 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                    {/* Top glass bubble shine */}
+                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                    
+                    {/* Tilted Artistic Icon on the Right Side as Background */}
+                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                      <Trophy className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                    </div>
+
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-sky-100 uppercase drop-shadow-md z-10">
+                      HSC
+                    </span>
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                      <span>২৬</span>
+                    </div>
+                  </div>
+                  
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-amber-300 transition-colors z-10">
+                    HSC ২৬
+                  </span>
+                </div>
+                
+                {/* Cute pill badge */}
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-rose-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                  ভার্সিটি ও ইঞ্জি.
+                </div>
+              </div>
+
+              {/* Card 2: HSC 27 */}
+              <div 
+                style={{ animationDelay: '180ms' }}
+                onClick={() => {
+                  setSelectedClass('Class 11');
+                  const el = document.getElementById('featured-courses');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="animate-card-in group cursor-pointer flex flex-col items-center"
+              >
+                <div className="w-full relative p-2 sm:p-3 rounded-[34px] sm:rounded-[42px] glossy-glass-card glow-card-sky aspect-[1/1.05] flex flex-col items-center justify-between border-2 border-sky-400/30 overflow-hidden">
+                  
+                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '4s' }} />
+
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#60a5fa] via-[#2563eb] to-[#1d4ed8] p-2 sm:p-3 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                    
+                    {/* Tilted Artistic Icon on the Right Side as Background */}
+                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                      <Target className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                    </div>
+
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-blue-100 uppercase drop-shadow-md z-10">
+                      HSC
+                    </span>
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                      <span>২৭</span>
+                    </div>
+                  </div>
+                  
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-sky-300 transition-colors z-10">
+                    HSC ২৭
+                  </span>
+                </div>
+                
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-red-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                  বোর্ড স্ট্যান্ডার্ড
+                </div>
+              </div>
+
+              {/* Card 3: HSC 28 */}
+              <div 
+                style={{ animationDelay: '260ms' }}
+                onClick={() => {
+                  setSelectedClass('Class 11');
+                  const el = document.getElementById('featured-courses');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="animate-card-in group cursor-pointer flex flex-col items-center"
+              >
+                <div className="w-full relative p-2 sm:p-3 rounded-[34px] sm:rounded-[42px] glossy-glass-card glow-card-blue aspect-[1/1.05] flex flex-col items-center justify-between border-2 border-cyan-400/30 overflow-hidden">
+                  
+                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '8s' }} />
+
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0f766e] p-2 sm:p-3 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                    
+                    {/* Tilted Artistic Icon on the Right Side as Background */}
+                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                      <Backpack className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                    </div>
+
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-cyan-100 uppercase drop-shadow-md z-10">
+                      HSC
+                    </span>
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                      <span>২৮</span>
+                    </div>
+                  </div>
+                  
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-cyan-300 transition-colors z-10">
+                    HSC ২৮
+                  </span>
+                </div>
+                
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-blue-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                  ফুল কোর্স
+                </div>
+              </div>
+
+              {/* Card 4: SSC 27 (দশম শ্রেণি) */}
+              <div 
+                style={{ animationDelay: '340ms' }}
+                onClick={() => {
+                  setSelectedClass('Class 10');
+                  const el = document.getElementById('featured-courses');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="animate-card-in group cursor-pointer flex flex-col items-center"
+              >
+                <div className="w-full relative p-2 sm:p-3 rounded-[34px] sm:rounded-[42px] glossy-glass-card glow-card-orange aspect-[1/1.05] flex flex-col items-center justify-between border-2 border-orange-400/30 overflow-hidden">
+                  
+                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '12s' }} />
+
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#fb923c] via-[#ea580c] to-[#c2410c] p-2 sm:p-3 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                    
+                    {/* Tilted Artistic Icon on the Right Side as Background */}
+                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                      <ScrollText className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                    </div>
+
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-orange-100 uppercase drop-shadow-md z-10">
+                      SSC
+                    </span>
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                      <span>২৭</span>
+                    </div>
+                  </div>
+                  
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-orange-300 transition-colors z-10">
+                    দশম শ্রেণি
+                  </span>
+                </div>
+                
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-orange-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                  লাইভ ও রিভিশন
+                </div>
+              </div>
+
+              {/* Card 5: Class 9 (৯ম শ্রেণি) */}
+              <div 
+                style={{ animationDelay: '420ms' }}
+                onClick={() => {
+                  setSelectedClass('Class 9');
+                  const el = document.getElementById('featured-courses');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="animate-card-in group cursor-pointer flex flex-col items-center"
+              >
+                <div className="w-full relative p-2 sm:p-3 rounded-[34px] sm:rounded-[42px] glossy-glass-card glow-card-emerald aspect-[1/1.05] flex flex-col items-center justify-between border-2 border-emerald-400/30 overflow-hidden">
+                  
+                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '16s' }} />
+
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#34d399] via-[#059669] to-[#047857] p-2 sm:p-3 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                    
+                    {/* Tilted Artistic Icon on the Right Side as Background */}
+                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                      <Tent className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                    </div>
+
+                    <span className="text-[9px] sm:text-[11px] font-black tracking-widest text-emerald-100 uppercase drop-shadow-md z-10">
+                      CLASS
+                    </span>
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                      <span>৯</span>
+                    </div>
+                  </div>
+                  
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-emerald-300 transition-colors z-10">
+                    ৯ম শ্রেণি
+                  </span>
+                </div>
+                
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-emerald-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                  নতুন কারিকুলাম
+                </div>
+              </div>
+
+              {/* Card 6: Class 6, 7, 8 (৬ষ্ঠ - ৮ম শ্রেণি) */}
+              <div 
+                style={{ animationDelay: '500ms' }}
+                onClick={() => {
+                  setSelectedClass('Class 8');
+                  const el = document.getElementById('featured-courses');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="animate-card-in group cursor-pointer flex flex-col items-center"
+              >
+                <div className="w-full relative p-2 sm:p-3 rounded-[34px] sm:rounded-[42px] glossy-glass-card glow-card-teal aspect-[1/1.05] flex flex-col items-center justify-between border-2 border-teal-400/30 overflow-hidden">
+                  
+                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '20s' }} />
+
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#2dd4bf] via-[#0d9488] to-[#115e59] p-2 sm:p-3 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                    
+                    {/* Tilted Artistic Icon on the Right Side as Background */}
+                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                      <BookOpenCheck className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                    </div>
+
+                    <span className="text-[9px] sm:text-[11px] font-black tracking-widest text-teal-100 uppercase drop-shadow-md z-10">
+                      CLASS
+                    </span>
+                    <div className="text-xl sm:text-2xl md:text-3xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                      <span>৬-৮</span>
+                    </div>
+                  </div>
+                  
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-teal-300 transition-colors z-10">
+                    জুনিয়র ব্যাচ
+                  </span>
+                </div>
+                
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-teal-600 via-cyan-600 to-teal-700 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-teal-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                  ফাউন্ডেশন কোর্স
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Action CTAs: Free Class and All Courses Button */}
+          <div className="mt-10 sm:mt-12 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/free-classes"
+              className="px-7 py-3 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all flex items-center gap-2"
+            >
+              <span>ফ্রি ক্লাস (HSC / SSC)</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href="/courses"
+              className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base border border-white/20 backdrop-blur-md hover:scale-105 transition-all flex items-center gap-2"
+            >
+              <span>সকল কোর্স দেখুন</span>
+              <ChevronRight className="w-4 h-4 text-rose-300" />
+            </Link>
+          </div>
+
         </div>
       </section>
 
       {/* 3. KEY METRICS STRIP */}
-      <section className="bg-slate-900 text-white py-8 border-y border-slate-800">
+      <section className="bg-slate-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-800">
             <div className="pt-3 md:pt-0">
@@ -299,61 +526,75 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. FEATURED COURSES SECTION */}
-      <section id="featured-courses" className="py-20 sm:py-24 bg-slate-50/70 dark:bg-slate-950/70 border-b border-slate-100 dark:border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 4. FEATURED COURSES SECTION (Unified Continuous Flow) */}
+      <section id="featured-courses" className="relative py-20 sm:py-28 overflow-hidden">
+        
+        {/* Subtle cute ambient cosmic glows in the background */}
+        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-rose-500/5 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          {/* Section Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 sm:mb-16 gap-6">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold mb-3">
-                <BookOpen className="w-3.5 h-3.5" /> কোর্সের তালিকা
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                জনপ্রিয় কোর্স ও ব্যাচসমূহ
+              {/* Title */}
+              <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                জনপ্রিয় কোর্স ও{' '}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                  ব্যাচসমূহ
+                </span>
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-xl">
-                তোমার পছন্দের কোর্সে ক্লিক করে বিস্তারিত সিলেবাস ও চলতি ব্যাচের সময়সূচি দেখে নাও।
+
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2.5 max-w-xl font-medium">
+                লক্ষ্যপূরণে তোমার উপযোগী কোর্স বেছে নাও—প্রতিটি ব্যাচে থাকছে পূর্ণাঙ্গ সিলেবাস কভারেজ ও সার্বক্ষণিক সাপোর্ট।
               </p>
             </div>
 
-            {/* Class Switcher Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
-              {classList.slice(0, 6).map((cls) => (
-                <button
-                  key={cls}
-                  onClick={() => setSelectedClass(cls)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-2xs ${
-                    selectedClass === cls
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  {cls === 'All' ? 'সকল শ্রেণি' : cls}
-                </button>
-              ))}
+            {/* Cute Class Switcher Pill Tabs */}
+            <div className="p-1.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
+              {classList.slice(0, 6).map((cls) => {
+                const isActive = selectedClass === cls;
+                return (
+                  <button
+                    key={cls}
+                    onClick={() => setSelectedClass(cls)}
+                    className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black whitespace-nowrap transition-all duration-300 cursor-pointer ${
+                      isActive
+                        ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-[1.02]'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/80'
+                    }`}
+                  >
+                    {cls === 'All' ? 'সকল শ্রেণি' : cls}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Courses Grid */}
           {loadingCourses ? (
-            <div className="py-20 text-center">
-              <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3" />
-              <p className="text-xs text-slate-500 font-medium">কোর্সগুলো লোড হচ্ছে...</p>
+            <div className="py-24 text-center">
+              <div className="inline-block w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-bold">কোর্সগুলো সাজানো হচ্ছে...</p>
             </div>
           ) : filteredCourses.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 max-w-md mx-auto">
-              <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">কোনো কোর্স পাওয়া যায়নি</h3>
-              <p className="text-xs text-slate-500 mt-1 mb-5">এই শ্রেণির জন্য নতুন কোর্স ও ব্যাচ শীঘ্রই যুক্ত করা হচ্ছে।</p>
+            <div className="text-center py-16 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-[32px] border border-slate-200/80 dark:border-slate-800 p-8 sm:p-12 max-w-md mx-auto shadow-sm">
+              <div className="w-16 h-16 rounded-2xl bg-blue-100/80 dark:bg-blue-950/60 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800">
+                <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">কোনো কোর্স পাওয়া যায়নি</h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6">এই শ্রেণির জন্য নতুন কোর্স ও ব্যাচ খুব শীঘ্রই লাইভ হবে।</p>
               <button
                 onClick={() => setSelectedClass('All')}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold"
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md shadow-blue-500/25 transition-all"
               >
                 সব কোর্স দেখুন
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {filteredCourses.map((c, idx) => {
                 const instructorName =
                   c.instructors && c.instructors.length > 0
@@ -362,39 +603,37 @@ export default function HomePage() {
                       : 'ফ্যাকাল্টি মেন্টর'
                     : 'গ্র্যাভ একাডেমি শিক্ষক প্যানেল';
 
-                const regularPrice = c.courseFee ? Math.round(c.courseFee * 1.35) : null;
-
-                // Modern EdTech tailored vibrant gradient palettes
+                // Cute vibrant card thumbnail gradients
                 const cardThemes = [
                   {
-                    gradient: 'from-violet-600 via-indigo-600 to-purple-800',
-                    tag: 'text-violet-200',
-                    blob1: 'bg-white/15',
-                    blob2: 'bg-indigo-300/25',
+                    gradient: 'from-[#4f46e5] via-[#7c3aed] to-[#c026d3]',
+                    pillBg: 'from-purple-500 to-indigo-600',
+                    accentColor: 'text-purple-600 dark:text-purple-400',
+                    glow: 'shadow-purple-500/20',
                   },
                   {
-                    gradient: 'from-emerald-600 via-teal-600 to-cyan-800',
-                    tag: 'text-teal-200',
-                    blob1: 'bg-white/15',
-                    blob2: 'bg-emerald-300/25',
+                    gradient: 'from-[#0284c7] via-[#2563eb] to-[#4f46e5]',
+                    pillBg: 'from-blue-500 to-indigo-600',
+                    accentColor: 'text-blue-600 dark:text-blue-400',
+                    glow: 'shadow-blue-500/20',
                   },
                   {
-                    gradient: 'from-blue-600 via-indigo-600 to-sky-900',
-                    tag: 'text-sky-200',
-                    blob1: 'bg-white/15',
-                    blob2: 'bg-sky-300/25',
+                    gradient: 'from-[#059669] via-[#0d9488] to-[#0284c7]',
+                    pillBg: 'from-emerald-500 to-teal-600',
+                    accentColor: 'text-teal-600 dark:text-teal-400',
+                    glow: 'shadow-teal-500/20',
                   },
                   {
-                    gradient: 'from-rose-600 via-pink-600 to-purple-900',
-                    tag: 'text-rose-200',
-                    blob1: 'bg-white/15',
-                    blob2: 'bg-pink-300/25',
+                    gradient: 'from-[#ea580c] via-[#e11d48] to-[#c026d3]',
+                    pillBg: 'from-rose-500 to-orange-500',
+                    accentColor: 'text-rose-600 dark:text-rose-400',
+                    glow: 'shadow-rose-500/20',
                   },
                   {
-                    gradient: 'from-amber-600 via-orange-600 to-rose-900',
-                    tag: 'text-amber-200',
-                    blob1: 'bg-white/15',
-                    blob2: 'bg-amber-300/25',
+                    gradient: 'from-[#d97706] via-[#ea580c] to-[#e11d48]',
+                    pillBg: 'from-amber-500 to-orange-600',
+                    accentColor: 'text-amber-600 dark:text-amber-400',
+                    glow: 'shadow-amber-500/20',
                   },
                 ];
 
@@ -404,86 +643,118 @@ export default function HomePage() {
                   <Link
                     key={c._id}
                     href={`/courses/${c.slug || c._id}`}
-                    className="group bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between"
+                    className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
                   >
                     <div>
-                      {/* Top Thumbnail Banner with Image / Fallback Vibrant Gradient */}
-                      <div className={`relative w-full aspect-video ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`} overflow-hidden`}>
-                        {c.thumbnailUrl ? (
-                          /* Pure 100% opacity full-bleed image */
-                          <img
-                            src={c.thumbnailUrl}
-                            alt={c.title}
-                            className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <>
-                            {/* Decorative background geometry fallback */}
-                            <div className={`absolute -right-8 -bottom-8 w-36 h-36 rounded-full ${currentTheme.blob1} blur-xl pointer-events-none`} />
-                            <div className={`absolute right-4 top-4 w-20 h-20 rounded-full ${currentTheme.blob2} blur-lg pointer-events-none`} />
-                          </>
-                        )}
+                      {/* Top Thumbnail Banner with Smooth Curved Mask */}
+                      <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
+                        <div className={`relative w-full h-full ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`}`}>
+                          {c.thumbnailUrl ? (
+                            <img
+                              src={c.thumbnailUrl}
+                              alt={c.title}
+                              className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                              <BookOpen className="w-12 h-12 text-white/80 drop-shadow-md mb-2 group-hover:scale-110 transition-transform duration-300" />
+                              <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3">
+                                {c.title}
+                              </span>
+                            </div>
+                          )}
 
-                        {/* Badges on Thumbnail - Absolute overlay */}
-                        <div className="absolute top-0 left-0 right-0 z-20 p-3.5 flex items-center justify-between pointer-events-none">
-                          <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-extrabold border border-white/20 shadow-md">
-                            {c.gradeLevel}
-                          </span>
+                          {/* Gloss Sheen Shine Across Thumbnail */}
+                          <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
 
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-slate-900 dark:bg-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200 dark:border-slate-700">
-                            <span className="relative flex h-2 w-2">
-                              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
-                              <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.9)]" />
+                          {/* Top Badges Overlay */}
+                          <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
+                            {/* Grade Level Tag */}
+                            <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
+                              <Sparkles className="w-3 h-3 text-amber-300" />
+                              <span>{c.gradeLevel}</span>
                             </span>
-                            লাইভ ব্যাচ
-                          </span>
+
+                            {/* Cute Live Indicator */}
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
+                              <span className="relative flex h-2 w-2">
+                                <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                                <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                              </span>
+                              <span>লাইভ ব্যাচ</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
 
                       {/* Card Content Body */}
-                      <div className="p-6">
-                        {/* Course Name */}
-                        <div className="mb-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-                          <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                            {c.title}
-                          </h3>
-                        </div>
+                      <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
+                        {/* Course Title */}
+                        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                          {c.title}
+                        </h3>
 
-                        {/* Short Description */}
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-[1.7] mb-4">
-                          {c.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড পরীক্ষার জন্য চূড়ান্ত প্রস্তুতিমূলক কোর্স।'}
+                        {/* Short Description (Strictly max 1 line with ellipsis) */}
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
+                          {c.description
+                            ? c.description.length > 55
+                              ? c.description.slice(0, 55).trim() + '...'
+                              : c.description
+                            : 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রস্তুতির কোর্স।'}
                         </p>
 
-                        {/* Features Micro-List */}
-                        <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                        {/* Cute Feature Micro-Badges */}
+                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
                           <div className="flex items-center gap-2">
-                            <PlayCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                            <span>লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
+                            <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                              <PlayCircle className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="line-clamp-1">লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <FileText className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                            <span>অধ্যায়ভিত্তিক লেকচার শিট ও ফর্মুলা বুক</span>
+                            <div className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                              <FileText className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="line-clamp-1">অধ্যায়ভিত্তিক লেকচার শিট ও নোট</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Award className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                            <span>অনলাইন মডেল টেস্ট ও লিডারবোর্ড</span>
+                            <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                              <Award className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="line-clamp-1">অনলাইন উইকলি টেস্ট ও এনালাইসিস</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Card Bottom: Batch Enrollment CTA */}
-                    <div className="p-5 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 flex items-center justify-between gap-3">
+                    {/* Cute Card Bottom: Enrollment CTA */}
+                    <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">এনরোলমেন্ট</span>
-                        <span className="text-xs font-black text-slate-800 dark:text-slate-200">
-                          ব্যাচভিত্তিক ভর্তি
+                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                          ভর্তি চলছে
                         </span>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          {c.courseFee ? (
+                            <>
+                              <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                                ৳{c.courseFee}
+                              </span>
+                              <span className="text-[11px] text-slate-400 line-through font-semibold">
+                                ৳{Math.round(c.courseFee * 1.35)}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
+                              ব্যাচভিত্তিক ফি
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="py-2 px-4 rounded-xl bg-blue-600 group-hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5">
+                      {/* Cute Action Button */}
+                      <div className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102">
                         <span>ব্যাচ দেখুন</span>
-                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>
@@ -492,100 +763,136 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Catalog CTA */}
-          <div className="mt-14 text-center">
+          {/* Cute Catalog CTA Button */}
+          <div className="mt-14 sm:mt-16 text-center">
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 text-slate-900 dark:text-white font-bold text-sm shadow-xs hover:shadow-md transition-all"
+              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white dark:bg-slate-900/90 border-2 border-slate-200/90 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 text-slate-900 dark:text-white font-black text-sm shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
             >
               <span>সকল কোর্স ও ব্যাচ ক্যাটালগ দেখুন</span>
-              <ArrowRight className="w-4 h-4 text-blue-600" />
+              <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
         </div>
       </section>
 
-      {/* 5. VISUAL SECTION 1: LIVE CLASS (Spacious, Clean & Minimal Text) */}
-      <section className="py-20 sm:py-28 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 5. VISUAL SECTION 1: LIVE CLASS (Cute, Cosmic & Glossy Glass Aesthetic) */}
+      <section className="relative py-20 sm:py-28 overflow-hidden">
+        
+        {/* Subtle cute ambient cosmic glows */}
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -left-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Image on Left */}
+            {/* Image on Left - Glossy Glass Container */}
             <div className="lg:col-span-6 order-2 lg:order-1">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-800 aspect-[16/10]">
-                <img
-                  src="/images/live-class.jpg"
-                  alt="Teacher conducting live class on digital interactive smartboard"
-                  className="w-full h-full object-cover object-center"
-                />
-                <div className="absolute top-4 left-4 bg-rose-600 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-                  <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                  <span>লাইভ স্টুডিও ক্লাস</span>
+              <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
+                
+                {/* Image Mask Frame */}
+                <div className="relative rounded-[28px] sm:rounded-[34px] overflow-hidden aspect-[16/10.5] bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner">
+                  <img
+                    src="/images/live-class.jpg"
+                    alt="Teacher conducting live class on digital interactive smartboard"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-106"
+                  />
+                  
+                  {/* Gloss Shimmer Sheen Across Image */}
+                  <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+
+                  {/* Overlaid Cute Top Badge */}
+                  <div className="absolute top-3.5 left-3.5 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-black border border-white/25 shadow-lg">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-75" />
+                      <span className="relative m-auto h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+                    </span>
+                    <span>ইন্টারেক্টিভ লাইভ ক্লাস</span>
+                  </div>
+
+                  {/* Bottom cute tag overlay */}
+                  <div className="absolute bottom-3.5 inset-x-3.5 z-10 flex items-center justify-between pointer-events-none">
+                    <div className="px-3.5 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15 flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <span>টু-ওয়ে অডিও ও স্ক্রিন শেয়ার</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Text on Right (Crisp, spacious 3 bullet points) */}
+            {/* Text & Feature Cards on Right */}
             <div className="lg:col-span-6 order-1 lg:order-2">
-              <span className="px-3.5 py-1.5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold inline-block mb-4">
-                আধুনিক পাঠদান পদ্ধতি
-              </span>
-              
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-[1.35] tracking-tight">
-                ডিজিটাল স্মার্টবোর্ডে জীবন্ত ও প্রাণবন্ত ক্লাস
+              <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.3] tracking-tight">
+                ইন্টারেক্টিভ{' '}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                  অনলাইন ক্লাস
+                </span>
               </h2>
               
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-4 leading-[1.8]">
-                বইয়ের কঠিন বিষয়গুলো সহজ গ্রাফিক্স ও বাস্তব উদাহরণের মাধ্যমে ক্লাসেই বুঝিয়ে দেওয়া হয়।
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-3.5 leading-relaxed font-medium">
+                অনলাইন হলেও মনে হবে শিক্ষক তোমার সামনেই আছেন! সরাসরি কথা বলে প্রশ্ন করা এবং স্ক্রিনে হাতে-কলমে সমাধান পাওয়ার আধুনিক ব্যবস্থা।
               </p>
 
-              {/* 3 Spacious Clean Feature Points */}
-              <div className="mt-8 space-y-5">
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center shrink-0 font-bold text-sm shadow-2xs">
+              {/* 3 Cute Glassmorphic Feature Pill Cards */}
+              <div className="mt-8 space-y-3.5">
+                
+                {/* Feature 1 */}
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-blue-500/60 dark:hover:border-blue-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-blue-500/25 group-hover/item:scale-108 transition-transform">
                     ১
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">রিয়েল-টাইম ডাউট সলভিং</h3>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-[1.6]">
-                      লাইভ ক্লাসেই সরাসরি প্রশ্ন করে যেকোনো দ্বিধা সমাধান করার সুযোগ।
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
+                      সরাসরি কথা বলে ডাউট সলভ
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      ক্লাস চলাকালীন মাইক অন করে বা চ্যাটে সরাসরি প্রশ্ন করে যেকোনো দ্বিধা সঙ্গে সঙ্গে ক্লিয়ার করে নাও।
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0 font-bold text-sm shadow-2xs">
+                {/* Feature 2 */}
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-emerald-500/25 group-hover/item:scale-108 transition-transform">
                     ২
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">বোর্ড প্রশ্ন ও টেস্ট পেপার সলভিং</h3>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-[1.6]">
-                      শীর্ষস্থানীয় কলেজ ও স্কুলের বিগত বছরের প্রশ্নের বিশেষ সমাধান।
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-emerald-600 dark:group-hover/item:text-emerald-400 transition-colors">
+                      স্ক্রিন শেয়ার ও লাইভ নোটস
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      শিক্ষক স্ক্রিনে প্রতিটি অঙ্ক ও থিওরি লিখে সমাধান করান এবং ক্লাস শেষেই ক্লাসরুমে হ্যান্ডনোট দিয়ে দেন।
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center shrink-0 font-bold text-sm shadow-2xs">
+                {/* Feature 3 */}
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-purple-500/60 dark:hover:border-purple-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-purple-500/25 group-hover/item:scale-108 transition-transform">
                     ৩
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">আনলিমিটেড রেকর্ডেড ক্লাস</h3>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-[1.6]">
-                      পরীক্ষার আগে রিভিশনের জন্য যতবার খুশি ক্লাস দেখার সুযোগ।
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-purple-600 dark:group-hover/item:text-purple-400 transition-colors">
+                      আনলিমিটেড রেকর্ডেড ক্লাস
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      পরীক্ষার আগে রিভিশনের জন্য যেকোনো সময় যতবার খুশি ফুল এইচডি ক্লাস দেখার সুবিধা।
                     </p>
                   </div>
                 </div>
+
               </div>
 
+              {/* Cute CTA Button */}
               <div className="mt-8 pt-2">
                 <Link
                   href="/free-classes"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all"
+                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-102 transition-all duration-300"
                 >
                   <span>ফ্রি ক্লাস ও সেমিনার দেখুন</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
@@ -595,71 +902,102 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS */}
-      <section className="py-20 sm:py-28 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS (Cute Cosmic Glass Aesthetic) */}
+      <section className="relative py-20 sm:py-28 overflow-hidden">
+        
+        {/* Subtle cute ambient cosmic glows */}
+        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -right-40 w-96 h-96 bg-amber-500/10 dark:bg-amber-600/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Text on Left */}
+            {/* Text & Feature Cards on Left */}
             <div className="lg:col-span-6">
-              <span className="px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold inline-block mb-4">
-                শিক্ষার্থী বান্ধব পরিবেশ
-              </span>
               
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-[1.35] tracking-tight">
-                একসাথে প্রস্তুতি, নিয়মিত পরীক্ষা ও আত্মবিশ্বাস বৃদ্ধি
+              {/* Short & Punchy Header */}
+              <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.3] tracking-tight">
+                একসাথে প্রস্তুতি ও{' '}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 dark:from-emerald-400 dark:via-teal-300 dark:to-cyan-400">
+                  আত্মবিশ্বাস বৃদ্ধি
+                </span>
               </h2>
               
-              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-4 leading-[1.8]">
-                নিয়মিত সাপ্তাহিক মডেল টেস্ট ও মূল্যায়ন দিয়ে যাচাই করো তোমার প্রস্তুতি।
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-3.5 leading-relaxed font-medium">
+                নিয়মিত অনলাইন পরীক্ষা, মডেল টেস্ট ও তাৎক্ষণিক পারফরম্যান্স অ্যানালাইসিস দিয়ে দেশসেরা সহপাঠীদের সাথে নিজেকে যাচাই করো।
               </p>
 
-              {/* 2 Big Spacious Highlight Cards */}
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-500 flex items-center justify-center font-bold mb-3">
+              {/* 2 Cute Glassmorphic Highlight Cards */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                
+                {/* Highlight Card 1 */}
+                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-slate-900/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-amber-500/25 group-hover/card:scale-110 transition-transform">
                     <Award className="w-5 h-5" />
                   </div>
-                  <h4 className="text-base font-bold text-slate-900 dark:text-white">রিয়েলটাইম লিডারবোর্ড</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-[1.6]">
-                    পরীক্ষার পর সারাদেশে সহপাঠীদের মাঝে নিজের মেধার অবস্থান দেখার সুবিধা।
+                  <h4 className="text-base font-black text-slate-900 dark:text-white group-hover/card:text-amber-600 dark:group-hover/card:text-amber-400 transition-colors">
+                    রিয়েলটাইম লিডারবোর্ড
+                  </h4>
+                  <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                    পরীক্ষার পর সারাদেশে সহপাঠীদের মাঝে নিজের মেধার সঠিক অবস্থান ও র‍্যাঙ্ক দেখার সুবিধা।
                   </p>
                 </div>
 
-                <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center font-bold mb-3">
+                {/* Highlight Card 2 */}
+                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-slate-900/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-emerald-500/25 group-hover/card:scale-110 transition-transform">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <h4 className="text-base font-bold text-slate-900 dark:text-white">অভিভাবক ট্র্যাকিং</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-[1.6]">
-                    ক্লাসের উপস্থিতি ও পরীক্ষার ফলাফল অভিভাবকরা সহজে ট্র্যাক করতে পারেন।
+                  <h4 className="text-base font-black text-slate-900 dark:text-white group-hover/card:text-emerald-600 dark:group-hover/card:text-emerald-400 transition-colors">
+                    স্মার্ট প্রগ্রেস ট্র্যাকিং
+                  </h4>
+                  <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                    ক্লাসের উপস্থিতি, মডেল টেস্টের মার্কস ও দুর্বল বিষয়ের প্রগ্রেস রিপোর্ট সহজে পর্যালোচনা।
                   </p>
                 </div>
+
               </div>
 
+              {/* Cute CTA Button */}
               <div className="mt-8 pt-2">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 font-bold text-xs sm:text-sm shadow-md transition-all"
+                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-700 hover:to-cyan-800 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-102 transition-all duration-300"
                 >
                   <span>ফ্রি স্টুডেন্ট অ্যাকাউন্ট খুলুন</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            {/* Image on Right */}
+            {/* Image on Right - Glossy Glass Container */}
             <div className="lg:col-span-6">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-800 aspect-[16/10]">
-                <img
-                  src="/images/group-study.jpg"
-                  alt="Students happily collaborating and checking high exam scores"
-                  className="w-full h-full object-cover object-center"
-                />
-                <div className="absolute bottom-5 right-5 bg-emerald-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
-                  <Check className="w-4 h-4" />
-                  <span>৯৮% সন্তুষ্ট শিক্ষার্থী ও অভিভাবক</span>
+              <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
+                
+                {/* Image Mask Frame */}
+                <div className="relative rounded-[28px] sm:rounded-[34px] overflow-hidden aspect-[16/10.5] bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner">
+                  <img
+                    src="/images/group-study.jpg"
+                    alt="Students happily collaborating and checking high exam scores"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-106"
+                  />
+
+                  {/* Gloss Shimmer Sheen Across Image */}
+                  <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+
+                  {/* Top cute tag overlay */}
+                  <div className="absolute top-3.5 left-3.5 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-black border border-white/25 shadow-lg">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>সাপ্তাহিক মডেল টেস্ট</span>
+                  </div>
+
+                  {/* Bottom cute tag overlay */}
+                  <div className="absolute bottom-3.5 right-3.5 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-600/95 backdrop-blur-md text-white text-xs font-black shadow-lg border border-emerald-400/30">
+                    <Check className="w-4 h-4 stroke-[3]" />
+                    <span>৯৮% সন্তুষ্ট শিক্ষার্থী ও অভিভাবক</span>
+                  </div>
                 </div>
+
               </div>
             </div>
 
@@ -667,93 +1005,106 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. TEACHERS / FACULTY SECTION (Shikho & 10 Minute School Style Instructor Cards) */}
-      <section className="py-20 sm:py-28 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 7. TEACHERS / FACULTY SECTION (Cute Cosmic Glass Aesthetic) */}
+      <section className="relative py-20 sm:py-28 overflow-hidden">
+        
+        {/* Subtle cute ambient cosmic glows */}
+        <div className="absolute top-1/4 -right-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 text-xs font-bold inline-block mb-3.5 shadow-2xs">
-              অভিজ্ঞ শিক্ষক প্যানেল
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              যাদের নিবিড় সান্নিধ্যে তোমার স্বপ্নপূরণ
+          {/* Section Header - Clean, Direct & Professional */}
+          <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+              যাদের সান্নিধ্যে{' '}
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                তোমার স্বপ্নপূরণ
+              </span>
             </h2>
-            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-2.5 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-3 font-medium leading-relaxed">
               বুয়েট, ঢাকা বিশ্ববিদ্যালয় ও শীর্ষ মেডিকেল কলেজের অভিজ্ঞ মেন্টরদের নিবিড় তত্ত্বাবধানে বিষয়ভিত্তিক পাঠদান।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Cute Instructors Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 sm:gap-8">
             {instructorsList.map((teacher, idx) => (
               <div
                 key={idx}
-                className="group relative bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-300 transform hover:-translate-y-2 flex flex-col"
+                className="group relative p-2.5 sm:p-3 rounded-[34px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2 flex flex-col justify-between"
               >
-                {/* Large Portrait Photo Container with subtle gradient vignette */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
-                  <img
-                    src={teacher.photo}
-                    alt={teacher.name}
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  />
-                  
-                  {/* Subtle gradient vignette at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+                <div>
+                  {/* Portrait Photo Mask Frame with Gloss Shimmer */}
+                  <div className="relative rounded-[26px] overflow-hidden aspect-[4/3.2] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner">
+                    <img
+                      src={teacher.photo}
+                      alt={teacher.name}
+                      className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
+                    />
+                    
+                    {/* Gloss Sheen Shine Across Photo */}
+                    <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
 
-                  {/* Top Floating Badge */}
-                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                    <span className="px-3 py-1 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-extrabold shadow-sm border border-white/20">
-                      {teacher.badge}
-                    </span>
-                    <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md" title="ভেরিফায়েড শিক্ষক">
-                      <Check className="w-4 h-4 stroke-[3]" />
+                    {/* Gradient vignette at bottom */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                    {/* Top Floating Badge */}
+                    <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 pointer-events-none">
+                      <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black shadow-md border border-white/20 flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 text-amber-300" />
+                        <span>{teacher.badge}</span>
+                      </span>
+
+                      <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border border-white/30" title="ভেরিফায়েড শিক্ষক">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                    </div>
+
+                    {/* Overlaid Institution on bottom of photo */}
+                    <div className="absolute bottom-3 inset-x-3 z-10 pointer-events-none">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-900 dark:text-slate-100 text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15">
+                        <GraduationCap className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                        <span className="truncate">{teacher.institution}</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Overlaid Institution on bottom of photo */}
-                  <div className="absolute bottom-3.5 left-4 right-4 z-10">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-900 dark:text-slate-100 text-xs font-bold shadow-md">
-                      <GraduationCap className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                      <span>{teacher.institution}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Clean, Simple & Modern Information Card Body */}
-                <div className="p-6 flex flex-col justify-between flex-1">
-                  <div>
-                    <h3 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {/* Information Card Body */}
+                  <div className="px-3.5 sm:px-4 pt-4 pb-2">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {teacher.name}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                       {teacher.department}
                     </p>
 
-                    {/* Subjects Taught */}
-                    <div className="flex flex-wrap gap-1.5 mt-3.5">
+                    {/* Cute Subjects Badges */}
+                    <div className="flex flex-wrap gap-1.5 mt-3">
                       {teacher.subjects.map((sub, sIdx) => (
                         <span
                           key={sIdx}
-                          className="px-2.5 py-1 rounded-lg bg-blue-50/80 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-900/60"
+                          className="px-2.5 py-1 rounded-lg bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/70 dark:border-blue-900/60 shadow-2xs"
                         >
                           {sub}
                         </span>
                       ))}
                     </div>
                   </div>
+                </div>
 
-                  {/* Simple Clean Stats Footer */}
-                  <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-semibold">
-                    <div className="flex items-center gap-1.5">
-                      <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      <span>{teacher.studentsCount} শিক্ষার্থী</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                      <PlayCircle className="w-4 h-4" />
-                      <span>{teacher.classesCount}</span>
-                    </div>
+                {/* Cute Clean Stats Footer Pill */}
+                <div className="mt-4 p-3 rounded-[22px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-bold shadow-inner">
+                  <div className="flex items-center gap-1.5">
+                    <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span>{teacher.studentsCount} শিক্ষার্থী</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                    <PlayCircle className="w-4 h-4" />
+                    <span>{teacher.classesCount}</span>
                   </div>
                 </div>
+
               </div>
             ))}
           </div>
@@ -761,92 +1112,136 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. 3-STEP ADMISSION PROCESS */}
-      <section className="py-20 sm:py-24 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 8. 3-STEP ADMISSION PROCESS (Cute Cosmic Glass Aesthetic) */}
+      <section className="relative py-20 sm:py-28 overflow-hidden">
+        
+        {/* Subtle cute ambient cosmic glows */}
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -right-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-xl mx-auto mb-14">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-              ভর্তি হতে মাত্র ৩টি ধাপ
+          {/* Header - Clean, Direct & Professional */}
+          <div className="text-center max-w-xl mx-auto mb-14 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+              ভর্তি হতে মাত্র{' '}
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                ৩টি সহজ ধাপ
+              </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">
-              সহজ তিনটি ধাপে ভর্তি হয়ে আজ থেকেই তোমার একাডেমিক পড়াশোনা শুরু করো।
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-3 font-medium leading-relaxed">
+              সহজ তিনটি ধাপে ভর্তি হয়ে আজ থেকেই তোমার স্বপ্নের একাডেমিক পড়াশোনা শুরু করো।
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-extrabold text-base flex items-center justify-center mx-auto mb-4 shadow-md shadow-blue-500/20">
+          {/* 3 Cute Connected Step Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative">
+            
+            {/* Step 1 */}
+            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-blue-500/70 dark:hover:border-blue-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
                 ১
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">রেজিস্ট্রেশন করুন</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                নাম ও মোবাইল নম্বর দিয়ে বিনামূল্যে একটি স্টুডেন্ট অ্যাকাউন্ট খুলুন।
+              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                রেজিস্ট্রেশন করুন
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                নাম ও মোবাইল নম্বর দিয়ে মাত্র ১ মিনিটে বিনামূল্যে একটি স্টুডেন্ট অ্যাকাউন্ট খুলুন।
               </p>
             </div>
 
-            <div className="text-center p-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-indigo-600 text-white font-extrabold text-base flex items-center justify-center mx-auto mb-4 shadow-md shadow-indigo-500/20">
+            {/* Step 2 */}
+            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-indigo-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
                 ২
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">কোর্স ও ব্যাচ পছন্দ করুন</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                তোমার পছন্দের শ্রেণি অনুযায়ী কোর্স নির্বাচন করে ব্যাচে ভর্তি সম্পন্ন করুন।
+              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                কোর্স ও ব্যাচ পছন্দ করুন
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                তোমার পছন্দের শ্রেণি অনুযায়ী কোর্স নির্বাচন করে চলতি ব্যাচে সহজে ভর্তি সম্পন্ন করুন।
               </p>
             </div>
 
-            <div className="text-center p-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
-              <div className="w-12 h-12 rounded-full bg-emerald-600 text-white font-extrabold text-base flex items-center justify-center mx-auto mb-4 shadow-md shadow-emerald-500/20">
+            {/* Step 3 */}
+            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-emerald-500/70 dark:hover:border-emerald-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-green-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
                 ৩
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">ক্লাস শুরু করুন</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                ড্যাশবোর্ড থেকে লাইভ ক্লাস করুন, নোট ডাউনলোড করুন ও নিয়মিত মডেল টেস্ট দিন।
+              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                ক্লাস শুরু করুন
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                ড্যাশবোর্ড থেকে লাইভ ক্লাসে অংশ নিন, হ্যান্ডনোট ডাউনলোড করুন ও নিয়মিত মডেল টেস্ট দিন।
               </p>
             </div>
+
           </div>
 
         </div>
       </section>
 
-      {/* 9. FREQUENTLY ASKED QUESTIONS (FAQ) */}
-      <section className="py-20 sm:py-24 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 9. FREQUENTLY ASKED QUESTIONS (FAQ) (Cute Cosmic Glass Aesthetic) */}
+      <section className="relative py-20 sm:py-28 overflow-hidden">
+        
+        {/* Subtle cute ambient cosmic glows */}
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-xl mx-auto mb-14">
-            <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 inline-block mb-3">
-              জিজ্ঞাসা
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-              সচরাচর জিজ্ঞাসিত প্রশ্ন (FAQ)
+          {/* Header - Clean, Direct & Professional */}
+          <div className="text-center max-w-xl mx-auto mb-14 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+              সচরাচর{' '}
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                জিজ্ঞাসিত প্রশ্ন (FAQ)
+              </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">
-              গ্র্যাভ একাডেমিতে ক্লাস, পরীক্ষা এবং ভর্তি সংক্রান্ত যেকোনো তথ্য।
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-3 font-medium leading-relaxed">
+              গ্র্যাভ একাডেমিতে ক্লাস, পরীক্ষা এবং ভর্তি সংক্রান্ত যেকোনো সাধারণ প্রশ্নের স্পষ্ট উত্তর।
             </p>
           </div>
 
+          {/* Cute Glassmorphic Accordion Cards */}
           <div className="space-y-4">
             {faqs.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 overflow-hidden transition-colors"
+                  className={`rounded-[26px] border-2 transition-all duration-300 overflow-hidden backdrop-blur-xl ${
+                    isOpen
+                      ? 'bg-white/95 dark:bg-slate-900/90 border-blue-500/70 dark:border-purple-500/70 shadow-lg shadow-blue-500/10 dark:shadow-purple-500/10'
+                      : 'bg-white/80 dark:bg-slate-900/75 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
+                  }`}
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-black text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
                   >
-                    <span>{faq.q}</span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-blue-600' : ''
-                      }`}
-                    />
+                    <span className="flex items-center gap-3">
+                      <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
+                        isOpen
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                      }`}>
+                        {idx + 1}
+                      </span>
+                      <span>{faq.q}</span>
+                    </span>
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
+                      isOpen
+                        ? 'bg-blue-100 dark:bg-purple-950/60 text-blue-600 dark:text-purple-300 rotate-180'
+                        : 'bg-slate-100/80 dark:bg-slate-800/80 text-slate-400'
+                    }`}>
+                      <ChevronDown className="w-4 h-4" />
+                    </div>
                   </button>
+                  
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-0 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-[1.8] border-t border-slate-100 dark:border-slate-800/80 mt-1 pt-3.5">
+                    <div className="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-[1.8] border-t border-slate-100 dark:border-slate-800/80 pt-4 font-medium pl-14 sm:pl-16">
                       {faq.a}
                     </div>
                   )}
@@ -858,42 +1253,55 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 10. BOTTOM BANNER */}
-      <section className="py-16 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-            আজই শুরু হোক তোমার সেরা প্রস্তুতি!
+      {/* 10. BOTTOM BANNER / CTA (Full Width Solid Midnight Clean Aesthetic - Same As Footer) */}
+      <section className="relative w-full py-20 sm:py-28 overflow-hidden bg-[#080c1a] text-white text-center">
+
+        <div className="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Title */}
+          <h2 className="text-2xl sm:text-4xl lg:text-[44px] font-black tracking-tight leading-tight">
+            আজই শুরু হোক তোমার{' '}
+            <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300">
+              সেরা প্রস্তুতি!
+            </span>
           </h2>
-          <p className="mt-3 text-blue-100 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            কোনো প্রকার সংশয় ছাড়া এখনই বিনামূল্যে রেজিস্টার করে সিলেবাস ও লাইভ ক্লাস রুটিন দেখে নাও।
+
+          <p className="mt-4 text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed font-medium max-w-2xl mx-auto">
+            কোনো প্রকার সংশয় ছাড়াই আজই বিনামূল্যে রেজিস্ট্রেশন করে পূর্ণাঙ্গ সিলেবাস, ক্লাস রুটিন ও ফ্রি ডেমো ক্লাস দেখে নাও।
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+
+          {/* Cute CTA Buttons */}
+          <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <Link
               href="/register"
-              className="px-6 py-3.5 rounded-xl bg-white text-blue-700 hover:bg-blue-50 font-extrabold text-sm shadow-lg transition-all"
+              className="group px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-blue-500/30 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
-              বিনামূল্যে অ্যাকাউন্ট খুলুন
+              <span>বিনামূল্যে একাউন্ট খুলুন</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
+
             <Link
               href="/courses"
-              className="px-6 py-3.5 rounded-xl bg-blue-800/80 hover:bg-blue-800 text-white border border-blue-400/40 font-bold text-sm transition-all"
+              className="px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs sm:text-base border border-white/20 sm:border-2 backdrop-blur-md hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
-              সকল কোর্স দেখুন
+              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>সকল কোর্স দেখুন</span>
             </Link>
           </div>
+
         </div>
       </section>
 
-      {/* 11. FOOTER */}
-      <footer className="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 text-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
+      {/* 11. FOOTER (Matching Bottom Banner) */}
+      <footer className="relative bg-[#080c1a] text-slate-400 py-12 text-xs">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-indigo-950/80">
             <div>
-              <div className="flex items-center gap-2 text-white font-extrabold text-base mb-3">
-                <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+              <div className="flex items-center gap-2.5 text-white font-extrabold text-base mb-3">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
                   <GraduationCap className="w-4 h-4" />
                 </div>
-                <span>Grav Academy</span>
+                <span className="tracking-tight">Grav Academy</span>
               </div>
               <p className="text-slate-400 leading-relaxed mb-4">
                 ক্লাস ৬ থেকে ১২ শ্রেণির শিক্ষার্থীদের জন্য আধুনিক অনলাইন একাডেমিক কোচিং প্ল্যাটফর্ম।
@@ -901,35 +1309,35 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3">কোর্সসমূহ</h4>
+              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-indigo-300">কোর্সসমূহ</h4>
               <ul className="space-y-2">
-                <li><Link href="/courses" className="hover:text-white transition-colors">Class 6 - 8 Foundation</Link></li>
-                <li><Link href="/courses" className="hover:text-white transition-colors">Class 9 - 10 SSC Special</Link></li>
-                <li><Link href="/courses" className="hover:text-white transition-colors">Class 11 - 12 HSC Prep</Link></li>
-                <li><Link href="/free-classes" className="hover:text-white transition-colors">ফ্রি ক্লাস ও সেমিনার</Link></li>
+                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">Class 6 - 8 Foundation</Link></li>
+                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">Class 9 - 10 SSC Special</Link></li>
+                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">Class 11 - 12 HSC Prep</Link></li>
+                <li><Link href="/free-classes" className="hover:text-indigo-300 transition-colors">ফ্রি ক্লাস ও সেমিনার</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3">কুইক লিংকস</h4>
+              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-indigo-300">কুইক লিংকস</h4>
               <ul className="space-y-2">
-                <li><Link href="/login" className="hover:text-white transition-colors">লগইন</Link></li>
-                <li><Link href="/register" className="hover:text-white transition-colors">রেজিস্ট্রেশন</Link></li>
-                <li><Link href="/courses" className="hover:text-white transition-colors">সকল ব্যাচ</Link></li>
+                <li><Link href="/login" className="hover:text-indigo-300 transition-colors">লগইন</Link></li>
+                <li><Link href="/register" className="hover:text-indigo-300 transition-colors">রেজিস্ট্রেশন</Link></li>
+                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">সকল ব্যাচ</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3">যোগাযোগ ও হেল্পলাইন</h4>
+              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-indigo-300">যোগাযোগ ও হেল্পলাইন</h4>
               <p className="leading-relaxed mb-2">সকাল ৯টা থেকে রাত ১০টা পর্যন্ত যেকোনো সহায়তায়:</p>
-              <p className="text-white font-bold text-sm">📞 16910 / 01700-000000</p>
+              <p className="text-white font-bold text-sm text-indigo-200">📞 16910 / 01700-000000</p>
               <p className="text-slate-400 mt-1">ইমেইল: support@gravacademy.com</p>
             </div>
           </div>
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-slate-500 gap-2">
             <div>© {new Date().getFullYear()} Grav Academy. সর্বস্বত্ব সংরক্ষিত।</div>
-            <div>Bangladeshi Academic Coaching Platform</div>
+            <div className="text-indigo-400/60 font-medium">Bangladeshi Academic Coaching Platform</div>
           </div>
         </div>
       </footer>
