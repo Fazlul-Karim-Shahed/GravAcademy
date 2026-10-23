@@ -45,7 +45,7 @@ export default function CreateCoursePage() {
     thumbnailUrl: '',
     description: '',
     gradeLevel: 'Class 10',
-    subject: 'Physics',
+    subject: '',
     courseFee: 2500,
     duration: '1 Year',
     targetAudience: 'Designed for SSC candidates and Class 10 students aiming for GPA 5.',

@@ -317,7 +317,7 @@ export default function BatchClassroomPage({
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-900/40">
-                  {batch.courseId?.gradeLevel || 'Class 6 - 12'} • {batch.courseId?.subject || 'একাডেমিক'}
+                  {batch.courseId?.gradeLevel || 'Class 6 - 12'}
                 </span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs text-slate-500 font-medium">{batch.status}</span>
