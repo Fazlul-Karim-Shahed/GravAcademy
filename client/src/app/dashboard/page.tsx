@@ -185,9 +185,6 @@ export default function StudentDashboard() {
                   key={batch._id}
                   className="group relative overflow-hidden rounded-[28px] bg-gradient-to-br from-blue-50/60 via-white/95 to-indigo-50/50 dark:from-slate-900/95 dark:via-[#0c1228]/95 dark:to-indigo-950/30 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500/70 shadow-md hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-indigo-500/10 transition-all duration-300"
                 >
-                  {/* Top Subtle Colorful Glow Border Strip */}
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-70 group-hover:opacity-100 transition-opacity" />
-
                   {/* Ambient Color Glow Orbs */}
                   <div className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-blue-500/15 to-indigo-500/15 dark:from-blue-500/20 dark:to-indigo-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
                   <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-purple-500/10 to-teal-500/10 dark:from-purple-500/15 dark:to-blue-500/10 rounded-full blur-2xl pointer-events-none" />
