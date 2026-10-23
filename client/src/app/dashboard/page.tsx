@@ -183,16 +183,19 @@ export default function StudentDashboard() {
               {batches.map((batch) => (
                 <div
                   key={batch._id}
-                  className="group relative overflow-hidden rounded-[28px] bg-white/90 dark:bg-slate-900/85 backdrop-blur-xl border-2 border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-6 flex flex-col justify-between hover:border-blue-400/80 dark:hover:border-blue-500/80 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 dark:hover:shadow-blue-500/10 transition-all duration-300"
+                  className="group relative overflow-hidden rounded-[28px] bg-gradient-to-br from-blue-50/60 via-white/95 to-indigo-50/50 dark:from-slate-900/95 dark:via-[#0c1228]/95 dark:to-indigo-950/30 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500/70 shadow-md hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-indigo-500/10 transition-all duration-300"
                 >
-                  {/* Subtle cute ambient light inside card */}
-                  <div className="absolute -top-12 -right-12 w-28 h-28 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/15 transition-all" />
-                  <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-indigo-500/5 dark:bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                  {/* Top Subtle Colorful Glow Border Strip */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-70 group-hover:opacity-100 transition-opacity" />
+
+                  {/* Ambient Color Glow Orbs */}
+                  <div className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-blue-500/15 to-indigo-500/15 dark:from-blue-500/20 dark:to-indigo-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+                  <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-purple-500/10 to-teal-500/10 dark:from-purple-500/15 dark:to-blue-500/10 rounded-full blur-2xl pointer-events-none" />
 
                   <div className="relative z-10 space-y-3">
                     {/* Class Tag (Aligned Right) */}
                     <div className="flex items-center justify-end">
-                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800/90 px-3 py-1 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
+                      <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50/90 dark:bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs">
                         {batch.courseId?.gradeLevel || 'একাডেমিক'}
                       </span>
                     </div>
@@ -202,9 +205,9 @@ export default function StudentDashboard() {
                       <h3 className="text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                         {batch.courseId?.title || batch.name}
                       </h3>
-                      <div className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-md bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60">
+                      <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-lg bg-blue-100/70 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 shadow-2xs">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                        <span className="text-xs font-bold text-blue-700 dark:text-blue-300">
+                        <span className="text-xs font-black text-blue-700 dark:text-blue-300">
                           {batch.name}
                         </span>
                       </div>
