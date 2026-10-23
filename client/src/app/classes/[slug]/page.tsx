@@ -400,9 +400,22 @@ export default function DedicatedClassPage() {
                     <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50/90 dark:bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs">
                       {course.gradeLevel || className}
                     </span>
-                    <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400">
-                      {course.courseFee ? `৳${course.courseFee}` : 'ফ্রি'}
-                    </span>
+                    <div className="flex items-baseline gap-1.5">
+                      {course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice ? (
+                        <>
+                          <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400">
+                            ৳{course.discountPrice}
+                          </span>
+                          <span className="text-[10px] text-slate-400 line-through font-semibold">
+                            ৳{course.regularPrice}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400">
+                          {course.regularPrice || course.courseFee ? `৳${course.regularPrice || course.courseFee}` : 'ফ্রি'}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Course Title */}

@@ -235,6 +235,18 @@ router.post(
   validateRequest(liveCtrl.createLiveClassSchema),
   liveCtrl.createLiveClass
 );
+router.put(
+  '/live-classes/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.LIVE_CLASSES_MANAGE),
+  liveCtrl.updateLiveClass
+);
+router.delete(
+  '/live-classes/:id',
+  authenticate,
+  requirePermission(PERMISSIONS.LIVE_CLASSES_MANAGE),
+  liveCtrl.deleteLiveClass
+);
 
 // --- USER & AUDIT MANAGEMENT ROUTES ---
 router.get(

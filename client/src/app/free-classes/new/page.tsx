@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS, hasPermission } from '@/lib/permissions';
-import { Card, Button } from '@/components/ui';
+import { Card, Button, DriveFileUpload } from '@/components/ui';
 import {
   Video,
   ArrowLeft,
@@ -29,6 +29,7 @@ export default function ScheduleFreeClassPage() {
 
   const [form, setForm] = useState({
     title: '',
+    thumbnailUrl: '',
     provider: 'google_meet' as 'zoom' | 'google_meet',
     meetingUrl: '',
     startTime: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
@@ -146,6 +147,15 @@ export default function ScheduleFreeClassPage() {
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
               />
             </div>
+
+            {/* Thumbnail Upload (Google Drive) */}
+            <DriveFileUpload
+              label="ক্লাস ব্যানার / থাম্বনেইল (Google Drive বা লিংক)"
+              value={form.thumbnailUrl}
+              onChange={(url) => setForm({ ...form, thumbnailUrl: url })}
+              placeholder="https://drive.google.com/... অথবা ফাইল আপলোড করুন"
+              helperText="ফ্রি ক্লাসের কার্ডে প্রদর্শনের জন্য ছবি আপলোড করুন, ফাইলটি সরাসরি ড্রাইভে সেভ হবে।"
+            />
 
             {/* Platform & Meeting URL */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

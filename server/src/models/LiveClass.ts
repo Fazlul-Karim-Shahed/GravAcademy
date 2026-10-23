@@ -5,6 +5,7 @@ export interface ILiveClass extends Document {
   batchId?: mongoose.Types.ObjectId;
   teacherId: mongoose.Types.ObjectId;
   title: string;
+  thumbnailUrl?: string;
   isFreePublic: boolean;
   provider: 'google_meet' | 'zoom';
   meetingUrl: string;
@@ -32,6 +33,7 @@ const LiveClassSchema = new Schema<ILiveClass>(
       index: true,
     },
     title: { type: String, required: true, trim: true },
+    thumbnailUrl: { type: String, trim: true },
     isFreePublic: { type: Boolean, default: false, index: true },
     provider: { type: String, enum: ['google_meet', 'zoom'], default: 'google_meet' },
     meetingUrl: { type: String, required: true, trim: true },

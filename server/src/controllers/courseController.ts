@@ -12,6 +12,8 @@ export const createCourseSchema = z.object({
   subject: z.string().optional().default(''),
   thumbnailUrl: z.string().url().optional().or(z.literal('')),
   courseFee: z.number().min(0).default(0),
+  regularPrice: z.number().min(0).optional(),
+  discountPrice: z.number().min(0).optional(),
   duration: z.string().optional(),
   isPublished: z.boolean().default(false),
 });

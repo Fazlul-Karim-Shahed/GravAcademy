@@ -733,16 +733,20 @@ export default function HomePage() {
                         <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
                           ভর্তি চলছে
                         </span>
-                        <div className="flex items-baseline gap-1 mt-0.5">
-                          {c.courseFee ? (
+                        <div className="flex items-baseline gap-1.5 mt-0.5">
+                          {c.discountPrice && c.discountPrice > 0 && c.regularPrice && c.regularPrice > c.discountPrice ? (
                             <>
                               <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                                ৳{c.courseFee}
+                                ৳{c.discountPrice}
                               </span>
                               <span className="text-[11px] text-slate-400 line-through font-semibold">
-                                ৳{Math.round(c.courseFee * 1.35)}
+                                ৳{c.regularPrice}
                               </span>
                             </>
+                          ) : c.regularPrice || c.courseFee ? (
+                            <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                              ৳{c.regularPrice || c.courseFee}
+                            </span>
                           ) : (
                             <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
                               ব্যাচভিত্তিক ফি

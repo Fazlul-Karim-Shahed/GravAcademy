@@ -213,7 +213,8 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   }
 
   const isAdmin = user?.role === 'superadmin' || user?.role === 'admin';
-  const regularPrice = course.courseFee ? Math.round(course.courseFee * 1.35) : null;
+  const hasDiscount = Boolean(course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice);
+  const regularPrice = hasDiscount ? course.regularPrice : null;
 
   const defaultHighlights = [
     'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বেসিক ক্লিয়ারিং লাইভ ক্লাস',

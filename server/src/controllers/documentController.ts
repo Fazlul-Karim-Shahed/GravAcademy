@@ -74,10 +74,18 @@ export const uploadDocument = async (req: AuthenticatedRequest, res: Response) =
       userAgent: req.headers['user-agent'],
     });
 
+    const directUrl = isDriveConfigured
+      ? `https://drive.google.com/uc?export=view&id=${driveFileId}`
+      : `/api/documents/${fileAsset._id}/stream`;
+
     return res.status(201).json({
       success: true,
       message: 'Document successfully uploaded and saved to Google Drive',
-      data: fileAsset,
+      data: {
+        ...fileAsset.toObject(),
+        url: directUrl,
+        fileUrl: directUrl,
+      },
     });
   } catch (error: any) {
     console.error('Document upload error:', error);

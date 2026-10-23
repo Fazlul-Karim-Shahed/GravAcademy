@@ -18,11 +18,16 @@ import {
   PlayCircle,
   Radio,
   BookOpen,
+  Edit,
+  Trash2,
+  X,
 } from 'lucide-react';
+import { DriveFileUpload } from '@/components/ui';
 
 interface FreeClassItem {
   _id: string;
   title: string;
+  thumbnailUrl?: string;
   provider: 'zoom' | 'google_meet';
   meetingUrl: string;
   startTime: string;
@@ -44,6 +49,14 @@ export default function FreeClassesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Edit modal state
+  const [editingClass, setEditingClass] = useState<FreeClassItem | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editThumbnailUrl, setEditThumbnailUrl] = useState('');
+  const [editMeetingUrl, setEditMeetingUrl] = useState('');
+  const [editDuration, setEditDuration] = useState(60);
+  const [savingEdit, setSavingEdit] = useState(false);
+
   useEffect(() => {
     loadFreeClasses();
   }, []);
@@ -59,6 +72,61 @@ export default function FreeClassesPage() {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenEdit = (cls: FreeClassItem) => {
+    setEditingClass(cls);
+    setEditTitle(cls.title);
+    setEditThumbnailUrl(cls.thumbnailUrl || '');
+    setEditMeetingUrl(cls.meetingUrl || '');
+    setEditDuration(cls.durationMinutes || 60);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingClass) return;
+    setSavingEdit(true);
+    try {
+      const res = await api.put(`/live-classes/${editingClass._id}`, {
+        title: editTitle.trim(),
+        thumbnailUrl: editThumbnailUrl.trim(),
+        meetingUrl: editMeetingUrl.trim(),
+        durationMinutes: Number(editDuration),
+      });
+
+      if (res.data?.success) {
+        setClasses((prev) =>
+          prev.map((c) =>
+            c._id === editingClass._id
+              ? {
+                  ...c,
+                  title: editTitle.trim(),
+                  thumbnailUrl: editThumbnailUrl.trim(),
+                  meetingUrl: editMeetingUrl.trim(),
+                  durationMinutes: Number(editDuration),
+                }
+              : c
+          )
+        );
+        setEditingClass(null);
+      }
+    } catch (err) {
+      console.error('Failed to update class', err);
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleDeleteClass = async (id: string) => {
+    if (!window.confirm('আপনি কি নিশ্চিত যে এই ফ্রি ক্লাসটি মুছে ফেলতে চান?')) return;
+    try {
+      const res = await api.delete(`/live-classes/${id}`);
+      if (res.data?.success) {
+        setClasses((prev) => prev.filter((c) => c._id !== id));
+      }
+    } catch (err) {
+      console.error('Failed to delete class', err);
     }
   };
 
@@ -232,18 +300,33 @@ export default function FreeClassesPage() {
                   <div>
                     {/* Top Thumbnail Banner with Curved Mask */}
                     <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm bg-slate-900">
-                      <div className={`relative w-full h-full bg-gradient-to-br ${currentTheme.gradient}`}>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                          <div className="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white mb-2 shadow-lg group-hover:scale-110 transition-transform duration-300 border border-white/30">
-                            <Video className="w-7 h-7" />
-                          </div>
-                          <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3 line-clamp-1">
+                      {cls.thumbnailUrl ? (
+                        <div className="relative w-full h-full">
+                          <img
+                            src={cls.thumbnailUrl}
+                            alt={cls.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                          <div className="absolute bottom-2.5 left-3 right-3 text-white font-bold text-xs drop-shadow-md line-clamp-1">
                             {cls.batchId?.name || 'ফ্রি লাইভ সেশন'}
-                          </span>
+                          </div>
                         </div>
+                      ) : (
+                        <div className={`relative w-full h-full bg-gradient-to-br ${currentTheme.gradient}`}>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                            <div className="w-13 h-13 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white mb-2 shadow-lg group-hover:scale-110 transition-transform duration-300 border border-white/30">
+                              <Video className="w-7 h-7" />
+                            </div>
+                            <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3 line-clamp-1">
+                              {cls.batchId?.name || 'ফ্রি লাইভ সেশন'}
+                            </span>
+                          </div>
 
-                        {/* Gloss Sheen Shine Across Thumbnail */}
-                        <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+                          {/* Gloss Sheen Shine Across Thumbnail */}
+                          <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+                        </div>
+                      )}
 
                         {/* Top Badges Overlay */}
                         <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
@@ -263,7 +346,6 @@ export default function FreeClassesPage() {
                           </span>
                         </div>
                       </div>
-                    </div>
 
                     {/* Card Content Body */}
                     <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
@@ -296,6 +378,30 @@ export default function FreeClassesPage() {
                     </div>
                   </div>
 
+                  {/* Admin Controls */}
+                  {canManageLive && (
+                    <div className="px-4 py-2 bg-slate-100/70 dark:bg-slate-900/90 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-end gap-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEdit(cls)}
+                        className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline p-1"
+                        title="এডিট করুন"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>এডিট</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteClass(cls._id)}
+                        className="inline-flex items-center gap-1 font-bold text-rose-600 dark:text-rose-400 hover:underline p-1"
+                        title="মুছে ফেলুন"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>মুছুন</span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* Card Bottom: Direct Join CTA */}
                   <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
                     <div>
@@ -324,6 +430,95 @@ export default function FreeClassesPage() {
         )}
 
       </div>
+
+      {/* EDIT MODAL WITH DRIVE FILE UPLOAD */}
+      {editingClass && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  ফ্রি ক্লাস এডিট করুন
+                </h3>
+              </div>
+              <button
+                onClick={() => setEditingClass(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  ক্লাস শিরোনাম *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Drive File Upload for Free Class Thumbnail */}
+              <DriveFileUpload
+                label="ক্লাস থাম্বনেইল (Google Drive বা লিংক)"
+                value={editThumbnailUrl}
+                onChange={(url) => setEditThumbnailUrl(url)}
+                placeholder="https://drive.google.com/... অথবা ফাইল আপলোড করুন"
+                helperText="ফ্রি ক্লাসের থাম্বনেইল ছবি সরাসরি ড্রাইভে আপলোড করুন।"
+              />
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  মিটিং লিংক (Google Meet / Zoom URL) *
+                </label>
+                <input
+                  type="url"
+                  required
+                  value={editMeetingUrl}
+                  onChange={(e) => setEditMeetingUrl(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  ক্লাসের সময়কাল (মিনিট)
+                </label>
+                <input
+                  type="number"
+                  min="15"
+                  value={editDuration}
+                  onChange={(e) => setEditDuration(Number(e.target.value))}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setEditingClass(null)}
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
+                >
+                  {savingEdit ? 'সংরক্ষণ হচ্ছে...' : 'পরিবর্তন সংরক্ষণ করুন'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

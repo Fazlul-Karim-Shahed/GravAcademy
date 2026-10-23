@@ -7,6 +7,7 @@ import { ROLES } from '../types/roles';
 
 export const createLiveClassSchema = z.object({
   title: z.string().min(3),
+  thumbnailUrl: z.string().optional(),
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID').optional(),
   isFreePublic: z.boolean().default(false),
   provider: z.enum(['google_meet', 'zoom']).default('google_meet'),
@@ -119,3 +120,43 @@ export const getStudentLiveClasses = async (req: AuthenticatedRequest, res: Resp
     return res.status(500).json({ success: false, message: 'Failed to fetch student live classes' });
   }
 };
+
+/**
+ * Update a Live Class / Free Webinar (Teacher, Admin, Superadmin)
+ */
+export const updateLiveClass = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const liveClass = await LiveClass.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!liveClass) {
+      return res.status(404).json({ success: false, message: 'Class not found' });
+    }
+    return res.status(200).json({
+      success: true,
+      message: 'Class updated successfully',
+      data: liveClass,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: 'Failed to update live class' });
+  }
+};
+
+/**
+ * Delete a Live Class / Free Webinar (Teacher, Admin, Superadmin)
+ */
+export const deleteLiveClass = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const liveClass = await LiveClass.findByIdAndDelete(id);
+    if (!liveClass) {
+      return res.status(404).json({ success: false, message: 'Class not found' });
+    }
+    return res.status(200).json({
+      success: true,
+      message: 'Class deleted successfully',
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: 'Failed to delete live class' });
+  }
+};
+

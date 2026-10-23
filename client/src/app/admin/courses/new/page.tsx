@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { Card, Button } from '@/components/ui';
+import { Card, Button, DriveFileUpload } from '@/components/ui';
 import {
   BookOpen,
   ArrowLeft,
@@ -47,6 +47,8 @@ export default function CreateCoursePage() {
     gradeLevel: 'Class 10',
     subject: '',
     courseFee: 2500,
+    regularPrice: 3500,
+    discountPrice: 2500,
     duration: '1 Year',
     targetAudience: 'Designed for SSC candidates and Class 10 students aiming for GPA 5.',
     isPublished: true,
@@ -231,22 +233,14 @@ export default function CreateCoursePage() {
               />
             </div>
 
-            {/* Course Header Picture / Thumbnail URL */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Course Header Picture Link (Thumbnail URL)
-              </label>
-              <input
-                type="url"
-                value={form.thumbnailUrl}
-                onChange={(e) => setForm({ ...form, thumbnailUrl: e.target.value })}
-                placeholder="https://images.unsplash.com/... or https://i.imgur.com/..."
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
-              />
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
-                Displays as the course banner image in the &ldquo;জনপ্রিয় কোর্স ও ব্যাচসমূহ&rdquo; grid and course catalog.
-              </p>
-            </div>
+            {/* Course Header Picture / Thumbnail via Drive or URL */}
+            <DriveFileUpload
+              label="Course Header Picture / Thumbnail (Google Drive বা লিংক)"
+              value={form.thumbnailUrl}
+              onChange={(url) => setForm({ ...form, thumbnailUrl: url })}
+              placeholder="https://drive.google.com/... অথবা ফাইল আপলোড করুন"
+              helperText="কোর্সের ব্যানার ছবি নির্বাচন করুন, ফাইলটি স্বয়ংক্রিয়ভাবে গুগল ড্রাইভে আপলোড হয়ে সেভ হবে।"
+            />
 
             {/* Academic Level */}
             <div>
@@ -294,18 +288,53 @@ export default function CreateCoursePage() {
               />
             </div>
 
-            {/* Duration Scope */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Course Duration Scope
-              </label>
-              <input
-                type="text"
-                value={form.duration}
-                onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                placeholder="e.g. 1 Year, 6 Months, or Full Session"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-              />
+            {/* Course Pricing: Regular & Discount */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-blue-50/50 dark:bg-slate-950/60 border border-blue-200/60 dark:border-slate-800">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                  অরিজিনাল প্রাইস (Regular Price - ৳) *
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.regularPrice}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setForm({
+                      ...form,
+                      regularPrice: val,
+                      courseFee: form.discountPrice && form.discountPrice > 0 ? form.discountPrice : val,
+                    });
+                  }}
+                  placeholder="e.g. 3500"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">কোর্সের প্রকৃত মূল ফি</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                  ডিসকাউন্টেড প্রাইস (Discount Price - ৳)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.discountPrice}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setForm({
+                      ...form,
+                      discountPrice: val,
+                      courseFee: val > 0 ? val : form.regularPrice,
+                    });
+                  }}
+                  placeholder="e.g. 2500 (ফাঁকা বা ০ রাখলে ডিসকাউন্ট থাকবে না)"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-emerald-600 dark:text-emerald-400"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  যদি কোনো ডিসকাউন্ট না থাকে, তাহলে এটি ফাঁকা বা ০ রাখুন; শুধু অরিজিনাল প্রাইস দেখাবে।
+                </p>
+              </div>
             </div>
 
             {/* FACULTY TEACHERS PICKER */}

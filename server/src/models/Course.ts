@@ -11,6 +11,8 @@ export interface ICourse extends Document {
   isPublished: boolean;
   duration?: string;
   courseFee: number;
+  regularPrice?: number;
+  discountPrice?: number;
   prerequisites?: string[];
   instructors: mongoose.Types.ObjectId[];
   curriculumHighlights?: string[];
@@ -66,6 +68,14 @@ const CourseSchema = new Schema<ICourse>(
     courseFee: {
       type: Number,
       default: 0,
+      min: 0,
+    },
+    regularPrice: {
+      type: Number,
+      min: 0,
+    },
+    discountPrice: {
+      type: Number,
       min: 0,
     },
     prerequisites: [{ type: String }],
