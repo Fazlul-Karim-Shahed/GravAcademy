@@ -197,11 +197,8 @@ export default function DedicatedClassPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-3xl">
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
-                {className}:{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
-                  {subtitle.toLowerCase().includes(className.toLowerCase())
-                    ? subtitle.replace(new RegExp(className, 'i'), '').replace(/^[:\-\s]+/, '')
-                    : subtitle}
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2">
+                  {subtitle}
                 </span>
               </h1>
 
