@@ -58,21 +58,37 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-500/25 mb-4">
+    <div className="relative min-h-[calc(100vh-4rem)] cosmic-hero-bg text-white flex items-center justify-center px-4 py-12 overflow-hidden">
+      {/* Deep space radial ambient lighting */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[220px] bg-red-600/15 rounded-full blur-[90px] pointer-events-none -z-10 animate-atmosphere" />
+      <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none -z-10" />
+
+      {/* Twinkling Cosmic Stars */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+        <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+        <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+        <div className="absolute top-[35%] right-[12%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
+        <span className="shooting-star meteor-1" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-7">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-500/30 mb-4 border border-white/20">
             <GraduationCap className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Sign In to Grav Academy</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Access your personalized learning portal or administration panel.
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            লগইন করুন
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1.5 font-medium">
+            আপনার গ্র্যাভ একাডেমি স্টুডেন্ট পোর্টাল অথবা ড্যাশবোর্ডে প্রবেশ করুন
           </p>
         </div>
 
-        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 shadow-xl shadow-slate-200/50 dark:shadow-none">
+        <div className="rounded-[32px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-2 border-slate-200/80 dark:border-slate-800/90 p-7 sm:p-8 shadow-2xl shadow-blue-950/20 text-slate-900 dark:text-white">
           {error && (
-            <div className="mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm flex items-center gap-2">
+            <div className="mb-5 p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -80,8 +96,8 @@ function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                Email Address
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                ইমেইল এড্রেস
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -91,15 +107,15 @@ function LoginForm() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="name@example.com"
-                  className="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  Password
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  পাসওয়ার্ড
                 </label>
               </div>
               <div className="relative">
@@ -110,26 +126,31 @@ function LoginForm() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                 />
               </div>
             </div>
 
-            <Button type="submit" isLoading={loading} className="w-full mt-2">
-              Sign In
-            </Button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-sm shadow-md shadow-blue-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              <span>সাইন ইন</span>
+            </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-            Don&apos;t have an account yet?{' '}
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-600 dark:text-slate-400">
+            এখনো কোনো একাউন্ট নেই?{' '}
             <Link
               href={redirectUrl ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register'}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-black"
             >
-              Create Student Account
+              নতুন একাউন্ট খুলুন
             </Link>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

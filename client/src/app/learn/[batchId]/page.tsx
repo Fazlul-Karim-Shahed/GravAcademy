@@ -181,49 +181,53 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
   return (
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. TOP HEADER - Sleek, Minimalist & Focused */}
-      <div className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+      {/* 1. TOP HEADER (Cosmic Glow Theme) */}
+      <div className="relative overflow-hidden cosmic-hero-bg text-white border-b border-white/10 shadow-lg">
+        {/* Subtle deep space glow in top bar */}
+        <div className="absolute top-0 left-1/3 w-[600px] h-[180px] bg-red-600/10 rounded-full blur-[80px] pointer-events-none -z-10" />
+        <div className="absolute top-0 right-1/4 w-[400px] h-[180px] bg-blue-600/10 rounded-full blur-[70px] pointer-events-none -z-10" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
               <Link
                 href="/dashboard"
-                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+                className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition-colors shrink-0"
                 title="ড্যাশবোর্ডে ফিরে যান"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4" />
               </Link>
 
               <div>
                 {/* Breadcrumbs */}
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                  <Link href="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-300 font-semibold">
+                  <Link href="/dashboard" className="hover:text-white transition-colors">
                     ড্যাশবোর্ড
                   </Link>
-                  <span>/</span>
-                  <Link href={courseLink} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate max-w-[150px] sm:max-w-xs">
+                  <span className="text-slate-500">/</span>
+                  <Link href={courseLink} className="hover:text-white transition-colors truncate max-w-[150px] sm:max-w-xs">
                     {data.batch.courseId?.title}
                   </Link>
-                  <span>/</span>
-                  <span className="text-blue-600 dark:text-blue-400 font-bold truncate max-w-[150px]">
+                  <span className="text-slate-500">/</span>
+                  <span className="text-blue-300 font-bold truncate max-w-[150px]">
                     {data.batch.name}
                   </span>
                 </div>
 
-                <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5 line-clamp-1">
+                <h1 className="text-base sm:text-lg font-black text-white tracking-tight mt-0.5 line-clamp-1">
                   {activeLesson ? activeLesson.title : data.batch.name}
                 </h1>
               </div>
             </div>
 
             {/* Quick Live Classroom & Batch Classroom Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto shrink-0">
+            <div className="flex flex-wrap items-center gap-2.5 self-end sm:self-auto shrink-0">
               <Link
                 href={`/classroom/${data.batch._id}`}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md active:scale-95 transition-all"
                 title="ব্যাচ ক্লাসরুম, ডিসকাশন গ্রুপ ও নোটিশ বোর্ড"
               >
-                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <MessageSquare className="w-4 h-4 text-emerald-400" />
                 <span>ভিউ ক্লাসরুম</span>
               </Link>
 
@@ -232,11 +236,11 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                   href={data.batch.meetingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-95 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-all"
+                  className="inline-flex items-center gap-2 px-4.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 active:scale-95 text-white text-xs font-black shadow-md shadow-emerald-600/30 transition-all"
                   title="Google Meet-এ লাইভ ক্লাসরুমে প্রবেশ করুন"
                 >
                   <Video className="w-4 h-4" />
-                  <span>ক্লাসরুমে প্রবেশ (Google Meet)</span>
+                  <span>Google Meet ক্লাসরুম</span>
                   <ExternalLink className="w-3.5 h-3.5 opacity-80" />
                 </a>
               )}

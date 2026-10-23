@@ -302,83 +302,96 @@ export default function BatchClassroomPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors pb-16">
       
-      {/* 1. TOP HEADER BANNER */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* 1. TOP HEADER BANNER (Cosmic Theme) */}
+      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-8 pb-10 sm:pt-10 sm:pb-12 mb-8">
+        {/* Deep space radial ambient lighting */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none -z-10" />
+
+        {/* Twinkling Cosmic Stars */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-            
             <div>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2.5 mb-2.5">
                 <button
                   onClick={() => router.back()}
-                  className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
                   title="ফিরে যান"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-900/40">
+                <span className="text-xs font-bold text-slate-200 bg-white/15 px-3 py-1 rounded-full border border-white/20 backdrop-blur-md">
                   {batch.courseId?.gradeLevel || 'Class 6 - 12'}
                 </span>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs text-slate-500 font-medium">{batch.status}</span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-300 font-bold bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>সক্রিয় ব্যাচ</span>
+                </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-normal leading-[1.35] pt-1">
                 {batch.name}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
                 {batch.courseId?.title}
               </p>
             </div>
 
             {/* Quick Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-3">
               {batch.meetingUrl && (
                 <a
                   href={batch.meetingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-extrabold shadow-sm shadow-emerald-600/20 active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all"
                 >
                   <Video className="w-4 h-4" />
-                  <span>Google Meet ক্লাস</span>
-                  <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                  <span>Google Meet ক্লাসরুম</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
                 </a>
               )}
 
               <Link
                 href={`/learn/${batchId}`}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/30 active:scale-95 transition-all"
               >
                 <GraduationCap className="w-4 h-4" />
-                <span>পাঠ্যক্রম ও লেকচার শিট</span>
+                <span>স্টাডি ম্যাটেরিয়াল ও লেকচার</span>
               </Link>
             </div>
-
           </div>
 
           {/* Broadcast confirmation alert */}
           {announceNotice && (
-            <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="mt-4 p-3.5 rounded-2xl bg-emerald-500/20 backdrop-blur-md border border-emerald-400/40 text-emerald-200 text-xs font-semibold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
               <span>{announceNotice}</span>
             </div>
           )}
 
           {/* 2. SUB-NAVIGATION TABS */}
-          <div className="flex items-center gap-2 sm:gap-4 mt-6 border-t border-slate-100 dark:border-slate-800 pt-4 overflow-x-auto">
+          <div className="flex items-center gap-2 sm:gap-3 mt-6 border-t border-white/10 pt-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab('discussion')}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+              className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
                 activeTab === 'discussion'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-102'
+                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
               <span>গ্রুপ ডিসকাশন</span>
-              <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
-                activeTab === 'discussion' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                activeTab === 'discussion' ? 'bg-white/25 text-white' : 'bg-white/15 text-slate-300'
               }`}>
                 {messages.length}
               </span>
@@ -386,16 +399,16 @@ export default function BatchClassroomPage({
 
             <button
               onClick={() => setActiveTab('announcements')}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+              className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
                 activeTab === 'announcements'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-102'
+                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
               }`}
             >
               <Megaphone className="w-4 h-4" />
               <span>এনাউন্সমেন্ট</span>
-              <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
-                activeTab === 'announcements' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                activeTab === 'announcements' ? 'bg-white/25 text-white' : 'bg-white/15 text-slate-300'
               }`}>
                 {announcements.length}
               </span>
@@ -403,22 +416,21 @@ export default function BatchClassroomPage({
 
             <button
               onClick={() => setActiveTab('members')}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+              className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
                 activeTab === 'members'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-102'
+                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
               }`}
             >
               <Users className="w-4 h-4" />
               <span>মেম্বার তালিকা</span>
-              <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
-                activeTab === 'members' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                activeTab === 'members' ? 'bg-white/25 text-white' : 'bg-white/15 text-slate-300'
               }`}>
                 {memberCounts.totalMembers}
               </span>
             </button>
           </div>
-
         </div>
       </div>
 

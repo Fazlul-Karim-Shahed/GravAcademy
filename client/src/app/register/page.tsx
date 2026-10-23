@@ -45,19 +45,35 @@ function RegisterForm() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-500/25 mb-4">
+    <div className="relative min-h-[calc(100vh-4rem)] cosmic-hero-bg text-white flex items-center justify-center px-4 py-12 overflow-hidden">
+      {/* Deep space radial ambient lighting */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[220px] bg-red-600/15 rounded-full blur-[90px] pointer-events-none -z-10 animate-atmosphere" />
+      <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none -z-10" />
+
+      {/* Twinkling Cosmic Stars */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[12%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+        <div className="absolute top-[28%] left-[24%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+        <div className="absolute top-[16%] right-[16%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+        <div className="absolute top-[32%] right-[10%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
+        <span className="shooting-star meteor-1" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-7">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-500/30 mb-4 border border-white/20">
             <GraduationCap className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Create Student Account</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Join Grav Academy to access courses, lectures, and live classes.
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            নতুন একাউন্ট তৈরি করুন
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1.5 font-medium">
+            গ্র্যাভ একাডেমিতে যুক্ত হয়ে কোর্স, লাইভ ক্লাস ও স্টাডি ম্যাটেরিয়ালে প্রবেশ করুন
           </p>
         </div>
 
-        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 shadow-xl shadow-slate-200/50 dark:shadow-none">
+        <div className="rounded-[32px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-2 border-slate-200/80 dark:border-slate-800/90 p-7 sm:p-8 shadow-2xl shadow-blue-950/20 text-slate-900 dark:text-white">
           {error && (
             <div className="mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -133,21 +149,26 @@ function RegisterForm() {
               </div>
             </div>
 
-            <Button type="submit" isLoading={loading} className="w-full mt-2">
-              Create Student Account
-            </Button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-sm shadow-md shadow-blue-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              <span>একাউন্ট তৈরি করুন</span>
+            </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-            Already have an account?{' '}
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-600 dark:text-slate-400">
+            ইতিমধ্যেই একাউন্ট আছে?{' '}
             <Link
               href={redirectUrl ? `/login?redirect=${encodeURIComponent(redirectUrl)}` : '/login'}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-black"
             >
-              Sign In
+              লগইন করুন
             </Link>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
