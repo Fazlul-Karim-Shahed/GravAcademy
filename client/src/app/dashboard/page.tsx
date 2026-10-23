@@ -132,14 +132,14 @@ export default function StudentDashboard() {
         <div className="space-y-6">
           <div className="flex items-center justify-between pb-2">
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/60">
                   <GraduationCap className="w-4 h-4" />
                 </div>
-                <span>আপনার সক্রিয় ব্যাচ ও পাঠ্যক্রম</span>
+                <span>আপনার সক্রিয় ব্যাচসমূহ</span>
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                প্রতিটি ব্যাচের অধ্যায়ভিত্তিক রেকর্ড ক্লাস, লেকচার নোট ও পরীক্ষার ম্যাটেরিয়াল এক নজরে
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                ক্লাসরুম ও পাঠ্যক্রমের স্টাডি ম্যাটেরিয়ালে সরাসরি প্রবেশ করুন
               </p>
             </div>
             <Link href="/courses" className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500 font-black hidden sm:flex items-center gap-1">
@@ -149,101 +149,78 @@ export default function StudentDashboard() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-96 rounded-[34px] bg-white/70 dark:bg-slate-900/70 border-2 border-slate-200/80 dark:border-slate-800/80 animate-pulse overflow-hidden p-3"
+                  className="h-52 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse p-5 space-y-4"
                 >
-                  <div className="h-44 bg-slate-200 dark:bg-slate-800 rounded-[26px]" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
-                    <div className="h-5 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
-                    <div className="h-3 w-full bg-slate-200 dark:bg-slate-800 rounded" />
-                  </div>
+                  <div className="h-4 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
+                  <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
+                  <div className="h-4 w-full bg-slate-200 dark:bg-slate-800 rounded" />
                 </div>
               ))}
             </div>
           ) : batches.length === 0 ? (
-            <div className="rounded-[34px] p-12 bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 text-center shadow-lg max-w-lg mx-auto">
-              <div className="w-16 h-16 rounded-2xl bg-blue-100/80 dark:bg-blue-950/60 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800">
-                <Compass className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div className="rounded-2xl p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center mx-auto mb-3">
+                <Compass className="w-6 h-6" />
               </div>
-              <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">আপনি এখনো কোনো ব্যাচে এনরোল করেননি</h3>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6 leading-relaxed">
-                আপনার ক্লাসের উপযুক্ত কোর্স নির্বাচন করে ব্যাচে যুক্ত হয়ে নিয়মিত ক্লাসে অংশ নিন।
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">কোনো ব্যাচে এখনো এনরোল করা হয়নি</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-5">
+                কোর্স ক্যাটালগ থেকে আপনার শ্রেণির ব্যাচে যুক্ত হন।
               </p>
               <Link
                 href="/courses"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
               >
-                <span>কোর্স তালিকা দেখুন</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>কোর্স ক্যাটালগ</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {batches.map((batch) => (
                 <div
                   key={batch._id}
-                  className="group rounded-3xl overflow-hidden flex flex-col justify-between p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-lg transition-all duration-300"
+                  className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-5 flex flex-col justify-between hover:border-blue-400/80 dark:hover:border-blue-500/80 hover:shadow-md transition-all duration-200"
                 >
                   <div>
-                    {/* Header: Grade & Active Status */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold border border-slate-200/60 dark:border-slate-700/60">
-                        {batch.courseId?.gradeLevel || 'একাডেমিক'}
+                    {/* Top Meta: Subject & Class */}
+                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                      <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-0.5 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
+                        {batch.courseId?.subject || 'সাধারণ'}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/60 dark:border-emerald-800/60">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>সক্রিয় ব্যাচ</span>
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                        {batch.courseId?.gradeLevel}
                       </span>
                     </div>
 
                     {/* Batch Name */}
-                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-1">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {batch.name}
                     </h3>
 
                     {/* Course Title */}
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-1 mb-4">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
                       {batch.courseId?.title}
                     </p>
 
-                    {/* Weekly Schedule info */}
-                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 mb-4">
-                      <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
-                        <Clock className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                          সাপ্তাহিক রুটিন
-                        </span>
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate mt-0.5">
-                          {batch.scheduleText || 'সাপ্তাহিক নিয়মিত ক্লাস শিডিউল'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Micro Features */}
-                    <div className="space-y-2 text-xs font-medium text-slate-600 dark:text-slate-400 mb-4 pb-2">
-                      <div className="flex items-center gap-2">
-                        <PlayCircle className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
-                        <span className="truncate">রেকর্ডেড ক্লাস ও লেকচার আর্কাইভ</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
-                        <span className="truncate">অধ্যায়ভিত্তিক শিট ও স্টাডি রিসোর্স</span>
-                      </div>
+                    {/* Weekly Routine Bar */}
+                    <div className="mt-3.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2 text-xs">
+                      <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+                      <span className="text-slate-700 dark:text-slate-300 font-medium truncate">
+                        {batch.scheduleText || 'রুটিন অনুযায়ী ক্লাস'}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Actions: Classroom & Study Material */}
-                  <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2.5">
+                  {/* Student Action Bar: Direct Classroom & Study Material Entry */}
+                  <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
                     <Link
                       href={`/classroom/${batch._id}`}
-                      className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition-colors"
-                      title="ব্যাচ ক্লাসরুম"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                      title="নোটিশ ও সহপাঠীদের ডিসকাশন"
                     >
                       <MessageSquare className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                       <span>ক্লাসরুম</span>
@@ -251,10 +228,11 @@ export default function StudentDashboard() {
 
                     <Link
                       href={`/learn/${batch._id}`}
-                      className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors shadow-xs"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+                      title="রেকর্ড ক্লাস ও পড়ালেখার ম্যাটেরিয়াল"
                     >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>স্টাডি ম্যাটেরিয়াল</span>
+                      <BookOpen className="w-3.5 h-3.5 text-blue-100" />
+                      <span>পড়া শুরু করুন</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
