@@ -15,6 +15,7 @@ import * as liveCtrl from '../controllers/liveClassController';
 import * as userAdminCtrl from '../controllers/userAdminController';
 import * as academicClassCtrl from '../controllers/academicClassController';
 import * as classroomCtrl from '../controllers/classroomController';
+import * as enrollmentCtrl from '../controllers/enrollmentController';
 
 const router = Router();
 const upload = multer({
@@ -96,6 +97,24 @@ router.delete(
   authenticate,
   requirePermission(PERMISSIONS.BATCHES_MANAGE),
   batchCtrl.deleteBatch
+);
+
+// --- ENROLLMENT ROUTES ---
+router.post(
+  '/enrollments/enroll',
+  authenticate,
+  validateRequest(enrollmentCtrl.enrollBatchSchema),
+  enrollmentCtrl.enrollInBatch
+);
+router.get(
+  '/enrollments/my-status',
+  authenticate,
+  enrollmentCtrl.getMyEnrollmentStatus
+);
+router.get(
+  '/enrollments/my-batches',
+  authenticate,
+  enrollmentCtrl.getMyBatches
 );
 
 // --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---

@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
-import { GraduationCap, Mail, Lock, AlertCircle } from 'lucide-react';
+import { GraduationCap, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -28,6 +30,12 @@ export default function LoginPage() {
       if (res.data.success) {
         const { token, user } = res.data.data;
         login(token, user);
+
+        // If redirect URL is provided and valid, prioritize redirect
+        if (redirectUrl && redirectUrl.startsWith('/')) {
+          router.push(redirectUrl);
+          return;
+        }
 
         // Role-based routing
         if (user.role === 'superadmin' || user.role === 'admin') {
@@ -114,12 +122,29 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
             Don&apos;t have an account yet?{' '}
-            <Link href="/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold">
+            <Link
+              href={redirectUrl ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register'}
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
+            >
               Create Student Account
             </Link>
           </div>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

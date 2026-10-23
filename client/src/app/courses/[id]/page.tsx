@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -22,6 +23,10 @@ import {
   PhoneCall,
   ShieldCheck,
   Sparkles,
+  AlertCircle,
+  Loader2,
+  X,
+  LogIn,
 } from 'lucide-react';
 import { ScheduleSlot, getDayInfo, formatTo12Hour } from '@/lib/schedule';
 
@@ -34,6 +39,7 @@ interface Batch {
   status: string;
   fee?: number;
   startDate?: string;
+  enrolledStudentCount?: number;
 }
 
 interface Teacher {
@@ -62,14 +68,22 @@ interface CourseDetail {
 
 export default function CourseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
+  const router = useRouter();
   const { user } = useAuth();
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
+  const [enrolledBatchIds, setEnrolledBatchIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Enrollment Modal state
+  const [selectedBatchForEnroll, setSelectedBatchForEnroll] = useState<Batch | null>(null);
+  const [enrolling, setEnrolling] = useState(false);
+  const [enrollSuccessMessage, setEnrollSuccessMessage] = useState('');
+  const [enrollErrorMessage, setEnrollErrorMessage] = useState('');
 
   useEffect(() => {
     fetchCourseAndBatches();
-  }, [resolvedParams.id]);
+  }, [resolvedParams.id, user]);
 
   const fetchCourseAndBatches = async () => {
     setLoading(true);
@@ -90,11 +104,78 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
         } catch (batchErr) {
           console.warn('Batches not loaded for course:', batchErr);
         }
+
+        // 3. If logged in as student, fetch enrollment status for this course
+        if (user && user.role === 'student') {
+          try {
+            const actualCourseId = loadedCourse._id || resolvedParams.id;
+            const enrollRes = await api.get(`/enrollments/my-status?courseId=${actualCourseId}`);
+            if (enrollRes.data?.success) {
+              setEnrolledBatchIds(enrollRes.data.enrolledBatchIds || []);
+            }
+          } catch (statusErr) {
+            console.warn('Enrollment status check failed:', statusErr);
+          }
+        } else {
+          setEnrolledBatchIds([]);
+        }
       }
     } catch (err) {
       console.error('Failed to load course details', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEnrollClick = (batch: Batch) => {
+    // If not logged in, redirect to login with return path
+    if (!user) {
+      const currentPath = `/courses/${resolvedParams.id}`;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+
+    // Open confirmation modal
+    setSelectedBatchForEnroll(batch);
+    setEnrollSuccessMessage('');
+    setEnrollErrorMessage('');
+  };
+
+  const handleConfirmEnrollment = async () => {
+    if (!selectedBatchForEnroll) return;
+    setEnrolling(true);
+    setEnrollErrorMessage('');
+    setEnrollSuccessMessage('');
+
+    try {
+      const res = await api.post('/enrollments/enroll', {
+        batchId: selectedBatchForEnroll._id,
+      });
+
+      if (res.data?.success) {
+        setEnrollSuccessMessage(res.data.message || 'সফলভাবে ব্যাচে এনরোল সম্পন্ন হয়েছে!');
+        // Update local state
+        setEnrolledBatchIds((prev) => [...prev, selectedBatchForEnroll._id]);
+        // Update batch enrolledStudentCount locally
+        setBatches((prev) =>
+          prev.map((b) =>
+            b._id === selectedBatchForEnroll._id
+              ? { ...b, enrolledStudentCount: (b.enrolledStudentCount || 0) + 1 }
+              : b
+          )
+        );
+
+        // After a brief delay, close modal or redirect to classroom
+        setTimeout(() => {
+          setSelectedBatchForEnroll(null);
+          setEnrollSuccessMessage('');
+          router.push(`/classroom/${selectedBatchForEnroll._id}`);
+        }, 1500);
+      }
+    } catch (err: any) {
+      setEnrollErrorMessage(err.response?.data?.message || 'এনরোলমেন্ট সম্পন্ন করা সম্ভব হয়নি। পুনরায় চেষ্টা করুন।');
+    } finally {
+      setEnrolling(false);
     }
   };
 
@@ -493,21 +574,58 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                           </div>
                         ) : null}
 
-                        {/* Batch Fee Display */}
+                        {/* Batch Fee & Enrolled Student Count Display */}
                         <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 mb-4">
-                          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">ব্যাচ ভর্তি ফি</span>
-                          <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                            {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি'}
-                          </span>
+                          <div>
+                            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">ব্যাচ ভর্তি ফি</span>
+                            <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                              {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি'}
+                            </span>
+                          </div>
+
+                          <div className="text-right">
+                            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">মোট শিক্ষার্থী</span>
+                            <span className="inline-flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400">
+                              <Users className="w-3.5 h-3.5" />
+                              <span>{batch.enrolledStudentCount ?? 0} জন</span>
+                              {batch.capacity && batch.capacity > 0 && (
+                                <span className="text-[10px] text-slate-400 font-normal">
+                                  / {batch.capacity}
+                                </span>
+                              )}
+                            </span>
+                          </div>
                         </div>
 
-                        <Link
-                          href={`/learn/${batch._id}`}
-                          className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
-                        >
-                          <span>এই ব্যাচে ক্লাস শুরু করুন</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
+                        {/* Role-based action button:
+                            - Admin / Teacher / Guardian / Employee: NO action button shown
+                            - Non-user (visitor) OR Student not enrolled: "এনরোল করুন"
+                            - Student already enrolled: "ক্লাসরুমে প্রবেশ করুন"
+                        */}
+                        {(!user || user.role === 'student') && (
+                          <>
+                            {user && user.role === 'student' && enrolledBatchIds.includes(batch._id) ? (
+                              <Link
+                                href={`/classroom/${batch._id}`}
+                                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
+                              >
+                                <GraduationCap className="w-4 h-4" />
+                                <span>ক্লাসরুমে প্রবেশ করুন</span>
+                                <ArrowRight className="w-4 h-4" />
+                              </Link>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleEnrollClick(batch)}
+                                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+                              >
+                                <Sparkles className="w-4 h-4 text-amber-300" />
+                                <span>এনরোল করুন</span>
+                                <ArrowRight className="w-4 h-4" />
+                              </button>
+                            )}
+                          </>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -547,8 +665,117 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
+      {/* Enrollment Confirmation Popup Modal */}
+      {selectedBatchForEnroll && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200/80 dark:border-slate-800 transition-all scale-100">
+            {/* Close button */}
+            <button
+              onClick={() => {
+                if (!enrolling) {
+                  setSelectedBatchForEnroll(null);
+                  setEnrollErrorMessage('');
+                  setEnrollSuccessMessage('');
+                }
+              }}
+              disabled={enrolling}
+              className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Modal Icon */}
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200/70 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-4">
+              <GraduationCap className="w-7 h-7" />
+            </div>
+
+            {/* Title & Description */}
+            <div className="text-center mb-5">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                ক্লাসে জয়েন নিশ্চিতকরণ
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                আপনি কি সত্যিই <span className="font-bold text-slate-900 dark:text-white">&ldquo;{selectedBatchForEnroll.name}&rdquo;</span> ব্যাচে জয়েন করতে চান?
+              </p>
+            </div>
+
+            {/* Course & Batch Summary Box */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/70 dark:border-slate-800 mb-5 space-y-2 text-xs">
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
+                <span className="font-semibold">কোর্স:</span>
+                <span className="font-bold text-slate-900 dark:text-white truncate max-w-[200px]">
+                  {course.title}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
+                <span className="font-semibold">ব্যাচ:</span>
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {selectedBatchForEnroll.name}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
+                <span className="font-semibold">ভর্তি ফি:</span>
+                <span className="font-black text-emerald-600 dark:text-emerald-400">
+                  {selectedBatchForEnroll.fee && selectedBatchForEnroll.fee > 0
+                    ? `৳ ${selectedBatchForEnroll.fee.toLocaleString()}`
+                    : 'ফ্রি'}
+                </span>
+              </div>
+            </div>
+
+            {/* Success or Error Alert */}
+            {enrollSuccessMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                <span>{enrollSuccessMessage}</span>
+              </div>
+            )}
+
+            {enrollErrorMessage && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                <span>{enrollErrorMessage}</span>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedBatchForEnroll(null);
+                  setEnrollErrorMessage('');
+                  setEnrollSuccessMessage('');
+                }}
+                disabled={enrolling}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
+              >
+                বাতিল করুন
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmEnrollment}
+                disabled={enrolling}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              >
+                {enrolling ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>এনরোল হচ্ছে...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>হ্যাঁ, জয়েন করুন</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
-
-// hii

@@ -36,6 +36,7 @@ interface Batch {
   scheduleText?: string;
   weeklySchedule?: ScheduleSlot[];
   capacity?: number;
+  enrolledStudentCount?: number;
 }
 
 interface Course {
@@ -225,19 +226,25 @@ export default function AdminBatchesPage() {
                       </div>
                     )}
 
-                    {/* Fee & Capacity 2-Column Info Grid */}
-                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950/70 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
+                    {/* Fee, Capacity & Enrolled Students 3-Column / Grid Info */}
+                    <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-950/70 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
                       <div>
                         <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">ভর্তি ফি</span>
-                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                          {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি ব্যাচ'}
+                        <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
+                          {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">এনরোল্ড</span>
+                        <span className="text-xs sm:text-sm font-black text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                          <span>{batch.enrolledStudentCount ?? 0} জন</span>
                         </span>
                       </div>
                       <div>
                         <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">আসন সংখ্যা</span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span>{batch.capacity ? `${batch.capacity} জন` : 'সীমাহীন'}</span>
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                          {batch.capacity ? `${batch.capacity} জন` : 'সীমাহীন'}
                         </span>
                       </div>
                     </div>

@@ -8,6 +8,8 @@ import { FileAsset } from '../models/FileAsset';
 import { AuditLog } from '../models/AuditLog';
 import { AuthenticatedRequest } from '../middleware/auth';
 
+import { Enrollment } from '../models/Enrollment';
+
 export const scheduleSlotSchema = z.object({
   day: z.enum(['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']),
   startTime: z.string().min(1),
@@ -58,9 +60,37 @@ export const getBatches = async (req: Request, res: Response) => {
     const batches = await Batch.find(filter)
       .populate('courseId', 'title slug gradeLevel subject')
       .populate('assignedTeachers', 'name email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
-    return res.status(200).json({ success: true, count: batches.length, data: batches });
+    // Attach enrolledStudentCount to each batch
+    const batchIds = batches.map((b) => b._id);
+    const countAgg = await Enrollment.aggregate([
+      {
+        $match: {
+          batchId: { $in: batchIds },
+          status: { $in: ['enrolled', 'completed'] },
+        },
+      },
+      {
+        $group: {
+          _id: '$batchId',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const countMap = new Map<string, number>();
+    countAgg.forEach((item) => {
+      countMap.set(item._id.toString(), item.count);
+    });
+
+    const enrichedBatches = batches.map((b) => ({
+      ...b,
+      enrolledStudentCount: countMap.get(b._id.toString()) || 0,
+    }));
+
+    return res.status(200).json({ success: true, count: enrichedBatches.length, data: enrichedBatches });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch batches' });
   }

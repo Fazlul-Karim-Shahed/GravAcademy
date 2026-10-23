@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
-import { GraduationCap, Mail, Lock, User, AlertCircle, Phone } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, AlertCircle, Phone, Loader2 } from 'lucide-react';
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -29,7 +31,11 @@ export default function RegisterPage() {
       const res = await api.post('/auth/register', formData);
       if (res.data.success) {
         login(res.data.data.token, res.data.data.user);
-        router.push('/dashboard');
+        if (redirectUrl && redirectUrl.startsWith('/')) {
+          router.push(redirectUrl);
+        } else {
+          router.push('/dashboard');
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please check your details.');
@@ -134,12 +140,29 @@ export default function RegisterPage() {
 
           <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold">
+            <Link
+              href={redirectUrl ? `/login?redirect=${encodeURIComponent(redirectUrl)}` : '/login'}
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
+            >
               Sign In
             </Link>
           </div>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

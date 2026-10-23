@@ -46,12 +46,13 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [user]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/batches');
+      // Fetch only batches the student has actually enrolled in
+      const res = await api.get('/enrollments/my-batches');
       if (res.data?.success) {
         setBatches(res.data.data || []);
       }
