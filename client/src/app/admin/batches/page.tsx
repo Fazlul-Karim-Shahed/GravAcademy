@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Edit3,
   Trash2,
+  MessageSquare,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { ScheduleSlot } from '@/lib/schedule';
@@ -244,13 +245,24 @@ export default function AdminBatchesPage() {
 
                   {/* Card Action Footer */}
                   <div className="px-6 py-4 bg-slate-50/80 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
-                    <Link
-                      href={`/admin/batches/${batch._id}/curriculum`}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
-                    >
-                      <Layers className="w-3.5 h-3.5" />
-                      <span>কারিকুলাম</span>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`/classroom/${batch._id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors"
+                        title="ক্লাসরুম ও ডিসকাশন গ্রুপ"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>ক্লাসরুম</span>
+                      </Link>
+
+                      <Link
+                        href={`/admin/batches/${batch._id}/curriculum`}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>কারিকুলাম</span>
+                      </Link>
+                    </div>
 
                     <div className="flex items-center gap-1.5">
                       <Link

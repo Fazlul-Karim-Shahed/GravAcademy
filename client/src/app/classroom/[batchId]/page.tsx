@@ -1,0 +1,862 @@
+'use client';
+
+import React, { useEffect, useState, use } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import {
+  Users,
+  MessageSquare,
+  Megaphone,
+  Video,
+  Send,
+  Pin,
+  Clock,
+  ArrowLeft,
+  Calendar,
+  Sparkles,
+  ExternalLink,
+  PlusCircle,
+  GraduationCap,
+  ShieldCheck,
+  CheckCircle2,
+  Mail,
+  User,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
+
+interface BatchInfo {
+  _id: string;
+  name: string;
+  status: string;
+  scheduleText?: string;
+  meetingUrl?: string;
+  courseId: {
+    _id: string;
+    title: string;
+    gradeLevel: string;
+    subject: string;
+  };
+  assignedTeachers: {
+    _id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string;
+  }[];
+}
+
+interface MemberUser {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  phone?: string;
+  avatarUrl?: string;
+  createdAt?: string;
+}
+
+interface AnnouncementItem {
+  _id: string;
+  title: string;
+  content: string;
+  authorName: string;
+  authorRole: string;
+  isPinned: boolean;
+  emailSentCount: number;
+  createdAt: string;
+}
+
+interface DiscussionMsg {
+  _id: string;
+  senderName: string;
+  senderRole: string;
+  senderAvatar?: string;
+  message: string;
+  createdAt: string;
+}
+
+export const dynamic = 'force-dynamic';
+
+export default function BatchClassroomPage({
+  params,
+}: {
+  params: Promise<{ batchId: string }>;
+}) {
+  const resolvedParams = use(params);
+  const batchId = resolvedParams.batchId;
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  // Active Tab: 'discussion' | 'announcements' | 'members'
+  const [activeTab, setActiveTab] = useState<'discussion' | 'announcements' | 'members'>('discussion');
+
+  const [batch, setBatch] = useState<BatchInfo | null>(null);
+  const [memberCounts, setMemberCounts] = useState<{
+    teachersCount: number;
+    studentsCount: number;
+    totalMembers: number;
+  }>({ teachersCount: 0, studentsCount: 0, totalMembers: 0 });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Discussions State
+  const [messages, setMessages] = useState<DiscussionMsg[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMsg, setSendingMsg] = useState(false);
+
+  // Announcements State
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [showAnnounceModal, setShowAnnounceModal] = useState(false);
+  const [announceForm, setAnnounceForm] = useState({ title: '', content: '', isPinned: false });
+  const [submittingAnnounce, setSubmittingAnnounce] = useState(false);
+  const [announceNotice, setAnnounceNotice] = useState('');
+
+  // Members State
+  const [members, setMembers] = useState<{ teachers: MemberUser[]; students: MemberUser[] }>({
+    teachers: [],
+    students: [],
+  });
+  const [loadingMembers, setLoadingMembers] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?redirect=/classroom/${batchId}`);
+      return;
+    }
+    if (user && batchId) {
+      loadOverview();
+      loadDiscussions();
+      loadAnnouncements();
+    }
+  }, [batchId, user, authLoading]);
+
+  useEffect(() => {
+    if (activeTab === 'members' && members.students.length === 0) {
+      loadMembers();
+    }
+  }, [activeTab]);
+
+  const loadOverview = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.get(`/classrooms/${batchId}`);
+      if (res.data?.success) {
+        setBatch(res.data.data.batch);
+        setMemberCounts(res.data.data.memberCounts);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || 'ক্লাসরুমের তথ্য লোড করতে ব্যর্থ হয়েছে');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadDiscussions = async () => {
+    try {
+      const res = await api.get(`/classrooms/${batchId}/discussions`);
+      if (res.data?.success) {
+        setMessages(res.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to load discussions:', err);
+    }
+  };
+
+  const loadAnnouncements = async () => {
+    try {
+      const res = await api.get(`/classrooms/${batchId}/announcements`);
+      if (res.data?.success) {
+        setAnnouncements(res.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to load announcements:', err);
+    }
+  };
+
+  const loadMembers = async () => {
+    setLoadingMembers(true);
+    try {
+      const res = await api.get(`/classrooms/${batchId}/members`);
+      if (res.data?.success) {
+        setMembers({
+          teachers: res.data.data.teachers || [],
+          students: res.data.data.students || [],
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load members:', err);
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim() || sendingMsg) return;
+
+    setSendingMsg(true);
+    try {
+      const res = await api.post(`/classrooms/${batchId}/discussions`, {
+        message: newMessage.trim(),
+      });
+      if (res.data?.success) {
+        setMessages((prev) => [...prev, res.data.data]);
+        setNewMessage('');
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'মেসেজ পাঠানো সম্ভব হয়নি');
+    } finally {
+      setSendingMsg(false);
+    }
+  };
+
+  const handleCreateAnnouncement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!announceForm.title.trim() || !announceForm.content.trim() || submittingAnnounce) return;
+
+    setSubmittingAnnounce(true);
+    setAnnounceNotice('');
+    try {
+      const res = await api.post(`/classrooms/${batchId}/announcements`, announceForm);
+      if (res.data?.success) {
+        setAnnouncements((prev) => [res.data.data, ...prev]);
+        setShowAnnounceModal(false);
+        setAnnounceForm({ title: '', content: '', isPinned: false });
+        setAnnounceNotice('এনাউন্সমেন্ট সফলভাবে প্রকাশিত হয়েছে এবং সকল সদস্যের কাছে ইমেইল পাঠানো হয়েছে!');
+        setTimeout(() => setAnnounceNotice(''), 6000);
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'এনাউন্সমেন্ট তৈরি করা সম্ভব হয়নি');
+    } finally {
+      setSubmittingAnnounce(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center py-20">
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <div className="w-9 h-9 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm font-semibold">ক্লাসরুম লোড হচ্ছে...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !batch) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 px-4">
+        <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center shadow-lg">
+          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">প্রবেশাধিকার সংরক্ষিত</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+            {error || 'আপনি এই ক্লাসরুমের সদস্য নন। দয়া করে সংশ্লিষ্ট ব্যাচে এনরোল করুন।'}
+          </p>
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>পূর্ববর্তী পাতায় ফিরে যান</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const roleBadge = (role: string) => {
+    switch (role) {
+      case 'superadmin':
+      case 'admin':
+        return (
+          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60">
+            এডমিন
+          </span>
+        );
+      case 'teacher':
+        return (
+          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+            শিক্ষক
+          </span>
+        );
+      case 'guardian':
+        return (
+          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+            অভিভাবক
+          </span>
+        );
+      default:
+        return (
+          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+            শিক্ষার্থী
+          </span>
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors pb-16">
+      
+      {/* 1. TOP HEADER BANNER */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <button
+                  onClick={() => router.back()}
+                  className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  title="ফিরে যান"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-900/40">
+                  {batch.courseId?.gradeLevel || 'Class 6 - 12'} • {batch.courseId?.subject || 'একাডেমিক'}
+                </span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs text-slate-500 font-medium">{batch.status}</span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                {batch.name}
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+                {batch.courseId?.title}
+              </p>
+            </div>
+
+            {/* Quick Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              {batch.meetingUrl && (
+                <a
+                  href={batch.meetingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-extrabold shadow-sm shadow-emerald-600/20 active:scale-95 transition-all"
+                >
+                  <Video className="w-4 h-4" />
+                  <span>Google Meet ক্লাস</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                </a>
+              )}
+
+              <Link
+                href={`/learn/${batchId}`}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+              >
+                <GraduationCap className="w-4 h-4" />
+                <span>পাঠ্যক্রম ও লেকচার শিট</span>
+              </Link>
+            </div>
+
+          </div>
+
+          {/* Broadcast confirmation alert */}
+          {announceNotice && (
+            <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{announceNotice}</span>
+            </div>
+          )}
+
+          {/* 2. SUB-NAVIGATION TABS */}
+          <div className="flex items-center gap-2 sm:gap-4 mt-6 border-t border-slate-100 dark:border-slate-800 pt-4 overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('discussion')}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+                activeTab === 'discussion'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>গ্রুপ ডিসকাশন</span>
+              <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
+                activeTab === 'discussion' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'
+              }`}>
+                {messages.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('announcements')}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+                activeTab === 'announcements'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+              }`}
+            >
+              <Megaphone className="w-4 h-4" />
+              <span>এনাউন্সমেন্ট</span>
+              <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
+                activeTab === 'announcements' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'
+              }`}>
+                {announcements.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('members')}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+                activeTab === 'members'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>মেম্বার তালিকা</span>
+              <span className={`text-[11px] px-1.5 py-0.2 rounded-full ${
+                activeTab === 'members' ? 'bg-white/20' : 'bg-slate-200 dark:bg-slate-700'
+              }`}>
+                {memberCounts.totalMembers}
+              </span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 3. MAIN TAB CONTENT CONTAINER */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        {/* ================= TAB 1: DISCUSSION GROUP ================= */}
+        {activeTab === 'discussion' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left 8 Cols: Simple & Clean Chat Thread */}
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-xs flex flex-col h-[640px]">
+              
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    ব্যাচ ডিসকাশন রুম
+                  </h3>
+                </div>
+                <span className="text-[11px] text-slate-400">
+                  ক্লাসের পড়া, প্রশ্ন ও মতামত শেয়ার করুন
+                </span>
+              </div>
+
+              {/* Message List */}
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                {messages.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                    <MessageSquare className="w-12 h-12 mb-2 opacity-40 text-blue-500" />
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">এখনো কোনো ডিসকাশন শুরু হয়নি</p>
+                    <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                      আপনার প্রথম বার্তা বা পড়া সম্পর্কিত প্রশ্ন নিচে লিখে পাঠান। শিক্ষক ও সহপাঠীরা মতামত দিতে পারবেন।
+                    </p>
+                  </div>
+                ) : (
+                  messages.map((msg) => {
+                    const isMe = msg.senderName === user?.name;
+                    return (
+                      <div
+                        key={msg._id}
+                        className={`flex gap-3 items-start ${isMe ? 'flex-row-reverse' : ''}`}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
+                          {msg.senderName.slice(0, 2).toUpperCase()}
+                        </div>
+
+                        <div className={`max-w-[75%] ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
+                          <div className="flex items-center gap-1.5 mb-1 text-[11px]">
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
+                              {msg.senderName}
+                            </span>
+                            {roleBadge(msg.senderRole)}
+                            <span className="text-[10px] text-slate-400 ml-1">
+                              {new Date(msg.createdAt).toLocaleTimeString('bn-BD', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                          </div>
+
+                          <div
+                            className={`p-3.5 rounded-2xl text-xs leading-relaxed font-medium ${
+                              isMe
+                                ? 'bg-blue-600 text-white rounded-tr-xs shadow-xs'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-tl-xs'
+                            }`}
+                          >
+                            {msg.message}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Message Input Box */}
+              <form onSubmit={handleSendMessage} className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="আপনার বার্তা বা প্রশ্ন লিখুন..."
+                  className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={!newMessage.trim() || sendingMsg}
+                  className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors shrink-0"
+                >
+                  <span>পাঠান</span>
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </form>
+
+            </div>
+
+            {/* Right 4 Cols: Batch Quick Info & Instructor Card */}
+            <div className="lg:col-span-4 space-y-4">
+              
+              {/* Routine Card */}
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    ক্লাস রুটিন
+                  </h4>
+                </div>
+                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-relaxed">
+                  {batch.scheduleText || 'সাপ্তাহিক নিয়মিত শিডিউল অনুযায়ী ক্লাস পরিচালিত হয়।'}
+                </p>
+              </div>
+
+              {/* Teachers Assigned */}
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      দায়িত্বপ্রাপ্ত শিক্ষকবৃন্দ ({batch.assignedTeachers?.length || 0})
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {batch.assignedTeachers?.map((t) => (
+                    <div key={t._id} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800/80">
+                      <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+                        {t.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                          {t.name}
+                        </span>
+                        <span className="text-[11px] text-slate-400 block truncate">
+                          {t.email}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Members Stats Pill */}
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                    মোট সদস্য
+                  </span>
+                  <span className="text-xl font-black text-slate-900 dark:text-white mt-0.5 block">
+                    {memberCounts.totalMembers} জন
+                  </span>
+                </div>
+                <button
+                  onClick={() => setActiveTab('members')}
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-blue-600 dark:text-blue-400 transition-colors"
+                >
+                  তালিকা দেখুন
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ================= TAB 2: ANNOUNCEMENTS ================= */}
+        {activeTab === 'announcements' && (
+          <div className="space-y-6">
+            
+            {/* Header / New Announcement Action */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xs">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Megaphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <span>ব্যাচ এনাউন্সমেন্ট ও নোটিশ</span>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  এখানে যেকোনো ঘোষণা প্রকাশ করলে ক্লাসরুমের প্রত্যেক সদস্যের কাছে সরাসরি ইমেইল নোটিফিকেশন পৌঁছে যায়।
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowAnnounceModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span>নতুন এনাউন্সমেন্ট লিখুন</span>
+              </button>
+            </div>
+
+            {/* Announcements List */}
+            {announcements.length === 0 ? (
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-slate-200/90 dark:border-slate-800">
+                <Megaphone className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">বর্তমানে কোনো এনাউন্সমেন্ট নেই</h4>
+                <p className="text-xs text-slate-500 mt-1 mb-4">
+                  শিক্ষক বা শিক্ষার্থী যেকোনো গুরুত্বপূর্ণ নোটিশ এখানে ঘোষণা করতে পারেন।
+                </p>
+                <button
+                  onClick={() => setShowAnnounceModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>প্রথম নোটিশ প্রকাশ করুন</span>
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {announcements.map((a) => (
+                  <div
+                    key={a._id}
+                    className={`rounded-3xl p-6 bg-white dark:bg-slate-900 border transition-all ${
+                      a.isPinned
+                        ? 'border-blue-400 dark:border-blue-700 shadow-md ring-1 ring-blue-500/20'
+                        : 'border-slate-200/90 dark:border-slate-800 shadow-xs'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2">
+                        {a.isPinned && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                            <Pin className="w-3 h-3" /> পিন করা
+                          </span>
+                        )}
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                          {a.title}
+                        </h4>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-xs text-slate-400">
+                        <span className="flex items-center gap-1">
+                          <Mail className="w-3.5 h-3.5 text-emerald-500" />
+                          <span>ইমেইল ব্রডকাস্ট হয়েছে ({a.emailSentCount || memberCounts.totalMembers})</span>
+                        </span>
+                        <span>•</span>
+                        <span>
+                          {new Date(a.createdAt).toLocaleDateString('bn-BD', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed mb-4">
+                      {a.content}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-600 dark:text-slate-400">প্রকাশক:</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{a.authorName}</span>
+                        {roleBadge(a.authorRole)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* ================= TAB 3: MEMBERS DIRECTORY ================= */}
+        {activeTab === 'members' && (
+          <div className="space-y-6">
+            
+            {/* Summary Strip */}
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  <span>ক্লাসরুম মেম্বার তালিকা ({memberCounts.totalMembers} জন)</span>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  এই ব্যাচে এনরোল করা সকল শিক্ষক ও শিক্ষার্থীদের পরিচিতি ও যোগাযোগের তালিকা।
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                  {members.teachers.length || memberCounts.teachersCount} জন শিক্ষক
+                </span>
+                <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+                  {members.students.length || memberCounts.studentsCount} জন শিক্ষার্থী
+                </span>
+              </div>
+            </div>
+
+            {loadingMembers ? (
+              <div className="py-12 text-center text-slate-400 text-xs font-semibold">
+                মেম্বার তালিকা লোড হচ্ছে...
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                {/* Teachers Section First */}
+                {members.teachers.map((t) => (
+                  <div
+                    key={t._id}
+                    className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 shadow-xs flex items-center gap-3.5"
+                  >
+                    <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm shadow-blue-600/20">
+                      {t.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
+                          {t.name}
+                        </span>
+                        {roleBadge('teacher')}
+                      </div>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                        {t.email}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Students Next */}
+                {members.students.map((s) => (
+                  <div
+                    key={s._id}
+                    className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5 hover:border-emerald-300 transition-colors"
+                  >
+                    <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center font-bold text-sm shrink-0">
+                      {s.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
+                          {s.name}
+                        </span>
+                        {roleBadge('student')}
+                      </div>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                        {s.email}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+              </div>
+            )}
+
+          </div>
+        )}
+
+      </div>
+
+      {/* ================= MODAL: CREATE ANNOUNCEMENT ================= */}
+      {showAnnounceModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-5">
+              <div className="flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-blue-600" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">নতুন এনাউন্সমেন্ট তৈরি করুন</h3>
+              </div>
+              <button
+                onClick={() => setShowAnnounceModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAnnouncement} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  ঘোষণার বিষয় / শিরোনাম *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={announceForm.title}
+                  onChange={(e) => setAnnounceForm({ ...announceForm, title: e.target.value })}
+                  placeholder="যেমন: আগামী রবিবারের স্পেশাল ক্লাস ও সিলেবাস"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  বিস্তারিত বার্তা *
+                </label>
+                <textarea
+                  required
+                  rows={5}
+                  value={announceForm.content}
+                  onChange={(e) => setAnnounceForm({ ...announceForm, content: e.target.value })}
+                  placeholder="আপনার নোটিশ বিস্তারিত এখানে লিখুন..."
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 leading-relaxed"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="pinCheck"
+                  checked={announceForm.isPinned}
+                  onChange={(e) => setAnnounceForm({ ...announceForm, isPinned: e.target.checked })}
+                  className="w-4 h-4 rounded text-blue-600"
+                />
+                <label htmlFor="pinCheck" className="text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+                  গুরুত্বপূর্ণ নোটিশ হিসেবে উপরে পিন করে রাখুন
+                </label>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200/70 dark:border-blue-800/60 text-blue-800 dark:text-blue-300 text-[11px] leading-relaxed flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-600 shrink-0" />
+                <span>এই নোটিশটি পাবলিশ হওয়া মাত্রই ক্লাসের সকল এনরোল্ড সদস্যের ইমেইলে পাঠিয়ে দেওয়া হবে।</span>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowAnnounceModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 transition-colors"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingAnnounce}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all"
+                >
+                  {submittingAnnounce ? 'প্রকাশ করা হচ্ছে...' : 'পাবলিশ ও ইমেইল পাঠান'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}

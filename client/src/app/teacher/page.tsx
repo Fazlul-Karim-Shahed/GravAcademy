@@ -16,6 +16,7 @@ import {
   Users,
   CheckCircle,
   ArrowRight,
+  MessageSquare,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -183,12 +184,21 @@ export default function TeacherPanelPage() {
                   <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{batch.courseId?.title}</p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/classroom/${batch._id}`}
+                    className="flex-1 min-w-[120px] py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                    title="ক্লাসরুম, মেম্বার তালিকা ও ডিসকাশন গ্রুপে প্রবেশ করুন"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>ভিউ ক্লাসরুম</span>
+                  </Link>
+
                   <Link
                     href={`/learn/${batch._id}`}
-                    className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                    className="py-2.5 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
                   >
-                    <span>View Curriculum</span>
+                    <span>কারিকুলাম</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
 
@@ -197,11 +207,11 @@ export default function TeacherPanelPage() {
                       setSelectedBatchId(batch._id);
                       setShowModuleModal(true);
                     }}
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-colors"
+                    className="px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-colors"
                     title="Add new module to this batch"
                   >
                     <PlusCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    <span>Add Module</span>
+                    <span>মডিউল</span>
                   </button>
                 </div>
               </div>

@@ -20,6 +20,7 @@ import {
   Maximize2,
   Minimize2,
   Loader2,
+  MessageSquare,
 } from 'lucide-react';
 import { ScheduleSlot, getDayInfo, formatTo12Hour } from '@/lib/schedule';
 
@@ -215,8 +216,17 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
               </div>
             </div>
 
-            {/* Quick Live Classroom Action Button */}
-            <div className="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
+            {/* Quick Live Classroom & Batch Classroom Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto shrink-0">
+              <Link
+                href={`/classroom/${data.batch._id}`}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 active:scale-95 transition-all"
+                title="ব্যাচ ক্লাসরুম, ডিসকাশন গ্রুপ ও নোটিশ বোর্ড"
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <span>ভিউ ক্লাসরুম</span>
+              </Link>
+
               {data.batch.meetingUrl && (
                 <a
                   href={data.batch.meetingUrl}

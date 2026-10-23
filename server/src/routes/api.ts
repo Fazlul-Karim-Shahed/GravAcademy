@@ -14,6 +14,7 @@ import * as examCtrl from '../controllers/examController';
 import * as liveCtrl from '../controllers/liveClassController';
 import * as userAdminCtrl from '../controllers/userAdminController';
 import * as academicClassCtrl from '../controllers/academicClassController';
+import * as classroomCtrl from '../controllers/classroomController';
 
 const router = Router();
 const upload = multer({
@@ -95,6 +96,24 @@ router.delete(
   authenticate,
   requirePermission(PERMISSIONS.BATCHES_MANAGE),
   batchCtrl.deleteBatch
+);
+
+// --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---
+router.get('/classrooms/:batchId', authenticate, classroomCtrl.getClassroomOverview);
+router.get('/classrooms/:batchId/members', authenticate, classroomCtrl.getClassroomMembers);
+router.get('/classrooms/:batchId/announcements', authenticate, classroomCtrl.getAnnouncements);
+router.post(
+  '/classrooms/:batchId/announcements',
+  authenticate,
+  validateRequest(classroomCtrl.createAnnouncementSchema),
+  classroomCtrl.createAnnouncement
+);
+router.get('/classrooms/:batchId/discussions', authenticate, classroomCtrl.getDiscussionMessages);
+router.post(
+  '/classrooms/:batchId/discussions',
+  authenticate,
+  validateRequest(classroomCtrl.createDiscussionSchema),
+  classroomCtrl.postDiscussionMessage
 );
 
 // --- CONTENT HIERARCHY ROUTES ---

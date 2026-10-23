@@ -20,6 +20,7 @@ import {
   GraduationCap,
   ExternalLink,
   ChevronRight,
+  MessageSquare,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -195,19 +196,24 @@ export default function StudentDashboard() {
                       </div>
                     </div>
 
-                    {/* Card Footer: Study Material CTA */}
-                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
-                        <BookOpen className="w-4 h-4 text-blue-500 shrink-0" />
-                        <span>লেকচার নোট ও রেকর্ডেড ক্লাস</span>
-                      </div>
+                    {/* Card Footer: Classroom & Study Material CTA */}
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
+                      <Link
+                        href={`/classroom/${batch._id}`}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/80 dark:border-emerald-800/60 transition-all shrink-0"
+                        title="ব্যাচ ক্লাসরুম, ডিসকাশন ও এনাউন্সমেন্ট"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <span>ভিউ ক্লাসরুম</span>
+                      </Link>
 
                       <Link
                         href={`/learn/${batch._id}`}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-blue-600 dark:bg-slate-800 dark:hover:bg-blue-600 text-white text-xs font-bold shadow-xs transition-all duration-200 group-hover:shadow-md shrink-0"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-blue-600 dark:bg-slate-800 dark:hover:bg-blue-600 text-white text-xs font-bold shadow-xs transition-all duration-200 group-hover:shadow-md shrink-0"
                       >
+                        <BookOpen className="w-3.5 h-3.5 text-blue-400" />
                         <span>স্টাডি ম্যাটেরিয়াল</span>
-                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                       </Link>
                     </div>
                   </div>
