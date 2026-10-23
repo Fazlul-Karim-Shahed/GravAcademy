@@ -182,147 +182,84 @@ export default function StudentDashboard() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {batches.map((batch, idx) => {
-                // Vibrant card themes matching homepage
-                const cardThemes = [
-                  {
-                    gradient: 'from-[#4f46e5] via-[#7c3aed] to-[#c026d3]',
-                    accentColor: 'text-purple-600 dark:text-purple-400',
-                  },
-                  {
-                    gradient: 'from-[#0284c7] via-[#2563eb] to-[#4f46e5]',
-                    accentColor: 'text-blue-600 dark:text-blue-400',
-                  },
-                  {
-                    gradient: 'from-[#059669] via-[#0d9488] to-[#0284c7]',
-                    accentColor: 'text-teal-600 dark:text-teal-400',
-                  },
-                  {
-                    gradient: 'from-[#ea580c] via-[#e11d48] to-[#c026d3]',
-                    accentColor: 'text-rose-600 dark:text-rose-400',
-                  },
-                  {
-                    gradient: 'from-[#d97706] via-[#ea580c] to-[#e11d48]',
-                    accentColor: 'text-amber-600 dark:text-amber-400',
-                  },
-                ];
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {batches.map((batch) => (
+                <div
+                  key={batch._id}
+                  className="group rounded-3xl overflow-hidden flex flex-col justify-between p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-lg transition-all duration-300"
+                >
+                  <div>
+                    {/* Header: Grade & Active Status */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold border border-slate-200/60 dark:border-slate-700/60">
+                        {batch.courseId?.gradeLevel || 'একাডেমিক'}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/60 dark:border-emerald-800/60">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>সক্রিয় ব্যাচ</span>
+                      </span>
+                    </div>
 
-                const currentTheme = cardThemes[idx % cardThemes.length];
+                    {/* Batch Name */}
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-1">
+                      {batch.name}
+                    </h3>
 
-                return (
-                  <div
-                    key={batch._id}
-                    className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300 shadow-md hover:shadow-xl"
-                  >
-                    <div>
-                      {/* Top Thumbnail Banner with Curved Mask */}
-                      <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
-                        <div className={`relative w-full h-full bg-gradient-to-br ${currentTheme.gradient} p-5 sm:p-6 flex flex-col justify-center`}>
-                          
-                          {/* Top Badges Overlay */}
-                          <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
-                            {/* Grade Level Tag */}
-                            <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
-                              <Sparkles className="w-3 h-3 text-amber-300" />
-                              <span>{batch.courseId?.gradeLevel || 'একাডেমিক'}</span>
-                            </span>
+                    {/* Course Title */}
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-1 mb-4">
+                      {batch.courseId?.title}
+                    </p>
 
-                            {/* Cute Live Indicator */}
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
-                              <span className="relative flex h-2 w-2">
-                                <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
-                                <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
-                              </span>
-                              <span>এনরোল্ড ব্যাচ</span>
-                            </span>
-                          </div>
-
-                          <div className="relative z-10 pt-4">
-                            <span className="text-[11px] font-black uppercase text-amber-300 tracking-wider block mb-0.5">
-                              {batch.courseId?.subject || 'একাডেমিক কোর্স'}
-                            </span>
-                            <h3 className="text-lg sm:text-xl font-black text-white tracking-tight line-clamp-1 drop-shadow-md">
-                              {batch.name}
-                            </h3>
-                            <p className="text-xs font-semibold text-blue-100 line-clamp-1 mt-0.5 drop-shadow-sm">
-                              {batch.courseId?.title}
-                            </p>
-                          </div>
-
-                          {/* Gloss Sheen Shine Across Thumbnail */}
-                          <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
-                        </div>
+                    {/* Weekly Schedule info */}
+                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 mb-4">
+                      <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
+                        <Clock className="w-4 h-4" />
                       </div>
-
-                      {/* Card Content Body */}
-                      <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
-                        {/* Batch Name */}
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
-                          {batch.name}
-                        </h3>
-
-                        {/* Course Title */}
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 font-semibold leading-relaxed mt-1">
-                          {batch.courseId?.title}
-                        </p>
-
-                        {/* Weekly Schedule Badge */}
-                        <div className="mt-3 p-2.5 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 flex items-center gap-2.5">
-                          <div className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shrink-0">
-                            <Clock className="w-3.5 h-3.5" />
-                          </div>
-                          <div className="min-w-0">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">
-                              সাপ্তাহিক শিডিউল
-                            </span>
-                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate">
-                              {batch.scheduleText || 'সাপ্তাহিক নিয়মিত রুটিন অনুযায়ী'}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Cute Feature Micro-Badges matching Home Page */}
-                        <div className="mt-3.5 pt-3.5 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                              <PlayCircle className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="line-clamp-1">অধ্যায়ভিত্তিক রেকর্ড ক্লাস ও লাইভ রুটিন</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                              <FileText className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="line-clamp-1">লেকচার শিট, হ্যান্ডনোট ও প্রশ্নব্যাংক</span>
-                          </div>
-                        </div>
+                      <div className="min-w-0">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                          সাপ্তাহিক রুটিন
+                        </span>
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate mt-0.5">
+                          {batch.scheduleText || 'সাপ্তাহিক নিয়মিত ক্লাস শিডিউল'}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Cute Card Bottom: Classroom & Study Material CTA */}
-                    <div className="p-3 sm:p-3.5 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-2 shadow-inner">
-                      <Link
-                        href={`/classroom/${batch._id}`}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-black border border-emerald-200/80 dark:border-emerald-800/60 transition-all shrink-0 hover:scale-102"
-                        title="ব্যাচ ক্লাসরুম, ডিসকাশন ও এনাউন্সমেন্ট"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                        <span>ক্লাসরুম</span>
-                      </Link>
-
-                      <Link
-                        href={`/learn/${batch._id}`}
-                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all shrink-0 hover:scale-102"
-                      >
-                        <BookOpen className="w-3.5 h-3.5 text-blue-200" />
-                        <span>স্টাডি ম্যাটেরিয়াল</span>
-                        <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                      </Link>
+                    {/* Micro Features */}
+                    <div className="space-y-2 text-xs font-medium text-slate-600 dark:text-slate-400 mb-4 pb-2">
+                      <div className="flex items-center gap-2">
+                        <PlayCircle className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
+                        <span className="truncate">রেকর্ডেড ক্লাস ও লেকচার আর্কাইভ</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
+                        <span className="truncate">অধ্যায়ভিত্তিক শিট ও স্টাডি রিসোর্স</span>
+                      </div>
                     </div>
                   </div>
-                );
-              })}
+
+                  {/* Actions: Classroom & Study Material */}
+                  <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2.5">
+                    <Link
+                      href={`/classroom/${batch._id}`}
+                      className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition-colors"
+                      title="ব্যাচ ক্লাসরুম"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                      <span>ক্লাসরুম</span>
+                    </Link>
+
+                    <Link
+                      href={`/learn/${batch._id}`}
+                      className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors shadow-xs"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>স্টাডি ম্যাটেরিয়াল</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
