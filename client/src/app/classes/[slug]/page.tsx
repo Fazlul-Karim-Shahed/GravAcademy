@@ -169,37 +169,14 @@ export default function DedicatedClassPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          {/* Breadcrumb & Switcher */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <Link href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1">
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>সকল কোর্স</span>
-              </Link>
-              <ChevronRight className="w-3 h-3 text-slate-400" />
-              <span className="text-slate-900 dark:text-white font-bold">{className}</span>
-            </div>
-
-            {/* Quick Switch Classes Pill Bar */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-              {allClasses.map((c) => {
-                const s = getClassSlug(c);
-                const isActive = s.toLowerCase() === slugParam.toLowerCase() || c.name.toLowerCase() === className.toLowerCase();
-                return (
-                  <Link
-                    key={c._id}
-                    href={`/classes/${s}`}
-                    className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 border ${
-                      isActive
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                        : 'bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-blue-400'
-                    }`}
-                  >
-                    {c.name}
-                  </Link>
-                );
-              })}
-            </div>
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 mb-6">
+            <Link href="/courses" className="hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1">
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>সকল কোর্স</span>
+            </Link>
+            <ChevronRight className="w-3 h-3 text-slate-400" />
+            <span className="text-slate-900 dark:text-white font-bold">{className}</span>
           </div>
 
           {/* Hero Content */}
