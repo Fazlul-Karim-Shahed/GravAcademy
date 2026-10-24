@@ -22,6 +22,7 @@ import {
   Settings,
   UserPlus,
   Briefcase,
+  DollarSign,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -275,6 +276,30 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
                   ইউজার ম্যানেজমেন্ট
+                </div>
+              </div>
+            </Link>
+
+            {/* Card 7: ফাইন্যান্স ম্যানেজমেন্ট (Finance Management) */}
+            <Link
+              href="/admin/finance"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <DollarSign className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  ৳০
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  ফাইন্যান্স ম্যানেজমেন্ট
                 </div>
               </div>
             </Link>
