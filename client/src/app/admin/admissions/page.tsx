@@ -512,9 +512,6 @@ export default function AdminAdmissionsPage() {
                     শিক্ষার্থীর ভর্তির তথ্য ফরম
                   </h2>
                 </div>
-                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50">
-                  ডিফল্ট পাসওয়ার্ড = ইউজার আইডি
-                </span>
               </div>
 
               {errorMsg && (
