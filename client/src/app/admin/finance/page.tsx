@@ -22,6 +22,7 @@ import {
   ExternalLink,
   ChevronRight,
   Filter,
+  Upload,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
@@ -73,9 +74,46 @@ export default function AdminFinancePage() {
   const [collectTrxId, setCollectTrxId] = useState('');
   const [collectSender, setCollectSender] = useState('');
   const [collectDocUrl, setCollectDocUrl] = useState('');
+  const [uploadingCollectDoc, setUploadingCollectDoc] = useState(false);
+  const [collectDocSuccess, setCollectDocSuccess] = useState('');
   const [collectNotes, setCollectNotes] = useState('');
   const [collectSubmitting, setCollectSubmitting] = useState(false);
   const [collectError, setCollectError] = useState('');
+
+  const handleCollectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+      setCollectError('ফাইলের সাইজ সর্বোচ্চ ২০ মেগাবাইট হতে পারবে।');
+      return;
+    }
+
+    setUploadingCollectDoc(true);
+    setCollectDocSuccess('');
+    setCollectError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('document', file);
+
+      const res = await api.post('/finance/upload-document', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      if (res.data?.success && res.data.data?.fileUrl) {
+        setCollectDocUrl(res.data.data.fileUrl);
+        setCollectDocSuccess(`✅ "${file.name}" সফলভাবে ড্রাইভে আপলোড হয়েছে!`);
+      } else {
+        setCollectError(res.data?.message || 'ডকুমেন্ট আপলোড করা যায়নি।');
+      }
+    } catch (err: any) {
+      console.error('Document upload error:', err);
+      setCollectError(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে।');
+    } finally {
+      setUploadingCollectDoc(false);
+    }
+  };
 
   useEffect(() => {
     fetchPayments();
@@ -628,18 +666,59 @@ export default function AdminFinancePage() {
                 </div>
               </div>
 
-              {/* Document URL */}
+              {/* Document / Slip URL & Upload */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  ডকুমেন্ট বা স্লিপ ফাইল লিংক (ঐচ্ছিক)
-                </label>
-                <input
-                  type="url"
-                  value={collectDocUrl}
-                  onChange={(e) => setCollectDocUrl(e.target.value)}
-                  placeholder="https://drive.google.com/..."
-                  className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    ডকুমেন্ট বা স্লিপ ফাইল (ঐচ্ছিক)
+                  </label>
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    সরাসরি ফাইল আপলোড অথবা লিংক
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                  <input
+                    type="url"
+                    value={collectDocUrl}
+                    onChange={(e) => setCollectDocUrl(e.target.value)}
+                    placeholder="https://drive.google.com/..."
+                    className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                  />
+
+                  <label
+                    className={`shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                      uploadingCollectDoc
+                        ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                        : 'bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                    }`}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*,.pdf,.doc,.docx"
+                      onChange={handleCollectFileUpload}
+                      disabled={uploadingCollectDoc}
+                      className="hidden"
+                    />
+                    {uploadingCollectDoc ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                        আপলোড হচ্ছে...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        ডিভাইস থেকে ফাইল
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                {collectDocSuccess && (
+                  <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1.5">
+                    {collectDocSuccess}
+                  </p>
+                )}
               </div>
 
               {/* Notes */}

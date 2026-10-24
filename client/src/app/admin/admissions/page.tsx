@@ -25,6 +25,7 @@ import {
   Printer,
   FileText,
   DollarSign,
+  Upload,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
@@ -131,6 +132,8 @@ export default function AdminAdmissionsPage() {
   const [transactionId, setTransactionId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
   const [documentUrl, setDocumentUrl] = useState('');
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [docUploadSuccess, setDocUploadSuccess] = useState('');
   const [notes, setNotes] = useState('');
 
   // Submitting state & Response Modal
@@ -140,6 +143,42 @@ export default function AdminAdmissionsPage() {
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
   const [copiedId, setCopiedId] = useState(false);
   const [copiedPass, setCopiedPass] = useState(false);
+
+  // Handle direct file upload for payment document
+  const handleDocumentFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+      setErrorMsg('ফাইলের সাইজ সর্বোচ্চ ২০ মেগাবাইট হতে পারবে।');
+      return;
+    }
+
+    setUploadingDoc(true);
+    setDocUploadSuccess('');
+    setErrorMsg('');
+
+    try {
+      const formData = new FormData();
+      formData.append('document', file);
+
+      const res = await api.post('/finance/upload-document', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      if (res.data?.success && res.data.data?.fileUrl) {
+        setDocumentUrl(res.data.data.fileUrl);
+        setDocUploadSuccess(`✅ "${file.name}" সফলভাবে ড্রাইভে আপলোড হয়েছে!`);
+      } else {
+        setErrorMsg(res.data?.message || 'ডকুমেন্ট আপলোড করা যায়নি।');
+      }
+    } catch (err: any) {
+      console.error('Document upload error:', err);
+      setErrorMsg(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে। লিংক ম্যানুয়ালি দিন।');
+    } finally {
+      setUploadingDoc(false);
+    }
+  };
 
   // Recent Admissions List
   const [recentAdmissions, setRecentAdmissions] = useState<EnrollmentRecord[]>([]);
@@ -661,18 +700,60 @@ export default function AdminAdmissionsPage() {
                       />
                     </div>
 
-                    {/* Document / Slip URL */}
+                    {/* Document / Slip Upload & URL */}
                     <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        পেমেন্ট প্রমাণপত্র / স্লিপ ডকুমেন্ট লিংক (ঐচ্ছিক)
-                      </label>
-                      <input
-                        type="url"
-                        value={documentUrl}
-                        onChange={(e) => setDocumentUrl(e.target.value)}
-                        placeholder="যেমন: গুগল ড্রাইভ / ইমেজ লিংক বা স্লিপ ডকুমেন্টের URL"
-                        className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                      />
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                          পেমেন্ট প্রমাণপত্র / স্লিপ ডকুমেন্ট (ঐচ্ছিক)
+                        </label>
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          সরাসরি ফাইল আপলোড অথবা ড্রাইভ লিংক
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                        <input
+                          type="url"
+                          value={documentUrl}
+                          onChange={(e) => setDocumentUrl(e.target.value)}
+                          placeholder="গুগল ড্রাইভ লিংক বা ফাইলের URL..."
+                          className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                        />
+
+                        {/* File Upload Button */}
+                        <label
+                          className={`relative shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                            uploadingDoc
+                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                              : 'bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                          }`}
+                        >
+                          <input
+                            type="file"
+                            accept="image/*,.pdf,.doc,.docx"
+                            onChange={handleDocumentFileUpload}
+                            disabled={uploadingDoc}
+                            className="hidden"
+                          />
+                          {uploadingDoc ? (
+                            <>
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                              আপলোড হচ্ছে...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5" />
+                              ডিভাইস থেকে ফাইল দিন
+                            </>
+                          )}
+                        </label>
+                      </div>
+
+                      {docUploadSuccess && (
+                        <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1.5">
+                          {docUploadSuccess}
+                        </p>
+                      )}
                     </div>
 
                     {/* Notes */}

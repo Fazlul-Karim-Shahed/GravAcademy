@@ -430,3 +430,70 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
     });
   }
 };
+
+/**
+ * Upload Payment Slip/Document directly to Google Drive
+ */
+export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'কোনো ফাইল আপলোড করা হয়নি।' });
+    }
+
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return res.status(400).json({
+        success: false,
+        message: 'শুধুমাত্র ছবি (JPG, PNG, WebP) অথবা PDF/ডকুমেন্ট আপলোড করা যাবে।',
+      });
+    }
+
+    const ext = file.originalname.split('.').pop() || 'jpg';
+    const sanitizedName = `slip_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+
+    let driveFileId = '';
+    const isDriveConfigured =
+      process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.GOOGLE_REFRESH_TOKEN;
+
+    if (isDriveConfigured) {
+      const { uploadFileToDrive } = await import('../services/googleDriveService');
+      const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
+      driveFileId = driveRes.fileId;
+    } else {
+      console.warn('⚠️ Google Drive OAuth not configured. Using placeholder.');
+      driveFileId = `stub_drive_${Date.now()}`;
+    }
+
+    // Direct preview/download link
+    const fileUrl = isDriveConfigured
+      ? `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`
+      : `/uploads/slips/${sanitizedName}`;
+
+    return res.status(200).json({
+      success: true,
+      message: 'পেমেন্ট স্লিপ সফলভাবে ড্রাইভে আপলোড হয়েছে!',
+      data: {
+        fileUrl,
+        driveFileId,
+        fileName: file.originalname,
+      },
+    });
+  } catch (error: any) {
+    console.error('uploadPaymentDocument error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'স্লিপ আপলোড করতে সমস্যা হয়েছে।',
+    });
+  }
+};

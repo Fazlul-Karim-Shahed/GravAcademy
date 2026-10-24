@@ -161,6 +161,12 @@ router.get(
   authenticate,
   financeCtrl.getPaymentReceipt
 );
+router.post(
+  '/finance/upload-document',
+  authenticate,
+  upload.single('document'),
+  financeCtrl.uploadPaymentDocument
+);
 
 // --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---
 router.get('/classrooms/:batchId', authenticate, classroomCtrl.getClassroomOverview);
