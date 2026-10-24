@@ -72,6 +72,20 @@ interface AdmissionResult {
   payment?: PaymentReceiptData;
 }
 
+interface StudentOption {
+  _id: string;
+  name: string;
+  userId: string;
+  phone?: string;
+  email?: string;
+  studentDetails?: {
+    schoolOrCollege?: string;
+    gradeLevel?: string;
+    guardianName?: string;
+    guardianPhone?: string;
+  };
+}
+
 interface EnrollmentRecord {
   _id: string;
   studentId: {
@@ -107,6 +121,12 @@ interface EnrollmentRecord {
 
 export default function AdminAdmissionsPage() {
   const { user } = useAuth();
+
+  // Admission Mode: 'new' (default) vs 'existing'
+  const [admissionMode, setAdmissionMode] = useState<'new' | 'existing'>('new');
+  const [existingStudents, setExistingStudents] = useState<StudentOption[]>([]);
+  const [existingStudentSearch, setExistingStudentSearch] = useState('');
+  const [selectedExistingStudent, setSelectedExistingStudent] = useState<StudentOption | null>(null);
 
   // Data sources
   const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
@@ -293,10 +313,11 @@ export default function AdminAdmissionsPage() {
   const fetchInitialData = async () => {
     setLoadingData(true);
     try {
-      const [coursesRes, batchesRes, classesList] = await Promise.all([
+      const [coursesRes, batchesRes, classesList, studentsRes] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
         getSharedAcademicClasses(),
+        api.get('/users?role=student&limit=300'),
       ]);
 
       const cList = coursesRes.data?.data || [];
@@ -307,11 +328,39 @@ export default function AdminAdmissionsPage() {
       setFilteredCourses(cList);
       setAllBatches(bList);
       setFilteredBatches(bList);
+      if (studentsRes.data?.success) {
+        setExistingStudents(studentsRes.data.data || []);
+      }
     } catch (e: any) {
-      console.error('Failed to load classes, courses or batches:', e);
+      console.error('Failed to load classes, courses, batches or students:', e);
     } finally {
       setLoadingData(false);
     }
+  };
+
+  const handleSelectExistingStudent = (st: StudentOption) => {
+    setSelectedExistingStudent(st);
+    setStudentName(st.name || '');
+    setStudentPhone(st.phone || '');
+    setStudentEmail(st.email || '');
+    if (st.studentDetails) {
+      setSchoolOrCollege(st.studentDetails.schoolOrCollege || '');
+      if (st.studentDetails.gradeLevel) {
+        setGradeLevel(st.studentDetails.gradeLevel);
+      }
+      setGuardianName(st.studentDetails.guardianName || '');
+      setGuardianPhone(st.studentDetails.guardianPhone || '');
+    }
+  };
+
+  const handleClearExistingStudent = () => {
+    setSelectedExistingStudent(null);
+    setStudentName('');
+    setStudentPhone('');
+    setStudentEmail('');
+    setSchoolOrCollege('');
+    setGuardianName('');
+    setGuardianPhone('');
   };
 
   const fetchRecentAdmissions = async (keyword = '') => {
@@ -334,6 +383,11 @@ export default function AdminAdmissionsPage() {
     e.preventDefault();
     setErrorMsg('');
 
+    if (admissionMode === 'existing' && !selectedExistingStudent) {
+      setErrorMsg('অনুগ্রহ করে তালিকা থেকে বিদ্যমান শিক্ষার্থী নির্বাচন করুন অথবা নতুন শিক্ষার্থী অপশনটি বেছে নিন।');
+      return;
+    }
+
     if (!studentName.trim()) {
       setErrorMsg('শিক্ষার্থীর নাম প্রদান করা আবশ্যক।');
       return;
@@ -349,7 +403,7 @@ export default function AdminAdmissionsPage() {
 
     setSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         name: studentName.trim(),
         phone: studentPhone.trim() || undefined,
         email: studentEmail.trim() || undefined,
@@ -367,11 +421,17 @@ export default function AdminAdmissionsPage() {
         notes: notes.trim() || undefined,
       };
 
+      if (admissionMode === 'existing' && selectedExistingStudent) {
+        payload.existingStudentId = selectedExistingStudent._id;
+      }
+
       const res = await api.post('/enrollments/admin-admit', payload);
 
       if (res.data.success) {
         setSuccessModalData(res.data);
         // Clear main fields
+        setSelectedExistingStudent(null);
+        setExistingStudentSearch('');
         setStudentName('');
         setStudentPhone('');
         setStudentEmail('');
@@ -466,6 +526,142 @@ export default function AdminAdmissionsPage() {
                 </div>
               )}
 
+              {/* Admission Mode Switcher: New vs Existing Student */}
+              <div className="mb-6 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl flex items-center gap-1.5 border border-slate-200/80 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAdmissionMode('new');
+                    handleClearExistingStudent();
+                  }}
+                  className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    admissionMode === 'new'
+                      ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="admissionMode"
+                    checked={admissionMode === 'new'}
+                    onChange={() => {}}
+                    className="w-4 h-4 text-blue-600 cursor-pointer pointer-events-none"
+                  />
+                  <span>নতুন শিক্ষার্থী (New Student)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setAdmissionMode('existing')}
+                  className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    admissionMode === 'existing'
+                      ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="admissionMode"
+                    checked={admissionMode === 'existing'}
+                    onChange={() => {}}
+                    className="w-4 h-4 text-blue-600 cursor-pointer pointer-events-none"
+                  />
+                  <span>ইতিমধ্যে একাউন্ট আছে (Existing Student)</span>
+                </button>
+              </div>
+
+              {/* Existing Student Search & Picker (Visible when admissionMode === 'existing') */}
+              {admissionMode === 'existing' && (
+                <div className="mb-6 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <Search className="w-3.5 h-3.5 text-blue-600" />
+                      শিক্ষার্থী খুঁজুন ও নির্বাচন করুন <span className="text-rose-500">*</span>
+                    </label>
+                    {selectedExistingStudent && (
+                      <button
+                        type="button"
+                        onClick={handleClearExistingStudent}
+                        className="text-[11px] text-rose-500 hover:underline font-semibold"
+                      >
+                        রিসেট / পরিবর্তন করুন
+                      </button>
+                    )}
+                  </div>
+
+                  {selectedExistingStudent ? (
+                    <div className="p-3 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <UserAvatar name={selectedExistingStudent.name} size="md" />
+                        <div>
+                          <div className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                            <span>{selectedExistingStudent.name}</span>
+                            <span className="text-[11px] px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono">
+                              #{selectedExistingStudent.userId}
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex flex-wrap gap-2">
+                            {selectedExistingStudent.phone && <span>📞 {selectedExistingStudent.phone}</span>}
+                            {selectedExistingStudent.email && <span>✉️ {selectedExistingStudent.email}</span>}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                        ✓ নির্বাচিত
+                      </span>
+                    </div>
+                  ) : (
+                    <div>
+                      <input
+                        type="text"
+                        value={existingStudentSearch}
+                        onChange={(e) => setExistingStudentSearch(e.target.value)}
+                        placeholder="নাম, আইডি (UserId), ফোন নম্বর বা ইমেইল দিয়ে খুঁজুন..."
+                        className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                      />
+                      <div className="max-h-40 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1 bg-white dark:bg-slate-900">
+                        {existingStudents
+                          .filter((s) => {
+                            if (!existingStudentSearch.trim()) return true;
+                            const q = existingStudentSearch.toLowerCase().trim();
+                            return (
+                              s.name?.toLowerCase().includes(q) ||
+                              s.userId?.toLowerCase().includes(q) ||
+                              (s.phone && s.phone.includes(q)) ||
+                              (s.email && s.email.toLowerCase().includes(q))
+                            );
+                          })
+                          .slice(0, 8)
+                          .map((s) => (
+                            <div
+                              key={s._id}
+                              onClick={() => handleSelectExistingStudent(s)}
+                              className="p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/50 cursor-pointer rounded-lg text-xs flex items-center justify-between transition-colors"
+                            >
+                              <div>
+                                <span className="font-bold text-slate-900 dark:text-white block">
+                                  {s.name}
+                                </span>
+                                <span className="text-[11px] text-slate-400">
+                                  {s.phone || s.email || 'যোগাযোগ নেই'}
+                                </span>
+                              </div>
+                              <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                #{s.userId}
+                              </span>
+                            </div>
+                          ))}
+                        {existingStudents.length === 0 && (
+                          <div className="text-xs text-slate-400 p-3 text-center">
+                            শিক্ষার্থীর তালিকা লোড হচ্ছে অথবা কোনো শিক্ষার্থী নেই
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <form onSubmit={handleSubmitAdmission} className="space-y-5">
                 
                 {/* 1. Student Personal Information */}
@@ -485,7 +681,12 @@ export default function AdminAdmissionsPage() {
                         onChange={(e) => setStudentName(e.target.value)}
                         placeholder="যেমন: সাকিব আল হাসান"
                         required
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        disabled={admissionMode === 'existing' && !!selectedExistingStudent}
+                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                          admissionMode === 'existing' && selectedExistingStudent
+                            ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                        }`}
                       />
                     </div>
 
@@ -501,7 +702,12 @@ export default function AdminAdmissionsPage() {
                           value={studentPhone}
                           onChange={(e) => setStudentPhone(e.target.value)}
                           placeholder="017XXXXXXXX"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                          disabled={admissionMode === 'existing' && !!selectedExistingStudent}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                            admissionMode === 'existing' && selectedExistingStudent
+                              ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                              : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                          }`}
                         />
                       </div>
                     </div>
@@ -518,7 +724,12 @@ export default function AdminAdmissionsPage() {
                           value={studentEmail}
                           onChange={(e) => setStudentEmail(e.target.value)}
                           placeholder="student@example.com"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                          disabled={admissionMode === 'existing' && !!selectedExistingStudent}
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                            admissionMode === 'existing' && selectedExistingStudent
+                              ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                              : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                          }`}
                         />
                       </div>
                     </div>
