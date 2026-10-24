@@ -9,6 +9,7 @@ export interface IEnrollment extends Document {
   enrolledAt: Date;
   completedAt?: Date;
   notes?: string;
+  batchFee?: number; // Snapshot of course price at the time of student enrollment
   paymentFee?: number;
   paymentStatus?: 'paid' | 'unpaid' | 'partial';
   enrolledBy?: mongoose.Types.ObjectId; // Admin who enrolled
@@ -50,6 +51,10 @@ const EnrollmentSchema = new Schema<IEnrollment>(
     },
     notes: {
       type: String,
+    },
+    batchFee: {
+      type: Number,
+      min: 0,
     },
     paymentFee: {
       type: Number,

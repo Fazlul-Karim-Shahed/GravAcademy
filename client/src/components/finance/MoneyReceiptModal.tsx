@@ -100,16 +100,15 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   // Calculate cumulative paid amount across all payments
   const totalPaidAcrossAll = paymentsList.reduce((acc, p) => acc + (p.amountPaid || 0), 0);
   
-  // Total current fee of the course: Always prioritize live course pricing (discountPrice ?? courseFee ?? regularPrice)
+  // Student's total fee: Prioritize the locked tuition fee snapshot (data.totalFee) set when the student was admitted
   const courseDoc = data.courseId;
-  const courseCurrentPrice =
-    courseDoc?.discountPrice ??
-    courseDoc?.courseFee ??
-    courseDoc?.regularPrice ??
-    data.totalFee ??
-    totalPaidAcrossAll;
-
-  const courseTotalFee = courseCurrentPrice;
+  const courseTotalFee =
+    (data.totalFee !== undefined && data.totalFee > 0)
+      ? data.totalFee
+      : courseDoc?.discountPrice ??
+        courseDoc?.courseFee ??
+        courseDoc?.regularPrice ??
+        totalPaidAcrossAll;
 
   // Final due amount is accurately: max(0, courseTotalFee - totalPaidAcrossAll)
   const finalDueAmount = Math.max(0, courseTotalFee - totalPaidAcrossAll);

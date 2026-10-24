@@ -120,19 +120,21 @@ export default function AdminFinancePage() {
       }
     }
 
-    // Final pass: Compute current course price and due = max(0, currentCoursePrice - totalAmountPaid)
+    // Final pass: Compute student's locked batchFee snapshot and due = max(0, studentBatchFee - totalAmountPaid)
     map.forEach((item) => {
       const courseDoc = item.courseId || item.latestPayment.courseId;
-      const currentCoursePrice =
-        courseDoc?.discountPrice ??
-        courseDoc?.courseFee ??
-        courseDoc?.regularPrice ??
-        item.latestPayment.totalFee ??
-        0;
+      // Prioritize the locked student tuition fee (batchFee snapshot) returned in latestPayment.totalFee
+      const studentBatchFee =
+        (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0)
+          ? item.latestPayment.totalFee
+          : courseDoc?.discountPrice ??
+            courseDoc?.courseFee ??
+            courseDoc?.regularPrice ??
+            0;
 
-      if (currentCoursePrice > 0) {
-        item.totalDue = Math.max(0, currentCoursePrice - item.totalAmountPaid);
-        item.latestPayment.totalFee = currentCoursePrice;
+      if (studentBatchFee > 0) {
+        item.totalDue = Math.max(0, studentBatchFee - item.totalAmountPaid);
+        item.latestPayment.totalFee = studentBatchFee;
         item.latestPayment.dueAmount = item.totalDue;
       } else if (item.latestPayment.dueAmount !== undefined) {
         item.totalDue = item.latestPayment.dueAmount;

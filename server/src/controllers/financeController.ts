@@ -88,9 +88,15 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
     if (batchId) {
       batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
       if (batch) {
-        const courseDoc = batch.courseId as any;
-        totalFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         enrollment = await Enrollment.findOne({ studentId, batchId });
+        const courseDoc = batch.courseId as any;
+        const currentCoursePrice = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+        // Batch fee snapshot: If enrollment exists and has batchFee, use it. Otherwise use currentCoursePrice and save it.
+        totalFee = enrollment?.batchFee || currentCoursePrice;
+        if (enrollment && !enrollment.batchFee) {
+          enrollment.batchFee = totalFee;
+          await enrollment.save();
+        }
       }
     }
 
@@ -244,7 +250,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
 
-    // Helper to calculate total due across all enrollments dynamically from Course and completed Payments
+    // Helper to calculate total due across all enrollments using their locked batchFee snapshot
     const calculateSystemTotalDue = async () => {
       const activeEnrollments = await Enrollment.find({
         status: { $in: ['enrolled', 'completed'] },
@@ -271,23 +277,32 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         const currentCoursePrice =
           courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
 
+        // Use the locked batchFee snapshot established when the student enrolled; fallback to current course price
+        const targetBatchFee = enr.batchFee !== undefined && enr.batchFee !== null
+          ? enr.batchFee
+          : currentCoursePrice;
+
         const key = `${enr.studentId.toString()}_${enr.batchId ? enr.batchId.toString() : 'no_batch'}`;
         const actualPaid = studentBatchPaidMap.has(key)
           ? studentBatchPaidMap.get(key)!
           : (enr.paymentFee || 0);
 
-        if (currentCoursePrice > actualPaid) {
-          systemDue += currentCoursePrice - actualPaid;
+        if (targetBatchFee > actualPaid) {
+          systemDue += targetBatchFee - actualPaid;
         }
       }
       return systemDue;
     };
 
-    // Helper to enrich payment items with current dynamic Course pricing and dynamic due
+    // Helper to enrich payment items with student's locked batchFee snapshot and accurate due
     const enrichPaymentsWithDynamicPricing = async (paymentDocs: any[]) => {
-      const allCompletedPayments = await Payment.find({ status: 'completed' })
-        .select('studentId batchId amountPaid')
-        .lean();
+      const [allCompletedPayments, activeEnrollments] = await Promise.all([
+        Payment.find({ status: 'completed' }).select('studentId batchId amountPaid').lean(),
+        Enrollment.find({ status: { $in: ['enrolled', 'completed'] } })
+          .populate('courseId', 'courseFee regularPrice discountPrice')
+          .select('studentId batchId batchFee courseId')
+          .lean(),
+      ]);
 
       const studentBatchPaidMap = new Map<string, number>();
       for (const p of allCompletedPayments) {
@@ -296,23 +311,39 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         studentBatchPaidMap.set(key, (studentBatchPaidMap.get(key) || 0) + (p.amountPaid || 0));
       }
 
-      return paymentDocs.map((p) => {
-        const courseDoc = p.courseId as any;
-        const currentCoursePrice =
-          courseDoc && (courseDoc.discountPrice !== undefined || courseDoc.courseFee !== undefined || courseDoc.regularPrice !== undefined)
-            ? (courseDoc.discountPrice ?? courseDoc.courseFee ?? courseDoc.regularPrice ?? 0)
-            : (p.totalFee || 0);
+      const enrollmentMap = new Map<string, any>();
+      for (const enr of activeEnrollments) {
+        if (!enr.studentId) continue;
+        const key = `${enr.studentId.toString()}_${enr.batchId ? enr.batchId.toString() : 'no_batch'}`;
+        enrollmentMap.set(key, enr);
+      }
 
+      return paymentDocs.map((p) => {
         const studentIdStr = p.studentId?._id?.toString() || p.studentId?.toString() || '';
         const batchIdStr = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
         const key = `${studentIdStr}_${batchIdStr}`;
 
+        const enr = enrollmentMap.get(key);
+        const courseDoc = p.courseId as any;
+        const liveCoursePrice =
+          courseDoc && (courseDoc.discountPrice !== undefined || courseDoc.courseFee !== undefined || courseDoc.regularPrice !== undefined)
+            ? (courseDoc.discountPrice ?? courseDoc.courseFee ?? courseDoc.regularPrice ?? 0)
+            : (p.totalFee || 0);
+
+        // Locked student tuition fee: from enrollment.batchFee, or p.totalFee, or liveCoursePrice
+        const effectiveBatchFee =
+          enr?.batchFee !== undefined && enr?.batchFee !== null
+            ? enr.batchFee
+            : p.totalFee !== undefined && p.totalFee > 0
+            ? p.totalFee
+            : liveCoursePrice;
+
         const totalPaidForThisBatch = studentBatchPaidMap.get(key) || (p.amountPaid || 0);
-        const dynamicDue = Math.max(0, currentCoursePrice - totalPaidForThisBatch);
+        const dynamicDue = Math.max(0, effectiveBatchFee - totalPaidForThisBatch);
 
         return {
           ...p,
-          totalFee: currentCoursePrice,
+          totalFee: effectiveBatchFee,
           dueAmount: dynamicDue,
         };
       });

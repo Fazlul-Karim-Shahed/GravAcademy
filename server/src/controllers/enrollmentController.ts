@@ -57,7 +57,7 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
       });
     }
 
-    const batch = await Batch.findById(batchId);
+    const batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
     if (!batch) {
       return res.status(404).json({ success: false, message: 'ব্যাচটি পাওয়া যায়নি' });
     }
@@ -66,6 +66,10 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
     if (batch.status === 'archived') {
       return res.status(400).json({ success: false, message: 'এই ব্যাচে নতুন ভর্তি বন্ধ রয়েছে' });
     }
+
+    const courseDoc = batch.courseId as any;
+    const currentPriceAtEnrollment =
+      courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
 
     // Check if already enrolled
     const existingEnrollment = await Enrollment.findOne({
@@ -84,6 +88,9 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
       // If was cancelled or pending, reactivate to enrolled
       existingEnrollment.status = 'enrolled';
       existingEnrollment.enrolledAt = new Date();
+      if (!existingEnrollment.batchFee) {
+        existingEnrollment.batchFee = currentPriceAtEnrollment;
+      }
       await existingEnrollment.save();
 
       return res.status(200).json({
@@ -107,11 +114,12 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
       }
     }
 
-    // Create Enrollment
+    // Create Enrollment with batchFee snapshot
     const newEnrollment = await Enrollment.create({
       studentId,
       batchId,
-      courseId: batch.courseId,
+      courseId: batch.courseId._id || batch.courseId,
+      batchFee: currentPriceAtEnrollment,
       status: 'enrolled',
       enrolledAt: new Date(),
     });
@@ -336,6 +344,11 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       existingEnrollment.notes = notes || existingEnrollment.notes;
       existingEnrollment.enrolledBy = adminUser._id;
       existingEnrollment.enrolledAt = new Date();
+      if (!existingEnrollment.batchFee) {
+        const courseDoc = batch.courseId as any;
+        existingEnrollment.batchFee =
+          courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+      }
       await existingEnrollment.save();
 
       let reactivatedPayment: any = null;
@@ -343,7 +356,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         const receiptNo = await generateReceiptNumber();
         const numericFee = Number(paymentFee) || 0;
         const courseDoc = batch.courseId as any;
-        const courseTotalFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+        const courseTotalFee = existingEnrollment.batchFee || (courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0);
         const dueAmount = Math.max(0, courseTotalFee - numericFee);
 
         const newPay = await Payment.create({
@@ -397,11 +410,16 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       });
     }
 
+    const courseDoc = batch.courseId as any;
+    const currentPriceAtEnrollment =
+      courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+
     // Create new Enrollment record
     const enrollment = await Enrollment.create({
       studentId: studentDoc._id,
       batchId: batch._id,
       courseId: batch.courseId._id || batch.courseId,
+      batchFee: currentPriceAtEnrollment,
       status: 'enrolled',
       enrolledAt: new Date(),
       paymentFee: Number(paymentFee) || 0,
@@ -413,8 +431,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
     // Create Payment record & Receipt if paymentFee > 0 or status is set
     let createdPayment: any = null;
     const numericFee = Number(paymentFee) || 0;
-    const courseDoc = batch.courseId as any;
-    const courseTotalFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+    const courseTotalFee = currentPriceAtEnrollment;
     const dueAmount = Math.max(0, courseTotalFee - numericFee);
 
     try {
