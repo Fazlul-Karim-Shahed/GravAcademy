@@ -196,7 +196,7 @@ export default function AdminDashboardPage() {
             </div>
           </Link>
 
-          {/* Card 4: Other Settings (অন্যান্য সেটিংস) */}
+          {/* Card 4: Other Settings */}
           <Link
             href="/admin/settings"
             className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300"
@@ -215,11 +215,11 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  কন্ট্রোল সেন্টার
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  4
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                  <span>ইউজার, হোমপেজ ও অন্যান্য কনফিগ</span>
+                  <span>কন্ট্রোল ও সেটিংস মডিউল</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
