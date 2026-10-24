@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import {
@@ -25,6 +26,7 @@ import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib
 import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
+  const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -379,6 +381,47 @@ export const Navbar: React.FC = () => {
               </Link>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি অপশন: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) */}
+      <div className="md:hidden border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-1.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-around gap-2">
+          <Link
+            href="/courses"
+            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
+              pathname?.startsWith('/courses') || pathname?.startsWith('/classes')
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5 shrink-0" />
+            <span>সকল কোর্স</span>
+          </Link>
+
+          <Link
+            href="/free-classes"
+            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
+              pathname?.startsWith('/free-classes')
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${pathname?.startsWith('/free-classes') ? 'bg-white' : 'bg-emerald-500 animate-pulse'}`} />
+            <span>ফ্রি ক্লাস</span>
+          </Link>
+
+          <Link
+            href="/jobs"
+            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
+              pathname?.startsWith('/jobs')
+                ? 'bg-indigo-600 text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Briefcase className="w-3.5 h-3.5 shrink-0" />
+            <span>জব সার্কুলার</span>
+          </Link>
         </div>
       </div>
     </header>
