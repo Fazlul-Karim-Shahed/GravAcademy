@@ -625,63 +625,48 @@ export default function AdminAdmissionsPage() {
                   recentAdmissions.map((adm) => (
                     <div
                       key={adm._id}
-                      className="group p-3 rounded-xl bg-slate-50/80 hover:bg-white dark:bg-slate-800/40 dark:hover:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-600/50 hover:shadow-sm transition-all duration-200 flex items-start justify-between gap-3"
+                      className="p-3 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3"
                     >
-                      {/* Left: Avatar + Details */}
-                      <div className="flex items-start gap-3 min-w-0">
-                        <UserAvatar
-                          name={adm.studentId?.name || 'শিক্ষার্থী'}
-                          avatarUrl={adm.studentId?.avatarUrl}
-                          role="student"
-                          size="md"
-                        />
-                        <div className="min-w-0">
-                          <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {/* Left: Info */}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                             {adm.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
                           </h4>
-                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                            <span className="font-mono font-bold text-[10px] px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
-                              আইডি: {adm.studentId?.userId || 'N/A'}
+                          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                            #{adm.studentId?.userId || 'N/A'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
+                          {adm.studentId?.phone && (
+                            <span>{adm.studentId.phone}</span>
+                          )}
+                          {adm.studentId?.phone && adm.batchId?.name && (
+                            <span>•</span>
+                          )}
+                          {adm.batchId?.name && (
+                            <span className="text-slate-600 dark:text-slate-300 font-medium">
+                              {adm.batchId.name}
                             </span>
-                            {adm.studentId?.phone && (
-                              <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-slate-400" />
-                                {adm.studentId.phone}
-                              </span>
-                            )}
-                          </div>
-                          <div className="mt-1.5 flex items-center gap-1.5 text-xs">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold text-[11px] border border-indigo-200/60 dark:border-indigo-800/60 truncate">
-                              <Layers className="w-3 h-3 shrink-0" />
-                              {adm.batchId?.name || 'ব্যাচ'}
-                            </span>
-                          </div>
+                          )}
                         </div>
                       </div>
 
-                      {/* Right: Payment Fee & Status Badge */}
-                      <div className="text-right shrink-0 flex flex-col items-end justify-between self-stretch">
-                        <div className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
+                      {/* Right: Fee & Status */}
+                      <div className="text-right shrink-0">
+                        <div className="text-sm font-bold text-slate-900 dark:text-white">
                           ৳{adm.paymentFee?.toLocaleString('bn-BD') || 0}
                         </div>
                         <span
-                          className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          className={`text-[11px] font-medium inline-block mt-0.5 ${
                             adm.paymentStatus === 'paid'
-                              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                              ? 'text-emerald-600 dark:text-emerald-400'
                               : adm.paymentStatus === 'partial'
-                              ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
-                              : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800'
+                              ? 'text-amber-600 dark:text-amber-400'
+                              : 'text-rose-600 dark:text-rose-400'
                           }`}
                         >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              adm.paymentStatus === 'paid'
-                                ? 'bg-emerald-500'
-                                : adm.paymentStatus === 'partial'
-                                ? 'bg-amber-500'
-                                : 'bg-rose-500'
-                            }`}
-                          />
                           {adm.paymentStatus === 'paid'
                             ? 'পরিশোধিত'
                             : adm.paymentStatus === 'partial'
