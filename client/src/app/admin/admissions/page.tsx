@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 
 interface BatchItem {
   _id: string;
@@ -107,7 +108,9 @@ export default function AdminAdmissionsPage() {
   const { user } = useAuth();
 
   // Data sources
+  const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
   const [courses, setCourses] = useState<CourseItem[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<CourseItem[]>([]);
   const [allBatches, setAllBatches] = useState<BatchItem[]>([]);
   const [filteredBatches, setFilteredBatches] = useState<BatchItem[]>([]);
   const [loadingData, setLoadingData] = useState(true);
@@ -148,26 +151,74 @@ export default function AdminAdmissionsPage() {
     fetchRecentAdmissions();
   }, []);
 
-  // Filter batches when course selection changes
+  // Filter courses & batches when gradeLevel (class) changes
   useEffect(() => {
-    if (!selectedCourseId) {
+    if (!gradeLevel) {
+      setFilteredCourses(courses);
       setFilteredBatches(allBatches);
       return;
     }
+
+    // Match courses belonging to the selected class
+    const matchedCourses = courses.filter((c) => {
+      if (!c.gradeLevel) return false;
+      return c.gradeLevel.trim().toLowerCase() === gradeLevel.trim().toLowerCase();
+    });
+    setFilteredCourses(matchedCourses);
+
+    // If currently selected course is not in the matched courses, reset course
+    if (selectedCourseId && !matchedCourses.some((c) => c._id === selectedCourseId)) {
+      setSelectedCourseId('');
+    }
+
+    // Match batches belonging to the filtered courses or matching gradeLevel
+    const matchedCourseIds = new Set(matchedCourses.map((c) => c._id));
+    const matchedBatches = allBatches.filter((b) => {
+      const cId = typeof b.courseId === 'string' ? b.courseId : b.courseId?._id;
+      const bGrade = typeof b.courseId === 'object' && b.courseId ? b.courseId.gradeLevel : '';
+      return (cId && matchedCourseIds.has(cId)) || (bGrade && bGrade.trim().toLowerCase() === gradeLevel.trim().toLowerCase());
+    });
+    setFilteredBatches(matchedBatches);
+
+    if (selectedBatchId && !matchedBatches.some((b) => b._id === selectedBatchId)) {
+      setSelectedBatchId('');
+    }
+  }, [gradeLevel, courses, allBatches]);
+
+  // Filter batches when specific course selection changes
+  useEffect(() => {
+    if (!selectedCourseId) {
+      // If course is deselected, fallback to batches filtered by gradeLevel
+      if (gradeLevel) {
+        const matchedCourses = courses.filter(
+          (c) => c.gradeLevel && c.gradeLevel.trim().toLowerCase() === gradeLevel.trim().toLowerCase()
+        );
+        const matchedCourseIds = new Set(matchedCourses.map((c) => c._id));
+        setFilteredBatches(
+          allBatches.filter((b) => {
+            const cId = typeof b.courseId === 'string' ? b.courseId : b.courseId?._id;
+            return cId && matchedCourseIds.has(cId);
+          })
+        );
+      } else {
+        setFilteredBatches(allBatches);
+      }
+      return;
+    }
+
     const matched = allBatches.filter((b) => {
       const cId = typeof b.courseId === 'string' ? b.courseId : b.courseId?._id;
       return cId === selectedCourseId;
     });
     setFilteredBatches(matched);
 
-    // If currently selected batch doesn't belong to this course, reset batch
     if (selectedBatchId) {
       const exists = matched.some((b) => b._id === selectedBatchId);
       if (!exists) {
         setSelectedBatchId('');
       }
     }
-  }, [selectedCourseId, allBatches]);
+  }, [selectedCourseId, gradeLevel, allBatches, courses]);
 
   // Auto-fill fee when batch changes
   const handleBatchChange = (batchId: string) => {
@@ -177,7 +228,6 @@ export default function AdminAdmissionsPage() {
       if (chosenBatch.fee !== undefined && chosenBatch.fee > 0) {
         setPaymentFee(chosenBatch.fee);
       } else {
-        // Fallback to course price if batch fee is 0
         const chosenCourse = courses.find((c) => {
           const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
           return c._id === cId;
@@ -189,10 +239,14 @@ export default function AdminAdmissionsPage() {
         }
       }
 
-      // Also auto-select course if not selected
+      // Also auto-select course and gradeLevel if not selected
       const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
       if (cId && cId !== selectedCourseId) {
         setSelectedCourseId(cId);
+      }
+      const cGrade = typeof chosenBatch.courseId === 'object' && chosenBatch.courseId ? chosenBatch.courseId.gradeLevel : '';
+      if (cGrade && !gradeLevel) {
+        setGradeLevel(cGrade);
       }
     }
   };
@@ -200,19 +254,22 @@ export default function AdminAdmissionsPage() {
   const fetchInitialData = async () => {
     setLoadingData(true);
     try {
-      const [coursesRes, batchesRes] = await Promise.all([
+      const [coursesRes, batchesRes, classesList] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
+        getSharedAcademicClasses(),
       ]);
 
-      const cList = coursesRes.data.data || [];
-      const bList = batchesRes.data.data || [];
+      const cList = coursesRes.data?.data || [];
+      const bList = batchesRes.data?.data || [];
 
+      setAcademicClasses(classesList || []);
       setCourses(cList);
+      setFilteredCourses(cList);
       setAllBatches(bList);
       setFilteredBatches(bList);
     } catch (e: any) {
-      console.error('Failed to load courses or batches:', e);
+      console.error('Failed to load classes, courses or batches:', e);
     } finally {
       setLoadingData(false);
     }
@@ -441,27 +498,48 @@ export default function AdminAdmissionsPage() {
                       />
                     </div>
 
-                    {/* Grade Level */}
+                    {/* Grade Level Dropdown (from created academic classes) */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        শ্রেণি / ক্লাস
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
+                        <span>শ্রেণি / ক্লাস <span className="text-blue-500">*</span></span>
+                        {gradeLevel && (
+                          <button
+                            type="button"
+                            onClick={() => setGradeLevel('')}
+                            className="text-[10px] text-slate-400 hover:text-rose-500 font-semibold"
+                          >
+                            রিসেট
+                          </button>
+                        )}
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={gradeLevel}
                         onChange={(e) => setGradeLevel(e.target.value)}
-                        placeholder="যেমন: Class 9, HSC 26"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                      />
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                      >
+                        <option value="">-- শ্রেণি / ক্লাস নির্বাচন করুন --</option>
+                        {academicClasses.map((cls) => (
+                          <option key={cls._id || cls.name} value={cls.name}>
+                            {cls.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
 
                 {/* 2. Course & Batch Selection */}
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-indigo-500" /> ২. কোর্স ও ব্যাচ নির্বাচন
-                  </h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-indigo-500" /> ২. কোর্স ও ব্যাচ নির্বাচন
+                    </h3>
+                    {gradeLevel && (
+                      <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/70 px-2.5 py-0.5 rounded-lg border border-blue-200/60 dark:border-blue-800/60">
+                        {gradeLevel}-এর কোর্স ও ব্যাচ
+                      </span>
+                    )}
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Course Filter Dropdown */}
                     <div>
@@ -473,8 +551,8 @@ export default function AdminAdmissionsPage() {
                         onChange={(e) => setSelectedCourseId(e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       >
-                        <option value="">-- সব কোর্স থেকে দেখুন --</option>
-                        {courses.map((c) => (
+                        <option value="">-- {gradeLevel ? `${gradeLevel}-এর সব কোর্স` : 'সব কোর্স থেকে দেখুন'} --</option>
+                        {filteredCourses.map((c) => (
                           <option key={c._id} value={c._id}>
                             {c.title} {c.gradeLevel ? `(${c.gradeLevel})` : ''}
                           </option>
