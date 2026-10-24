@@ -19,6 +19,7 @@ import {
   Compass,
   ChevronRight,
   User,
+  Briefcase,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
@@ -207,6 +208,11 @@ export const Navbar: React.FC = () => {
           <Link href="/free-classes" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>ফ্রি ক্লাস</span>
+          </Link>
+
+          <Link href="/jobs" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1.5 font-bold">
+            <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>জব সার্কুলার</span>
           </Link>
         </nav>
 

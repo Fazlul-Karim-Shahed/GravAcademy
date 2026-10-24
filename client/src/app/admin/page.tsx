@@ -21,6 +21,7 @@ import {
   FolderOpen,
   Settings,
   UserPlus,
+  Briefcase,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -32,6 +33,7 @@ export default function AdminDashboardPage() {
     usersCount: 0,
     liveClassesCount: 0,
     admissionsCount: 0,
+    jobsCount: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -42,12 +44,13 @@ export default function AdminDashboardPage() {
   const loadOverview = async () => {
     setLoading(true);
     try {
-      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes] = await Promise.all([
+      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes, jobsRes] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
         api.get('/users').catch(() => ({ data: { count: 1 } })),
         api.get('/live-classes').catch(() => ({ data: { count: 0 } })),
         api.get('/enrollments/admin-list?limit=1').catch(() => ({ data: { total: 0 } })),
+        api.get('/admin/jobs?limit=1').catch(() => ({ data: { total: 0 } })),
       ]);
 
       setStats({
@@ -56,6 +59,7 @@ export default function AdminDashboardPage() {
         usersCount: usersRes.data.count || usersRes.data.data?.length || 1,
         liveClassesCount: liveRes.data.count || liveRes.data.data?.length || 0,
         admissionsCount: enrollRes.data.total || 0,
+        jobsCount: jobsRes.data.total || 0,
       });
     } catch (e) {
       console.error(e);
@@ -87,6 +91,12 @@ export default function AdminDashboardPage() {
               <UserPlus className="w-3.5 h-3.5" /> ভর্তি করান (Admission)
             </Link>
             <Link
+              href="/admin/jobs"
+              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
+            >
+              <Briefcase className="w-3.5 h-3.5" /> জব সার্কুলার
+            </Link>
+            <Link
               href="/admin/classes"
               className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
             >
@@ -108,7 +118,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Sleek Minimalist Metric Cards with Watermark Background Icons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 sm:gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 sm:gap-6 mb-10">
           
           {/* Card 0: Manual Admission */}
           <Link
@@ -229,7 +239,37 @@ export default function AdminDashboardPage() {
             </div>
           </Link>
 
-          {/* Card 4: Other Settings */}
+          {/* Card 4: Job Circulars Management */}
+          <Link
+            href="/admin/jobs"
+            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300"
+          >
+            {/* Elegant Large Watermark Background Icon */}
+            <Briefcase className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  জব সার্কুলার
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  {stats.jobsCount}
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                  <span>জব পোস্ট ম্যানেজ করুন</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 5: Other Settings */}
           <Link
             href="/admin/settings"
             className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300"

@@ -16,6 +16,7 @@ import * as userAdminCtrl from '../controllers/userAdminController';
 import * as academicClassCtrl from '../controllers/academicClassController';
 import * as classroomCtrl from '../controllers/classroomController';
 import * as enrollmentCtrl from '../controllers/enrollmentController';
+import * as jobCtrl from '../controllers/jobPostController';
 
 const router = Router();
 const upload = multer({
@@ -294,6 +295,38 @@ router.get(
   authenticate,
   requireRole(ROLES.SUPERADMIN),
   userAdminCtrl.getAuditLogs
+);
+
+// --- JOB CIRCULAR ROUTES ---
+// Public routes
+router.get('/jobs', jobCtrl.getPublicJobPosts);
+router.get('/jobs/:slug', jobCtrl.getJobPostBySlug);
+
+// Admin routes
+router.get(
+  '/admin/jobs',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  jobCtrl.getAdminJobPosts
+);
+router.post(
+  '/admin/jobs',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  validateRequest(jobCtrl.jobPostSchema),
+  jobCtrl.createJobPost
+);
+router.put(
+  '/admin/jobs/:id',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  jobCtrl.updateJobPost
+);
+router.delete(
+  '/admin/jobs/:id',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  jobCtrl.deleteJobPost
 );
 
 export default router;
