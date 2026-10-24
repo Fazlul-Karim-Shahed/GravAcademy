@@ -222,25 +222,145 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
 
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
     return res.status(200).json({
       success: true,
       data: {
         user: {
-          id: req.user._id,
-          userId: req.user.userId,
-          name: req.user.name,
-          email: req.user.email,
-          phone: req.user.phone,
-          role: req.user.role,
-          avatarUrl: req.user.avatarUrl,
-          customPermissions: req.user.customPermissions,
-          guardianDetails: req.user.guardianDetails,
-          employeeDetails: req.user.employeeDetails,
-          createdAt: req.user.createdAt,
+          id: user._id,
+          userId: user.userId,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          avatarUrl: user.avatarUrl,
+          bio: user.bio,
+          teacherDetails: user.teacherDetails,
+          studentDetails: user.studentDetails,
+          customPermissions: user.customPermissions,
+          guardianDetails: user.guardianDetails,
+          employeeDetails: user.employeeDetails,
+          createdAt: user.createdAt,
         },
       },
     });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/**
+ * Update Current Authenticated User Profile
+ */
+export const updateProfile = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const {
+      name,
+      phone,
+      avatarUrl,
+      bio,
+      teacherDetails,
+      studentDetails,
+    } = req.body;
+
+    if (name && typeof name === 'string') {
+      user.name = name.trim();
+    }
+
+    if (phone !== undefined) {
+      user.phone = phone.trim();
+    }
+
+    if (avatarUrl !== undefined) {
+      user.avatarUrl = avatarUrl.trim();
+    }
+
+    if (bio !== undefined) {
+      user.bio = typeof bio === 'string' ? bio.slice(0, 1000) : bio;
+    }
+
+    // Role-specific profile payload
+    if (user.role === 'teacher' && teacherDetails && typeof teacherDetails === 'object') {
+      user.teacherDetails = {
+        institution: teacherDetails.institution?.trim() || '',
+        department: teacherDetails.department?.trim() || '',
+        experience: teacherDetails.experience?.trim() || '',
+        specialistSubjects: Array.isArray(teacherDetails.specialistSubjects)
+          ? teacherDetails.specialistSubjects.filter(Boolean)
+          : [],
+        badge: teacherDetails.badge?.trim() || 'মেন্টর',
+        cvUrl: teacherDetails.cvUrl?.trim() || '',
+        classesCount: teacherDetails.classesCount?.trim() || '',
+        studentsCount: teacherDetails.studentsCount?.trim() || '',
+      };
+    }
+
+    if (user.role === 'student' && studentDetails && typeof studentDetails === 'object') {
+      user.studentDetails = {
+        schoolOrCollege: studentDetails.schoolOrCollege?.trim() || '',
+        gradeLevel: studentDetails.gradeLevel?.trim() || '',
+        group: studentDetails.group?.trim() || '',
+        guardianName: studentDetails.guardianName?.trim() || '',
+        guardianPhone: studentDetails.guardianPhone?.trim() || '',
+      };
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'প্রোফাইল সফলভাবে আপডেট করা হয়েছে।',
+      data: {
+        user: {
+          id: user._id,
+          userId: user.userId,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          avatarUrl: user.avatarUrl,
+          bio: user.bio,
+          teacherDetails: user.teacherDetails,
+          studentDetails: user.studentDetails,
+          customPermissions: user.customPermissions,
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error('Update profile error:', error);
+    return res.status(500).json({ success: false, message: 'প্রোফাইল আপডেট করতে সমস্যা হয়েছে।' });
+  }
+};
+
+/**
+ * Public endpoint to fetch active teacher profiles (e.g. for homepage instructor roster)
+ */
+export const getPublicTeachers = async (_req: any, res: Response) => {
+  try {
+    const teachers = await User.find({ role: 'teacher', status: 'active' })
+      .select('name userId avatarUrl bio teacherDetails createdAt')
+      .sort({ createdAt: -1 })
+      .limit(12);
+
+    return res.status(200).json({
+      success: true,
+      data: teachers,
+    });
+  } catch (error: any) {
+    console.error('getPublicTeachers error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to fetch teachers.' });
   }
 };

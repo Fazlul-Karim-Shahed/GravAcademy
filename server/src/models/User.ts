@@ -13,6 +13,24 @@ export interface IUser extends Document {
   status: 'active' | 'pending_verification' | 'suspended' | 'deactivated';
   emailVerified: boolean;
   avatarUrl?: string;
+  bio?: string;
+  teacherDetails?: {
+    institution?: string;
+    department?: string;
+    experience?: string;
+    specialistSubjects?: string[];
+    badge?: string;
+    cvUrl?: string;
+    classesCount?: string;
+    studentsCount?: string;
+  };
+  studentDetails?: {
+    schoolOrCollege?: string;
+    gradeLevel?: string;
+    group?: string; // Science, Commerce, Arts
+    guardianName?: string;
+    guardianPhone?: string;
+  };
   guardianDetails?: {
     linkedStudents: mongoose.Types.ObjectId[];
   };
@@ -76,6 +94,27 @@ const UserSchema = new Schema<IUser>(
     },
     avatarUrl: {
       type: String,
+    },
+    bio: {
+      type: String,
+      maxlength: 1000,
+    },
+    teacherDetails: {
+      institution: { type: String, trim: true },
+      department: { type: String, trim: true },
+      experience: { type: String, trim: true },
+      specialistSubjects: [{ type: String, trim: true }],
+      badge: { type: String, trim: true },
+      cvUrl: { type: String, trim: true },
+      classesCount: { type: String, trim: true },
+      studentsCount: { type: String, trim: true },
+    },
+    studentDetails: {
+      schoolOrCollege: { type: String, trim: true },
+      gradeLevel: { type: String, trim: true },
+      group: { type: String, trim: true },
+      guardianName: { type: String, trim: true },
+      guardianPhone: { type: String, trim: true },
     },
     guardianDetails: {
       linkedStudents: [{ type: Schema.Types.ObjectId, ref: 'User' }],

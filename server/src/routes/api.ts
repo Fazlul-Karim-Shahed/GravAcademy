@@ -23,10 +23,12 @@ const upload = multer({
   limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB max
 });
 
-// --- AUTH ROUTES ---
+// --- AUTH & PROFILE ROUTES ---
 router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl.register);
 router.post('/auth/login', validateRequest(authCtrl.loginSchema), authCtrl.login);
 router.get('/auth/me', authenticate, authCtrl.getMe);
+router.put('/auth/profile', authenticate, authCtrl.updateProfile);
+router.get('/teachers', authCtrl.getPublicTeachers);
 
 // --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
 router.get('/classes', academicClassCtrl.getAcademicClasses);
