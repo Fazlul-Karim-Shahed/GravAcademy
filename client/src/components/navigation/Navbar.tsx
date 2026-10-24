@@ -33,6 +33,9 @@ export const Navbar: React.FC = () => {
   const [classes, setClasses] = React.useState<AcademicClassItem[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const dropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const desktopDropdownRef = React.useRef<HTMLDivElement | null>(null);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = React.useState(false);
+  const mobileDropdownRef = React.useRef<HTMLDivElement | null>(null);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const profileMenuRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -45,8 +48,15 @@ export const Navbar: React.FC = () => {
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (profileMenuRef.current && !profileMenuRef.current.contains(target)) {
         setIsProfileOpen(false);
+      }
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(target)) {
+        setIsMobileDropdownOpen(false);
+      }
+      if (desktopDropdownRef.current && !desktopDropdownRef.current.contains(target)) {
+        setIsDropdownOpen(false);
       }
     };
 
@@ -115,22 +125,41 @@ export const Navbar: React.FC = () => {
         <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-200">
           {/* Courses with Mega Hover Dropdown */}
           <div
+            ref={desktopDropdownRef}
             className="relative"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <Link
               href="/courses"
+              onClick={(e) => {
+                // Allows click to toggle dropdown or navigate
+                if (!isDropdownOpen) {
+                  // If not open, first click opens dropdown
+                  // e.preventDefault();
+                }
+              }}
               className={`inline-flex items-center gap-1.5 py-2 px-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
                 isDropdownOpen ? 'text-blue-600 dark:text-blue-400' : ''
               }`}
             >
               <span>সকল কোর্স</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  isDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
-                }`}
-              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsDropdownOpen((prev) => !prev);
+                }}
+                className="p-0.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                aria-label="কোর্স মেনু খুলুন"
+              >
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
+                  }`}
+                />
+              </button>
             </Link>
 
             {/* Hover Flyout Panel (নেভিগেশন কপাট) */}
@@ -385,42 +414,93 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি অপশন: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) */}
-      <div className="md:hidden border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-1.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-around gap-2">
-          <Link
-            href="/courses"
-            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
-              pathname?.startsWith('/courses') || pathname?.startsWith('/classes')
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5 shrink-0" />
-            <span>সকল কোর্স</span>
-          </Link>
+      <div className="md:hidden border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-md px-2 py-1">
+        <div className="max-w-md mx-auto flex items-center justify-center gap-1.5 relative">
+          
+          {/* সকল কোর্স Button with Dropdown Trigger */}
+          <div ref={mobileDropdownRef} className="relative flex-1">
+            <button
+              type="button"
+              onClick={() => setIsMobileDropdownOpen((prev) => !prev)}
+              className={`w-full py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all flex items-center justify-center gap-1 ${
+                pathname?.startsWith('/courses') || pathname?.startsWith('/classes') || isMobileDropdownOpen
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+              }`}
+            >
+              <span>সকল কোর্স</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isMobileDropdownOpen ? 'rotate-180' : 'opacity-70'
+                }`}
+              />
+            </button>
 
+            {/* Mobile Dropdown Menu */}
+            {isMobileDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 sm:right-auto sm:w-80 mt-1.5 z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+                  <span className="text-xs font-black text-slate-800 dark:text-white">
+                    শ্রেণি অনুযায়ী কারিকুলাম
+                  </span>
+                  <Link
+                    href="/courses"
+                    onClick={() => setIsMobileDropdownOpen(false)}
+                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                  >
+                    <span>সকল কোর্স পেজ</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-2 gap-1.5 max-h-60 overflow-y-auto pr-0.5">
+                  {classes.map((cls) => {
+                    const slug = getClassSlug(cls);
+                    return (
+                      <Link
+                        key={cls._id}
+                        href={`/classes/${slug}`}
+                        onClick={() => setIsMobileDropdownOpen(false)}
+                        className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200/60 dark:border-slate-700/60 transition-colors"
+                      >
+                        <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                          {cls.name}
+                        </span>
+                        <span className="block text-[9px] text-slate-400 truncate">
+                          {cls.subtitle || 'কোর্স ও ব্যাচ'}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ফ্রি ক্লাস Button */}
           <Link
             href="/free-classes"
-            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
+            onClick={() => setIsMobileDropdownOpen(false)}
+            className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all ${
               pathname?.startsWith('/free-classes')
                 ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800'
             }`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full ${pathname?.startsWith('/free-classes') ? 'bg-white' : 'bg-emerald-500 animate-pulse'}`} />
-            <span>ফ্রি ক্লাস</span>
+            ফ্রি ক্লাস
           </Link>
 
+          {/* জব সার্কুলার Button */}
           <Link
             href="/jobs"
-            className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 ${
+            onClick={() => setIsMobileDropdownOpen(false)}
+            className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all ${
               pathname?.startsWith('/jobs')
                 ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800'
             }`}
           >
-            <Briefcase className="w-3.5 h-3.5 shrink-0" />
-            <span>জব সার্কুলার</span>
+            জব সার্কুলার
           </Link>
         </div>
       </div>
