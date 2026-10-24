@@ -36,6 +36,7 @@ export const Navbar: React.FC = () => {
   const desktopDropdownRef = React.useRef<HTMLDivElement | null>(null);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = React.useState(false);
   const mobileDropdownRef = React.useRef<HTMLDivElement | null>(null);
+  const mobileDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const profileMenuRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -84,6 +85,20 @@ export const Navbar: React.FC = () => {
     dropdownTimeoutRef.current = setTimeout(() => {
       setIsDropdownOpen(false);
     }, 200);
+  };
+
+  const handleMobileMouseEnter = () => {
+    if (mobileDropdownTimeoutRef.current) {
+      clearTimeout(mobileDropdownTimeoutRef.current);
+      mobileDropdownTimeoutRef.current = null;
+    }
+    setIsMobileDropdownOpen(true);
+  };
+
+  const handleMobileMouseLeave = () => {
+    mobileDropdownTimeoutRef.current = setTimeout(() => {
+      setIsMobileDropdownOpen(false);
+    }, 250);
   };
 
   const getDashboardLink = () => {
@@ -418,10 +433,20 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-center gap-5 sm:gap-6 relative">
           
           {/* সকল কোর্স Link with Dropdown Trigger */}
-          <div ref={mobileDropdownRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setIsMobileDropdownOpen((prev) => !prev)}
+          <div
+            ref={mobileDropdownRef}
+            className="relative"
+            onMouseEnter={handleMobileMouseEnter}
+            onMouseLeave={handleMobileMouseLeave}
+          >
+            <Link
+              href="/courses"
+              onClick={(e) => {
+                // If clicked, also toggle dropdown on touch devices
+                if (!isMobileDropdownOpen) {
+                  // e.preventDefault();
+                }
+              }}
               className={`text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1 py-1 cursor-pointer ${
                 pathname?.startsWith('/courses') || pathname?.startsWith('/classes') || isMobileDropdownOpen
                   ? 'text-blue-600 dark:text-blue-400 font-bold'
@@ -429,16 +454,31 @@ export const Navbar: React.FC = () => {
               }`}
             >
               <span>সকল কোর্স</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  isMobileDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
-                }`}
-              />
-            </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMobileDropdownOpen((prev) => !prev);
+                }}
+                className="p-0.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                aria-label="কোর্স মেনু খুলুন"
+              >
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isMobileDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
+                  }`}
+                />
+              </button>
+            </Link>
 
-            {/* Mobile Dropdown Menu (৭৫% - ৮৫% চওড়া) */}
+            {/* Mobile Dropdown Menu (৭৫% - ৮৫% চওড়া, ঠিক বারের নিচে) */}
             {isMobileDropdownOpen && (
-              <div className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[88vw] max-w-[420px] z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150">
+              <div
+                onMouseEnter={handleMobileMouseEnter}
+                onMouseLeave={handleMobileMouseLeave}
+                className="fixed left-1/2 -translate-x-1/2 top-[76px] w-[88vw] max-w-[420px] z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150"
+              >
                 <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-black text-slate-800 dark:text-white">
                     শ্রেণি অনুযায়ী কারিকুলাম
