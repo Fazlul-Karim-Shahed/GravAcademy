@@ -108,13 +108,6 @@ export default function TeacherPanelPage() {
               <User className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               <span>আমার প্রোফাইল</span>
             </Link>
-            <Link
-              href="/profile/edit"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-purple-500/25 transition-all"
-            >
-              <GraduationCap className="w-4 h-4" />
-              <span>প্রোফাইল ও সিভি এডিট</span>
-            </Link>
           </div>
         </div>
 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 import { JobPost } from '../models/JobPost';
+import { JobCategory } from '../models/JobCategory';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 // Helper function to create URL-safe slug from title
@@ -21,7 +22,7 @@ export const jobPostSchema = z.object({
   title: z.string().min(3, 'সার্কুলারের শিরোনাম আবশ্যক'),
   organizationName: z.string().min(2, 'প্রতিষ্ঠানের নাম আবশ্যক'),
   organizationLogo: z.string().optional().or(z.literal('')),
-  sector: z.enum(['govt', 'semi_govt', 'private', 'autonomous', 'bank', 'ngo']).default('govt'),
+  sector: z.string().min(1).default('govt'),
   category: z.string().optional().or(z.literal('')),
   postName: z.string().min(2, 'পদের নাম আবশ্যক'),
   vacancyCount: z.string().optional().or(z.literal('')),
@@ -386,3 +387,117 @@ export const deleteJobPost = async (req: AuthenticatedRequest, res: Response) =>
     });
   }
 };
+
+/**
+ * Public & Admin: Get All Job Categories (Initial default is 'govt' / 'সরকারি চাকরি')
+ */
+export const getJobCategories = async (req: Request, res: Response) => {
+  try {
+    let categories = await JobCategory.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
+
+    // Seed default 'সরকারি চাকরি' if database is empty
+    if (categories.length === 0) {
+      await JobCategory.create({
+        name: 'সরকারি চাকরি',
+        slug: 'govt',
+        description: 'বাংলাদেশ সরকারের বিভিন্ন মন্ত্রণালয়, অধিদপ্তর ও পরিদপ্তরের সরকারি নিয়োগ বিজ্ঞপ্তি',
+        badgeColor: 'emerald',
+        order: 1,
+        isActive: true,
+      });
+      categories = await JobCategory.find({ isActive: true }).sort({ order: 1 });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: categories.length,
+      data: categories,
+    });
+  } catch (error: any) {
+    console.error('getJobCategories error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'ক্যাটাগরি তালিকা লোড করতে সমস্যা হয়েছে।',
+    });
+  }
+};
+
+/**
+ * Admin: Create New Job Category
+ */
+export const createJobCategory = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { name, slug, description, badgeColor = 'blue', order = 0 } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ success: false, message: 'ক্যাটাগরির নাম আবশ্যক।' });
+    }
+
+    const finalSlug = slug && slug.trim()
+      ? slug.trim().toLowerCase().replace(/\s+/g, '-')
+      : name.trim().toLowerCase().replace(/[^\u0980-\u09FFa-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-');
+
+    const existing = await JobCategory.findOne({
+      $or: [{ name: name.trim() }, { slug: finalSlug }],
+    });
+
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'এই নামে বা স্লাগে ইতিমধ্যে একটি ক্যাটাগরি রয়েছে।' });
+    }
+
+    const category = await JobCategory.create({
+      name: name.trim(),
+      slug: finalSlug,
+      description: description?.trim() || undefined,
+      badgeColor,
+      order: Number(order) || 0,
+      isActive: true,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'নতুন ক্যাটাগরি সফলভাবে তৈরি করা হয়েছে!',
+      data: category,
+    });
+  } catch (error: any) {
+    console.error('createJobCategory error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'ক্যাটাগরি তৈরি করতে সমস্যা হয়েছে।',
+    });
+  }
+};
+
+/**
+ * Admin: Delete Job Category
+ */
+export const deleteJobCategory = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const count = await JobCategory.countDocuments();
+    if (count <= 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'কমপক্ষে একটি ক্যাটাগরি সিস্টেমে থাকা আবশ্যক।',
+      });
+    }
+
+    const cat = await JobCategory.findByIdAndDelete(id);
+    if (!cat) {
+      return res.status(404).json({ success: false, message: 'ক্যাটাগরি পাওয়া যায়নি।' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'ক্যাটাগরি সফলভাবে মুছে ফেলা হয়েছে।',
+    });
+  } catch (error: any) {
+    console.error('deleteJobCategory error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'ক্যাটাগরি ডিলিট করতে সমস্যা হয়েছে।',
+    });
+  }
+};
+

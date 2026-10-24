@@ -301,6 +301,7 @@ router.get(
 // --- JOB CIRCULAR ROUTES ---
 // Public routes
 router.get('/jobs', jobCtrl.getPublicJobPosts);
+router.get('/jobs/categories', jobCtrl.getJobCategories);
 router.get('/jobs/:slug', jobCtrl.getJobPostBySlug);
 
 // Admin routes
@@ -328,6 +329,20 @@ router.delete(
   authenticate,
   requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
   jobCtrl.deleteJobPost
+);
+
+// Admin Job Categories Management
+router.post(
+  '/admin/jobs/categories',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  jobCtrl.createJobCategory
+);
+router.delete(
+  '/admin/jobs/categories/:id',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  jobCtrl.deleteJobCategory
 );
 
 export default router;

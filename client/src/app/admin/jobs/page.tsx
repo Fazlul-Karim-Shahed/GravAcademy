@@ -22,6 +22,9 @@ import {
   AlertCircle,
   FileText,
   Users,
+  Tag,
+  FolderPlus,
+  X,
 } from 'lucide-react';
 
 interface JobItem {
@@ -79,13 +82,66 @@ export default function AdminJobsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
+  // Categories State
+  const [categories, setCategories] = useState<{ _id: string; name: string; slug: string; description?: string }[]>([]);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [newCatSlug, setNewCatSlug] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
+
   // Deletion modal state
   const [deleteTarget, setDeleteTarget] = useState<JobItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
     fetchJobs();
   }, [page, selectedSector, selectedStatus]);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/jobs/categories');
+      if (res.data?.success) {
+        setCategories(res.data.data || []);
+      }
+    } catch (e) {
+      console.error('Failed to load categories in admin:', e);
+    }
+  };
+
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCatName.trim()) return;
+    setCreatingCategory(true);
+    try {
+      const res = await api.post('/admin/jobs/categories', {
+        name: newCatName.trim(),
+        slug: newCatSlug.trim() || undefined,
+      });
+      if (res.data?.success) {
+        setNewCatName('');
+        setNewCatSlug('');
+        fetchCategories();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'ক্যাটাগরি তৈরি করতে সমস্যা হয়েছে।');
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string, name: string) => {
+    if (!confirm(`আপনি কি "${name}" ক্যাটাগরি ডিলিট করতে চান?`)) return;
+    try {
+      await api.delete(`/admin/jobs/categories/${id}`);
+      fetchCategories();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'ক্যাটাগরি মুছে ফেলা যায়নি।');
+    }
+  };
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -155,6 +211,12 @@ export default function AdminJobsPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Tag className="w-3.5 h-3.5 text-amber-500" /> ক্যাটাগরি ম্যানেজ
+            </button>
             <Link
               href="/jobs"
               target="_blank"
@@ -188,7 +250,7 @@ export default function AdminJobsPage() {
             </div>
 
             {/* Sector Filter */}
-            <div className="w-full md:w-48">
+            <div className="w-full md:w-52">
               <select
                 value={selectedSector}
                 onChange={(e) => {
@@ -197,13 +259,12 @@ export default function AdminJobsPage() {
                 }}
                 className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">সব সেক্টর (All Sectors)</option>
-                <option value="govt">সরকারি (Govt)</option>
-                <option value="semi_govt">আধা সরকারি (Semi-Govt)</option>
-                <option value="autonomous">স্বায়ত্তশাসিত</option>
-                <option value="bank">ব্যাংক ও আর্থিক প্রতিষ্ঠান</option>
-                <option value="private">বেসরকারি (Private)</option>
-                <option value="ngo">এনজিও (NGO)</option>
+                <option value="all">সব ক্যাটাগরি / সেক্টর</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.slug}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -477,6 +538,110 @@ export default function AdminJobsPage() {
                   {deleting ? 'মুছে ফেলা হচ্ছে...' : 'হ্যাঁ, ডিলিট করুন'}
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Dynamic Category Management Modal */}
+        {showCategoryModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-5">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
+                    <Tag className="w-5 h-5" />
+                  </span>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                      জব ক্যাটাগরি ম্যানেজমেন্ট
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      নতুন চাকরির ক্যাটাগরি যোগ করুন বা ম্যানেজ করুন
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Add New Category Form */}
+              <form onSubmit={handleCreateCategory} className="mb-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  নতুন ক্যাটাগরি তৈরি করুন:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input
+                    type="text"
+                    value={newCatName}
+                    onChange={(e) => setNewCatName(e.target.value)}
+                    placeholder="যেমন: ব্যাংক ও আর্থিক"
+                    required
+                    className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    value={newCatSlug}
+                    onChange={(e) => setNewCatSlug(e.target.value)}
+                    placeholder="স্লাগ (ঐচ্ছিক, e.g. bank)"
+                    className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={creatingCategory}
+                  className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  {creatingCategory ? 'তৈরি করা হচ্ছে...' : 'ক্যাটাগরি যুক্ত করুন'}
+                </button>
+              </form>
+
+              {/* Current Categories List */}
+              <div className="space-y-2">
+                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  বর্তমান ক্যাটাগরিসমূহ ({categories.length} টি):
+                </div>
+                <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+                  {categories.map((c) => (
+                    <div
+                      key={c._id}
+                      className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700"
+                    >
+                      <div>
+                        <span className="font-bold text-xs text-slate-900 dark:text-white block">
+                          {c.name}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          slug: {c.slug}
+                        </span>
+                      </div>
+                      {categories.length > 1 && (
+                        <button
+                          onClick={() => handleDeleteCategory(c._id, c.name)}
+                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                          title="ক্যাটাগরি ডিলিট করুন"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                <button
+                  onClick={() => setShowCategoryModal(false)}
+                  className="px-5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                >
+                  বন্ধ করুন
+                </button>
+              </div>
+
             </div>
           </div>
         )}

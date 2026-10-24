@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type JobSector = 'govt' | 'semi_govt' | 'private' | 'autonomous' | 'bank' | 'ngo';
+export type JobSector = string;
 
 export interface ICustomJobField {
   label: string;
@@ -77,9 +77,9 @@ const JobPostSchema = new Schema<IJobPost>(
     },
     sector: {
       type: String,
-      enum: ['govt', 'semi_govt', 'private', 'autonomous', 'bank', 'ngo'],
       default: 'govt',
       index: true,
+      trim: true,
     },
     category: {
       type: String,

@@ -49,7 +49,8 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
   const [title, setTitle] = useState('');
   const [organizationName, setOrganizationName] = useState('');
   const [organizationLogo, setOrganizationLogo] = useState('');
-  const [sector, setSector] = useState<'govt' | 'semi_govt' | 'private' | 'autonomous' | 'bank' | 'ngo'>('govt');
+  const [sector, setSector] = useState<string>('govt');
+  const [categories, setCategories] = useState<{ _id: string; name: string; slug: string }[]>([]);
   const [category, setCategory] = useState('সাধারণ সরকারি');
   const [postName, setPostName] = useState('');
   const [vacancyCount, setVacancyCount] = useState('');
@@ -79,10 +80,25 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
   const [savedSlug, setSavedSlug] = useState('');
 
   useEffect(() => {
+    fetchCategories();
     if (isEditing && jobId) {
       loadJobDetails(jobId);
     }
   }, [jobId]);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/jobs/categories');
+      if (res.data?.data && Array.isArray(res.data.data)) {
+        setCategories(res.data.data);
+        if (!isEditing && res.data.data.length > 0) {
+          setSector(res.data.data[0].slug);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load categories:', e);
+    }
+  };
 
   const loadJobDetails = async (id: string) => {
     setLoading(true);
@@ -310,20 +326,25 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
 
               {/* Sector */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  চাকরির সেক্টর <span className="text-rose-500">*</span>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
+                  <span>চাকরির ক্যাটাগরি / সেক্টর <span className="text-rose-500">*</span></span>
+                  <Link href="/admin/jobs" className="text-blue-600 dark:text-blue-400 text-2xs hover:underline font-normal">
+                    ক্যাটাগরি ম্যানেজ করুন
+                  </Link>
                 </label>
                 <select
                   value={sector}
-                  onChange={(e) => setSector(e.target.value as any)}
+                  onChange={(e) => setSector(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                 >
-                  <option value="govt">সরকারি (Government)</option>
-                  <option value="semi_govt">আধা সরকারি (Semi-Government)</option>
-                  <option value="autonomous">স্বায়ত্তশাসিত প্রতিষ্ঠান</option>
-                  <option value="bank">ব্যাংক ও আর্থিক প্রতিষ্ঠান</option>
-                  <option value="private">বেসরকারি (Private)</option>
-                  <option value="ngo">এনজিও / আন্তর্জাতিক সংস্থা (NGO)</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
+                  {categories.length === 0 && (
+                    <option value="govt">সরকারি চাকরি</option>
+                  )}
                 </select>
               </div>
 

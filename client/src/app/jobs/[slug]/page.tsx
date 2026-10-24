@@ -35,7 +35,7 @@ interface JobPostDetail {
   slug: string;
   organizationName: string;
   organizationLogo?: string;
-  sector: 'govt' | 'semi_govt' | 'private' | 'autonomous' | 'bank' | 'ngo';
+  sector: string;
   category?: string;
   postName: string;
   vacancyCount?: string;
