@@ -170,15 +170,28 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       search,
       paymentMethod,
       paymentType,
+      filterType, // 'today' | 'due' | 'all'
       batchId,
       studentId,
       startDate,
       endDate,
       page = 1,
-      limit = 30,
+      limit = 20,
     } = req.query;
 
     const query: any = { status: 'completed' };
+
+    // Card Filter: Today's collections
+    if (filterType === 'today') {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      query.paidAt = { $gte: todayStart };
+    }
+
+    // Card Filter: Transactions with Due amount
+    if (filterType === 'due') {
+      query.dueAmount = { $gt: 0 };
+    }
 
     if (paymentMethod && paymentMethod !== 'all') {
       query.paymentMethod = paymentMethod;

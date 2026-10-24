@@ -21,8 +21,10 @@ import {
   CheckCircle2,
   ExternalLink,
   ChevronRight,
+  ChevronLeft,
   Filter,
   Upload,
+  RotateCcw,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
@@ -61,6 +63,15 @@ export default function AdminFinancePage() {
   const [search, setSearch] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('all');
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
+
+  // New Filters: Card click filter & Date Range Filter & Pagination
+  const [cardFilterType, setCardFilterType] = useState<'all' | 'today' | 'due'>('all');
+  const [dateRangePreset, setDateRangePreset] = useState<'all' | 'today' | 'last_month' | 'custom'>('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Collect Payment Modal State
   const [isCollectModalOpen, setIsCollectModalOpen] = useState(false);
@@ -118,7 +129,7 @@ export default function AdminFinancePage() {
   useEffect(() => {
     fetchPayments();
     fetchStudentsAndBatches();
-  }, [selectedMethod]);
+  }, [selectedMethod, cardFilterType, dateRangePreset, startDate, endDate, currentPage]);
 
   const fetchPayments = async () => {
     setLoading(true);
@@ -126,17 +137,62 @@ export default function AdminFinancePage() {
       const params = new URLSearchParams();
       if (search.trim()) params.append('search', search.trim());
       if (selectedMethod !== 'all') params.append('paymentMethod', selectedMethod);
+      if (cardFilterType !== 'all') params.append('filterType', cardFilterType);
+
+      // Handle Date Presets or Custom Dates
+      if (dateRangePreset === 'today') {
+        const todayStr = new Date().toISOString().split('T')[0];
+        params.append('startDate', todayStr);
+        params.append('endDate', todayStr);
+      } else if (dateRangePreset === 'last_month') {
+        const now = new Date();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        params.append('startDate', lastMonth.toISOString().split('T')[0]);
+        params.append('endDate', now.toISOString().split('T')[0]);
+      } else if (dateRangePreset === 'custom') {
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+      }
+
+      params.append('page', currentPage.toString());
+      params.append('limit', '20');
 
       const res = await api.get(`/finance/admin-payments?${params.toString()}`);
       if (res.data?.success) {
         setPayments(res.data.data || []);
         setStats(res.data.summary || null);
+        if (res.data.meta) {
+          setTotalPages(res.data.meta.totalPages || 1);
+          setTotalCount(res.data.meta.totalCount || 0);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch payments:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResetFilters = () => {
+    setCardFilterType('all');
+    setSelectedMethod('all');
+    setDateRangePreset('all');
+    setStartDate('');
+    setEndDate('');
+    setSearch('');
+    setCurrentPage(1);
+  };
+
+  const handleCardClick = (type: 'all' | 'today' | 'due') => {
+    if (cardFilterType === type) {
+      setCardFilterType('all'); // Toggle off if clicked again
+    } else {
+      setCardFilterType(type);
+      if (type === 'today') {
+        setDateRangePreset('today');
+      }
+    }
+    setCurrentPage(1);
   };
 
   const fetchStudentsAndBatches = async () => {
@@ -257,58 +313,94 @@ export default function AdminFinancePage() {
           </div>
         </div>
 
-        {/* 4 Financial Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {/* Card 1: Total Revenue */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+        {/* 4 Financial Stat Cards (Clickable Filters) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {/* Card 1: Total Revenue (Reset / All) */}
+          <div
+            onClick={() => handleCardClick('all')}
+            className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
+              cardFilterType === 'all'
+                ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-600 ring-2 ring-emerald-500/20'
+                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+            }`}
+          >
             <div>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                সর্বমোট কালেকশন
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  সর্বমোট কালেকশন
+                </span>
+                {cardFilterType === 'all' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                )}
+              </div>
               <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
                 ৳{stats?.totalRevenue?.toLocaleString('bn-BD') || 0}
               </div>
               <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 inline-block">
-                {stats?.totalTransactions || 0} টি সম্পন্ন লেনদেন
+                {stats?.totalTransactions || 0} টি সম্পন্ন লেনদেন (সকল)
               </span>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-100 dark:border-emerald-800/60">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-100 dark:border-emerald-800/60 shrink-0">
               ৳
             </div>
           </div>
 
-          {/* Card 2: Today's Collection */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+          {/* Card 2: Today's Collection (Clickable Filter) */}
+          <div
+            onClick={() => handleCardClick('today')}
+            className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
+              cardFilterType === 'today'
+                ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-400 dark:border-blue-600 ring-2 ring-blue-500/20'
+                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800/60'
+            }`}
+          >
             <div>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                আজকের আদায়
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  আজকের আদায়
+                </span>
+                {cardFilterType === 'today' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                )}
+              </div>
               <div className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
                 ৳{stats?.todayTotal?.toLocaleString('bn-BD') || 0}
               </div>
-              <span className="text-[11px] text-slate-500 font-semibold mt-1 inline-block">
-                আজ {stats?.todayCount || 0} টি রিসিট
+              <span className="text-[11px] text-blue-600/80 dark:text-blue-400 font-semibold mt-1 inline-block">
+                আজ {stats?.todayCount || 0} টি রিসিট {cardFilterType === 'today' ? '• ফিল্টার সক্রিয়' : '• ক্লিক করুন'}
               </span>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-800/60">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-800/60 shrink-0">
               <TrendingUp className="w-6 h-6" />
             </div>
           </div>
 
-          {/* Card 3: Total Due */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+          {/* Card 3: Total Due (Clickable Filter) */}
+          <div
+            onClick={() => handleCardClick('due')}
+            className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
+              cardFilterType === 'due'
+                ? 'bg-rose-50/80 dark:bg-rose-950/50 border-rose-400 dark:border-rose-600 ring-2 ring-rose-500/20'
+                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-800/60'
+            }`}
+          >
             <div>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                মোট বকেয়া (Due)
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  মোট বকেয়া (Due)
+                </span>
+                {cardFilterType === 'due' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                )}
+              </div>
               <div className="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">
                 ৳{stats?.totalDue?.toLocaleString('bn-BD') || 0}
               </div>
-              <span className="text-[11px] text-rose-500/80 font-medium mt-1 inline-block">
-                সকল শিক্ষার্থী মিলিয়ে
+              <span className="text-[11px] text-rose-500 font-semibold mt-1 inline-block">
+                {cardFilterType === 'due' ? 'বকেয়া থাকা পেমেন্ট ফিল্টার সক্রিয়' : 'বকেয়া তালিকা দেখতে ক্লিক করুন'}
               </span>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-100 dark:border-rose-800/60">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-100 dark:border-rose-800/60 shrink-0">
               <AlertCircle className="w-6 h-6" />
             </div>
           </div>
@@ -341,43 +433,128 @@ export default function AdminFinancePage() {
           </div>
         </div>
 
-        {/* Filters & Search Bar */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 mb-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-          <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-96">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="রিসিট নং, স্টুডেন্ট নাম, আইডি বা TrxID..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </form>
+        {/* Date Filter & Control Bar */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 mb-6 shadow-xs flex flex-col gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Search input */}
+            <form onSubmit={handleSearchSubmit} className="relative w-full lg:w-80">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="রিসিট নং, শিক্ষার্থী, আইডি বা TrxID..."
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </form>
 
-          {/* Payment Method Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-            {[
-              { id: 'all', label: 'সকল মাধ্যম' },
-              { id: 'cash', label: '💵 ক্যাশ' },
-              { id: 'bkash', label: '📱 বিকাশ' },
-              { id: 'nagad', label: '📱 নগদ' },
-              { id: 'bank_transfer', label: '🏦 ব্যাংক' },
-            ].map((m) => (
-              <button
-                key={m.id}
-                onClick={() => setSelectedMethod(m.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                  selectedMethod === m.id
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
+            {/* Date Presets (All / Today / Last Month / Custom Date) */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5" /> সময়কাল:
+              </span>
+              {[
+                { id: 'all', label: 'সব সময়' },
+                { id: 'today', label: 'আজকের' },
+                { id: 'last_month', label: 'গত ১ মাস' },
+                { id: 'custom', label: 'নির্দিষ্ট তারিখ' },
+              ].map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => {
+                    setDateRangePreset(d.id as any);
+                    if (d.id === 'all') {
+                      setStartDate('');
+                      setEndDate('');
+                    }
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    dateRangePreset === d.id
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {d.label}
+                </button>
+              ))}
+
+              {(cardFilterType !== 'all' || dateRangePreset !== 'all' || selectedMethod !== 'all' || search) && (
+                <button
+                  onClick={handleResetFilters}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors ml-1 cursor-pointer"
+                  title="ফিল্টার রিসেট করুন"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> ফিল্টার রিসেট
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Custom Date Pickers (Shown when 'custom' is selected) */}
+          {dateRangePreset === 'custom' && (
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+              <span className="font-bold text-slate-500">তারিখ নির্বাচন:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">হতে</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">পর্যন্ত</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Payment Method Pills */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 overflow-x-auto">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5" /> মাধ্যম:
+              </span>
+              {[
+                { id: 'all', label: 'সকল' },
+                { id: 'cash', label: '💵 ক্যাশ' },
+                { id: 'bkash', label: '📱 বিকাশ' },
+                { id: 'nagad', label: '📱 নগদ' },
+                { id: 'bank_transfer', label: '🏦 ব্যাংক' },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setSelectedMethod(m.id);
+                    setCurrentPage(1);
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    selectedMethod === m.id
+                      ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-2xs'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
             <button
               onClick={fetchPayments}
-              className="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               title="রিফ্রেশ"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-blue-500' : ''}`} />
@@ -502,6 +679,32 @@ export default function AdminFinancePage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Footer */}
+          <div className="p-4 bg-slate-50/60 dark:bg-slate-800/40 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <span className="text-slate-500 font-medium">
+              সর্বমোট <strong className="text-slate-900 dark:text-white">{totalCount}</strong> টি রেকর্ডের মধ্যে{' '}
+              পৃষ্ঠা <strong className="text-blue-600 dark:text-blue-400">{currentPage}</strong> / {totalPages || 1}
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1 || loading}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" /> পূর্ববর্তী
+              </button>
+
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages || loading}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                পরবর্তী <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
