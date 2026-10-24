@@ -413,47 +413,47 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি অপশন: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) */}
-      <div className="md:hidden border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-md px-2 py-1">
-        <div className="max-w-md mx-auto flex items-center justify-center gap-1.5 relative">
+      {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি লিংক: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) */}
+      <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2">
+        <div className="flex items-center justify-center gap-5 sm:gap-6 relative">
           
-          {/* সকল কোর্স Button with Dropdown Trigger */}
-          <div ref={mobileDropdownRef} className="relative flex-1">
+          {/* সকল কোর্স Link with Dropdown Trigger */}
+          <div ref={mobileDropdownRef} className="relative">
             <button
               type="button"
               onClick={() => setIsMobileDropdownOpen((prev) => !prev)}
-              className={`w-full py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all flex items-center justify-center gap-1 ${
+              className={`text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1 py-1 cursor-pointer ${
                 pathname?.startsWith('/courses') || pathname?.startsWith('/classes') || isMobileDropdownOpen
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+                  ? 'text-blue-600 dark:text-blue-400 font-bold'
+                  : 'text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               <span>সকল কোর্স</span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  isMobileDropdownOpen ? 'rotate-180' : 'opacity-70'
+                  isMobileDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
                 }`}
               />
             </button>
 
-            {/* Mobile Dropdown Menu */}
+            {/* Mobile Dropdown Menu (৭৫% - ৮৫% চওড়া) */}
             {isMobileDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 sm:right-auto sm:w-80 mt-1.5 z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3 animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+              <div className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[88vw] max-w-[420px] z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-black text-slate-800 dark:text-white">
                     শ্রেণি অনুযায়ী কারিকুলাম
                   </span>
                   <Link
                     href="/courses"
                     onClick={() => setIsMobileDropdownOpen(false)}
-                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                    className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                   >
                     <span>সকল কোর্স পেজ</span>
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-2 gap-1.5 max-h-60 overflow-y-auto pr-0.5">
+                <div className="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto pr-0.5">
                   {classes.map((cls) => {
                     const slug = getClassSlug(cls);
                     return (
@@ -461,12 +461,12 @@ export const Navbar: React.FC = () => {
                         key={cls._id}
                         href={`/classes/${slug}`}
                         onClick={() => setIsMobileDropdownOpen(false)}
-                        className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200/60 dark:border-slate-700/60 transition-colors"
+                        className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 border border-slate-200/70 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-600/60 transition-all"
                       >
                         <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                           {cls.name}
                         </span>
-                        <span className="block text-[9px] text-slate-400 truncate">
+                        <span className="block text-[10px] text-slate-400 truncate">
                           {cls.subtitle || 'কোর্স ও ব্যাচ'}
                         </span>
                       </Link>
@@ -477,27 +477,33 @@ export const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* ফ্রি ক্লাস Button */}
+          {/* সেপারেটর ডট */}
+          <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+
+          {/* ফ্রি ক্লাস Link */}
           <Link
             href="/free-classes"
             onClick={() => setIsMobileDropdownOpen(false)}
-            className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all ${
+            className={`text-xs sm:text-sm font-semibold transition-colors py-1 ${
               pathname?.startsWith('/free-classes')
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+                ? 'text-blue-600 dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             ফ্রি ক্লাস
           </Link>
 
-          {/* জব সার্কুলার Button */}
+          {/* সেপারেটর ডট */}
+          <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+
+          {/* জব সার্কুলার Link */}
           <Link
             href="/jobs"
             onClick={() => setIsMobileDropdownOpen(false)}
-            className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold text-center transition-all ${
+            className={`text-xs sm:text-sm font-semibold transition-colors py-1 ${
               pathname?.startsWith('/jobs')
-                ? 'bg-indigo-600 text-white shadow-xs'
-                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800'
+                ? 'text-blue-600 dark:text-blue-400 font-bold'
+                : 'text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             জব সার্কুলার
