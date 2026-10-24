@@ -21,8 +21,10 @@ import {
 
 interface UserRecord {
   _id: string;
+  userId?: string;
   name: string;
-  email: string;
+  email?: string;
+  phone?: string;
   role: 'superadmin' | 'admin' | 'teacher' | 'student' | 'guardian' | 'employee';
   status: string;
   avatarUrl?: string;
@@ -235,8 +237,17 @@ export default function AdminSettingsPage() {
                                   )}
                                 </div>
                                 <div className="min-w-0">
-                                  <div className="font-bold text-slate-900 dark:text-white truncate">{u.name}</div>
-                                  <div className="text-[11px] text-slate-400 truncate">{u.email}</div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-slate-900 dark:text-white truncate">{u.name}</span>
+                                    {u.userId && (
+                                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-slate-700 shrink-0">
+                                        ID: {u.userId}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-slate-400 truncate">
+                                    {u.email || u.phone || 'ইমেইল নেই'}
+                                  </div>
                                 </div>
                               </div>
                             </td>

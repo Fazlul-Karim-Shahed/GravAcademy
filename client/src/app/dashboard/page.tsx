@@ -21,6 +21,8 @@ import {
   ExternalLink,
   ChevronRight,
   MessageSquare,
+  IdCard,
+  Hash,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -94,7 +96,21 @@ export default function StudentDashboard() {
                   {user?.name || 'শিক্ষার্থী'}!
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1.5 max-w-xl font-medium leading-relaxed">
+
+              {/* Unique User ID Display Badge */}
+              {user?.userId && (
+                <div className="inline-flex items-center gap-2 mt-2 px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xs">
+                  <div className="w-5 h-5 rounded-lg bg-blue-500/30 flex items-center justify-center text-blue-300">
+                    <IdCard className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs text-slate-300 font-medium">ইউজার আইডি:</span>
+                  <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono">
+                    {user.userId}
+                  </span>
+                </div>
+              )}
+
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
                 আপনার ক্লাস রুটিন অনুযায়ী সময়মতো সরাসরি লাইভ ক্লাসরুমে প্রবেশ করুন এবং পাঠ্যক্রমের স্টাডি ম্যাটেরিয়াল রিভিশন করুন।
               </p>
             </div>

@@ -101,16 +101,15 @@ function RegisterForm() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                Email Address
+                ইমেইল এড্রেস (Email)
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
-                  required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="tanvir@example.com"
+                  placeholder="tanvir@example.com (ইমেইল অথবা ফোন দিন)"
                   className="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
                 />
               </div>
@@ -118,7 +117,7 @@ function RegisterForm() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                Phone Number (Optional)
+                মোবাইল নম্বর (Phone Number)
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -126,10 +125,13 @@ function RegisterForm() {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+880 1700 000000"
+                  placeholder="01700000000"
                   className="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
                 />
               </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                * একাউন্ট খোলার জন্য একটি ইমেইল অথবা একটি ফোন নম্বর প্রয়োজন।
+              </p>
             </div>
 
             <div>

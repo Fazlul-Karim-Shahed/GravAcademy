@@ -6,8 +6,10 @@ import { api } from '@/lib/api';
 
 export interface User {
   id: string;
+  userId?: string;
   name: string;
-  email: string;
+  email?: string;
+  phone?: string;
   role: 'superadmin' | 'admin' | 'teacher' | 'student' | 'guardian' | 'employee';
   avatarUrl?: string;
   customPermissions?: string[];

@@ -3,8 +3,9 @@ import { ROLES, UserRole, PermissionKey } from '../types/roles';
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
+  userId: string; // e.g. 261024001 (DDMMYY + 3 digit serial)
   name: string;
-  email: string;
+  email?: string;
   passwordHash: string;
   phone?: string;
   role: UserRole;
@@ -25,6 +26,13 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
+    userId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+      trim: true,
+    },
     name: {
       type: String,
       required: [true, 'Name is required'],
@@ -33,12 +41,9 @@ const UserSchema = new Schema<IUser>(
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
-      unique: true,
       trim: true,
       lowercase: true,
       index: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
     },
     passwordHash: {
       type: String,
@@ -87,6 +92,6 @@ const UserSchema = new Schema<IUser>(
 
 // Compound indexes for user search and queries
 UserSchema.index({ role: 1, status: 1 });
-UserSchema.index({ name: 'text', email: 'text' });
+UserSchema.index({ name: 'text', email: 'text', userId: 'text' });
 
 export const User = mongoose.model<IUser>('User', UserSchema);

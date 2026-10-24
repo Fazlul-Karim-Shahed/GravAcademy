@@ -42,6 +42,8 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
       filter.$or = [
         { name: { $regex: search as string, $options: 'i' } },
         { email: { $regex: search as string, $options: 'i' } },
+        { userId: { $regex: search as string, $options: 'i' } },
+        { phone: { $regex: search as string, $options: 'i' } },
       ];
     }
 

@@ -229,15 +229,22 @@ export const Navbar: React.FC = () => {
                 <span className="text-sm font-bold text-slate-900 dark:text-white block leading-tight">
                   {user.name}
                 </span>
-                <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold block leading-tight">
-                  {user.role === 'admin' || user.role === 'superadmin'
-                    ? 'এডমিন'
-                    : user.role === 'teacher'
-                    ? 'শিক্ষক'
-                    : user.role === 'guardian'
-                    ? 'অভিভাবক'
-                    : 'শিক্ষার্থী'}
-                </span>
+                <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                  {user.userId && (
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                      ID: {user.userId}
+                    </span>
+                  )}
+                  <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold block leading-tight">
+                    {user.role === 'admin' || user.role === 'superadmin'
+                      ? 'এডমিন'
+                      : user.role === 'teacher'
+                      ? 'শিক্ষক'
+                      : user.role === 'guardian'
+                      ? 'অভিভাবক'
+                      : 'শিক্ষার্থী'}
+                  </span>
+                </div>
               </div>
               <button
                 onClick={logout}

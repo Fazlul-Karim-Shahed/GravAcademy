@@ -6,15 +6,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
-import { GraduationCap, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { GraduationCap, Mail, Lock, AlertCircle, Loader2, UserCheck, Hash } from 'lucide-react';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
   const { login } = useAuth();
+
+  // Mode: Default is User ID login. If useEmail is checked, user logs in with email.
+  const [useEmail, setUseEmail] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '',
     password: '',
   });
   const [error, setError] = useState('');
@@ -26,7 +29,10 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await api.post('/auth/login', formData);
+      const res = await api.post('/auth/login', {
+        identifier: formData.identifier.trim(),
+        password: formData.password,
+      });
       if (res.data.success) {
         const { token, user } = res.data.data;
         login(token, user);
@@ -51,7 +57,7 @@ function LoginForm() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password.');
+      setError(err.response?.data?.message || 'সঠিক ইউজার আইডি/ইমেইল অথবা পাসওয়ার্ড দিন।');
     } finally {
       setLoading(false);
     }
@@ -96,19 +102,47 @@ function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                ইমেইল এড্রেস
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  {useEmail ? 'ইমেইল এড্রেস' : 'ইউজার আইডি (User ID)'}
+                </label>
+              </div>
+
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                {useEmail ? (
+                  <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                ) : (
+                  <Hash className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                )}
                 <input
-                  type="email"
+                  type={useEmail ? 'email' : 'text'}
                   required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="name@example.com"
-                  className="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  value={formData.identifier}
+                  onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
+                  placeholder={useEmail ? 'name@example.com' : 'যেমন: 261024001'}
+                  className="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors font-medium"
                 />
+              </div>
+
+              {/* Checkbox Toggle to switch to email login */}
+              <div className="mt-2.5 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="useEmailToggle"
+                  checked={useEmail}
+                  onChange={(e) => {
+                    setUseEmail(e.target.checked);
+                    setFormData({ ...formData, identifier: '' });
+                    setError('');
+                  }}
+                  className="w-4 h-4 rounded-md border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600"
+                />
+                <label
+                  htmlFor="useEmailToggle"
+                  className="text-xs text-slate-600 dark:text-slate-400 cursor-pointer select-none font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  ইমেইল দিয়ে লগইন করতে চাই
+                </label>
               </div>
             </div>
 
