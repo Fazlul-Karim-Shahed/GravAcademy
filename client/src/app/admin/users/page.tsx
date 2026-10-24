@@ -222,9 +222,6 @@ export default function AdminUsersPage() {
                             <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
                               {u.name}
                             </div>
-                            <div className="text-[11px] text-slate-400">
-                              যুক্ত: {u.createdAt ? new Date(u.createdAt).toLocaleDateString('bn-BD') : '—'}
-                            </div>
                           </div>
                         </div>
                       </td>
