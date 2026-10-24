@@ -80,6 +80,7 @@ export default function AdminFinancePage() {
   const [search, setSearch] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('all');
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
+  const [activeReceiptPayments, setActiveReceiptPayments] = useState<PaymentReceiptData[]>([]);
   const [activeDetailsGroup, setActiveDetailsGroup] = useState<GroupedStudentBatchPayment | null>(null);
 
   // Group payments so each student in a batch appears once in the list
@@ -755,7 +756,10 @@ export default function AdminFinancePage() {
                         <td className="py-4 px-6 text-center">
                           {group.totalAmountPaid > 0 ? (
                             <button
-                              onClick={() => setActiveReceipt(latestP)}
+                              onClick={() => {
+                                setActiveReceipt(latestP);
+                                setActiveReceiptPayments(group.payments);
+                              }}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
                               title="মানি রিসিট দেখুন ও প্রিন্ট করুন"
                             >
@@ -1066,8 +1070,12 @@ export default function AdminFinancePage() {
       {/* Money Receipt View Modal */}
       <MoneyReceiptModal
         isOpen={!!activeReceipt}
-        onClose={() => setActiveReceipt(null)}
+        onClose={() => {
+          setActiveReceipt(null);
+          setActiveReceiptPayments([]);
+        }}
         data={activeReceipt}
+        allPayments={activeReceiptPayments}
       />
 
       {/* Student Details & Payment History Modal */}
@@ -1259,9 +1267,10 @@ export default function AdminFinancePage() {
                               onClick={() => {
                                 setActiveDetailsGroup(null);
                                 setActiveReceipt(p);
+                                setActiveReceiptPayments([p]);
                               }}
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
-                              title="এই কিস্তির রিসিট দেখুন"
+                              title="শুধুমাত্র এই কিস্তির রিসিট দেখুন"
                             >
                               <Printer className="w-3 h-3" /> রিসিট
                             </button>

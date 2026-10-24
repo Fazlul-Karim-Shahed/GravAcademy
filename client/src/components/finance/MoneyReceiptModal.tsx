@@ -54,12 +54,14 @@ export interface PaymentReceiptData {
     userId?: string;
     role?: string;
   };
+  allPayments?: PaymentReceiptData[];
 }
 
 interface MoneyReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: PaymentReceiptData | null;
+  allPayments?: PaymentReceiptData[];
 }
 
 const methodNames: Record<string, string> = {
@@ -75,6 +77,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   isOpen,
   onClose,
   data,
+  allPayments,
 }) => {
   const receiptRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +86,22 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   const handlePrint = () => {
     window.print();
   };
+
+  // Determine payments list: if allPayments passed or data.allPayments exists with items, use that; otherwise fallback to [data]
+  const paymentsList = (allPayments && allPayments.length > 0)
+    ? allPayments
+    : (data.allPayments && data.allPayments.length > 0)
+    ? data.allPayments
+    : [data];
+
+  // Calculate cumulative paid amount across all payments
+  const totalPaidAcrossAll = paymentsList.reduce((acc, p) => acc + (p.amountPaid || 0), 0);
+  // Total fee of the course
+  const courseTotalFee = data.totalFee ?? totalPaidAcrossAll;
+  // Final due amount is based on the latest payment dueAmount or courseTotalFee - totalPaidAcrossAll
+  const finalDueAmount = data.dueAmount !== undefined
+    ? data.dueAmount
+    : Math.max(0, courseTotalFee - totalPaidAcrossAll);
 
   const receiptDate = data.paidAt || data.createdAt
     ? new Date(data.paidAt || data.createdAt!).toLocaleDateString('bn-BD', {
@@ -197,40 +216,63 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
             </div>
           </div>
 
-          {/* Payment Breakdown Table */}
+          {/* Payment Breakdown Table (Shows all installments or single payment) */}
           <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 print:border-slate-300">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 print:bg-slate-200 print:text-black text-xs font-extrabold">
                 <tr>
-                  <th className="py-3 px-4">বিবরণ (Description)</th>
+                  <th className="py-3 px-4">তারিখ ও কিস্তির বিবরণ (Description)</th>
                   <th className="py-3 px-4 text-center">মেথড ও ট্রানজ্যাকশন</th>
                   <th className="py-3 px-4 text-right">টাকার পরিমাণ (Amount)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 print:divide-slate-300">
-                <tr>
-                  <td className="py-3.5 px-4 font-semibold text-slate-900 dark:text-white print:text-black">
-                    {data.paymentType === 'admission' ? 'ভর্তি ও কোর্স ফি' : 'বকেয়া পরিশোধ / কিস্তি'}
-                  </td>
-                  <td className="py-3.5 px-4 text-center text-xs">
-                    <span className="font-semibold text-slate-700 dark:text-slate-300 print:text-black">
-                      {methodNames[data.paymentMethod] || data.paymentMethod}
-                    </span>
-                    {data.transactionId && (
-                      <div className="font-mono text-[10px] text-slate-500 print:text-black mt-0.5">
-                        TrxID: {data.transactionId}
-                      </div>
-                    )}
-                    {data.senderNumber && (
-                      <div className="font-mono text-[10px] text-slate-500 print:text-black">
-                        Sender: {data.senderNumber}
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4 text-right font-black text-slate-900 dark:text-white print:text-black text-base">
-                    ৳{data.amountPaid?.toLocaleString('bn-BD')}
-                  </td>
-                </tr>
+                {paymentsList.map((item, idx) => {
+                  const itemDate = item.paidAt || item.createdAt
+                    ? new Date(item.paidAt || item.createdAt!).toLocaleDateString('bn-BD', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })
+                    : '';
+
+                  const installmentLabel = paymentsList.length > 1
+                    ? `কিস্তি #${idx + 1} (${item.paymentType === 'admission' ? 'ভর্তি/১ম কিস্তি' : 'বকেয়া পরিশোধ'})`
+                    : item.paymentType === 'admission'
+                    ? 'ভর্তি ও কোর্স ফি'
+                    : 'বকেয়া পরিশোধ / কিস্তি';
+
+                  return (
+                    <tr key={item._id || idx}>
+                      <td className="py-3.5 px-4 font-semibold text-slate-900 dark:text-white print:text-black">
+                        <div>{installmentLabel}</div>
+                        {itemDate && (
+                          <div className="text-[11px] text-slate-400 print:text-slate-600 font-normal mt-0.5">
+                            তারিখ: {itemDate} • রিসিট নং: <span className="font-mono">{item.receiptNo}</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-center text-xs">
+                        <span className="font-semibold text-slate-700 dark:text-slate-300 print:text-black">
+                          {methodNames[item.paymentMethod] || item.paymentMethod}
+                        </span>
+                        {item.transactionId && (
+                          <div className="font-mono text-[10px] text-slate-500 print:text-black mt-0.5">
+                            TrxID: {item.transactionId}
+                          </div>
+                        )}
+                        {item.senderNumber && (
+                          <div className="font-mono text-[10px] text-slate-500 print:text-black">
+                            Sender: {item.senderNumber}
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-black text-slate-900 dark:text-white print:text-black text-base">
+                        ৳{item.amountPaid?.toLocaleString('bn-BD')}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -263,15 +305,15 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
             <div className="w-full sm:w-64 space-y-2 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 print:bg-slate-50 print:border-slate-300">
               <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400 print:text-black">
                 <span>কোর্সের মোট ফি:</span>
-                <span className="font-bold">৳{data.totalFee ? data.totalFee.toLocaleString('bn-BD') : data.amountPaid?.toLocaleString('bn-BD')}</span>
+                <span className="font-bold">৳{courseTotalFee.toLocaleString('bn-BD')}</span>
               </div>
               <div className="flex justify-between text-sm font-black text-emerald-600 dark:text-emerald-400 print:text-black border-t border-slate-200 dark:border-slate-700 pt-1.5">
-                <span>পরিশোধিত:</span>
-                <span>৳{data.amountPaid?.toLocaleString('bn-BD')}</span>
+                <span>সর্বমোট পরিশোধিত:</span>
+                <span>৳{totalPaidAcrossAll.toLocaleString('bn-BD')}</span>
               </div>
               <div className="flex justify-between text-xs font-bold text-rose-600 dark:text-rose-400 print:text-black border-t border-slate-200 dark:border-slate-700 pt-1.5">
                 <span>অবশিষ্ট বকেয়া (Due):</span>
-                <span>৳{data.dueAmount !== undefined ? data.dueAmount.toLocaleString('bn-BD') : 0}</span>
+                <span>৳{finalDueAmount.toLocaleString('bn-BD')}</span>
               </div>
             </div>
           </div>
