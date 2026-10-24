@@ -17,6 +17,7 @@ import * as academicClassCtrl from '../controllers/academicClassController';
 import * as classroomCtrl from '../controllers/classroomController';
 import * as enrollmentCtrl from '../controllers/enrollmentController';
 import * as jobCtrl from '../controllers/jobPostController';
+import * as financeCtrl from '../controllers/financeController';
 
 const router = Router();
 const upload = multer({
@@ -134,6 +135,31 @@ router.get(
   authenticate,
   requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
   enrollmentCtrl.getAdminEnrollments
+);
+
+// --- FINANCE & PAYMENT ROUTES ---
+router.post(
+  '/finance/collect-payment',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  validateRequest(financeCtrl.collectPaymentSchema),
+  financeCtrl.collectPayment
+);
+router.get(
+  '/finance/admin-payments',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  financeCtrl.getAdminPayments
+);
+router.get(
+  '/finance/my-payments',
+  authenticate,
+  financeCtrl.getMyPayments
+);
+router.get(
+  '/finance/receipts/:id',
+  authenticate,
+  financeCtrl.getPaymentReceipt
 );
 
 // --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---

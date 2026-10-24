@@ -24,6 +24,7 @@ import {
   IdCard,
   Hash,
   User,
+  CreditCard,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -126,6 +127,13 @@ export default function StudentDashboard() {
               )}
 
               <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href="/dashboard/payments"
+                  className="px-4 py-2.5 rounded-2xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-400/30 backdrop-blur-md flex items-center gap-2 transition-all shadow-md hover:scale-102"
+                >
+                  <CreditCard className="w-4 h-4 text-emerald-300" />
+                  <span>আমার পেমেন্ট ও রিসিট</span>
+                </Link>
                 <Link
                   href="/profile"
                   className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all shadow-md hover:scale-102"

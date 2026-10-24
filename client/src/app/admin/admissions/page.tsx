@@ -22,8 +22,12 @@ import {
   Clock,
   Sparkles,
   ShieldAlert,
+  Printer,
+  FileText,
+  DollarSign,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
 
 interface BatchItem {
   _id: string;
@@ -63,6 +67,7 @@ interface AdmissionResult {
     course: any;
   };
   enrollment: any;
+  payment?: PaymentReceiptData;
 }
 
 interface EnrollmentRecord {
@@ -119,12 +124,17 @@ export default function AdminAdmissionsPage() {
   const [selectedBatchId, setSelectedBatchId] = useState('');
   const [paymentFee, setPaymentFee] = useState<number | string>(0);
   const [paymentStatus, setPaymentStatus] = useState<'paid' | 'unpaid' | 'partial'>('paid');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bkash' | 'nagad' | 'rocket' | 'bank_transfer' | 'other'>('cash');
+  const [transactionId, setTransactionId] = useState('');
+  const [senderNumber, setSenderNumber] = useState('');
+  const [documentUrl, setDocumentUrl] = useState('');
   const [notes, setNotes] = useState('');
 
   // Submitting state & Response Modal
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successModalData, setSuccessModalData] = useState<AdmissionResult | null>(null);
+  const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
   const [copiedId, setCopiedId] = useState(false);
   const [copiedPass, setCopiedPass] = useState(false);
 
@@ -254,6 +264,10 @@ export default function AdminAdmissionsPage() {
         batchId: selectedBatchId,
         paymentFee: Number(paymentFee) || 0,
         paymentStatus,
+        paymentMethod,
+        transactionId: transactionId.trim() || undefined,
+        senderNumber: senderNumber.trim() || undefined,
+        documentUrl: documentUrl.trim() || undefined,
         notes: notes.trim() || undefined,
       };
 
@@ -268,6 +282,9 @@ export default function AdminAdmissionsPage() {
         setSchoolOrCollege('');
         setGuardianName('');
         setGuardianPhone('');
+        setTransactionId('');
+        setSenderNumber('');
+        setDocumentUrl('');
         setNotes('');
         fetchRecentAdmissions();
       } else {
@@ -516,7 +533,7 @@ export default function AdminAdmissionsPage() {
                     {/* Payment Status */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        পেমেন্ট স্ট্যাটাস
+                        পেমেন্ট অবস্থা
                       </label>
                       <select
                         value={paymentStatus}
@@ -529,16 +546,67 @@ export default function AdminAdmissionsPage() {
                       </select>
                     </div>
 
+                    {/* Payment Method */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        পেমেন্ট মাধ্যম (Payment Method)
+                      </label>
+                      <select
+                        value={paymentMethod}
+                        onChange={(e) => setPaymentMethod(e.target.value as any)}
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                      >
+                        <option value="cash">💵 সরাসরি ক্যাশ (Cash)</option>
+                        <option value="bkash">📱 পার্সোনাল বিকাশ (bKash)</option>
+                        <option value="nagad">📱 নগদ (Nagad)</option>
+                        <option value="rocket">📱 রকেট (Rocket)</option>
+                        <option value="bank_transfer">🏦 ব্যাংক ট্রান্সফার (Bank)</option>
+                        <option value="other">অন্যান্য (Other)</option>
+                      </select>
+                    </div>
+
+                    {/* Transaction ID / Sender Phone */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        {paymentMethod === 'cash'
+                          ? 'রেফারেন্স / ক্যাশ রিসিট নং (ঐচ্ছিক)'
+                          : paymentMethod === 'bank_transfer'
+                          ? 'চেক / একাউন্ট / ব্যাংক ট্রানজ্যাকশন নং'
+                          : 'বিকাশ/নগদ TrxID বা প্রেরকের নম্বর'}
+                      </label>
+                      <input
+                        type="text"
+                        value={transactionId}
+                        onChange={(e) => setTransactionId(e.target.value)}
+                        placeholder={paymentMethod === 'cash' ? 'যেমন: Slip-01' : 'যেমন: 9J3K8... বা প্রেরক নম্বর'}
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                      />
+                    </div>
+
+                    {/* Document / Slip URL */}
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        পেমেন্ট প্রমাণপত্র / স্লিপ ডকুমেন্ট লিংক (ঐচ্ছিক)
+                      </label>
+                      <input
+                        type="url"
+                        value={documentUrl}
+                        onChange={(e) => setDocumentUrl(e.target.value)}
+                        placeholder="যেমন: গুগল ড্রাইভ / ইমেজ লিংক বা স্লিপ ডকুমেন্টের URL"
+                        className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      />
+                    </div>
+
                     {/* Notes */}
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        অতিরিক্ত মন্তব্য / ট্রানজ্যাকশন রেফারেন্স (ঐচ্ছিক)
+                        অতিরিক্ত মন্তব্য (ঐচ্ছিক)
                       </label>
                       <input
                         type="text"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="যেমন: ক্যাশ গ্রহণ করা হয়েছে / বিকাশ ট্রানজ্যাকশন 8X9K..."
+                        placeholder="যেমন: অফিসে এসে প্রদান করা হয়েছে..."
                         className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       />
                     </div>
@@ -785,10 +853,23 @@ export default function AdminAdmissionsPage() {
               </div>
 
               {/* Close / Action Button */}
-              <div className="flex justify-end gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                {successModalData.payment && (
+                  <button
+                    onClick={() => {
+                      setActiveReceipt(successModalData.payment || null);
+                    }}
+                    className="w-full sm:w-1/2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+                  >
+                    <Printer className="w-4 h-4" />
+                    মানি রিসিট প্রিন্ট করুন
+                  </button>
+                )}
                 <button
                   onClick={() => setSuccessModalData(null)}
-                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-colors"
+                  className={`w-full ${
+                    successModalData.payment ? 'sm:w-1/2' : ''
+                  } py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-colors`}
                 >
                   ঠিক আছে, সম্পন্ন করুন
                 </button>
@@ -797,6 +878,13 @@ export default function AdminAdmissionsPage() {
             </div>
           </div>
         )}
+
+        {/* Money Receipt Modal */}
+        <MoneyReceiptModal
+          isOpen={!!activeReceipt}
+          onClose={() => setActiveReceipt(null)}
+          data={activeReceipt}
+        />
 
       </div>
     </div>

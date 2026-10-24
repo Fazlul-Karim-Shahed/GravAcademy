@@ -8,7 +8,9 @@ import { AuthenticatedRequest } from '../middleware/auth';
 
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
+import { Payment } from '../models/Payment';
 import { generateUniqueUserId } from './authController';
+import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
 
 export const enrollBatchSchema = z.object({
@@ -27,6 +29,10 @@ export const adminAdmitStudentSchema = z.object({
   guardianPhone: z.string().optional().or(z.literal('')),
   paymentFee: z.number().min(0).default(0),
   paymentStatus: z.enum(['paid', 'unpaid', 'partial']).default('paid'),
+  paymentMethod: z.enum(['cash', 'bkash', 'nagad', 'rocket', 'bank_transfer', 'other']).default('cash'),
+  transactionId: z.string().optional().or(z.literal('')),
+  senderNumber: z.string().optional().or(z.literal('')),
+  documentUrl: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
   existingStudentId: z.string().optional().or(z.literal('')), // in case an existing student is selected
 });
@@ -230,6 +236,10 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       guardianPhone,
       paymentFee = 0,
       paymentStatus = 'paid',
+      paymentMethod = 'cash',
+      transactionId = '',
+      senderNumber = '',
+      documentUrl = '',
       notes = '',
       existingStudentId,
     } = req.body;
@@ -362,6 +372,37 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       notes: notes || '',
     });
 
+    // Create Payment record & Receipt if paymentFee > 0 or status is set
+    let createdPayment: any = null;
+    const numericFee = Number(paymentFee) || 0;
+    const batchTotalFee = batch.fee || 0;
+    const dueAmount = Math.max(0, batchTotalFee - numericFee);
+
+    try {
+      const receiptNo = await generateReceiptNumber();
+      createdPayment = await Payment.create({
+        receiptNo,
+        studentId: studentDoc._id,
+        enrollmentId: enrollment._id,
+        batchId: batch._id,
+        courseId: batch.courseId._id || batch.courseId,
+        amountPaid: numericFee,
+        totalFee: batchTotalFee,
+        dueAmount,
+        paymentMethod: paymentMethod || 'cash',
+        paymentType: 'admission',
+        transactionId: transactionId ? transactionId.trim() : '',
+        senderNumber: senderNumber ? senderNumber.trim() : '',
+        documentUrl: documentUrl ? documentUrl.trim() : '',
+        status: 'completed',
+        notes: notes ? notes.trim() : '',
+        collectedBy: adminUser._id,
+        paidAt: new Date(),
+      });
+    } catch (payErr) {
+      console.error('Failed to create initial Payment record:', payErr);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'অভিনন্দন! শিক্ষার্থীকে সফলভাবে ব্যাচে ভর্তি করানো হয়েছে।',
@@ -380,6 +421,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         course: batch.courseId,
       },
       enrollment,
+      payment: createdPayment,
     });
   } catch (error: any) {
     console.error('adminAdmitStudent error:', error);
