@@ -338,6 +338,42 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       existingEnrollment.enrolledAt = new Date();
       await existingEnrollment.save();
 
+      let reactivatedPayment: any = null;
+      try {
+        const receiptNo = await generateReceiptNumber();
+        const numericFee = Number(paymentFee) || 0;
+        const batchTotalFee = batch.fee || 0;
+        const dueAmount = Math.max(0, batchTotalFee - numericFee);
+
+        const newPay = await Payment.create({
+          receiptNo,
+          studentId: studentDoc._id,
+          enrollmentId: existingEnrollment._id,
+          batchId: batch._id,
+          courseId: batch.courseId._id || batch.courseId,
+          amountPaid: numericFee,
+          totalFee: batchTotalFee,
+          dueAmount,
+          paymentMethod: paymentMethod || 'cash',
+          paymentType: 'admission',
+          transactionId: transactionId ? transactionId.trim() : '',
+          senderNumber: senderNumber ? senderNumber.trim() : '',
+          documentUrl: documentUrl ? documentUrl.trim() : '',
+          status: 'completed',
+          notes: notes ? notes.trim() : '',
+          collectedBy: adminUser._id,
+          paidAt: new Date(),
+        });
+
+        reactivatedPayment = await Payment.findById(newPay._id)
+          .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+          .populate('batchId', 'name fee courseId')
+          .populate('courseId', 'title')
+          .populate('collectedBy', 'name userId role');
+      } catch (payErr) {
+        console.error('Failed to create Payment record on reactivation:', payErr);
+      }
+
       return res.status(200).json({
         success: true,
         message: 'শিক্ষার্থীর ভর্তি স্ট্যাটাস সফলভাবে পুনরায় সক্রিয় করা হয়েছে!',
@@ -356,6 +392,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
           course: batch.courseId,
         },
         enrollment: existingEnrollment,
+        payment: reactivatedPayment,
       });
     }
 
@@ -380,7 +417,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
 
     try {
       const receiptNo = await generateReceiptNumber();
-      createdPayment = await Payment.create({
+      const newPay = await Payment.create({
         receiptNo,
         studentId: studentDoc._id,
         enrollmentId: enrollment._id,
@@ -399,6 +436,12 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         collectedBy: adminUser._id,
         paidAt: new Date(),
       });
+
+      createdPayment = await Payment.findById(newPay._id)
+        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+        .populate('batchId', 'name fee courseId')
+        .populate('courseId', 'title')
+        .populate('collectedBy', 'name userId role');
     } catch (payErr) {
       console.error('Failed to create initial Payment record:', payErr);
     }

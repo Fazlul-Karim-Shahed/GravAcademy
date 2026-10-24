@@ -1277,7 +1277,35 @@ export default function AdminAdmissionsPage() {
                 {successModalData.payment && (
                   <button
                     onClick={() => {
-                      setActiveReceipt(successModalData.payment || null);
+                      const pay = successModalData.payment!;
+                      // Ensure studentId, batchId, courseId have objects with name/userId if not already populated
+                      const enrichedReceipt: PaymentReceiptData = {
+                        ...pay,
+                        studentId:
+                          pay.studentId && typeof pay.studentId === 'object' && pay.studentId.name
+                            ? pay.studentId
+                            : {
+                                _id: successModalData.student._id,
+                                name: successModalData.student.name,
+                                userId: successModalData.student.userId,
+                                phone: successModalData.student.phone,
+                                email: successModalData.student.email,
+                              },
+                        batchId:
+                          pay.batchId && typeof pay.batchId === 'object' && pay.batchId.name
+                            ? pay.batchId
+                            : {
+                                _id: successModalData.batch._id,
+                                name: successModalData.batch.name,
+                              },
+                        courseId:
+                          pay.courseId && typeof pay.courseId === 'object' && pay.courseId.title
+                            ? pay.courseId
+                            : typeof successModalData.batch.course === 'object'
+                            ? successModalData.batch.course
+                            : undefined,
+                      };
+                      setActiveReceipt(enrichedReceipt);
                     }}
                     className="w-full sm:w-1/2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
                   >
