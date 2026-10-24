@@ -115,11 +115,6 @@ export default function PublicJobCircularsPage() {
         
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 text-xs font-bold mb-4 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-            <span>বাংলাদেশ সরকারি ও বেসরকারি নিয়োগ বিজ্ঞপ্তি ২০২৬</span>
-          </div>
-
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             সকল চাকরির সার্কুলার <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">এক ঠিকানায়</span>
           </h1>
