@@ -161,10 +161,10 @@ export default function UserPermissionsEditPage() {
             এই আইডি সম্পন্ন কোনো অ্যাকাউন্ট ডাটাবেসে নেই বা মুছে ফেলা হয়েছে।
           </p>
           <Link
-            href="/admin/users"
+            href="/admin/settings"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> ইউজার তালিকায় ফিরে যান
+            <ArrowLeft className="w-4 h-4" /> সেটিংস তালিকায় ফিরে যান
           </Link>
         </div>
       </div>
@@ -178,10 +178,10 @@ export default function UserPermissionsEditPage() {
         {/* Navigation Breadcrumb */}
         <div className="mb-6">
           <Link
-            href="/admin/users"
+            href="/admin/settings"
             className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Users Management
+            <ArrowLeft className="w-4 h-4" /> Back to Settings
           </Link>
         </div>
 
@@ -407,7 +407,7 @@ export default function UserPermissionsEditPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Link href="/admin/users">
+              <Link href="/admin/settings">
                 <Button type="button" variant="secondary" size="md">
                   বাতিল (Cancel)
                 </Button>
