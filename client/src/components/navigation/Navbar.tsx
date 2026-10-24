@@ -429,20 +429,20 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি লিংক: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) */}
-      <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2">
-        <div className="flex items-center justify-center gap-5 sm:gap-6 relative">
+      <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 relative">
+        <div className="flex items-center justify-center gap-5 sm:gap-6">
           
           {/* সকল কোর্স Link with Dropdown Trigger */}
           <div
             ref={mobileDropdownRef}
-            className="relative"
+            className="static"
             onMouseEnter={handleMobileMouseEnter}
             onMouseLeave={handleMobileMouseLeave}
           >
             <Link
               href="/courses"
               onClick={(e) => {
-                // If clicked, also toggle dropdown on touch devices
+                // Toggle on click/tap
                 if (!isMobileDropdownOpen) {
                   // e.preventDefault();
                 }
@@ -472,12 +472,12 @@ export const Navbar: React.FC = () => {
               </button>
             </Link>
 
-            {/* Mobile Dropdown Menu (৭৫% - ৮৫% চওড়া, ঠিক বারের নিচে) */}
+            {/* Mobile Dropdown Menu (ঠিক ১ পিক্সেল নিচে স্ন্যাগ পজিশন) */}
             {isMobileDropdownOpen && (
               <div
                 onMouseEnter={handleMobileMouseEnter}
                 onMouseLeave={handleMobileMouseLeave}
-                className="fixed left-1/2 -translate-x-1/2 top-[76px] w-[88vw] max-w-[420px] z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150"
+                className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+1px)] w-[88vw] max-w-[420px] z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150"
               >
                 <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-black text-slate-800 dark:text-white">
