@@ -139,7 +139,7 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
-    const batch = await Batch.findById(batchId).populate('assignedTeachers', 'name email role avatarUrl');
+    const batch = await Batch.findById(batchId).populate('assignedTeachers', 'name userId role avatarUrl');
     if (!batch) {
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
@@ -148,7 +148,7 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
       batchId,
       status: { $in: ['enrolled', 'completed'] },
     })
-      .populate('studentId', 'name email role phone avatarUrl createdAt')
+      .populate('studentId', 'name userId role avatarUrl createdAt')
       .sort({ createdAt: -1 });
 
     const students = enrollments

@@ -49,8 +49,9 @@ interface BatchInfo {
 
 interface MemberUser {
   _id: string;
+  userId?: string;
   name: string;
-  email: string;
+  email?: string;
   role: string;
   phone?: string;
   avatarUrl?: string;
@@ -731,7 +732,7 @@ export default function BatchClassroomPage({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 
                 {/* Teachers Section First */}
-                {members.teachers.map((t) => (
+                {members.teachers.map((t: any) => (
                   <div
                     key={t._id}
                     className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 shadow-xs flex items-center gap-3.5"
@@ -746,8 +747,8 @@ export default function BatchClassroomPage({
                         </span>
                         {roleBadge('teacher')}
                       </div>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
-                        {t.email}
+                      <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 block truncate">
+                        {t.userId ? `ID: ${t.userId}` : 'শিক্ষক'}
                       </span>
                     </div>
                   </div>
@@ -769,8 +770,8 @@ export default function BatchClassroomPage({
                         </span>
                         {roleBadge('student')}
                       </div>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
-                        {s.email}
+                      <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
+                        {s.userId ? `ID: ${s.userId}` : 'শিক্ষার্থী'}
                       </span>
                     </div>
                   </div>
