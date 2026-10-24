@@ -32,6 +32,7 @@ import {
   BookOpenCheck,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface Course {
   _id: string;
@@ -58,14 +59,28 @@ export default function HomePage() {
   const [dynamicClasses, setDynamicClasses] = useState<AcademicClassItem[]>([]);
   const classList = ['All', ...dynamicClasses.map((c) => c.name)];
 
+  const [dbTeachers, setDbTeachers] = useState<any[]>([]);
+
   useEffect(() => {
     fetchFeaturedCourses();
     fetchDynamicClasses();
+    fetchTeachers();
   }, []);
 
   const fetchDynamicClasses = async () => {
     const list = await getSharedAcademicClasses();
     setDynamicClasses(list);
+  };
+
+  const fetchTeachers = async () => {
+    try {
+      const res = await api.get('/teachers');
+      if (res.data?.success && res.data.data?.length > 0) {
+        setDbTeachers(res.data.data);
+      }
+    } catch (err) {
+      // Fallback to static list gracefully
+    }
   };
 
   const fetchFeaturedCourses = async () => {
@@ -109,7 +124,7 @@ export default function HomePage() {
     },
   ];
 
-  const instructorsList = [
+  const defaultInstructors = [
     {
       name: 'মাহমুদুল হাসান',
       institution: 'বুয়েট (BUET - CSE)',
@@ -144,6 +159,25 @@ export default function HomePage() {
       photo: '/images/teacher-1.jpg',
     },
   ];
+
+  // If DB teachers exist, prioritize them so updates from profile reflect live on homepage
+  const instructorsList =
+    dbTeachers.length > 0
+      ? dbTeachers.map((t) => ({
+          name: t.name,
+          institution: t.teacherDetails?.institution || 'বুয়েট / ঢাবি / ডিএমসি',
+          department: t.teacherDetails?.department || 'বিষয়ভিত্তিক স্পেশালিস্ট',
+          exp: t.teacherDetails?.experience || 'অভিজ্ঞ মেন্টর',
+          subjects:
+            t.teacherDetails?.specialistSubjects && t.teacherDetails.specialistSubjects.length > 0
+              ? t.teacherDetails.specialistSubjects
+              : ['গণিত', 'বিজ্ঞান'],
+          badge: t.teacherDetails?.badge || 'মেন্টর',
+          studentsCount: t.teacherDetails?.studentsCount || '৫,০০০+',
+          classesCount: t.teacherDetails?.classesCount || '২০০+ লাইভ ক্লাস',
+          photo: t.avatarUrl || '',
+        }))
+      : defaultInstructors;
 
   return (
     <div className="bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
@@ -793,7 +827,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Image on Left - Glossy Glass Container */}
-            <div className="lg:col-span-6 order-2 lg:order-1">
+            <div className="lg:col-span-6 order-1 lg:order-1">
               <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
                 
                 {/* Image Mask Frame */}
@@ -828,7 +862,7 @@ export default function HomePage() {
             </div>
 
             {/* Text & Feature Cards on Right */}
-            <div className="lg:col-span-6 order-1 lg:order-2">
+            <div className="lg:col-span-6 order-2 lg:order-2">
               <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.3] tracking-tight">
                 ইন্টারেক্টিভ{' '}
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
@@ -918,7 +952,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Text & Feature Cards on Left */}
-            <div className="lg:col-span-6">
+            <div className="lg:col-span-6 order-2 lg:order-1">
               
               {/* Short & Punchy Header */}
               <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.3] tracking-tight">
@@ -976,7 +1010,7 @@ export default function HomePage() {
             </div>
 
             {/* Image on Right - Glossy Glass Container */}
-            <div className="lg:col-span-6">
+            <div className="lg:col-span-6 order-1 lg:order-2">
               <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
                 
                 {/* Image Mask Frame */}
@@ -1041,12 +1075,21 @@ export default function HomePage() {
               >
                 <div>
                   {/* Portrait Photo Mask Frame with Gloss Shimmer */}
-                  <div className="relative rounded-[26px] overflow-hidden aspect-[4/3.2] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner">
-                    <img
-                      src={teacher.photo}
-                      alt={teacher.name}
-                      className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
-                    />
+                  <div className="relative rounded-[26px] overflow-hidden aspect-[4/3.2] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner flex items-center justify-center">
+                    {teacher.photo ? (
+                      <img
+                        src={teacher.photo}
+                        alt={teacher.name}
+                        className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
+                      />
+                    ) : (
+                      <UserAvatar
+                        name={teacher.name}
+                        role="teacher"
+                        size="xl"
+                        className="w-full h-full rounded-none"
+                      />
+                    )}
                     
                     {/* Gloss Sheen Shine Across Photo */}
                     <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
@@ -1086,7 +1129,7 @@ export default function HomePage() {
 
                     {/* Cute Subjects Badges */}
                     <div className="flex flex-wrap gap-1.5 mt-3">
-                      {teacher.subjects.map((sub, sIdx) => (
+                      {teacher.subjects.map((sub: string, sIdx: number) => (
                         <span
                           key={sIdx}
                           className="px-2.5 py-1 rounded-lg bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/70 dark:border-blue-900/60 shadow-2xs"

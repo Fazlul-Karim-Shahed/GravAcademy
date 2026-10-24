@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   FolderOpen,
   Settings,
+  UserPlus,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -30,6 +31,7 @@ export default function AdminDashboardPage() {
     batchesCount: 0,
     usersCount: 0,
     liveClassesCount: 0,
+    admissionsCount: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -40,11 +42,12 @@ export default function AdminDashboardPage() {
   const loadOverview = async () => {
     setLoading(true);
     try {
-      const [coursesRes, batchesRes, usersRes, liveRes] = await Promise.all([
+      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
         api.get('/users').catch(() => ({ data: { count: 1 } })),
         api.get('/live-classes').catch(() => ({ data: { count: 0 } })),
+        api.get('/enrollments/admin-list?limit=1').catch(() => ({ data: { total: 0 } })),
       ]);
 
       setStats({
@@ -52,6 +55,7 @@ export default function AdminDashboardPage() {
         batchesCount: batchesRes.data.count || batchesRes.data.data?.length || 0,
         usersCount: usersRes.data.count || usersRes.data.data?.length || 1,
         liveClassesCount: liveRes.data.count || liveRes.data.data?.length || 0,
+        admissionsCount: enrollRes.data.total || 0,
       });
     } catch (e) {
       console.error(e);
@@ -77,6 +81,12 @@ export default function AdminDashboardPage() {
 
           <div className="flex items-center gap-2.5">
             <Link
+              href="/admin/admissions"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white text-xs font-extrabold shadow-sm flex items-center gap-2 transition-all"
+            >
+              <UserPlus className="w-3.5 h-3.5" /> ভর্তি করান (Admission)
+            </Link>
+            <Link
               href="/admin/classes"
               className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
             >
@@ -94,17 +104,40 @@ export default function AdminDashboardPage() {
             >
               <Copy className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Batches
             </Link>
-            <Link
-              href="/admin/settings"
-              className="px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors border border-slate-800 dark:border-slate-700"
-            >
-              <Settings className="w-3.5 h-3.5 text-emerald-400" /> অন্যান্য সেটিংস
-            </Link>
           </div>
         </div>
 
         {/* Sleek Minimalist Metric Cards with Watermark Background Icons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 sm:gap-6 mb-10">
+          
+          {/* Card 0: Manual Admission */}
+          <Link
+            href="/admin/admissions"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+          >
+            <UserPlus className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:text-white/20 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-xs font-bold text-blue-100 uppercase tracking-wider">
+                  ভর্তি ও শিক্ষার্থী যোগ
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/30 group-hover:bg-white group-hover:text-blue-700 transition-colors">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  {stats.admissionsCount}
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-blue-100 mt-3 pt-3 border-t border-white/20">
+                  <span>নতুন ভর্তি করান</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </Link>
           
           {/* Card 1: Courses */}
           <Link

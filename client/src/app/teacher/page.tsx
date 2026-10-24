@@ -18,7 +18,9 @@ import {
   ArrowRight,
   MessageSquare,
   RefreshCw,
+  User,
 } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
 import { usePathname } from 'next/navigation';
@@ -82,7 +84,7 @@ export default function TeacherPanelPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Banner */}
-        <div className="rounded-3xl p-8 mb-8 border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-gradient-to-r dark:from-indigo-950/40 dark:via-blue-950/20 dark:to-slate-900/60 shadow-xs">
+        <div className="rounded-3xl p-8 mb-8 border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-gradient-to-r dark:from-indigo-950/40 dark:via-blue-950/20 dark:to-slate-900/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400" />
@@ -96,6 +98,23 @@ export default function TeacherPanelPage() {
             <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
               Manage your assigned batches, upload lesson notes and worksheets, schedule live sessions, and review student progress.
             </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+            <Link
+              href="/profile"
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700"
+            >
+              <User className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span>আমার প্রোফাইল</span>
+            </Link>
+            <Link
+              href="/profile/edit"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-purple-500/25 transition-all"
+            >
+              <GraduationCap className="w-4 h-4" />
+              <span>প্রোফাইল ও সিভি এডিট</span>
+            </Link>
           </div>
         </div>
 

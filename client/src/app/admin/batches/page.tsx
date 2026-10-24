@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
@@ -18,6 +19,8 @@ import {
   Edit3,
   Trash2,
   MessageSquare,
+  Filter,
+  X,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { ScheduleSlot } from '@/lib/schedule';
@@ -46,17 +49,24 @@ interface Course {
   subject: string;
 }
 
-export default function AdminBatchesPage() {
+function AdminBatchesContent() {
+  const searchParams = useSearchParams();
+  const initialCourseId = searchParams.get('courseId') || 'all';
+
   const { user } = useAuth();
   const [batches, setBatches] = useState<Batch[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(initialCourseId);
   const [loading, setLoading] = useState(true);
 
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const cid = searchParams.get('courseId');
+    if (cid) {
+      setSelectedCourseId(cid);
+    }
+  }, [searchParams]);
 
   const loadData = async () => {
     setLoading(true);
@@ -90,6 +100,12 @@ export default function AdminBatchesPage() {
       });
     }
   };
+
+  const filteredBatches = batches.filter((b) => {
+    if (selectedCourseId === 'all') return true;
+    const cId = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId._id : b.courseId;
+    return String(cId) === String(selectedCourseId);
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
@@ -137,6 +153,47 @@ export default function AdminBatchesPage() {
           </div>
         )}
 
+        {/* Filter Bar */}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+              <Filter className="w-4 h-4 text-blue-500" />
+              <span>কোর্স অনুযায়ী ফিল্টার:</span>
+            </div>
+
+            <select
+              value={selectedCourseId}
+              onChange={(e) => setSelectedCourseId(e.target.value)}
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer max-w-xs"
+            >
+              <option value="all">সকল কোর্স (All Courses)</option>
+              {courses.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.gradeLevel} - {c.title}
+                </option>
+              ))}
+            </select>
+
+            {selectedCourseId !== 'all' && (
+              <button
+                onClick={() => setSelectedCourseId('all')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>ফিল্টার মুছুন</span>
+              </button>
+            )}
+          </div>
+
+          <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+            মোট ব্যাচ:{' '}
+            <span className="text-blue-600 dark:text-blue-400 font-extrabold">
+              {filteredBatches.length}
+            </span>{' '}
+            টি
+          </div>
+        </div>
+
         {/* Batch Cards Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -147,23 +204,39 @@ export default function AdminBatchesPage() {
               />
             ))}
           </div>
-        ) : batches.length === 0 ? (
+        ) : filteredBatches.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 rounded-3xl text-center py-16 px-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
             <Layers className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">No batches created yet</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              {selectedCourseId !== 'all'
+                ? 'এই কোর্সে এখনও কোনো ব্যাচ তৈরি করা হয়নি'
+                : 'No batches created yet'}
+            </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
-              Create your first batch or clone an existing curriculum to get started.
+              {selectedCourseId !== 'all'
+                ? 'নতুন ব্যাচ তৈরি করুন অথবা ফিল্টার পরিবর্তন করুন।'
+                : 'Create your first batch or clone an existing curriculum to get started.'}
             </p>
-            <Link
-              href="/admin/batches/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
-            >
-              <PlusCircle className="w-4 h-4" /> Create Batch
-            </Link>
+            <div className="flex items-center justify-center gap-3">
+              {selectedCourseId !== 'all' && (
+                <button
+                  onClick={() => setSelectedCourseId('all')}
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
+                >
+                  সকল ব্যাচ দেখুন
+                </button>
+              )}
+              <Link
+                href={`/admin/batches/new${selectedCourseId !== 'all' ? `?courseId=${selectedCourseId}` : ''}`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              >
+                <PlusCircle className="w-4 h-4" /> Create Batch
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-            {batches.map((batch, idx) => {
+            {filteredBatches.map((batch, idx) => {
               const batchAccents = [
                 'from-blue-600 via-indigo-600 to-violet-700',
                 'from-violet-600 via-purple-600 to-fuchsia-700',
@@ -299,5 +372,19 @@ export default function AdminBatchesPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function AdminBatchesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 flex items-center justify-center">
+          <div className="text-xs font-bold text-slate-400">লোড হচ্ছে...</div>
+        </div>
+      }
+    >
+      <AdminBatchesContent />
+    </Suspense>
   );
 }

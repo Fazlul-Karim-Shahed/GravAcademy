@@ -17,8 +17,11 @@ import {
   Sparkles,
   ArrowRight,
   Compass,
+  ChevronRight,
+  User,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib/classes';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -27,6 +30,8 @@ export const Navbar: React.FC = () => {
   const [classes, setClasses] = React.useState<AcademicClassItem[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const dropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const profileMenuRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
@@ -35,12 +40,21 @@ export const Navbar: React.FC = () => {
     const handleUpdate = () => {
       getSharedAcademicClasses().then((data) => setClasses(data || []));
     };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+
     if (typeof window !== 'undefined') {
       window.addEventListener('grav_classes_updated', handleUpdate);
+      document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('grav_classes_updated', handleUpdate);
+        document.removeEventListener('mousedown', handleClickOutside);
       }
     };
   }, []);
@@ -194,11 +208,6 @@ export const Navbar: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>ফ্রি ক্লাস</span>
           </Link>
-          {user && (
-            <Link href={getDashboardLink()} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              ড্যাশবোর্ড
-            </Link>
-          )}
         </nav>
 
         {/* User Account & Dark/Light Toggle */}
@@ -224,35 +233,129 @@ export const Navbar: React.FC = () => {
           </button>
 
           {mounted && user ? (
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:block text-right">
-                <span className="text-sm font-bold text-slate-900 dark:text-white block leading-tight">
-                  {user.name}
-                </span>
-                <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                  {user.userId && (
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
-                      ID: {user.userId}
-                    </span>
-                  )}
-                  <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold block leading-tight">
-                    {user.role === 'admin' || user.role === 'superadmin'
-                      ? 'এডমিন'
-                      : user.role === 'teacher'
-                      ? 'শিক্ষক'
-                      : user.role === 'guardian'
-                      ? 'অভিভাবক'
-                      : 'শিক্ষার্থী'}
-                  </span>
-                </div>
-              </div>
+            <div className="relative" ref={profileMenuRef}>
+              {/* Profile Avatar Button */}
               <button
-                onClick={logout}
-                className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
-                title="লগআউট"
+                type="button"
+                onClick={() => setIsProfileOpen((prev) => !prev)}
+                className="rounded-2xl transition-transform hover:scale-105 focus:outline-none cursor-pointer"
+                aria-label="ইউজার প্রোফাইল মেনু"
               >
-                <LogOut className="w-4 h-4" />
+                <UserAvatar
+                  name={user.name}
+                  avatarUrl={user.avatarUrl}
+                  role={user.role}
+                  size="md"
+                />
               </button>
+
+              {/* Profile Dropdown Menu */}
+              {isProfileOpen && (
+                <div className="absolute right-0 top-full mt-3 w-72 rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-blue-900/10 dark:shadow-black/40 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
+                  {/* Ambient accent blob */}
+                  <div className="absolute -top-10 -right-10 w-28 h-28 bg-blue-500/15 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
+
+                  {/* User Profile Summary */}
+                  <div className="relative p-4 pb-3 border-b border-slate-100 dark:border-slate-800/80">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar
+                        name={user.name}
+                        avatarUrl={user.avatarUrl}
+                        role={user.role}
+                        size="md"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-sm font-black text-slate-900 dark:text-white truncate">
+                            {user.name}
+                          </h4>
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                            {user.role === 'admin' || user.role === 'superadmin'
+                              ? 'এডমিন'
+                              : user.role === 'teacher'
+                              ? 'শিক্ষক'
+                              : user.role === 'guardian'
+                              ? 'অভিভাবক'
+                              : 'শিক্ষার্থী'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Compact User ID strip */}
+                    {user.userId && (
+                      <div className="mt-3 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                          ইউজার আইডি
+                        </span>
+                        <span className="font-mono font-black text-xs text-blue-600 dark:text-blue-400 tracking-wide select-all">
+                          {user.userId}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions / Menu Items */}
+                  <div className="p-2 space-y-1">
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="group/item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-all text-xs font-bold text-slate-700 dark:text-slate-200"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-200/60 dark:border-purple-800/60 group-hover/item:scale-105 transition-transform">
+                          <User className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="block leading-tight">আমার প্রোফাইল</span>
+                          <span className="block text-[10px] text-slate-400 font-normal">ব্যক্তিগত ও অ্যাকাডেমিক তথ্য</span>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover/item:translate-x-0.5 group-hover/item:text-purple-600 dark:group-hover/item:text-purple-400 transition-all" />
+                    </Link>
+
+                    <Link
+                      href={getDashboardLink()}
+                      onClick={() => setIsProfileOpen(false)}
+                      className="group/item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-all text-xs font-bold text-slate-700 dark:text-slate-200"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/60 group-hover/item:scale-105 transition-transform">
+                          <LayoutDashboard className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="block leading-tight">ড্যাশবোর্ড</span>
+                          <span className="block text-[10px] text-slate-400 font-normal">আমার ক্লাসরুম ও কোর্সসমূহ</span>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover/item:translate-x-0.5 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-all" />
+                    </Link>
+
+                    <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsProfileOpen(false);
+                        logout();
+                      }}
+                      className="group/logout w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 transition-all text-xs font-bold text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-200/60 dark:border-rose-800/60 group-hover/logout:scale-105 transition-transform">
+                          <LogOut className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="block leading-tight">লগআউট</span>
+                          <span className="block text-[10px] text-rose-400/80 font-normal">একাউন্ট থেকে সাইন-আউট</span>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center gap-2">

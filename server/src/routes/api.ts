@@ -119,6 +119,20 @@ router.get(
   authenticate,
   enrollmentCtrl.getMyBatches
 );
+// Admin Admission & Enrollment Routes
+router.post(
+  '/enrollments/admin-admit',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  validateRequest(enrollmentCtrl.adminAdmitStudentSchema),
+  enrollmentCtrl.adminAdmitStudent
+);
+router.get(
+  '/enrollments/admin-list',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  enrollmentCtrl.getAdminEnrollments
+);
 
 // --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---
 router.get('/classrooms/:batchId', authenticate, classroomCtrl.getClassroomOverview);

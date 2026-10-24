@@ -23,6 +23,7 @@ import {
   MessageSquare,
   IdCard,
   Hash,
+  User,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -97,12 +98,9 @@ export default function StudentDashboard() {
                 </span>
               </h1>
 
-              {/* Unique User ID Display Badge */}
+              {/* Unique User ID Display (Visible on mobile/small screens below greeting) */}
               {user?.userId && (
-                <div className="inline-flex items-center gap-2 mt-2 px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xs">
-                  <div className="w-5 h-5 rounded-lg bg-blue-500/30 flex items-center justify-center text-blue-300">
-                    <IdCard className="w-3.5 h-3.5" />
-                  </div>
+                <div className="inline-flex md:hidden items-center gap-1.5 mt-2 text-white">
                   <span className="text-xs text-slate-300 font-medium">ইউজার আইডি:</span>
                   <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono">
                     {user.userId}
@@ -115,22 +113,34 @@ export default function StudentDashboard() {
               </p>
             </div>
 
-            {/* Quick Actions */}
-            <div className="flex flex-wrap items-center gap-3 self-start md:self-auto shrink-0">
-              <Link
-                href="/free-classes"
-                className="px-5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-black border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all shadow-md hover:scale-102"
-              >
-                <Video className="w-4 h-4 text-emerald-400" />
-                <span>ফ্রি লাইভ ক্লাস</span>
-              </Link>
-              <Link
-                href="/courses"
-                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/25 flex items-center gap-2 transition-all hover:scale-102"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>সকল কোর্স</span>
-              </Link>
+            {/* Right section: User ID (large screen) + Quick Actions */}
+            <div className="flex flex-col md:items-end gap-3 self-start md:self-auto shrink-0">
+              {/* Unique User ID Display (Visible on md/lg screens on the right) */}
+              {user?.userId && (
+                <div className="hidden md:inline-flex items-center gap-1.5 text-white">
+                  <span className="text-xs text-slate-300 font-medium">ইউজার আইডি:</span>
+                  <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono">
+                    {user.userId}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href="/profile"
+                  className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all shadow-md hover:scale-102"
+                >
+                  <User className="w-4 h-4 text-amber-300" />
+                  <span>আমার প্রোফাইল</span>
+                </Link>
+                <Link
+                  href="/courses"
+                  className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/25 flex items-center gap-2 transition-all hover:scale-102"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>সকল কোর্স</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

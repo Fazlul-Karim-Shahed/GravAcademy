@@ -18,6 +18,7 @@ import {
   ExternalLink,
   Sparkles,
 } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface UserRecord {
   _id: string;
@@ -179,7 +180,7 @@ export default function AdminSettingsPage() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        placeholder="নাম বা ইমেইল..."
+                        placeholder="নাম বা আইডি..."
                         className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-8 pr-3 py-2 w-44 sm:w-52 focus:outline-none focus:border-blue-500"
                       />
                     </div>
@@ -205,6 +206,7 @@ export default function AdminSettingsPage() {
                     <thead>
                       <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-400 font-semibold uppercase text-[11px]">
                         <th className="py-3 px-4">ইউজার</th>
+                        <th className="py-3 px-4">আইডি (User ID)</th>
                         <th className="py-3 px-3">রোল</th>
                         <th className="py-3 px-3">স্ট্যাটাস</th>
                         <th className="py-3 px-4 text-right">অ্যাকশন</th>
@@ -213,13 +215,13 @@ export default function AdminSettingsPage() {
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                       {loadingUsers ? (
                         <tr>
-                          <td colSpan={4} className="text-center py-10 text-slate-400">
+                          <td colSpan={5} className="text-center py-10 text-slate-400">
                             লোড হচ্ছে...
                           </td>
                         </tr>
                       ) : users.length === 0 ? (
                         <tr>
-                          <td colSpan={4} className="text-center py-10 text-slate-400">
+                          <td colSpan={5} className="text-center py-10 text-slate-400">
                             কোনো অ্যাকাউন্ট পাওয়া যায়নি।
                           </td>
                         </tr>
@@ -229,27 +231,23 @@ export default function AdminSettingsPage() {
                             {/* User Avatar + Name */}
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-300 text-xs shrink-0 overflow-hidden">
-                                  {u.avatarUrl ? (
-                                    <img src={u.avatarUrl} alt={u.name} className="w-full h-full object-cover" />
-                                  ) : (
-                                    u.name.slice(0, 2).toUpperCase()
-                                  )}
-                                </div>
+                                <UserAvatar
+                                  name={u.name}
+                                  avatarUrl={u.avatarUrl}
+                                  role={u.role}
+                                  size="sm"
+                                />
                                 <div className="min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-bold text-slate-900 dark:text-white truncate">{u.name}</span>
-                                    {u.userId && (
-                                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-slate-700 shrink-0">
-                                        ID: {u.userId}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="text-[11px] text-slate-400 truncate">
-                                    {u.email || u.phone || 'ইমেইল নেই'}
-                                  </div>
+                                  <div className="font-bold text-slate-900 dark:text-white truncate">{u.name}</div>
                                 </div>
                               </div>
+                            </td>
+
+                            {/* User ID Column */}
+                            <td className="py-3 px-4 whitespace-nowrap">
+                              <span className="font-mono font-bold text-xs px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
+                                {u.userId || '—'}
+                              </span>
                             </td>
 
                             {/* Role */}

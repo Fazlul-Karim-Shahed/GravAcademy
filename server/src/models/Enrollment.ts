@@ -9,6 +9,9 @@ export interface IEnrollment extends Document {
   enrolledAt: Date;
   completedAt?: Date;
   notes?: string;
+  paymentFee?: number;
+  paymentStatus?: 'paid' | 'unpaid' | 'partial';
+  enrolledBy?: mongoose.Types.ObjectId; // Admin who enrolled
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +50,19 @@ const EnrollmentSchema = new Schema<IEnrollment>(
     },
     notes: {
       type: String,
+    },
+    paymentFee: {
+      type: Number,
+      default: 0,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['paid', 'unpaid', 'partial'],
+      default: 'paid',
+    },
+    enrolledBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   { timestamps: true }

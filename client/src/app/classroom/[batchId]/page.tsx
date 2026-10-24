@@ -26,6 +26,7 @@ import {
   AlertCircle,
   RefreshCw,
 } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface BatchInfo {
   _id: string;
@@ -703,15 +704,12 @@ export default function BatchClassroomPage({
           <div className="space-y-6">
             
             {/* Summary Strip */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-2">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   <span>ক্লাসরুম মেম্বার তালিকা ({memberCounts.totalMembers} জন)</span>
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  এই ব্যাচে এনরোল করা সকল শিক্ষক ও শিক্ষার্থীদের পরিচিতি ও যোগাযোগের তালিকা।
-                </p>
               </div>
 
               <div className="flex items-center gap-3">
@@ -737,9 +735,12 @@ export default function BatchClassroomPage({
                     key={t._id}
                     className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 shadow-xs flex items-center gap-3.5"
                   >
-                    <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm shadow-blue-600/20">
-                      {t.name.slice(0, 2).toUpperCase()}
-                    </div>
+                    <UserAvatar
+                      name={t.name}
+                      avatarUrl={t.avatarUrl}
+                      role="teacher"
+                      size="lg"
+                    />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
@@ -760,9 +761,12 @@ export default function BatchClassroomPage({
                     key={s._id}
                     className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5 hover:border-emerald-300 transition-colors"
                   >
-                    <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center font-bold text-sm shrink-0">
-                      {s.name.slice(0, 2).toUpperCase()}
-                    </div>
+                    <UserAvatar
+                      name={s.name}
+                      avatarUrl={s.avatarUrl}
+                      role="student"
+                      size="lg"
+                    />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">

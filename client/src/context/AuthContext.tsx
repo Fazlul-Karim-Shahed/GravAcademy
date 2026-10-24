@@ -12,6 +12,24 @@ export interface User {
   phone?: string;
   role: 'superadmin' | 'admin' | 'teacher' | 'student' | 'guardian' | 'employee';
   avatarUrl?: string;
+  bio?: string;
+  teacherDetails?: {
+    institution?: string;
+    department?: string;
+    experience?: string;
+    specialistSubjects?: string[];
+    badge?: string;
+    cvUrl?: string;
+    classesCount?: string;
+    studentsCount?: string;
+  };
+  studentDetails?: {
+    schoolOrCollege?: string;
+    gradeLevel?: string;
+    group?: string;
+    guardianName?: string;
+    guardianPhone?: string;
+  };
   customPermissions?: string[];
 }
 
@@ -21,6 +39,7 @@ interface AuthContextType {
   loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
+  updateUser: (updatedFields: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,6 +48,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: () => {},
   logout: () => {},
+  updateUser: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -69,8 +89,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUser = (updatedFields: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const merged = { ...prev, ...updatedFields };
+      Cookies.set('grav_user', JSON.stringify(merged), { expires: 7, secure: true, sameSite: 'strict' });
+      return merged;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

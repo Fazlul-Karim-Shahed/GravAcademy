@@ -352,13 +352,9 @@ function AdminCoursesContent() {
                     {/* Card Content Body */}
                     <div className="p-5 flex flex-col flex-1">
                       <div className="flex-1">
-                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
+                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-4">
                           {course.title}
                         </h3>
-
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
-                          {course.description || 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট, লেকচার ও প্র্যাকটিস সমৃদ্ধ স্পেশাল কোর্স।'}
-                        </p>
                       </div>
 
                       {/* Meta Information Cards */}
@@ -408,7 +404,7 @@ function AdminCoursesContent() {
 
                             {/* Batches */}
                             <Link
-                              href="/admin/batches"
+                              href={`/admin/batches?courseId=${course._id}`}
                               className="group/batch block px-2 min-w-0 rounded-xl hover:bg-white dark:hover:bg-slate-900/80 transition-colors"
                               title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
                             >
@@ -427,6 +423,8 @@ function AdminCoursesContent() {
                   <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
                     <Link
                       href={`/courses/${course.slug || course._id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/90 dark:border-slate-700/80 transition-all shadow-2xs hover:shadow-xs group/btn"
                     >
                       <span>ভিউ পেজ</span>
