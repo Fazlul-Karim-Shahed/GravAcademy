@@ -18,7 +18,8 @@ import {
   Sparkles,
   ChevronRight,
   ShieldCheck,
-  FolderOpen
+  FolderOpen,
+  Settings,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 
@@ -93,6 +94,12 @@ export default function AdminDashboardPage() {
             >
               <Copy className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Batches
             </Link>
+            <Link
+              href="/admin/settings"
+              className="px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors border border-slate-800 dark:border-slate-700"
+            >
+              <Settings className="w-3.5 h-3.5 text-emerald-400" /> অন্যান্য সেটিংস
+            </Link>
           </div>
         </div>
 
@@ -159,37 +166,7 @@ export default function AdminDashboardPage() {
             </div>
           </Link>
 
-          {/* Card 3: Users */}
-          <Link
-            href="/admin/users"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300"
-          >
-            {/* Elegant Large Watermark Background Icon */}
-            <Users className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
-
-            <div className="relative z-10 flex flex-col justify-between h-full">
-              <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  Registered Users
-                </span>
-                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                  <Users className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  {stats.usersCount}
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                  <span>Roles & Permissions</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </div>
-          </Link>
-
-          {/* Card 4: Free Classes */}
+          {/* Card 3: Free Classes & Seminars */}
           <Link
             href="/free-classes"
             className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300"
@@ -213,6 +190,36 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
                   <span>ফ্রি ক্লাস পরিচালনা করুন</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 4: Other Settings (অন্যান্য সেটিংস) */}
+          <Link
+            href="/admin/settings"
+            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300"
+          >
+            {/* Elegant Large Watermark Background Icon */}
+            <Settings className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col justify-between h-full">
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  অন্যান্য সেটিংস
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <Settings className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div>
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  কন্ট্রোল সেন্টার
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                  <span>ইউজার, হোমপেজ ও অন্যান্য কনফিগ</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
