@@ -364,3 +364,71 @@ export const getPublicTeachers = async (_req: any, res: Response) => {
     return res.status(500).json({ success: false, message: 'Failed to fetch teachers.' });
   }
 };
+
+/**
+ * Upload Profile Avatar Photo directly to Google Drive and update user's avatarUrl
+ */
+export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'কোনো ছবি আপলোড করা হয়নি।' });
+    }
+
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return res.status(400).json({
+        success: false,
+        message: 'শুধুমাত্র JPG, PNG বা WebP ফরম্যাটের ছবি আপলোড করা যাবে।',
+      });
+    }
+
+    const sanitizedName = `avatar_${req.user.userId || req.user._id}_${Date.now()}.${file.mimetype.split('/')[1] || 'jpg'}`;
+
+    let driveFileId = '';
+    const isDriveConfigured =
+      process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.GOOGLE_REFRESH_TOKEN;
+
+    if (isDriveConfigured) {
+      const { uploadFileToDrive } = await import('../services/googleDriveService');
+      const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
+      driveFileId = driveRes.fileId;
+    } else {
+      console.warn('⚠️ Google Drive OAuth not configured. Using stub.');
+      driveFileId = `stub_drive_${Date.now()}`;
+    }
+
+    // Google Drive direct image viewable URL
+    const avatarUrl = isDriveConfigured
+      ? `https://drive.google.com/uc?export=view&id=${driveFileId}`
+      : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(req.user.name)}`;
+
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.avatarUrl = avatarUrl;
+      await user.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'প্রোফাইল ছবি সফলভাবে ড্রাইভে আপলোড ও সেভ করা হয়েছে!',
+      data: {
+        avatarUrl,
+        driveFileId,
+      },
+    });
+  } catch (error: any) {
+    console.error('uploadAvatar error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'ছবি আপলোড করতে সমস্যা হয়েছে।',
+    });
+  }
+};
+

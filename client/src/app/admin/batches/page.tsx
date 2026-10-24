@@ -58,13 +58,18 @@ function AdminBatchesContent() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>(initialCourseId);
   const [loading, setLoading] = useState(true);
-
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   useEffect(() => {
     const cid = searchParams.get('courseId');
     if (cid) {
       setSelectedCourseId(cid);
+    } else {
+      setSelectedCourseId('all');
     }
   }, [searchParams]);
 

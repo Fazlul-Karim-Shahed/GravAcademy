@@ -29,6 +29,7 @@ router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl
 router.post('/auth/login', validateRequest(authCtrl.loginSchema), authCtrl.login);
 router.get('/auth/me', authenticate, authCtrl.getMe);
 router.put('/auth/profile', authenticate, authCtrl.updateProfile);
+router.post('/auth/avatar', authenticate, upload.single('avatar'), authCtrl.uploadAvatar);
 router.get('/teachers', authCtrl.getPublicTeachers);
 
 // --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
