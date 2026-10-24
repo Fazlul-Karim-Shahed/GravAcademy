@@ -25,6 +25,12 @@ import {
   Filter,
   Upload,
   RotateCcw,
+  Eye,
+  Info,
+  Mail,
+  GraduationCap,
+  Building2,
+  X,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
@@ -55,6 +61,18 @@ interface BatchOption {
   name: string;
 }
 
+export interface GroupedStudentBatchPayment {
+  key: string;
+  studentId: PaymentReceiptData['studentId'];
+  batchId?: PaymentReceiptData['batchId'];
+  courseId?: PaymentReceiptData['courseId'];
+  totalAmountPaid: number;
+  totalDue: number;
+  lastPaymentDate?: string;
+  payments: PaymentReceiptData[];
+  latestPayment: PaymentReceiptData;
+}
+
 export default function AdminFinancePage() {
   const [payments, setPayments] = useState<PaymentReceiptData[]>([]);
   const [stats, setStats] = useState<FinancialStats | null>(null);
@@ -62,6 +80,49 @@ export default function AdminFinancePage() {
   const [search, setSearch] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('all');
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
+  const [activeDetailsGroup, setActiveDetailsGroup] = useState<GroupedStudentBatchPayment | null>(null);
+
+  // Group payments so each student in a batch appears once in the list
+  const groupedPayments: GroupedStudentBatchPayment[] = React.useMemo(() => {
+    const map = new Map<string, GroupedStudentBatchPayment>();
+
+    for (const p of payments) {
+      const studentKey = p.studentId?._id || p.studentId?.userId || (p.studentId as any) || 'unknown';
+      const batchKey = p.batchId?._id || (p.batchId as any) || 'no_batch';
+      const key = `${studentKey}_${batchKey}`;
+
+      if (!map.has(key)) {
+        map.set(key, {
+          key,
+          studentId: p.studentId,
+          batchId: p.batchId,
+          courseId: p.courseId,
+          totalAmountPaid: p.amountPaid || 0,
+          totalDue: p.dueAmount !== undefined ? p.dueAmount : 0,
+          lastPaymentDate: p.paidAt || p.createdAt,
+          payments: [p],
+          latestPayment: p,
+        });
+      } else {
+        const item = map.get(key)!;
+        item.payments.push(p);
+        item.totalAmountPaid += (p.amountPaid || 0);
+        // The latest due amount is the most up-to-date due
+        if (p.dueAmount !== undefined) {
+          // If latestPayment was created earlier, keep the most recent due
+          const curTime = new Date(item.latestPayment.paidAt || item.latestPayment.createdAt || 0).getTime();
+          const thisTime = new Date(p.paidAt || p.createdAt || 0).getTime();
+          if (thisTime >= curTime) {
+            item.totalDue = p.dueAmount;
+            item.latestPayment = p;
+            item.lastPaymentDate = p.paidAt || p.createdAt;
+          }
+        }
+      }
+    }
+
+    return Array.from(map.values());
+  }, [payments]);
 
   // New Filters: Card click filter & Date Range Filter & Pagination
   const [cardFilterType, setCardFilterType] = useState<'none' | 'total' | 'today' | 'due'>('none');
@@ -570,29 +631,32 @@ export default function AdminFinancePage() {
                   <th className="py-4 px-6">রিসিট নং ও তারিখ</th>
                   <th className="py-4 px-6">শিক্ষার্থী</th>
                   <th className="py-4 px-6">ব্যাচ ও কোর্স</th>
-                  <th className="py-4 px-6">পেমেন্ট মাধ্যম ও TrxID</th>
-                  <th className="py-4 px-6 text-right">আদায়ের পরিমাণ</th>
-                  <th className="py-4 px-6 text-center">অ্যাকশন</th>
+                  <th className="py-4 px-6 text-right">মোট পরিশোধ</th>
+                  <th className="py-4 px-6 text-right">বকেয়া</th>
+                  <th className="py-4 px-6 text-center">বকেয়া জমা</th>
+                  <th className="py-4 px-6 text-center">রিসিট</th>
+                  <th className="py-4 px-6 text-center">Details</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="py-16 text-center text-slate-400 text-xs">
+                    <td colSpan={8} className="py-16 text-center text-slate-400 text-xs">
                       <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-500" />
                       পেমেন্ট ডাটা লোড হচ্ছে...
                     </td>
                   </tr>
-                ) : payments.length === 0 ? (
+                ) : groupedPayments.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-16 text-center text-slate-400 text-xs">
+                    <td colSpan={8} className="py-16 text-center text-slate-400 text-xs">
                       কোনো লেনদেনের তথ্য পাওয়া যায়নি।
                     </td>
                   </tr>
                 ) : (
-                  payments.map((p) => {
-                    const payDate = p.paidAt
-                      ? new Date(p.paidAt).toLocaleDateString('bn-BD', {
+                  groupedPayments.map((group) => {
+                    const latestP = group.latestPayment;
+                    const payDate = group.lastPaymentDate
+                      ? new Date(group.lastPaymentDate).toLocaleDateString('bn-BD', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
@@ -601,105 +665,121 @@ export default function AdminFinancePage() {
 
                     return (
                       <tr
-                        key={p._id}
+                        key={group.key}
                         className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
                       >
                         {/* Receipt No & Date */}
                         <td className="py-4 px-6">
                           <span className="font-mono font-bold text-xs text-blue-600 dark:text-blue-400 select-all block">
-                            {p.receiptNo}
+                            {latestP.receiptNo}
                           </span>
                           <span className="text-[11px] text-slate-400 mt-0.5 block">
                             {payDate}
                           </span>
                         </td>
 
-                        {/* Student */}
+                        {/* Student (Name and ID only) */}
                         <td className="py-4 px-6">
                           <div className="font-bold text-slate-900 dark:text-white">
-                            {p.studentId?.name || 'অজ্ঞাত'}
+                            {group.studentId?.name || 'অজ্ঞাত'}
                           </div>
-                          <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-400">
+                          <div className="mt-0.5 text-xs text-slate-400">
                             <span className="font-mono text-slate-500 dark:text-slate-300">
-                              #{p.studentId?.userId || 'N/A'}
+                              #{group.studentId?.userId || 'N/A'}
                             </span>
-                            {p.studentId?.phone && <span>• {p.studentId.phone}</span>}
                           </div>
                         </td>
 
                         {/* Batch & Course */}
                         <td className="py-4 px-6">
                           <div className="font-semibold text-slate-800 dark:text-slate-200">
-                            {p.batchId?.name || '—'}
+                            {group.batchId?.name || '—'}
                           </div>
-                          {p.courseId?.title && (
+                          {group.courseId?.title && (
                             <span className="text-xs text-slate-400 truncate block max-w-xs">
-                              {p.courseId.title}
+                              {group.courseId.title}
                             </span>
                           )}
                         </td>
 
-                        {/* Payment Method */}
-                        <td className="py-4 px-6">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 capitalize">
-                            {p.paymentMethod === 'bkash' ? '📱 বিকাশ' : p.paymentMethod === 'bank_transfer' ? '🏦 ব্যাংক' : p.paymentMethod === 'nagad' ? '📱 নগদ' : '💵 ক্যাশ'}
-                          </span>
-                          {p.transactionId && (
-                            <span className="block font-mono text-[11px] text-slate-400 mt-1">
-                              Trx: {p.transactionId}
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Amount */}
+                        {/* Total Paid Amount */}
                         <td className="py-4 px-6 text-right">
                           <div className="text-base font-black text-emerald-600 dark:text-emerald-400">
-                            ৳{p.amountPaid?.toLocaleString('bn-BD')}
+                            ৳{group.totalAmountPaid.toLocaleString('bn-BD')}
                           </div>
-                          {p.dueAmount !== undefined && p.dueAmount > 0 && (
-                            <span className="text-[11px] font-bold text-rose-500 block">
-                              বকেয়া: ৳{p.dueAmount.toLocaleString('bn-BD')}
+                          {group.payments.length > 1 && (
+                            <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 mt-0.5">
+                              {group.payments.length} বার পেমেন্ট
                             </span>
                           )}
                         </td>
 
-                        {/* Actions */}
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            {p.dueAmount !== undefined && p.dueAmount > 0 && (
-                              <button
-                                onClick={() => {
-                                  if (p.studentId) {
-                                    setSelectedStudent({
-                                      _id: p.studentId._id || (p.studentId as any),
-                                      name: p.studentId.name,
-                                      userId: p.studentId.userId,
-                                      phone: p.studentId.phone,
-                                    });
-                                  }
-                                  if (p.batchId) {
-                                    setCollectBatchId(p.batchId._id || (p.batchId as any));
-                                  }
-                                  setCollectAmount(p.dueAmount || 0);
-                                  setIsCollectModalOpen(true);
-                                }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/60 dark:border-emerald-800/60 transition-colors cursor-pointer"
-                                title="বকেয়া কিস্তি গ্রহণ করুন"
-                              >
-                                <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
-                              </button>
-                            )}
+                        {/* Due Amount (Separate column) */}
+                        <td className="py-4 px-6 text-right">
+                          {group.totalDue > 0 ? (
+                            <div className="text-sm font-bold text-rose-500">
+                              বকেয়া: ৳{group.totalDue.toLocaleString('bn-BD')}
+                            </div>
+                          ) : (
+                            <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+                              পরিশোধিত
+                            </span>
+                          )}
+                        </td>
 
-                            {p.amountPaid > 0 && (
-                              <button
-                                onClick={() => setActiveReceipt(p)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
-                                title="মানি রিসিট দেখুন ও প্রিন্ট করুন"
-                              >
-                                <Printer className="w-3.5 h-3.5" /> রিসিট
-                              </button>
-                            )}
-                          </div>
+                        {/* বকেয়া জমা (Separate column) */}
+                        <td className="py-4 px-6 text-center">
+                          {group.totalDue > 0 ? (
+                            <button
+                              onClick={() => {
+                                if (group.studentId) {
+                                  setSelectedStudent({
+                                    _id: group.studentId._id || (group.studentId as any),
+                                    name: group.studentId.name,
+                                    userId: group.studentId.userId,
+                                    phone: group.studentId.phone,
+                                  });
+                                }
+                                if (group.batchId) {
+                                  setCollectBatchId(group.batchId._id || (group.batchId as any));
+                                }
+                                setCollectAmount(group.totalDue || 0);
+                                setIsCollectModalOpen(true);
+                              }}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/60 dark:border-emerald-800/60 transition-colors cursor-pointer"
+                              title="বকেয়া কিস্তি গ্রহণ করুন"
+                            >
+                              <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
+                            </button>
+                          ) : (
+                            <span className="text-slate-300 dark:text-slate-700 text-xs">—</span>
+                          )}
+                        </td>
+
+                        {/* Receipt Button (Separate column) */}
+                        <td className="py-4 px-6 text-center">
+                          {group.totalAmountPaid > 0 ? (
+                            <button
+                              onClick={() => setActiveReceipt(latestP)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
+                              title="মানি রিসিট দেখুন ও প্রিন্ট করুন"
+                            >
+                              <Printer className="w-3.5 h-3.5" /> রিসিট
+                            </button>
+                          ) : (
+                            <span className="text-slate-300 dark:text-slate-700 text-xs">—</span>
+                          )}
+                        </td>
+
+                        {/* Details Button */}
+                        <td className="py-4 px-6 text-center">
+                          <button
+                            onClick={() => setActiveDetailsGroup(group)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/70 dark:border-slate-700 transition-colors cursor-pointer shadow-2xs"
+                            title="শিক্ষার্থী ও পেমেন্ট হিস্ট্রি দেখুন"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-blue-500" /> Details
+                          </button>
                         </td>
                       </tr>
                     );
@@ -994,6 +1074,227 @@ export default function AdminFinancePage() {
         onClose={() => setActiveReceipt(null)}
         data={activeReceipt}
       />
+
+      {/* Student Details & Payment History Modal */}
+      {activeDetailsGroup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
+                    শিক্ষার্থী ও পেমেন্ট বিবরণী
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    শিক্ষার্থীর মৌলিক তথ্য এবং এই ব্যাচে প্রদানের যাবতীয় হিস্ট্রি
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveDetailsGroup(null)}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6 overflow-y-auto">
+              {/* Basic Student Info Card */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
+                      {activeDetailsGroup.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
+                    </h4>
+                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                      আইডি: #{activeDetailsGroup.studentId?.userId || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+                      ব্যাচ ও কোর্স
+                    </span>
+                    <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                      {activeDetailsGroup.batchId?.name || '—'}
+                    </span>
+                    {activeDetailsGroup.courseId?.title && (
+                      <span className="text-xs text-slate-400 block truncate max-w-xs">
+                        {activeDetailsGroup.courseId.title}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-xs">
+                  {activeDetailsGroup.studentId?.phone && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <Phone className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{activeDetailsGroup.studentId.phone}</span>
+                    </div>
+                  )}
+                  {activeDetailsGroup.studentId?.email && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{activeDetailsGroup.studentId.email}</span>
+                    </div>
+                  )}
+                  {activeDetailsGroup.studentId?.studentDetails?.schoolOrCollege && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                      <span>প্রতিষ্ঠান: {activeDetailsGroup.studentId.studentDetails.schoolOrCollege}</span>
+                    </div>
+                  )}
+                  {activeDetailsGroup.studentId?.studentDetails?.gradeLevel && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
+                      <span>শ্রেণি: {activeDetailsGroup.studentId.studentDetails.gradeLevel}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Total Financial Summary Cards */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/60">
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 block">
+                    সর্বমোট পরিশোধিত টাকা
+                  </span>
+                  <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
+                    ৳{activeDetailsGroup.totalAmountPaid.toLocaleString('bn-BD')}
+                  </span>
+                  <span className="text-[11px] text-emerald-600/80 font-medium">
+                    মোট {activeDetailsGroup.payments.filter((p) => p.amountPaid > 0).length} টি কিস্তিতে
+                  </span>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-800/60">
+                  <span className="text-xs font-bold text-rose-700 dark:text-rose-300 block">
+                    বর্তমান অবশিষ্ট বকেয়া
+                  </span>
+                  <span className="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 block">
+                    ৳{activeDetailsGroup.totalDue.toLocaleString('bn-BD')}
+                  </span>
+                  <span className="text-[11px] text-rose-600/80 font-medium">
+                    {activeDetailsGroup.totalDue > 0 ? 'বকেয়া পরিশোধযোগ্য' : 'সম্পূর্ণ পরিশোধিত'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Individual Payment History List */}
+              <div>
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-blue-500" /> পেমেন্ট কিস্তি হিস্ট্রি ({activeDetailsGroup.payments.length} টি)
+                </h4>
+
+                <div className="space-y-2.5">
+                  {activeDetailsGroup.payments.map((p, idx) => {
+                    const payDateStr = p.paidAt || p.createdAt
+                      ? new Date(p.paidAt || p.createdAt || '').toLocaleDateString('bn-BD', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '—';
+
+                    return (
+                      <div
+                        key={p._id || idx}
+                        className="p-3.5 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-850 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                              {p.receiptNo}
+                            </span>
+                            <span className="text-[11px] text-slate-400">
+                              • {payDateStr}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-600 dark:text-slate-300">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-slate-100 dark:bg-slate-800 text-[11px]">
+                              {p.paymentMethod === 'bkash'
+                                ? '📱 বিকাশ'
+                                : p.paymentMethod === 'bank_transfer'
+                                ? '🏦 ব্যাংক'
+                                : p.paymentMethod === 'nagad'
+                                ? '📱 নগদ'
+                                : '💵 ক্যাশ'}
+                            </span>
+                            {p.transactionId && (
+                              <span className="font-mono text-[11px] text-slate-500">
+                                TrxID: {p.transactionId}
+                              </span>
+                            )}
+                            {p.senderNumber && (
+                              <span className="font-mono text-[11px] text-slate-500">
+                                Sender: {p.senderNumber}
+                              </span>
+                            )}
+                          </div>
+
+                          {p.notes && (
+                            <p className="text-[11px] text-slate-500 italic mt-1">
+                              মন্তব্য: {p.notes}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                          <div className="text-right">
+                            <span className="text-base font-black text-emerald-600 dark:text-emerald-400 block">
+                              ৳{p.amountPaid?.toLocaleString('bn-BD')}
+                            </span>
+                            {p.dueAmount !== undefined && (
+                              <span className="text-[10px] text-slate-400 font-medium block">
+                                এই কিস্তির পর বকেয়া: ৳{p.dueAmount.toLocaleString('bn-BD')}
+                              </span>
+                            )}
+                          </div>
+
+                          {p.amountPaid > 0 && (
+                            <button
+                              onClick={() => {
+                                setActiveDetailsGroup(null);
+                                setActiveReceipt(p);
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
+                              title="এই কিস্তির রিসিট দেখুন"
+                            >
+                              <Printer className="w-3 h-3" /> রিসিট
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 flex items-center justify-between">
+              <span className="text-xs text-slate-400">
+                শিক্ষার্থী আইডি: #{activeDetailsGroup.studentId?.userId || 'N/A'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveDetailsGroup(null)}
+                className="px-5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+              >
+                বন্ধ করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

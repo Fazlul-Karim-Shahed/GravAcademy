@@ -262,7 +262,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
             {/* Calculations Card */}
             <div className="w-full sm:w-64 space-y-2 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 print:bg-slate-50 print:border-slate-300">
               <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400 print:text-black">
-                <span>ব্যাচের মোট ফি:</span>
+                <span>কোর্সের মোট ফি:</span>
                 <span className="font-bold">৳{data.totalFee ? data.totalFee.toLocaleString('bn-BD') : data.amountPaid?.toLocaleString('bn-BD')}</span>
               </div>
               <div className="flex justify-between text-sm font-black text-emerald-600 dark:text-emerald-400 print:text-black border-t border-slate-200 dark:border-slate-700 pt-1.5">
