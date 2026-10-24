@@ -707,11 +707,6 @@ export default function AdminFinancePage() {
                           <div className="text-base font-black text-emerald-600 dark:text-emerald-400">
                             ৳{group.totalAmountPaid.toLocaleString('bn-BD')}
                           </div>
-                          {group.payments.length > 1 && (
-                            <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 mt-0.5">
-                              {group.payments.length} বার পেমেন্ট
-                            </span>
-                          )}
                         </td>
 
                         {/* Due Amount (Separate column) */}
