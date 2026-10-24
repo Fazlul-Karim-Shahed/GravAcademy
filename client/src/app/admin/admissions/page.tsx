@@ -608,18 +608,49 @@ export default function AdminAdmissionsPage() {
                       </span>
                     </div>
                   ) : (
-                    <div>
+                    <div className="relative">
                       <input
                         type="text"
                         value={existingStudentSearch}
                         onChange={(e) => setExistingStudentSearch(e.target.value)}
-                        placeholder="নাম, আইডি (UserId), ফোন নম্বর বা ইমেইল দিয়ে খুঁজুন..."
-                        className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                        placeholder="নাম, আইডি (UserId), ফোন নম্বর বা ইমেইল লিখুন..."
+                        className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
-                      <div className="max-h-40 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1 bg-white dark:bg-slate-900">
-                        {existingStudents
-                          .filter((s) => {
-                            if (!existingStudentSearch.trim()) return true;
+                      {/* Suggestion dropdown: Only appears when user types something */}
+                      {existingStudentSearch.trim() !== '' && (
+                        <div className="mt-2 max-h-48 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1 bg-white dark:bg-slate-900 shadow-lg">
+                          {existingStudents
+                            .filter((s) => {
+                              const q = existingStudentSearch.toLowerCase().trim();
+                              return (
+                                s.name?.toLowerCase().includes(q) ||
+                                s.userId?.toLowerCase().includes(q) ||
+                                (s.phone && s.phone.includes(q)) ||
+                                (s.email && s.email.toLowerCase().includes(q))
+                              );
+                            })
+                            .slice(0, 8)
+                            .map((s) => (
+                              <div
+                                key={s._id}
+                                onClick={() => handleSelectExistingStudent(s)}
+                                className="p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/50 cursor-pointer rounded-lg text-xs flex items-center justify-between transition-colors"
+                              >
+                                <div>
+                                  <span className="font-bold text-slate-900 dark:text-white block">
+                                    {s.name}
+                                  </span>
+                                  <span className="text-[11px] text-slate-400">
+                                    {s.phone || s.email || 'যোগাযোগ নেই'}
+                                  </span>
+                                </div>
+                                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                  #{s.userId}
+                                </span>
+                              </div>
+                            ))}
+
+                          {existingStudents.filter((s) => {
                             const q = existingStudentSearch.toLowerCase().trim();
                             return (
                               s.name?.toLowerCase().includes(q) ||
@@ -627,33 +658,13 @@ export default function AdminAdmissionsPage() {
                               (s.phone && s.phone.includes(q)) ||
                               (s.email && s.email.toLowerCase().includes(q))
                             );
-                          })
-                          .slice(0, 8)
-                          .map((s) => (
-                            <div
-                              key={s._id}
-                              onClick={() => handleSelectExistingStudent(s)}
-                              className="p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/50 cursor-pointer rounded-lg text-xs flex items-center justify-between transition-colors"
-                            >
-                              <div>
-                                <span className="font-bold text-slate-900 dark:text-white block">
-                                  {s.name}
-                                </span>
-                                <span className="text-[11px] text-slate-400">
-                                  {s.phone || s.email || 'যোগাযোগ নেই'}
-                                </span>
-                              </div>
-                              <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                #{s.userId}
-                              </span>
+                          }).length === 0 && (
+                            <div className="text-xs text-slate-400 p-3 text-center">
+                              &ldquo;{existingStudentSearch}&rdquo; দিয়ে কোনো শিক্ষার্থী পাওয়া যায়নি
                             </div>
-                          ))}
-                        {existingStudents.length === 0 && (
-                          <div className="text-xs text-slate-400 p-3 text-center">
-                            শিক্ষার্থীর তালিকা লোড হচ্ছে অথবা কোনো শিক্ষার্থী নেই
-                          </div>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
