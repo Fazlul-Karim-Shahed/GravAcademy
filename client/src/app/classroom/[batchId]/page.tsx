@@ -25,6 +25,7 @@ import {
   User,
   AlertCircle,
   RefreshCw,
+  FileText,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
@@ -361,6 +362,14 @@ export default function BatchClassroomPage({
                   <ExternalLink className="w-3.5 h-3.5 opacity-80" />
                 </a>
               )}
+
+              <Link
+                href={`/classroom/${batchId}/exams`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-500/30 active:scale-95 transition-all"
+              >
+                <FileText className="w-4 h-4" />
+                <span>এক্সাম রুম (Exam Room)</span>
+              </Link>
 
               <Link
                 href={`/learn/${batchId}`}

@@ -1,5 +1,10 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+export interface ICQQuestion {
+  questionText: string;
+  marks: number;
+}
+
 // --- Examination ---
 export interface IExamination extends Document {
   _id: mongoose.Types.ObjectId;
@@ -15,6 +20,11 @@ export interface IExamination extends Document {
   attemptLimit: number;
   randomizeQuestions: boolean;
   isPublished: boolean;
+  examType: 'upload_paper' | 'system_questions';
+  questionMode?: 'mcq' | 'cq' | 'both';
+  questionPaperUrl?: string;
+  cqQuestions?: ICQQuestion[];
+  createdBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,7 +47,28 @@ const ExaminationSchema = new Schema<IExamination>(
     endWindow: { type: Date, required: true },
     attemptLimit: { type: Number, default: 1, min: 1 },
     randomizeQuestions: { type: Boolean, default: false },
-    isPublished: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: true },
+    examType: {
+      type: String,
+      enum: ['upload_paper', 'system_questions'],
+      default: 'system_questions',
+    },
+    questionMode: {
+      type: String,
+      enum: ['mcq', 'cq', 'both'],
+      default: 'mcq',
+    },
+    questionPaperUrl: { type: String, default: '' },
+    cqQuestions: [
+      {
+        questionText: { type: String, required: true },
+        marks: { type: Number, required: true, default: 10 },
+      },
+    ],
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   { timestamps: true }
 );
@@ -94,6 +125,11 @@ export interface IStudentAnswer {
   marksAwarded?: number;
 }
 
+export interface ICQAnswer {
+  questionIndex: number;
+  answerText?: string;
+}
+
 export interface IExamAttempt extends Document {
   _id: mongoose.Types.ObjectId;
   studentId: mongoose.Types.ObjectId;
@@ -102,9 +138,17 @@ export interface IExamAttempt extends Document {
   startedAt: Date;
   submittedAt?: Date;
   answers: IStudentAnswer[];
+  cqAnswers?: ICQAnswer[];
+  studentDocumentUrl?: string; // Uploaded answer script (PDF or images)
+  mcqScore: number;
+  cqScore: number;
   totalScore: number;
   passed: boolean;
-  status: 'in_progress' | 'submitted' | 'timeout' | 'abandoned';
+  isEvaluated: boolean;
+  teacherFeedback?: string;
+  evaluatedBy?: mongoose.Types.ObjectId;
+  evaluatedAt?: Date;
+  status: 'in_progress' | 'submitted' | 'evaluated' | 'timeout' | 'abandoned';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -138,11 +182,24 @@ const ExamAttemptSchema = new Schema<IExamAttempt>(
         marksAwarded: { type: Number, default: 0 },
       },
     ],
+    cqAnswers: [
+      {
+        questionIndex: { type: Number },
+        answerText: { type: String, default: '' },
+      },
+    ],
+    studentDocumentUrl: { type: String, default: '' },
+    mcqScore: { type: Number, default: 0 },
+    cqScore: { type: Number, default: 0 },
     totalScore: { type: Number, default: 0 },
     passed: { type: Boolean, default: false },
+    isEvaluated: { type: Boolean, default: false },
+    teacherFeedback: { type: String, default: '' },
+    evaluatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    evaluatedAt: { type: Date },
     status: {
       type: String,
-      enum: ['in_progress', 'submitted', 'timeout', 'abandoned'],
+      enum: ['in_progress', 'submitted', 'evaluated', 'timeout', 'abandoned'],
       default: 'in_progress',
     },
   },

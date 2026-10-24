@@ -270,9 +270,29 @@ router.post(
 router.get('/documents/:fileAssetId/stream', authenticate, docCtrl.streamProtectedDocument);
 
 // --- EXAM ROUTES ---
+router.post(
+  '/exams',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.TEACHER),
+  examCtrl.createExam
+);
 router.get('/batches/:batchId/exams', authenticate, examCtrl.getBatchExams);
+router.get('/exams/:examId', authenticate, examCtrl.getExamDetails);
 router.get('/exams/:examId/take', authenticate, examCtrl.getStudentExamQuestions);
 router.post('/exams/:examId/submit', authenticate, examCtrl.submitExam);
+router.get(
+  '/exams/:examId/submissions',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.TEACHER),
+  examCtrl.getExamSubmissions
+);
+router.put(
+  '/exams/attempts/:attemptId/evaluate',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.TEACHER),
+  examCtrl.evaluateStudentAttempt
+);
+router.get('/exams/:examId/my-result', authenticate, examCtrl.getStudentExamResult);
 
 // --- LIVE CLASS & FREE PUBLIC CLASSES ROUTES ---
 router.get('/free-classes', liveCtrl.getFreePublicClasses);
