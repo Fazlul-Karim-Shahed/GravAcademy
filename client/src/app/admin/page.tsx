@@ -104,8 +104,8 @@ export default function AdminDashboardPage() {
 
         {/* Sleek Boxy Metric Cards with Watermark Background Icons */}
         <div className="space-y-4 mb-10">
-          {/* Row 1: Core Academic & Admission Modules */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          {/* Row 1: 6 Core Modules */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
             
             {/* Card 0: এডমিশন */}
             <Link
@@ -202,36 +202,8 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </Link>
-          </div>
 
-          {/* Row 2: Administration, Jobs & Control Modules */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3.5 sm:gap-4">
-            
-            {/* Card 4: ইউজার ম্যানেজমেন্ট */}
-            <Link
-              href="/admin/settings"
-              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-cyan-400/80 dark:hover:border-cyan-500/60 transition-all duration-300 flex flex-col justify-between"
-            >
-              <Users className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-cyan-500/10 dark:group-hover:text-cyan-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
-
-              <div className="relative z-10 flex items-center justify-between mb-3">
-                <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-900/50 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                  <Users className="w-4 h-4" />
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
-              </div>
-
-              <div className="relative z-10">
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.usersCount}
-                </div>
-                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                  ইউজার ম্যানেজমেন্ট
-                </div>
-              </div>
-            </Link>
-
-            {/* Card 5: জব সার্কুলার */}
+            {/* Card 4: জব সার্কুলার */}
             <Link
               href="/admin/jobs"
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between"
@@ -255,7 +227,7 @@ export default function AdminDashboardPage() {
               </div>
             </Link>
 
-            {/* Card 6: অন্যান্য সেটিংস */}
+            {/* Card 5: অন্যান্য সেটিংস */}
             <Link
               href="/admin/settings"
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between"
@@ -275,6 +247,34 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
                   অন্যান্য সেটিংস
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Row 2: Additional Management Modules (Starting with User Management) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+            
+            {/* Card 6: ইউজার ম্যানেজমেন্ট */}
+            <Link
+              href="/admin/settings"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-cyan-400/80 dark:hover:border-cyan-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Users className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-cyan-500/10 dark:group-hover:text-cyan-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-900/50 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                  <Users className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.usersCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  ইউজার ম্যানেজমেন্ট
                 </div>
               </div>
             </Link>
