@@ -452,9 +452,6 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                 <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 ml-1.5 font-medium">
                   {hierarchy.batch.courseId?.gradeLevel}
                 </span>
-                <span className="block text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Click the <strong>pencil icon</strong> on any module, section, or lecture to edit names and parameters.
-                </span>
               </p>
             </div>
 
