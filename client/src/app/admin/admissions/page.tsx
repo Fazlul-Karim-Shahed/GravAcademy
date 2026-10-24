@@ -904,14 +904,9 @@ export default function AdminAdmissionsPage() {
 
                     {/* Payment Status (Auto-detected) */}
                     <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                          পেমেন্ট অবস্থা
-                        </label>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60">
-                          ⚡ অটো ডিটেক্টেড
-                        </span>
-                      </div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        পেমেন্ট অবস্থা
+                      </label>
                       <select
                         value={paymentStatus}
                         onChange={(e) => setPaymentStatus(e.target.value as any)}
