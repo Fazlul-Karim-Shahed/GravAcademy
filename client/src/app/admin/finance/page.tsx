@@ -108,19 +108,30 @@ export default function AdminFinancePage() {
         const item = map.get(key)!;
         item.payments.push(p);
         item.totalAmountPaid += (p.amountPaid || 0);
-        // The latest due amount is the most up-to-date due
-        if (p.dueAmount !== undefined) {
-          // If latestPayment was created earlier, keep the most recent due
-          const curTime = new Date(item.latestPayment.paidAt || item.latestPayment.createdAt || 0).getTime();
-          const thisTime = new Date(p.paidAt || p.createdAt || 0).getTime();
-          if (thisTime >= curTime) {
-            item.totalDue = p.dueAmount;
-            item.latestPayment = p;
-            item.lastPaymentDate = p.paidAt || p.createdAt;
-          }
+
+        // Keep the latest payment as primary reference
+        const curTime = new Date(item.latestPayment.paidAt || item.latestPayment.createdAt || 0).getTime();
+        const thisTime = new Date(p.paidAt || p.createdAt || 0).getTime();
+        if (thisTime >= curTime) {
+          item.latestPayment = p;
+          item.lastPaymentDate = p.paidAt || p.createdAt;
+        }
+
+        // Compute totalDue based on latest payment due or totalFee - totalAmountPaid
+        if (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0) {
+          item.totalDue = Math.max(0, item.latestPayment.totalFee - item.totalAmountPaid);
+        } else if (p.dueAmount !== undefined) {
+          item.totalDue = p.dueAmount;
         }
       }
     }
+
+    // Final pass to ensure totalDue is accurately clamped and reflects totalFee
+    map.forEach((item) => {
+      if (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0) {
+        item.totalDue = Math.max(0, item.latestPayment.totalFee - item.totalAmountPaid);
+      }
+    });
 
     return Array.from(map.values());
   }, [payments]);
