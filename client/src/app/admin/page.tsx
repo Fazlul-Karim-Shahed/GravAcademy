@@ -140,26 +140,26 @@ export default function AdminDashboardPage() {
           {/* Card 1: Courses */}
           <Link
             href="/admin/courses"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-700 text-white p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
             {/* Elegant Large Watermark Background Icon */}
-            <BookOpen className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            <BookOpen className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:text-white/20 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-cyan-100 uppercase tracking-wider">
                   Total Courses
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/30 group-hover:bg-white group-hover:text-cyan-700 transition-colors">
                   <BookOpen className="w-5 h-5" />
                 </div>
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                   {stats.coursesCount}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-100 mt-3 pt-3 border-t border-white/20">
                   <span>Manage Courses</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -170,26 +170,26 @@ export default function AdminDashboardPage() {
           {/* Card 2: Batches */}
           <Link
             href="/admin/batches"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-indigo-400/80 dark:hover:border-indigo-500/60 transition-all duration-300"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
             {/* Elegant Large Watermark Background Icon */}
-            <Layers className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-indigo-500/10 dark:group-hover:text-indigo-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            <Layers className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:text-white/20 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-indigo-100 uppercase tracking-wider">
                   Total Batches
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/30 group-hover:bg-white group-hover:text-indigo-700 transition-colors">
                   <Layers className="w-5 h-5" />
                 </div>
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                   {stats.batchesCount}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-100 mt-3 pt-3 border-t border-white/20">
                   <span>Manage & Duplicate</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -200,26 +200,26 @@ export default function AdminDashboardPage() {
           {/* Card 3: Free Classes & Seminars */}
           <Link
             href="/free-classes"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
             {/* Elegant Large Watermark Background Icon */}
-            <Video className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            <Video className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:text-white/20 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">
                   ফ্রি ক্লাস ও সেমিনার
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/30 group-hover:bg-white group-hover:text-emerald-700 transition-colors">
                   <Video className="w-5 h-5" />
                 </div>
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                   {stats.liveClassesCount}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-100 mt-3 pt-3 border-t border-white/20">
                   <span>ফ্রি ক্লাস পরিচালনা করুন</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -230,26 +230,26 @@ export default function AdminDashboardPage() {
           {/* Card 4: Job Circulars Management */}
           <Link
             href="/admin/jobs"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
             {/* Elegant Large Watermark Background Icon */}
-            <Briefcase className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            <Briefcase className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:text-white/20 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-amber-100 uppercase tracking-wider">
                   জব সার্কুলার
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/30 group-hover:bg-white group-hover:text-amber-700 transition-colors">
                   <Briefcase className="w-5 h-5" />
                 </div>
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                   {stats.jobsCount}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-100 mt-3 pt-3 border-t border-white/20">
                   <span>জব পোস্ট ম্যানেজ করুন</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -260,26 +260,26 @@ export default function AdminDashboardPage() {
           {/* Card 5: Other Settings */}
           <Link
             href="/admin/settings"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 to-pink-700 text-white p-6 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
             {/* Elegant Large Watermark Background Icon */}
-            <Settings className="absolute -right-4 -bottom-4 w-32 h-32 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 pointer-events-none" />
+            <Settings className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:text-white/20 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 pointer-events-none" />
 
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-purple-100 uppercase tracking-wider">
                   অন্যান্য সেটিংস
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/30 group-hover:bg-white group-hover:text-purple-700 transition-colors">
                   <Settings className="w-5 h-5" />
                 </div>
               </div>
 
               <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <div className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                   4
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-purple-100 mt-3 pt-3 border-t border-white/20">
                   <span>কন্ট্রোল ও সেটিংস মডিউল</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
