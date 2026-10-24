@@ -205,9 +205,6 @@ export default function AdminJobsPage() {
               </span>
               জব সার্কুলার ম্যানেজমেন্ট
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              সরকারি, আধা-সরকারি ও বেসরকারি নিয়োগ বিজ্ঞপ্তিসমূহ তৈরি, এডিট এবং পরিচালনা করুন।
-            </p>
           </div>
 
           <div className="flex items-center gap-3">

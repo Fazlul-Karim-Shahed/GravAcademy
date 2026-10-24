@@ -190,9 +190,6 @@ export default function EditBatchPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Edit Batch Details
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Update batch title, class level, admission fee, live class schedules, and seat capacity.
-          </p>
         </div>
 
         {/* Alerts */}

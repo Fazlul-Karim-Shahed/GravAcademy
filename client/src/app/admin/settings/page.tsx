@@ -111,9 +111,6 @@ export default function AdminSettingsPage() {
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 সেটিংস ও কন্ট্রোল
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                ইউজার একাউন্ট ও সিস্টেম কনফিগারেশন
-              </p>
             </div>
           </div>
         </div>

@@ -194,9 +194,6 @@ export default function CreateCoursePage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Create Comprehensive Course
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Build a rich course profile with assigned faculty teachers, syllabus features, learning outcomes, and fee settings.
-          </p>
         </div>
 
         {/* Alerts */}

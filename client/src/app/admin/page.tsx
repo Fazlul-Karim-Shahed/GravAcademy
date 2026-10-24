@@ -78,9 +78,6 @@ export default function AdminDashboardPage() {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Admin Dashboard
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Manage courses, batches, students, and live classes.
-            </p>
           </div>
 
           <div className="flex items-center gap-2.5">

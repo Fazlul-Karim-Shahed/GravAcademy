@@ -200,11 +200,6 @@ function CreateBatchContent() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             {cloneFromId ? 'Duplicate & Create New Batch' : 'Create New Batch'}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {cloneFromId
-              ? 'Clone the full curriculum, structure, and configuration from the selected batch into a new dedicated batch.'
-              : 'Establish a distinct classroom roster, live schedule, and syllabus hierarchy for student enrollments.'}
-          </p>
         </div>
 
         {/* Alerts */}

@@ -230,9 +230,6 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Edit Course Details
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Update descriptions, assigned faculty teachers, curriculum highlights, and tuition fees.
-          </p>
         </div>
 
         {/* Alerts */}

@@ -228,9 +228,6 @@ export default function EditClassPage() {
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               &lsquo;{targetClass?.name}&rsquo; এডিট করুন
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              ক্লাসের নাম পরিবর্তন করলে এই ক্লাসের অন্তর্ভুক্ত সব কোর্সে স্বয়ংক্রিয়ভাবে আপডেট হবে।
-            </p>
           </div>
         </div>
 

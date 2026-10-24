@@ -140,9 +140,6 @@ function AdminCoursesContent() {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
               <BookOpen className="w-7 h-7 text-blue-600 dark:text-blue-400" /> Course Management
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Create, edit, organize syllabus, and publish courses dynamically for Class 6 to Class 12.
-            </p>
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0">

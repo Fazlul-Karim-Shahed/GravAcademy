@@ -314,9 +314,6 @@ export default function AdminAdmissionsPage() {
               </span>
               ম্যানুয়াল শিক্ষার্থী ভর্তি (Admin Admission)
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              এডমিন সরাসরি যেকোনো কোর্সের নির্দিষ্ট ব্যাচে নতুন বা বিদ্যমান শিক্ষার্থীকে ভর্তি করাতে পারবেন। নতুন শিক্ষার্থীর ক্ষেত্রে স্বয়ংক্রিয় ইউজার আইডি ও পাসওয়ার্ড তৈরি হবে।
-            </p>
           </div>
 
           <div className="flex items-center gap-3">

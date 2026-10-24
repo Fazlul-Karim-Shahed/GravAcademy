@@ -120,9 +120,6 @@ function AdminBatchesContent() {
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
               <Layers className="w-7 h-7 text-blue-600 dark:text-blue-500" /> Batch Management
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Create, organize student batches, and configure class schedules.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
