@@ -40,8 +40,9 @@ interface Course {
   description: string;
   thumbnailUrl?: string;
   gradeLevel: string;
-  subject: string;
   courseFee: number;
+  regularPrice?: number;
+  discountPrice?: number;
   duration?: string;
   batchCount?: number;
   instructors?: any[];

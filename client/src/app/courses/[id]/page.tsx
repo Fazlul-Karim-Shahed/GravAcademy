@@ -57,8 +57,10 @@ interface CourseDetail {
   description: string;
   thumbnailUrl?: string;
   gradeLevel: string;
-  subject: string;
+  subject?: string;
   courseFee: number;
+  regularPrice?: number;
+  discountPrice?: number;
   duration?: string;
   targetAudience?: string;
   instructors?: Teacher[];
