@@ -106,152 +106,183 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Sleek Boxy Metric Cards with Watermark Background Icons */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4 mb-10">
-          
-          {/* Card 0: Manual Admission */}
-          <Link
-            href="/admin/admissions"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between"
-          >
-            <UserPlus className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+        <div className="space-y-4 mb-10">
+          {/* Row 1: Core Academic & Admission Modules */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+            
+            {/* Card 0: এডমিশন */}
+            <Link
+              href="/admin/admissions"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <UserPlus className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <UserPlus className="w-4 h-4" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <UserPlus className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
-            </div>
 
-            <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                {stats.admissionsCount}
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.admissionsCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  এডমিশন
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                নতুন ভর্তি করান
-              </div>
-            </div>
-          </Link>
-          
-          {/* Card 1: Courses */}
-          <Link
-            href="/admin/courses"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between"
-          >
-            <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            </Link>
+            
+            {/* Card 1: কোর্স ম্যানেজমেন্ট */}
+            <Link
+              href="/admin/courses"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <BookOpen className="w-4 h-4" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
-            </div>
 
-            <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                {stats.coursesCount}
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.coursesCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  কোর্স ম্যানেজমেন্ট
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                সকল কোর্স
-              </div>
-            </div>
-          </Link>
+            </Link>
 
-          {/* Card 2: Batches */}
-          <Link
-            href="/admin/batches"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-indigo-400/80 dark:hover:border-indigo-500/60 transition-all duration-300 flex flex-col justify-between"
-          >
-            <Layers className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-indigo-500/10 dark:group-hover:text-indigo-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            {/* Card 2: ব্যাচ ম্যানেজমেন্ট */}
+            <Link
+              href="/admin/batches"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-indigo-400/80 dark:hover:border-indigo-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Layers className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-indigo-500/10 dark:group-hover:text-indigo-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                <Layers className="w-4 h-4" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <Layers className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
-            </div>
 
-            <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                {stats.batchesCount}
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.batchesCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  ব্যাচ ম্যানেজমেন্ট
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                সকল ব্যাচ
-              </div>
-            </div>
-          </Link>
+            </Link>
 
-          {/* Card 3: Free Classes & Seminars */}
-          <Link
-            href="/free-classes"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between"
-          >
-            <Video className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+            {/* Card 3: ফ্রি ক্লাস ও সেমিনার */}
+            <Link
+              href="/free-classes"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Video className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                <Video className="w-4 h-4" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <Video className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-            </div>
 
-            <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                {stats.liveClassesCount}
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.liveClassesCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  ফ্রি ক্লাস ও সেমিনার
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                ফ্রি ক্লাস ও সেমিনার
-              </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
 
-          {/* Card 4: Job Circulars Management */}
-          <Link
-            href="/admin/jobs"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between"
-          >
-            <Briefcase className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+          {/* Row 2: Administration, Jobs & Control Modules */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3.5 sm:gap-4">
+            
+            {/* Card 4: ইউজার ম্যানেজমেন্ট */}
+            <Link
+              href="/admin/settings"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-cyan-400/80 dark:hover:border-cyan-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Users className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-cyan-500/10 dark:group-hover:text-cyan-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                <Briefcase className="w-4 h-4" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center border border-cyan-100 dark:border-cyan-900/50 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                  <Users className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
-            </div>
 
-            <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                {stats.jobsCount}
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.usersCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  ইউজার ম্যানেজমেন্ট
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                জব সার্কুলার
-              </div>
-            </div>
-          </Link>
+            </Link>
 
-          {/* Card 5: Other Settings */}
-          <Link
-            href="/admin/settings"
-            className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between"
-          >
-            <Settings className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 pointer-events-none" />
+            {/* Card 5: জব সার্কুলার */}
+            <Link
+              href="/admin/jobs"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Briefcase className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
 
-            <div className="relative z-10 flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                <Settings className="w-4 h-4" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                  <Briefcase className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
-            </div>
 
-            <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                4
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  {stats.jobsCount}
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  জব সার্কুলার
+                </div>
               </div>
-              <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                অন্যান্য সেটিংস
-              </div>
-            </div>
-          </Link>
+            </Link>
 
+            {/* Card 6: অন্যান্য সেটিংস */}
+            <Link
+              href="/admin/settings"
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Settings className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 pointer-events-none" />
+
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                  <Settings className="w-4 h-4" />
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
+                  3
+                </div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                  অন্যান্য সেটিংস
+                </div>
+              </div>
+            </Link>
+
+          </div>
         </div>
 
         {/* Global Daily & Weekly Class Schedule Overview */}
