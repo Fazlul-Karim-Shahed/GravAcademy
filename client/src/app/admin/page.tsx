@@ -85,18 +85,6 @@ export default function AdminDashboardPage() {
 
           <div className="flex items-center gap-2.5">
             <Link
-              href="/admin/admissions"
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] text-white text-xs font-extrabold shadow-sm flex items-center gap-2 transition-all"
-            >
-              <UserPlus className="w-3.5 h-3.5" /> ভর্তি করান (Admission)
-            </Link>
-            <Link
-              href="/admin/jobs"
-              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
-            >
-              <Briefcase className="w-3.5 h-3.5" /> জব সার্কুলার
-            </Link>
-            <Link
               href="/admin/classes"
               className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
             >
