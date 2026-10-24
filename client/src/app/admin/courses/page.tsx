@@ -374,70 +374,67 @@ function AdminCoursesContent() {
                         const hasDiscount = typeof discount === 'number' && discount > 0 && regular > discount;
 
                         return (
-                          <div className="space-y-2 mb-1">
-                            {/* Course Fee Highlight Card */}
-                            <div className="flex items-center justify-between p-2.5 px-3 bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 rounded-2xl">
-                              <div className="flex items-center gap-2">
-                                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 dark:bg-emerald-400/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                                  <Banknote className="w-4 h-4" />
-                                </div>
-                                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">কোর্স ফি</span>
+                          <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-950/60 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800/80 mb-1">
+                            {/* Course Fee */}
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 dark:bg-emerald-400/15 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <Banknote className="w-4 h-4" />
                               </div>
-                              <div className="text-right">
+                              <div className="min-w-0">
+                                <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">কোর্স ফি</span>
                                 {hasDiscount ? (
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-xs line-through text-slate-400 font-semibold">
-                                      ৳{regular.toLocaleString()}
-                                    </span>
-                                    <span className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
+                                  <div className="flex items-baseline gap-1 truncate">
+                                    <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
                                       ৳{discount?.toLocaleString()}
+                                    </span>
+                                    <span className="text-[10px] line-through text-slate-400 font-semibold">
+                                      ৳{regular.toLocaleString()}
                                     </span>
                                   </div>
                                 ) : regular > 0 ? (
-                                  <span className="text-sm font-extrabold text-slate-900 dark:text-white">
+                                  <span className="text-xs font-black text-slate-800 dark:text-slate-200 truncate block">
                                     ৳{regular.toLocaleString()}
                                   </span>
                                 ) : (
-                                  <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 rounded-md">
+                                  <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 truncate block">
                                     ফ্রি
                                   </span>
                                 )}
                               </div>
                             </div>
 
-                            {/* Meta Grid (Duration & Batches) */}
-                            <div className="grid grid-cols-2 gap-2.5 bg-slate-50 dark:bg-slate-950/60 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
-                              <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-xl bg-blue-500/10 dark:bg-blue-400/10 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                                  <Clock className="w-4 h-4" />
+                            {/* Duration */}
+                            <div className="flex items-center gap-2 min-w-0 border-x border-slate-200/60 dark:border-slate-800/60 px-2">
+                              <div className="w-8 h-8 rounded-xl bg-blue-500/10 dark:bg-blue-400/10 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                <Clock className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">মেয়াদকাল</span>
+                                <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate block">
+                                  {course.duration || '১ বছর'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Batches */}
+                            <Link
+                              href="/admin/batches"
+                              className="group/batch flex items-center justify-between p-1 -m-1 rounded-xl hover:bg-white dark:hover:bg-slate-900/80 transition-colors min-w-0"
+                              title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-8 h-8 rounded-xl bg-purple-500/10 dark:bg-purple-400/10 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0 group-hover/batch:bg-purple-500 group-hover/batch:text-white transition-colors">
+                                  <Layers className="w-4 h-4" />
                                 </div>
                                 <div className="min-w-0">
-                                  <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">মেয়াদকাল</span>
-                                  <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate block">
-                                    {course.duration || '১ বছর'}
+                                  <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">মোট ব্যাচ</span>
+                                  <span className="text-xs font-black text-purple-600 dark:text-purple-400 truncate block">
+                                    {batchCount} টি
                                   </span>
                                 </div>
                               </div>
-
-                              <Link
-                                href="/admin/batches"
-                                className="group/batch flex items-center justify-between p-1 -m-1 rounded-xl hover:bg-white dark:hover:bg-slate-900/80 transition-colors"
-                                title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
-                              >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="w-8 h-8 rounded-xl bg-purple-500/10 dark:bg-purple-400/10 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0 group-hover/batch:bg-purple-500 group-hover/batch:text-white transition-colors">
-                                    <Layers className="w-4 h-4" />
-                                  </div>
-                                  <div className="min-w-0">
-                                    <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight">মোট ব্যাচ</span>
-                                    <span className="text-xs font-black text-purple-600 dark:text-purple-400 truncate block">
-                                      {batchCount} টি ব্যাচ
-                                    </span>
-                                  </div>
-                                </div>
-                                <ArrowRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 group-hover/batch:text-purple-500 group-hover/batch:translate-x-0.5 transition-all shrink-0 ml-1" />
-                              </Link>
-                            </div>
+                              <ArrowRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 group-hover/batch:text-purple-500 group-hover/batch:translate-x-0.5 transition-all shrink-0 hidden sm:block" />
+                            </Link>
                           </div>
                         );
                       })()}
