@@ -494,25 +494,44 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             {/* Premium Enrollment & Batches Card */}
             <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
 
-              {/* Top Card Banner: Batch Admission Focus */}
+              {/* Top Card Banner: Course Fee & Admission Focus */}
               <div className="p-7 sm:p-8 bg-gradient-to-b from-blue-50/60 to-white dark:from-slate-800/50 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    ব্যাচ নির্বাচন ও ভর্তি
+                    কোর্স ভর্তি ফি
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black border border-emerald-500/20 tracking-wide">
                     {course.gradeLevel}
                   </span>
                 </div>
 
-                <div className="mt-1">
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                    নিচের ব্যাচ নির্বাচন করুন
-                  </h3>
+                {/* Course Tuition Fee Display */}
+                <div className="flex items-baseline gap-2.5">
+                  {course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice ? (
+                    <>
+                      <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                        ৳ {course.discountPrice.toLocaleString()}
+                      </span>
+                      <span className="text-base text-slate-400 line-through font-semibold">
+                        ৳ {course.regularPrice.toLocaleString()}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-black">
+                        অফার চলছে
+                      </span>
+                    </>
+                  ) : course.regularPrice || course.courseFee ? (
+                    <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                      ৳ {(course.regularPrice || course.courseFee).toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                      ফ্রি কোর্স
+                    </span>
+                  )}
                 </div>
 
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium leading-relaxed">
-                  আপনার সুবিধাজনক ব্যাচ ও ক্লাসের শিডিউল নির্বাচন করে সরাসরি ক্লাসে যুক্ত হতে পারেন।
+                  নিচের আপনার সুবিধাজনক ব্যাচ ও ক্লাসের শিডিউল নির্বাচন করে সরাসরি ক্লাসে যুক্ত হতে পারেন।
                 </p>
               </div>
 
@@ -575,27 +594,18 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                           </div>
                         ) : null}
 
-                        {/* Batch Fee & Enrolled Student Count Display */}
-                        <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 mb-4">
-                          <div>
-                            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">ব্যাচ ভর্তি ফি</span>
-                            <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                              {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি'}
-                            </span>
-                          </div>
-
-                          <div className="text-right">
-                            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">মোট শিক্ষার্থী</span>
-                            <span className="inline-flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400">
-                              <Users className="w-3.5 h-3.5" />
-                              <span>{batch.enrolledStudentCount ?? 0} জন</span>
-                              {batch.capacity && batch.capacity > 0 && (
-                                <span className="text-[10px] text-slate-400 font-normal">
-                                  / {batch.capacity}
-                                </span>
-                              )}
-                            </span>
-                          </div>
+                        {/* Enrolled Student Count Display */}
+                        <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 mb-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                          <span>আসন পরিস্থিতি:</span>
+                          <span className="inline-flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400">
+                            <Users className="w-3.5 h-3.5" />
+                            <span>{batch.enrolledStudentCount ?? 0} জন এনরোল্ড</span>
+                            {batch.capacity && batch.capacity > 0 && (
+                              <span className="text-[10px] text-slate-400 font-normal">
+                                (আসন: {batch.capacity})
+                              </span>
+                            )}
+                          </span>
                         </div>
 
                         {/* Role-based action button:
@@ -715,10 +725,12 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 </span>
               </div>
               <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                <span className="font-semibold">ভর্তি ফি:</span>
+                <span className="font-semibold">ভর্তি ফি (কোর্স):</span>
                 <span className="font-black text-emerald-600 dark:text-emerald-400">
-                  {selectedBatchForEnroll.fee && selectedBatchForEnroll.fee > 0
-                    ? `৳ ${selectedBatchForEnroll.fee.toLocaleString()}`
+                  {course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice
+                    ? `৳ ${course.discountPrice.toLocaleString()}`
+                    : course.regularPrice || course.courseFee
+                    ? `৳ ${(course.regularPrice || course.courseFee).toLocaleString()}`
                     : 'ফ্রি'}
                 </span>
               </div>

@@ -505,7 +505,7 @@ export default function DedicatedClassPage() {
                           </span>
                         ) : (
                           <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
-                            ব্যাচভিত্তিক ফি
+                            ফ্রি কোর্স
                           </span>
                         )}
                       </div>

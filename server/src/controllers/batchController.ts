@@ -21,7 +21,7 @@ export const createBatchSchema = z.object({
   name: z.string().min(2).max(120),
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Course ID'),
   status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).default('draft'),
-  fee: z.number().min(0).default(0),
+  fee: z.number().min(0).optional().default(0),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   enrollmentOpenDate: z.string().datetime().optional(),

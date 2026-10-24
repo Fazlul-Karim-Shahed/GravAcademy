@@ -314,30 +314,8 @@ function CreateBatchContent() {
               </select>
             </div>
 
-            {/* Fee, Schedule & Capacity */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Batch Fee (৳ BDT) *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm pointer-events-none">
-                    ৳
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="50"
-                    required
-                    value={form.fee}
-                    onChange={(e) => setForm({ ...form, fee: Number(e.target.value) })}
-                    placeholder="0"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-8 pr-4 py-3 text-sm text-slate-900 dark:text-white font-bold focus:outline-none focus:border-indigo-500 transition-colors"
-                  />
-                </div>
-                <span className="text-[10px] text-slate-400 block mt-1">০ হলে ফ্রি ব্যাচ হিসেবে গণ্য হবে</span>
-              </div>
-
+            {/* Schedule & Capacity */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   Student Seat Capacity
@@ -350,6 +328,7 @@ function CreateBatchContent() {
                   onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors"
                 />
+                <span className="text-[10px] text-slate-400 block mt-1">ব্যাচে সর্বোচ্চ কতজন শিক্ষার্থী ভর্তি হতে পারবে</span>
               </div>
             </div>
 

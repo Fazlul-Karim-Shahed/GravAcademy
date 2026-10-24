@@ -100,7 +100,7 @@ export default function AdminBatchesPage() {
               <Layers className="w-7 h-7 text-blue-600 dark:text-blue-500" /> Batch Management
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Create, organize student batches, manage admissions fees, and configure schedules.
+              Create, organize student batches, and configure class schedules.
             </p>
           </div>
 
@@ -226,16 +226,10 @@ export default function AdminBatchesPage() {
                       </div>
                     )}
 
-                    {/* Fee, Capacity & Enrolled Students 3-Column / Grid Info */}
-                    <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-950/70 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
+                    {/* Capacity & Enrolled Students 2-Column / Grid Info */}
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950/70 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">ভর্তি ফি</span>
-                        <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
-                          {batch.fee && batch.fee > 0 ? `৳ ${batch.fee.toLocaleString()}` : 'ফ্রি'}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">এনরোল্ড</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">এনরোল্ড শিক্ষার্থী</span>
                         <span className="text-xs sm:text-sm font-black text-blue-600 dark:text-blue-400 flex items-center gap-1">
                           <Users className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                           <span>{batch.enrolledStudentCount ?? 0} জন</span>
