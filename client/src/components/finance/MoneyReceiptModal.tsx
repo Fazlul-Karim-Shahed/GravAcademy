@@ -48,6 +48,9 @@ export interface PaymentReceiptData {
   courseId?: {
     _id?: string;
     title: string;
+    courseFee?: number;
+    regularPrice?: number;
+    discountPrice?: number;
   };
   collectedBy?: {
     name: string;
@@ -96,12 +99,20 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
 
   // Calculate cumulative paid amount across all payments
   const totalPaidAcrossAll = paymentsList.reduce((acc, p) => acc + (p.amountPaid || 0), 0);
-  // Total fee of the course
-  const courseTotalFee = data.totalFee ?? totalPaidAcrossAll;
-  // Final due amount is based on the latest payment dueAmount or courseTotalFee - totalPaidAcrossAll
-  const finalDueAmount = data.dueAmount !== undefined
-    ? data.dueAmount
-    : Math.max(0, courseTotalFee - totalPaidAcrossAll);
+  
+  // Total current fee of the course: Always prioritize live course pricing (discountPrice ?? courseFee ?? regularPrice)
+  const courseDoc = data.courseId;
+  const courseCurrentPrice =
+    courseDoc?.discountPrice ??
+    courseDoc?.courseFee ??
+    courseDoc?.regularPrice ??
+    data.totalFee ??
+    totalPaidAcrossAll;
+
+  const courseTotalFee = courseCurrentPrice;
+
+  // Final due amount is accurately: max(0, courseTotalFee - totalPaidAcrossAll)
+  const finalDueAmount = Math.max(0, courseTotalFee - totalPaidAcrossAll);
 
   const receiptDate = data.paidAt || data.createdAt
     ? new Date(data.paidAt || data.createdAt!).toLocaleDateString('bn-BD', {

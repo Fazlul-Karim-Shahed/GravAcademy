@@ -115,21 +115,27 @@ export default function AdminFinancePage() {
         if (thisTime >= curTime) {
           item.latestPayment = p;
           item.lastPaymentDate = p.paidAt || p.createdAt;
-        }
-
-        // Compute totalDue based on latest payment due or totalFee - totalAmountPaid
-        if (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0) {
-          item.totalDue = Math.max(0, item.latestPayment.totalFee - item.totalAmountPaid);
-        } else if (p.dueAmount !== undefined) {
-          item.totalDue = p.dueAmount;
+          if (p.courseId) item.courseId = p.courseId;
         }
       }
     }
 
-    // Final pass to ensure totalDue is accurately clamped and reflects totalFee
+    // Final pass: Compute current course price and due = max(0, currentCoursePrice - totalAmountPaid)
     map.forEach((item) => {
-      if (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0) {
-        item.totalDue = Math.max(0, item.latestPayment.totalFee - item.totalAmountPaid);
+      const courseDoc = item.courseId || item.latestPayment.courseId;
+      const currentCoursePrice =
+        courseDoc?.discountPrice ??
+        courseDoc?.courseFee ??
+        courseDoc?.regularPrice ??
+        item.latestPayment.totalFee ??
+        0;
+
+      if (currentCoursePrice > 0) {
+        item.totalDue = Math.max(0, currentCoursePrice - item.totalAmountPaid);
+        item.latestPayment.totalFee = currentCoursePrice;
+        item.latestPayment.dueAmount = item.totalDue;
+      } else if (item.latestPayment.dueAmount !== undefined) {
+        item.totalDue = item.latestPayment.dueAmount;
       }
     });
 
