@@ -257,7 +257,7 @@ export default function AdminDashboardPage() {
             
             {/* Card 6: ইউজার ম্যানেজমেন্ট */}
             <Link
-              href="/admin/settings"
+              href="/admin/users"
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-cyan-400/80 dark:hover:border-cyan-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <Users className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-cyan-500/10 dark:group-hover:text-cyan-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
