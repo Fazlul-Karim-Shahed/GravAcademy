@@ -305,9 +305,12 @@ export default function EditBatchPage() {
                   type="number"
                   min="1"
                   max="500"
-                  value={form.capacity}
-                  onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  value={form.capacity === 0 ? '' : form.capacity}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    setForm({ ...form, capacity: raw === '' ? 0 : Number(raw) });
+                  }}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors font-bold"
                 />
                 <span className="text-[10px] text-slate-400 block mt-1">ব্যাচে সর্বোচ্চ কতজন শিক্ষার্থী ভর্তি হতে পারবে</span>
               </div>

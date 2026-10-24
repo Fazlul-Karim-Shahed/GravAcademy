@@ -331,14 +331,16 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                 <input
                   type="number"
                   min="0"
-                  value={form.regularPrice}
+                  step="50"
+                  value={form.regularPrice === 0 ? '' : form.regularPrice}
                   onChange={(e) => {
-                    const val = Number(e.target.value);
-                    setForm({
-                      ...form,
+                    const raw = e.target.value;
+                    const val = raw === '' ? 0 : Number(raw);
+                    setForm((prev) => ({
+                      ...prev,
                       regularPrice: val,
-                      courseFee: form.discountPrice && form.discountPrice > 0 ? form.discountPrice : val,
-                    });
+                      courseFee: prev.discountPrice && prev.discountPrice > 0 ? prev.discountPrice : val,
+                    }));
                   }}
                   placeholder="e.g. 3500"
                   className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold"
@@ -353,14 +355,16 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                 <input
                   type="number"
                   min="0"
-                  value={form.discountPrice}
+                  step="50"
+                  value={form.discountPrice === 0 ? '' : form.discountPrice}
                   onChange={(e) => {
-                    const val = Number(e.target.value);
-                    setForm({
-                      ...form,
+                    const raw = e.target.value;
+                    const val = raw === '' ? 0 : Number(raw);
+                    setForm((prev) => ({
+                      ...prev,
                       discountPrice: val,
-                      courseFee: val > 0 ? val : form.regularPrice,
-                    });
+                      courseFee: val > 0 ? val : prev.regularPrice,
+                    }));
                   }}
                   placeholder="e.g. 2500 (ফাঁকা বা ০ রাখলে ডিসকাউন্ট থাকবে না)"
                   className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 font-bold text-emerald-600 dark:text-emerald-400"

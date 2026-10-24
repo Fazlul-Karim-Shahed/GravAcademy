@@ -844,12 +844,14 @@ html.dark .cute-course-card:hover {
   text-overflow: ellipsis;
   word-break: break-word;
 }
-
-
-
-
-
-
-
-
+/* Ensure number input spin buttons / up-down arrows are always visible and styled */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1 !important;
+  cursor: pointer;
+  height: 28px;
+}
+input[type="number"] {
+  -moz-appearance: number-input;
+}
 
