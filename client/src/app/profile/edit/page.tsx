@@ -300,10 +300,6 @@ export default function ProfileEditPage() {
               <div className="flex-1 space-y-3.5">
                 {/* Upload from device to Drive */}
                 <div>
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5 flex items-center gap-1.5">
-                    <Upload className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                    <span>ডিভাইস থেকে সরাসরি ছবি আপলোড করুন (গুগল ড্রাইভে সেভ হবে):</span>
-                  </label>
                   <div className="flex items-center gap-3">
                     <label className="px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 text-xs font-bold cursor-pointer transition-colors inline-flex items-center gap-2">
                       {uploadingAvatar ? (
