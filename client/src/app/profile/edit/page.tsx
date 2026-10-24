@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import {
   User,
   GraduationCap,
@@ -37,6 +38,9 @@ import {
 export default function ProfileEditPage() {
   const { user, loading: authLoading, updateUser } = useAuth();
   const router = useRouter();
+
+  // Academic Classes dynamically managed by Admin
+  const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
 
   // Basic Details State
   const [name, setName] = useState('');
@@ -109,6 +113,13 @@ export default function ProfileEditPage() {
   };
 
   useEffect(() => {
+    // Fetch academic classes created/supported by Admin
+    getSharedAcademicClasses().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setAcademicClasses(data);
+      }
+    });
+
     if (authLoading) return;
     if (!user) {
       router.push('/login');
@@ -600,13 +611,11 @@ export default function ProfileEditPage() {
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer"
                   >
                     <option value="">শ্রেণি নির্বাচন করুন</option>
-                    <option value="Class 6">Class 6 (৬ষ্ঠ শ্রেণি)</option>
-                    <option value="Class 7">Class 7 (৭ম শ্রেণি)</option>
-                    <option value="Class 8">Class 8 (৮ম শ্রেণি)</option>
-                    <option value="Class 9">Class 9 (৯ম শ্রেণি)</option>
-                    <option value="Class 10">Class 10 (১০ম শ্রেণি / SSC)</option>
-                    <option value="HSC 1st Year">HSC ১ম বর্ষ</option>
-                    <option value="HSC 2nd Year">HSC ২য় বর্ষ</option>
+                    {academicClasses.map((cls) => (
+                      <option key={cls._id || cls.name} value={cls.name}>
+                        {cls.name} {cls.subtitle ? `(${cls.subtitle})` : ''}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
