@@ -239,8 +239,167 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     }
 
     const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 30));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
+
+    // If filterType is 'due', we need to return transactions with dueAmount > 0
+    // PLUS any active enrollments whose batch fee has not been paid or partially paid!
+    if (filterType === 'due') {
+      // Find all enrollments with due
+      const dueEnrollments = await Enrollment.find({
+        status: { $in: ['enrolled', 'completed'] },
+      })
+        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+        .populate('batchId', 'name fee courseId')
+        .populate('courseId', 'title')
+        .lean();
+
+      // Find all existing completed payments for enrollments
+      const paymentsWithDue = await Payment.find(query)
+        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+        .populate('batchId', 'name fee courseId')
+        .populate('courseId', 'title')
+        .populate('collectedBy', 'name userId role')
+        .sort({ paidAt: -1, createdAt: -1 })
+        .lean();
+
+      const existingEnrollmentIdsWithPayment = new Set(
+        paymentsWithDue.map((p) => p.enrollmentId?.toString()).filter(Boolean)
+      );
+
+      // Create synthetic payment receipt objects for unpaid/self-enrolled students without payment records yet
+      const syntheticDues: any[] = [];
+      for (const enr of dueEnrollments) {
+        const batchFee = (enr.batchId as any)?.fee || 0;
+        const paid = enr.paymentFee || 0;
+        const dueAmount = Math.max(0, batchFee - paid);
+
+        if (dueAmount > 0 && !existingEnrollmentIdsWithPayment.has(enr._id.toString())) {
+          // If search filter exists, check match
+          if (search) {
+            const searchStr = (search as string).trim().toLowerCase();
+            const sName = (enr.studentId as any)?.name?.toLowerCase() || '';
+            const sId = (enr.studentId as any)?.userId?.toLowerCase() || '';
+            const sPhone = (enr.studentId as any)?.phone || '';
+            if (!sName.includes(searchStr) && !sId.includes(searchStr) && !sPhone.includes(searchStr)) {
+              continue;
+            }
+          }
+
+          syntheticDues.push({
+            _id: `due_${enr._id}`,
+            receiptNo: `DUE-${enr._id.toString().slice(-6).toUpperCase()}`,
+            studentId: enr.studentId,
+            batchId: enr.batchId,
+            courseId: enr.courseId,
+            enrollmentId: enr._id,
+            amountPaid: paid,
+            totalFee: batchFee,
+            dueAmount,
+            paymentMethod: 'cash',
+            paymentType: 'admission',
+            status: 'completed',
+            notes: 'এনরোলমেন্ট ফি বকেয়া রয়েছে (Self/Manual Enrolled)',
+            paidAt: enr.enrolledAt || (enr as any).createdAt,
+            createdAt: enr.enrolledAt || (enr as any).createdAt,
+          });
+        }
+      }
+
+      // Merge and sort by date descending
+      const allDueItems = [...paymentsWithDue, ...syntheticDues].sort((a, b) => {
+        const tA = new Date(a.paidAt || a.createdAt).getTime();
+        const tB = new Date(b.paidAt || b.createdAt).getTime();
+        return tB - tA;
+      });
+
+      const totalCount = allDueItems.length;
+      const paginatedItems = allDueItems.slice(skip, skip + limitNum);
+
+      // Calculate stats for response
+      const aggregateStats = await Payment.aggregate([
+        { $match: { status: 'completed' } },
+        {
+          $group: {
+            _id: null,
+            totalRevenue: { $sum: '$amountPaid' },
+            totalTransactions: { $sum: 1 },
+            cashRevenue: {
+              $sum: { $cond: [{ $eq: ['$paymentMethod', 'cash'] }, '$amountPaid', 0] },
+            },
+            bkashRevenue: {
+              $sum: { $cond: [{ $eq: ['$paymentMethod', 'bkash'] }, '$amountPaid', 0] },
+            },
+            nagadRevenue: {
+              $sum: { $cond: [{ $eq: ['$paymentMethod', 'nagad'] }, '$amountPaid', 0] },
+            },
+            bankRevenue: {
+              $sum: { $cond: [{ $eq: ['$paymentMethod', 'bank_transfer'] }, '$amountPaid', 0] },
+            },
+          },
+        },
+      ]);
+
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayStats = await Payment.aggregate([
+        {
+          $match: {
+            status: 'completed',
+            paidAt: { $gte: todayStart },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            todayTotal: { $sum: '$amountPaid' },
+            todayCount: { $sum: 1 },
+          },
+        },
+      ]);
+
+      let totalDue = 0;
+      for (const enr of dueEnrollments) {
+        const batchFee = (enr.batchId as any)?.fee || 0;
+        const paid = enr.paymentFee || 0;
+        if (batchFee > paid) {
+          totalDue += batchFee - paid;
+        }
+      }
+
+      const stats = aggregateStats[0] || {
+        totalRevenue: 0,
+        totalTransactions: 0,
+        cashRevenue: 0,
+        bkashRevenue: 0,
+        nagadRevenue: 0,
+        bankRevenue: 0,
+      };
+
+      return res.status(200).json({
+        success: true,
+        data: paginatedItems,
+        meta: {
+          totalCount,
+          totalPages: Math.ceil(totalCount / limitNum),
+          page: pageNum,
+          limit: limitNum,
+        },
+        summary: {
+          totalRevenue: stats.totalRevenue || 0,
+          totalTransactions: stats.totalTransactions || 0,
+          totalDue,
+          todayTotal: todayStats[0]?.todayTotal || 0,
+          todayCount: todayStats[0]?.todayCount || 0,
+          byMethod: {
+            cash: stats.cashRevenue || 0,
+            bkash: stats.bkashRevenue || 0,
+            nagad: stats.nagadRevenue || 0,
+            bank: stats.bankRevenue || 0,
+          },
+        },
+      });
+    }
 
     const [payments, totalCount, aggregateStats] = await Promise.all([
       Payment.find(query)

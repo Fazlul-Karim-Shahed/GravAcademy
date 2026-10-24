@@ -666,12 +666,41 @@ export default function AdminFinancePage() {
 
                         {/* Actions */}
                         <td className="py-4 px-6 text-center">
-                          <button
-                            onClick={() => setActiveReceipt(p)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
-                          >
-                            <Printer className="w-3.5 h-3.5" /> রিসিট
-                          </button>
+                          <div className="flex items-center justify-center gap-2">
+                            {p.dueAmount !== undefined && p.dueAmount > 0 && (
+                              <button
+                                onClick={() => {
+                                  if (p.studentId) {
+                                    setSelectedStudent({
+                                      _id: p.studentId._id || (p.studentId as any),
+                                      name: p.studentId.name,
+                                      userId: p.studentId.userId,
+                                      phone: p.studentId.phone,
+                                    });
+                                  }
+                                  if (p.batchId) {
+                                    setCollectBatchId(p.batchId._id || (p.batchId as any));
+                                  }
+                                  setCollectAmount(p.dueAmount || 0);
+                                  setIsCollectModalOpen(true);
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/60 dark:border-emerald-800/60 transition-colors cursor-pointer"
+                                title="বকেয়া কিস্তি গ্রহণ করুন"
+                              >
+                                <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
+                              </button>
+                            )}
+
+                            {p.amountPaid > 0 && (
+                              <button
+                                onClick={() => setActiveReceipt(p)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
+                                title="মানি রিসিট দেখুন ও প্রিন্ট করুন"
+                              >
+                                <Printer className="w-3.5 h-3.5" /> রিসিট
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
