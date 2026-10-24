@@ -12,6 +12,7 @@ import {
   Search,
   ArrowLeft,
   ChevronRight,
+  ChevronLeft,
   Shield,
   Key,
   ExternalLink,
@@ -38,29 +39,48 @@ export default function AdminSettingsPage() {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 10;
 
   useEffect(() => {
     if (activeTab === 'users') {
-      fetchUsers();
+      fetchUsers(page);
     }
-  }, [activeTab, selectedRole]);
+  }, [activeTab, selectedRole, page]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (targetPage = page) => {
     setLoadingUsers(true);
     try {
-      const params: any = {};
+      const params: any = {
+        page: targetPage,
+        limit,
+      };
       if (selectedRole !== 'all') params.role = selectedRole;
-      if (search) params.search = search;
+      if (search.trim()) params.search = search.trim();
 
       const res = await api.get('/users', { params });
       if (res.data?.success) {
-        setUsers(res.data.data);
+        setUsers(res.data.data || []);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalCount(res.data.totalCount ?? res.data.data?.length ?? 0);
       }
     } catch (e) {
       console.error(e);
     } finally {
       setLoadingUsers(false);
     }
+  };
+
+  const handleSearch = () => {
+    setPage(1);
+    fetchUsers(1);
+  };
+
+  const handleRoleChange = (role: string) => {
+    setSelectedRole(role);
+    setPage(1);
   };
 
   const tabs = [
@@ -144,7 +164,7 @@ export default function AdminSettingsPage() {
                       ইউজার তালিকা ও পারমিশন
                     </h2>
                     <p className="text-xs text-slate-400">
-                      সিস্টেমের মোট {users.length} জন ব্যবহারকারী
+                      মোট {totalCount} জন ব্যবহারকারী {totalPages > 1 && `(পৃষ্ঠা ${page}/${totalPages})`}
                     </p>
                   </div>
 
@@ -156,7 +176,7 @@ export default function AdminSettingsPage() {
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && fetchUsers()}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         placeholder="নাম বা ইমেইল..."
                         className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-8 pr-3 py-2 w-44 sm:w-52 focus:outline-none focus:border-blue-500"
                       />
@@ -164,7 +184,7 @@ export default function AdminSettingsPage() {
 
                     <select
                       value={selectedRole}
-                      onChange={(e) => setSelectedRole(e.target.value)}
+                      onChange={(e) => handleRoleChange(e.target.value)}
                       className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-2.5 py-2 focus:outline-none focus:border-blue-500 cursor-pointer"
                     >
                       <option value="all">সকল রোল</option>
@@ -260,6 +280,62 @@ export default function AdminSettingsPage() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="p-3.5 px-4 bg-slate-50/60 dark:bg-slate-950/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 text-xs">
+                    <div className="text-slate-500 dark:text-slate-400">
+                      পৃষ্ঠা <span className="font-bold text-slate-800 dark:text-slate-200">{page}</span> / {totalPages}
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page <= 1 || loadingUsers}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <span>আগেরটি</span>
+                      </button>
+
+                      {/* Numeric page pills */}
+                      <div className="hidden sm:flex items-center gap-1">
+                        {Array.from({ length: totalPages }, (_, idx) => idx + 1)
+                          .filter((pNum) => pNum === 1 || pNum === totalPages || Math.abs(pNum - page) <= 1)
+                          .map((pNum, i, arr) => {
+                            const prev = arr[i - 1];
+                            return (
+                              <React.Fragment key={pNum}>
+                                {prev && pNum - prev > 1 && (
+                                  <span className="px-1 text-slate-400">...</span>
+                                )}
+                                <button
+                                  onClick={() => setPage(pNum)}
+                                  disabled={loadingUsers}
+                                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                                    page === pNum
+                                      ? 'bg-blue-600 text-white shadow-xs'
+                                      : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                  }`}
+                                >
+                                  {pNum}
+                                </button>
+                              </React.Fragment>
+                            );
+                          })}
+                      </div>
+
+                      <button
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page >= totalPages || loadingUsers}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        <span>পরেরটি</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

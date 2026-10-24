@@ -34,10 +34,10 @@ export const getPermissionsCatalog = async (req: AuthenticatedRequest, res: Resp
  */
 export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { role, search } = req.query;
+    const { role, search, page = '1', limit = '10' } = req.query;
     const filter: any = {};
 
-    if (role) filter.role = role;
+    if (role && role !== 'all') filter.role = role;
     if (search) {
       filter.$or = [
         { name: { $regex: search as string, $options: 'i' } },
@@ -45,11 +45,26 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
       ];
     }
 
+    const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 10));
+    const skip = (pageNum - 1) * limitNum;
+
+    const totalCount = await User.countDocuments(filter);
     const users = await User.find(filter)
       .select('-passwordHash')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
 
-    return res.status(200).json({ success: true, count: users.length, data: users });
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limitNum),
+      currentPage: pageNum,
+      limit: limitNum,
+      data: users,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch users' });
   }
