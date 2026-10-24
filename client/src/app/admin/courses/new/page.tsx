@@ -297,7 +297,7 @@ export default function CreateCoursePage() {
                 <input
                   type="number"
                   min="0"
-                  step="50"
+                  step="1"
                   value={form.regularPrice === 0 ? '' : form.regularPrice}
                   onChange={(e) => {
                     const raw = e.target.value;
@@ -321,7 +321,7 @@ export default function CreateCoursePage() {
                 <input
                   type="number"
                   min="0"
-                  step="50"
+                  step="1"
                   value={form.discountPrice === 0 ? '' : form.discountPrice}
                   onChange={(e) => {
                     const raw = e.target.value;
