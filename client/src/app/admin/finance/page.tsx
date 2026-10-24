@@ -65,7 +65,7 @@ export default function AdminFinancePage() {
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
 
   // New Filters: Card click filter & Date Range Filter & Pagination
-  const [cardFilterType, setCardFilterType] = useState<'all' | 'today' | 'due'>('all');
+  const [cardFilterType, setCardFilterType] = useState<'none' | 'total' | 'today' | 'due'>('none');
   const [dateRangePreset, setDateRangePreset] = useState<'all' | 'today' | 'last_month' | 'custom'>('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -137,7 +137,7 @@ export default function AdminFinancePage() {
       const params = new URLSearchParams();
       if (search.trim()) params.append('search', search.trim());
       if (selectedMethod !== 'all') params.append('paymentMethod', selectedMethod);
-      if (cardFilterType !== 'all') params.append('filterType', cardFilterType);
+      if (cardFilterType !== 'none') params.append('filterType', cardFilterType);
 
       // Handle Date Presets or Custom Dates
       if (dateRangePreset === 'today') {
@@ -174,7 +174,7 @@ export default function AdminFinancePage() {
   };
 
   const handleResetFilters = () => {
-    setCardFilterType('all');
+    setCardFilterType('none');
     setSelectedMethod('all');
     setDateRangePreset('all');
     setStartDate('');
@@ -183,9 +183,9 @@ export default function AdminFinancePage() {
     setCurrentPage(1);
   };
 
-  const handleCardClick = (type: 'all' | 'today' | 'due') => {
+  const handleCardClick = (type: 'total' | 'today' | 'due') => {
     if (cardFilterType === type) {
-      setCardFilterType('all'); // Toggle off if clicked again
+      setCardFilterType('none'); // Toggle off if clicked again -> returns to all/reset view
     } else {
       setCardFilterType(type);
       if (type === 'today') {
@@ -315,13 +315,13 @@ export default function AdminFinancePage() {
 
         {/* 4 Financial Stat Cards (Clickable Filters) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {/* Card 1: Total Revenue (Reset / All) */}
+          {/* Card 1: Total Revenue (Total Filter) */}
           <div
-            onClick={() => handleCardClick('all')}
+            onClick={() => handleCardClick('total')}
             className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
-              cardFilterType === 'all'
+              cardFilterType === 'total'
                 ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-600 ring-2 ring-emerald-500/20'
-                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-800/60'
             }`}
           >
             <div>
@@ -329,7 +329,7 @@ export default function AdminFinancePage() {
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                   সর্বমোট কালেকশন
                 </span>
-                {cardFilterType === 'all' && (
+                {cardFilterType === 'total' && (
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 )}
               </div>
@@ -337,7 +337,7 @@ export default function AdminFinancePage() {
                 ৳{stats?.totalRevenue?.toLocaleString('bn-BD') || 0}
               </div>
               <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 inline-block">
-                {stats?.totalTransactions || 0} টি সম্পন্ন লেনদেন (সকল)
+                {stats?.totalTransactions || 0} টি সম্পন্ন লেনদেন {cardFilterType === 'total' ? '• ফিল্টার সক্রিয়' : '• ক্লিক করুন'}
               </span>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-100 dark:border-emerald-800/60 shrink-0">
@@ -479,7 +479,7 @@ export default function AdminFinancePage() {
                 </button>
               ))}
 
-              {(cardFilterType !== 'all' || dateRangePreset !== 'all' || selectedMethod !== 'all' || search) && (
+              {(cardFilterType !== 'none' || dateRangePreset !== 'all' || selectedMethod !== 'all' || search) && (
                 <button
                   onClick={handleResetFilters}
                   className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors ml-1 cursor-pointer"
