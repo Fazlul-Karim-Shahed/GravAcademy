@@ -279,6 +279,42 @@ export default function AdminAdmissionsPage() {
     }
   }, [selectedCourseId, gradeLevel, allBatches, courses]);
 
+  // Auto-detect payment status based on batch fee vs paid amount
+  useEffect(() => {
+    const chosenBatch = allBatches.find((b) => b._id === selectedBatchId);
+    let totalBatchFee = 0;
+    if (chosenBatch) {
+      if (chosenBatch.fee !== undefined && chosenBatch.fee > 0) {
+        totalBatchFee = chosenBatch.fee;
+      } else {
+        const chosenCourse = courses.find((c) => {
+          const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
+          return c._id === cId;
+        });
+        totalBatchFee = chosenCourse?.price || 0;
+      }
+    }
+
+    const numericPaid = Number(paymentFee) || 0;
+
+    if (totalBatchFee > 0) {
+      if (numericPaid >= totalBatchFee) {
+        setPaymentStatus('paid');
+      } else if (numericPaid > 0) {
+        setPaymentStatus('partial');
+      } else {
+        setPaymentStatus('unpaid');
+      }
+    } else {
+      // If fee is 0 or no batch selected yet
+      if (numericPaid > 0) {
+        setPaymentStatus('paid');
+      } else {
+        setPaymentStatus('unpaid');
+      }
+    }
+  }, [paymentFee, selectedBatchId, allBatches, courses]);
+
   // Auto-fill fee when batch changes
   const handleBatchChange = (batchId: string) => {
     setSelectedBatchId(batchId);
@@ -866,15 +902,26 @@ export default function AdminAdmissionsPage() {
                       </div>
                     </div>
 
-                    {/* Payment Status */}
+                    {/* Payment Status (Auto-detected) */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        পেমেন্ট অবস্থা
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                          পেমেন্ট অবস্থা
+                        </label>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60">
+                          ⚡ অটো ডিটেক্টেড
+                        </span>
+                      </div>
                       <select
                         value={paymentStatus}
                         onChange={(e) => setPaymentStatus(e.target.value as any)}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold ${
+                          paymentStatus === 'paid'
+                            ? 'bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
+                            : paymentStatus === 'partial'
+                            ? 'bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700'
+                            : 'bg-rose-50/80 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-700'
+                        }`}
                       >
                         <option value="paid">পরিশোধিত (Paid)</option>
                         <option value="partial">আংশিক পরিশোধ (Partial)</option>
