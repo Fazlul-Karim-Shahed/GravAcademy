@@ -34,7 +34,6 @@ import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 interface BatchItem {
   _id: string;
   name: string;
-  fee?: number;
   capacity?: number;
   status: string;
   courseId: {
@@ -42,6 +41,9 @@ interface BatchItem {
     title: string;
     slug?: string;
     gradeLevel?: string;
+    courseFee?: number;
+    regularPrice?: number;
+    discountPrice?: number;
   } | string;
 }
 
@@ -50,6 +52,9 @@ interface CourseItem {
   title: string;
   slug: string;
   gradeLevel?: string;
+  courseFee?: number;
+  regularPrice?: number;
+  discountPrice?: number;
   price?: number;
 }
 
@@ -279,26 +284,23 @@ export default function AdminAdmissionsPage() {
     }
   }, [selectedCourseId, gradeLevel, allBatches, courses]);
 
-  // Auto-detect payment status based on batch fee vs paid amount
+  // Auto-detect payment status based on course fee vs paid amount
   useEffect(() => {
     const chosenBatch = allBatches.find((b) => b._id === selectedBatchId);
-    let totalBatchFee = 0;
+    let totalFee = 0;
     if (chosenBatch) {
-      if (chosenBatch.fee !== undefined && chosenBatch.fee > 0) {
-        totalBatchFee = chosenBatch.fee;
-      } else {
-        const chosenCourse = courses.find((c) => {
-          const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
-          return c._id === cId;
-        });
-        totalBatchFee = chosenCourse?.price || 0;
-      }
+      const chosenCourse = courses.find((c) => {
+        const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
+        return c._id === cId;
+      });
+      const batchCourseObj = typeof chosenBatch.courseId === 'object' && chosenBatch.courseId !== null ? chosenBatch.courseId : null;
+      totalFee = chosenCourse?.discountPrice ?? chosenCourse?.courseFee ?? chosenCourse?.regularPrice ?? chosenCourse?.price ?? batchCourseObj?.discountPrice ?? batchCourseObj?.courseFee ?? batchCourseObj?.regularPrice ?? 0;
     }
 
     const numericPaid = Number(paymentFee) || 0;
 
-    if (totalBatchFee > 0) {
-      if (numericPaid >= totalBatchFee) {
+    if (totalFee > 0) {
+      if (numericPaid >= totalFee) {
         setPaymentStatus('paid');
       } else if (numericPaid > 0) {
         setPaymentStatus('partial');
@@ -320,19 +322,13 @@ export default function AdminAdmissionsPage() {
     setSelectedBatchId(batchId);
     const chosenBatch = allBatches.find((b) => b._id === batchId);
     if (chosenBatch) {
-      if (chosenBatch.fee !== undefined && chosenBatch.fee > 0) {
-        setPaymentFee(chosenBatch.fee);
-      } else {
-        const chosenCourse = courses.find((c) => {
-          const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
-          return c._id === cId;
-        });
-        if (chosenCourse?.price) {
-          setPaymentFee(chosenCourse.price);
-        } else {
-          setPaymentFee(0);
-        }
-      }
+      const chosenCourse = courses.find((c) => {
+        const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
+        return c._id === cId;
+      });
+      const batchCourseObj = typeof chosenBatch.courseId === 'object' && chosenBatch.courseId !== null ? chosenBatch.courseId : null;
+      const courseFeeToUse = chosenCourse?.discountPrice ?? chosenCourse?.courseFee ?? chosenCourse?.regularPrice ?? chosenCourse?.price ?? batchCourseObj?.discountPrice ?? batchCourseObj?.courseFee ?? batchCourseObj?.regularPrice ?? 0;
+      setPaymentFee(courseFeeToUse);
 
       // Also auto-select course and gradeLevel if not selected
       const cId = typeof chosenBatch.courseId === 'string' ? chosenBatch.courseId : chosenBatch.courseId?._id;
@@ -870,7 +866,7 @@ export default function AdminAdmissionsPage() {
                           const courseTitle = typeof b.courseId === 'object' && b.courseId ? b.courseId.title : '';
                           return (
                             <option key={b._id} value={b._id}>
-                              {b.name} {courseTitle ? `[${courseTitle}]` : ''} {b.fee ? `- ৳${b.fee}` : ''}
+                              {b.name} {courseTitle ? `[${courseTitle}]` : ''}
                             </option>
                           );
                         })}

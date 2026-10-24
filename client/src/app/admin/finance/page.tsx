@@ -53,7 +53,6 @@ interface StudentOption {
 interface BatchOption {
   _id: string;
   name: string;
-  fee?: number;
 }
 
 export default function AdminFinancePage() {
@@ -827,7 +826,7 @@ export default function AdminFinancePage() {
                   <option value="">-- ব্যাচ নির্বাচন করুন (ঐচ্ছিক) --</option>
                   {batches.map((b) => (
                     <option key={b._id} value={b._id}>
-                      {b.name} {b.fee ? `(ফি: ৳${b.fee})` : ''}
+                      {b.name}
                     </option>
                   ))}
                 </select>

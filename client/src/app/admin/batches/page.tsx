@@ -29,7 +29,6 @@ interface Batch {
   _id: string;
   name: string;
   status: string;
-  fee?: number;
   courseId: {
     _id: string;
     title: string;

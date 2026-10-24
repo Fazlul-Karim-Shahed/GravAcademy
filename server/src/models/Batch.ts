@@ -16,7 +16,6 @@ export interface IBatch extends Document {
   name: string;
   courseId: mongoose.Types.ObjectId;
   status: BatchStatus;
-  fee?: number;
   startDate?: Date;
   endDate?: Date;
   enrollmentOpenDate?: Date;
@@ -50,11 +49,6 @@ const BatchSchema = new Schema<IBatch>(
       enum: ['draft', 'upcoming', 'active', 'completed', 'archived'],
       default: 'draft',
       index: true,
-    },
-    fee: {
-      type: Number,
-      default: 0,
-      min: 0,
     },
     startDate: { type: Date },
     endDate: { type: Date },

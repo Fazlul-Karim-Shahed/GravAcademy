@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { Payment } from '../models/Payment';
 import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
+import { Course } from '../models/Course';
 import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 
@@ -85,9 +86,10 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
     let dueAmount = 0;
 
     if (batchId) {
-      batch = await Batch.findById(batchId);
+      batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
       if (batch) {
-        totalFee = batch.fee || 0;
+        const courseDoc = batch.courseId as any;
+        totalFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         enrollment = await Enrollment.findOne({ studentId, batchId });
       }
     }
@@ -250,14 +252,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         status: { $in: ['enrolled', 'completed'] },
       })
         .populate('studentId', 'name userId phone email avatarUrl studentDetails')
-        .populate('batchId', 'name fee courseId')
-        .populate('courseId', 'title')
+        .populate('batchId', 'name courseId')
+        .populate('courseId', 'title courseFee regularPrice discountPrice')
         .lean();
 
       // Find all existing completed payments for enrollments
       const paymentsWithDue = await Payment.find(query)
         .populate('studentId', 'name userId phone email avatarUrl studentDetails')
-        .populate('batchId', 'name fee courseId')
+        .populate('batchId', 'name courseId')
         .populate('courseId', 'title')
         .populate('collectedBy', 'name userId role')
         .sort({ paidAt: -1, createdAt: -1 })
@@ -270,9 +272,10 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       // Create synthetic payment receipt objects for unpaid/self-enrolled students without payment records yet
       const syntheticDues: any[] = [];
       for (const enr of dueEnrollments) {
-        const batchFee = (enr.batchId as any)?.fee || 0;
+        const courseDoc = enr.courseId as any;
+        const totalCourseFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         const paid = enr.paymentFee || 0;
-        const dueAmount = Math.max(0, batchFee - paid);
+        const dueAmount = Math.max(0, totalCourseFee - paid);
 
         if (dueAmount > 0 && !existingEnrollmentIdsWithPayment.has(enr._id.toString())) {
           // If search filter exists, check match
@@ -294,7 +297,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             courseId: enr.courseId,
             enrollmentId: enr._id,
             amountPaid: paid,
-            totalFee: batchFee,
+            totalFee: totalCourseFee,
             dueAmount,
             paymentMethod: 'cash',
             paymentType: 'admission',
@@ -360,10 +363,11 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
       let totalDue = 0;
       for (const enr of dueEnrollments) {
-        const batchFee = (enr.batchId as any)?.fee || 0;
+        const courseDoc = enr.courseId as any;
+        const totalCourseFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         const paid = enr.paymentFee || 0;
-        if (batchFee > paid) {
-          totalDue += batchFee - paid;
+        if (totalCourseFee > paid) {
+          totalDue += totalCourseFee - paid;
         }
       }
 
@@ -409,14 +413,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         status: { $in: ['enrolled', 'completed'] },
       })
         .populate('studentId', 'name userId phone email avatarUrl studentDetails')
-        .populate('batchId', 'name fee courseId')
-        .populate('courseId', 'title')
+        .populate('batchId', 'name courseId')
+        .populate('courseId', 'title courseFee regularPrice discountPrice')
         .lean();
 
       // Find all payments matching general filters (without due restriction)
       const allPayments = await Payment.find(query)
         .populate('studentId', 'name userId phone email avatarUrl studentDetails')
-        .populate('batchId', 'name fee courseId')
+        .populate('batchId', 'name courseId')
         .populate('courseId', 'title')
         .populate('collectedBy', 'name userId role')
         .sort({ paidAt: -1, createdAt: -1 })
@@ -429,9 +433,10 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       // Add synthetic unpaid items for enrollments that don't have a payment record yet
       const syntheticUnpaid: any[] = [];
       for (const enr of dueEnrollments) {
-        const batchFee = (enr.batchId as any)?.fee || 0;
+        const courseDoc = enr.courseId as any;
+        const totalCourseFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         const paid = enr.paymentFee || 0;
-        const dueAmount = Math.max(0, batchFee - paid);
+        const dueAmount = Math.max(0, totalCourseFee - paid);
 
         if (!existingEnrollmentIdsWithPayment.has(enr._id.toString())) {
           // If search filter exists, check match
@@ -453,7 +458,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             courseId: enr.courseId,
             enrollmentId: enr._id,
             amountPaid: paid,
-            totalFee: batchFee,
+            totalFee: totalCourseFee,
             dueAmount,
             paymentMethod: 'cash',
             paymentType: 'admission',
@@ -518,10 +523,11 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
       let totalDue = 0;
       for (const enr of dueEnrollments) {
-        const batchFee = (enr.batchId as any)?.fee || 0;
+        const courseDoc = enr.courseId as any;
+        const totalCourseFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         const paid = enr.paymentFee || 0;
-        if (batchFee > paid) {
-          totalDue += batchFee - paid;
+        if (totalCourseFee > paid) {
+          totalDue += totalCourseFee - paid;
         }
       }
 
@@ -562,7 +568,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     const [payments, totalCount, aggregateStats] = await Promise.all([
       Payment.find(query)
         .populate('studentId', 'name userId phone email avatarUrl studentDetails')
-        .populate('batchId', 'name fee courseId')
+        .populate('batchId', 'name courseId')
         .populate('courseId', 'title')
         .populate('collectedBy', 'name userId role')
         .sort({ paidAt: -1, createdAt: -1 })
@@ -615,15 +621,16 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
     // Calculate total due from all enrollments
     const enrollments = await Enrollment.find({ status: { $in: ['enrolled', 'completed'] } })
-      .populate('batchId', 'fee')
+      .populate('courseId', 'courseFee regularPrice discountPrice')
       .lean();
 
     let totalDue = 0;
     for (const enr of enrollments) {
-      const batchFee = (enr.batchId as any)?.fee || 0;
+      const courseDoc = enr.courseId as any;
+      const totalCourseFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
       const paid = enr.paymentFee || 0;
-      if (batchFee > paid) {
-        totalDue += batchFee - paid;
+      if (totalCourseFee > paid) {
+        totalDue += totalCourseFee - paid;
       }
     }
 
@@ -719,29 +726,31 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
     }
 
     const payments = await Payment.find({ studentId, status: 'completed' })
-      .populate('batchId', 'name fee')
+      .populate('batchId', 'name')
       .populate('courseId', 'title')
       .populate('collectedBy', 'name')
       .sort({ paidAt: -1, createdAt: -1 })
       .lean();
 
-    // Calculate total paid & due for this student across enrolled batches
+    // Calculate total paid & due for this student across enrolled courses
     const enrollments = await Enrollment.find({
       studentId,
       status: { $in: ['enrolled', 'completed'] },
     })
-      .populate('batchId', 'name fee')
+      .populate('courseId', 'courseFee regularPrice discountPrice')
       .lean();
 
-    let totalBatchFee = 0;
+    let totalCourseFee = 0;
     let totalPaid = 0;
 
     enrollments.forEach((e: any) => {
-      totalBatchFee += e.batchId?.fee || 0;
+      const courseDoc = e.courseId;
+      const cFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+      totalCourseFee += cFee;
       totalPaid += e.paymentFee || 0;
     });
 
-    const totalDue = Math.max(0, totalBatchFee - totalPaid);
+    const totalDue = Math.max(0, totalCourseFee - totalPaid);
 
     return res.status(200).json({
       success: true,

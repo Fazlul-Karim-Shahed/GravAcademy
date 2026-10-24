@@ -245,7 +245,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
     } = req.body;
 
     // Verify batch
-    const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject');
+    const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject courseFee regularPrice discountPrice');
     if (!batch) {
       return res.status(404).json({ success: false, message: 'নির্বাচিত ব্যাচটি পাওয়া যায়নি।' });
     }
@@ -342,8 +342,9 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       try {
         const receiptNo = await generateReceiptNumber();
         const numericFee = Number(paymentFee) || 0;
-        const batchTotalFee = batch.fee || 0;
-        const dueAmount = Math.max(0, batchTotalFee - numericFee);
+        const courseDoc = batch.courseId as any;
+        const courseTotalFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+        const dueAmount = Math.max(0, courseTotalFee - numericFee);
 
         const newPay = await Payment.create({
           receiptNo,
@@ -352,7 +353,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
           batchId: batch._id,
           courseId: batch.courseId._id || batch.courseId,
           amountPaid: numericFee,
-          totalFee: batchTotalFee,
+          totalFee: courseTotalFee,
           dueAmount,
           paymentMethod: paymentMethod || 'cash',
           paymentType: 'admission',
@@ -367,7 +368,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
 
         reactivatedPayment = await Payment.findById(newPay._id)
           .populate('studentId', 'name userId phone email avatarUrl studentDetails')
-          .populate('batchId', 'name fee courseId')
+          .populate('batchId', 'name courseId')
           .populate('courseId', 'title')
           .populate('collectedBy', 'name userId role');
       } catch (payErr) {
@@ -412,8 +413,9 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
     // Create Payment record & Receipt if paymentFee > 0 or status is set
     let createdPayment: any = null;
     const numericFee = Number(paymentFee) || 0;
-    const batchTotalFee = batch.fee || 0;
-    const dueAmount = Math.max(0, batchTotalFee - numericFee);
+    const courseDoc = batch.courseId as any;
+    const courseTotalFee = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+    const dueAmount = Math.max(0, courseTotalFee - numericFee);
 
     try {
       const receiptNo = await generateReceiptNumber();
@@ -424,7 +426,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         batchId: batch._id,
         courseId: batch.courseId._id || batch.courseId,
         amountPaid: numericFee,
-        totalFee: batchTotalFee,
+        totalFee: courseTotalFee,
         dueAmount,
         paymentMethod: paymentMethod || 'cash',
         paymentType: 'admission',

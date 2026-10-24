@@ -21,7 +21,6 @@ export const createBatchSchema = z.object({
   name: z.string().min(2).max(120),
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Course ID'),
   status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).default('draft'),
-  fee: z.number().min(0).optional().default(0),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   enrollmentOpenDate: z.string().datetime().optional(),
@@ -188,7 +187,6 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       name,
       courseId,
       status,
-      fee,
       startDate,
       endDate,
       enrollmentOpenDate,
@@ -215,7 +213,6 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       name,
       courseId,
       status: status || 'draft',
-      fee: fee !== undefined ? Number(fee) : 0,
       startDate,
       endDate,
       enrollmentOpenDate,
@@ -346,7 +343,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
 export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, courseId, status, fee, scheduleText, weeklySchedule, capacity } = req.body;
+    const { name, courseId, status, scheduleText, weeklySchedule, capacity } = req.body;
 
     const batch = await Batch.findById(id);
     if (!batch) {
@@ -356,7 +353,6 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
     if (name !== undefined) batch.name = name;
     if (courseId !== undefined) batch.courseId = courseId;
     if (status !== undefined) batch.status = status;
-    if (fee !== undefined) batch.fee = Number(fee);
     if (scheduleText !== undefined) batch.scheduleText = scheduleText;
     if (req.body.meetingUrl !== undefined) batch.meetingUrl = req.body.meetingUrl;
     if (weeklySchedule !== undefined && Array.isArray(weeklySchedule)) {
