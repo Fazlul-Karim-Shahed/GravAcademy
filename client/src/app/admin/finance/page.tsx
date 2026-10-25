@@ -647,22 +647,83 @@ export default function AdminFinancePage() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               মাধ্যমভিত্তিক আদায়
             </span>
-            <div className="grid grid-cols-3 gap-2 mt-2 text-center text-xs">
-              <div className="p-1.5 rounded-xl bg-slate-50 dark:bg-slate-800">
-                <span className="text-[10px] text-slate-400 block font-bold">ক্যাশ</span>
-                <span className="font-extrabold text-slate-900 dark:text-white">
+            <div className="grid grid-cols-4 gap-1.5 mt-2 text-center text-xs">
+              <div
+                onClick={() => {
+                  setSelectedMethod(selectedMethod === 'cash' ? 'all' : 'cash');
+                  setCurrentPage(1);
+                }}
+                className={`p-1.5 rounded-xl cursor-pointer transition-all border ${
+                  selectedMethod === 'cash'
+                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs'
+                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-750'
+                }`}
+                title="ক্যাশ লেনদেন ফিল্টার করতে ক্লিক করুন"
+              >
+                <span className={`text-[10px] block font-bold ${selectedMethod === 'cash' ? 'opacity-80' : 'text-slate-400'}`}>
+                  ক্যাশ
+                </span>
+                <span className="font-extrabold text-[11px] block mt-0.5 truncate">
                   ৳{stats?.byMethod?.cash ? stats.byMethod.cash.toLocaleString('bn-BD') : 0}
                 </span>
               </div>
-              <div className="p-1.5 rounded-xl bg-pink-50 dark:bg-pink-950/50 text-pink-700 dark:text-pink-300">
-                <span className="text-[10px] text-pink-500 block font-bold">বিকাশ</span>
-                <span className="font-extrabold">
+
+              <div
+                onClick={() => {
+                  setSelectedMethod(selectedMethod === 'bkash' ? 'all' : 'bkash');
+                  setCurrentPage(1);
+                }}
+                className={`p-1.5 rounded-xl cursor-pointer transition-all border ${
+                  selectedMethod === 'bkash'
+                    ? 'bg-pink-600 text-white border-pink-600 shadow-xs ring-2 ring-pink-500/20'
+                    : 'bg-pink-50/70 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border-pink-200/60 dark:border-pink-800/50 hover:bg-pink-100'
+                }`}
+                title="বিকাশ লেনদেন ফিল্টার করতে ক্লিক করুন"
+              >
+                <span className={`text-[10px] block font-bold ${selectedMethod === 'bkash' ? 'text-white' : 'text-pink-500'}`}>
+                  বিকাশ
+                </span>
+                <span className="font-extrabold text-[11px] block mt-0.5 truncate">
                   ৳{stats?.byMethod?.bkash ? stats.byMethod.bkash.toLocaleString('bn-BD') : 0}
                 </span>
               </div>
-              <div className="p-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300">
-                <span className="text-[10px] text-indigo-500 block font-bold">ব্যাংক</span>
-                <span className="font-extrabold">
+
+              <div
+                onClick={() => {
+                  setSelectedMethod(selectedMethod === 'nagad' ? 'all' : 'nagad');
+                  setCurrentPage(1);
+                }}
+                className={`p-1.5 rounded-xl cursor-pointer transition-all border ${
+                  selectedMethod === 'nagad'
+                    ? 'bg-orange-600 text-white border-orange-600 shadow-xs ring-2 ring-orange-500/20'
+                    : 'bg-orange-50/70 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200/60 dark:border-orange-800/50 hover:bg-orange-100'
+                }`}
+                title="নগদ লেনদেন ফিল্টার করতে ক্লিক করুন"
+              >
+                <span className={`text-[10px] block font-bold ${selectedMethod === 'nagad' ? 'text-white' : 'text-orange-500'}`}>
+                  নগদ
+                </span>
+                <span className="font-extrabold text-[11px] block mt-0.5 truncate">
+                  ৳{stats?.byMethod?.nagad ? stats.byMethod.nagad.toLocaleString('bn-BD') : 0}
+                </span>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedMethod(selectedMethod === 'bank_transfer' ? 'all' : 'bank_transfer');
+                  setCurrentPage(1);
+                }}
+                className={`p-1.5 rounded-xl cursor-pointer transition-all border ${
+                  selectedMethod === 'bank_transfer'
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs ring-2 ring-indigo-500/20'
+                    : 'bg-indigo-50/70 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200/60 dark:border-indigo-800/50 hover:bg-indigo-100'
+                }`}
+                title="ব্যাংক লেনদেন ফিল্টার করতে ক্লিক করুন"
+              >
+                <span className={`text-[10px] block font-bold ${selectedMethod === 'bank_transfer' ? 'text-white' : 'text-indigo-500'}`}>
+                  ব্যাংক
+                </span>
+                <span className="font-extrabold text-[11px] block mt-0.5 truncate">
                   ৳{stats?.byMethod?.bank ? stats.byMethod.bank.toLocaleString('bn-BD') : 0}
                 </span>
               </div>
@@ -852,6 +913,17 @@ export default function AdminFinancePage() {
                           </span>
                           <span className="text-[11px] text-slate-400 mt-0.5 block">
                             {payDate}
+                          </span>
+                          <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                            {latestP.paymentMethod === 'bkash'
+                              ? '📱 বিকাশ'
+                              : latestP.paymentMethod === 'nagad'
+                              ? '📱 নগদ'
+                              : latestP.paymentMethod === 'bank_transfer'
+                              ? '🏦 ব্যাংক'
+                              : latestP.paymentMethod === 'rocket'
+                              ? '📱 রকেট'
+                              : '💵 ক্যাশ'}
                           </span>
                         </td>
 
