@@ -112,8 +112,9 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
         courseDoc?.regularPrice ??
         totalPaidAcrossAll;
 
-  // Final due amount is accurately: max(0, courseTotalFee - totalPaidAcrossAll)
-  const finalDueAmount = Math.max(0, courseTotalFee - totalPaidAcrossAll);
+  // Final due amount is accurately: courseTotalFee - totalPaidAcrossAll (negative means excess paid)
+  const netDueAmount = courseTotalFee - totalPaidAcrossAll;
+  const finalDueAmount = Math.max(0, netDueAmount);
 
   const receiptDate = data.paidAt || data.createdAt
     ? new Date(data.paidAt || data.createdAt!).toLocaleDateString('bn-BD', {
@@ -323,22 +324,36 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                 <span>সর্বমোট পরিশোধিত:</span>
                 <span>৳{totalPaidAcrossAll.toLocaleString('bn-BD')}</span>
               </div>
-              <div className="flex justify-between items-center text-xs font-bold text-rose-600 dark:text-rose-400 print:text-black border-t border-slate-200 dark:border-slate-700 pt-1.5">
-                <span>অবশিষ্ট বকেয়া:</span>
+              <div className={`flex justify-between items-center text-xs font-bold border-t border-slate-200 dark:border-slate-700 pt-1.5 print:text-black ${
+                netDueAmount < 0
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : 'text-rose-600 dark:text-rose-400'
+              }`}>
+                <span>{netDueAmount < 0 ? 'অতিরিক্ত পরিশোধ:' : 'অবশিষ্ট বকেয়া:'}</span>
                 <div className="text-right">
                   {data.isManualPaid ? (
                     <div>
                       <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                         পরিশোধিত (Paid)
                       </span>
-                      {finalDueAmount > 0 && (
+                      {netDueAmount > 0 ? (
                         <div className="text-[10px] text-slate-400 font-mono">
                           (৳{finalDueAmount.toLocaleString('bn-BD')})
                         </div>
-                      )}
+                      ) : netDueAmount < 0 ? (
+                        <div className="text-[10px] text-emerald-600 font-mono font-bold">
+                          +৳{Math.abs(netDueAmount).toLocaleString('bn-BD')}
+                        </div>
+                      ) : null}
                     </div>
-                  ) : (
+                  ) : netDueAmount < 0 ? (
+                    <span className="text-emerald-600 dark:text-emerald-400 font-black">
+                      +৳{Math.abs(netDueAmount).toLocaleString('bn-BD')}
+                    </span>
+                  ) : netDueAmount > 0 ? (
                     <span>৳{finalDueAmount.toLocaleString('bn-BD')}</span>
+                  ) : (
+                    <span className="text-slate-400 font-normal">৳০ (পরিশোধিত)</span>
                   )}
                 </div>
               </div>

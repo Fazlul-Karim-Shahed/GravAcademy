@@ -134,9 +134,9 @@ export default function AdminFinancePage() {
             0;
 
       if (studentBatchFee > 0) {
-        item.totalDue = Math.max(0, studentBatchFee - item.totalAmountPaid);
+        item.totalDue = studentBatchFee - item.totalAmountPaid;
         item.latestPayment.totalFee = studentBatchFee;
-        item.latestPayment.dueAmount = item.totalDue;
+        item.latestPayment.dueAmount = Math.max(0, item.totalDue);
       } else if (item.latestPayment.dueAmount !== undefined) {
         item.totalDue = item.latestPayment.dueAmount;
       }
@@ -831,20 +831,29 @@ export default function AdminFinancePage() {
                               <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs">
                                 ✓ পেইড (পরিশোধিত)
                               </span>
-                              {group.totalDue > 0 && (
+                              {group.totalDue > 0 ? (
                                 <div className="text-[11px] font-mono text-slate-400 mt-0.5" title="এডমিন কর্তৃক মোট বকেয়া থেকে অব্যাহতিপ্রাপ্ত">
                                   ৳{group.totalDue.toLocaleString('bn-BD')}
                                 </div>
-                              )}
+                              ) : group.totalDue < 0 ? (
+                                <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 font-bold" title="অতিরিক্ত পরিশোধ">
+                                  +৳{Math.abs(group.totalDue).toLocaleString('bn-BD')} (অতিরিক্ত)
+                                </div>
+                              ) : null}
                             </div>
                           ) : group.totalDue > 0 ? (
+                            // বকেয়া বাকি থাকলে লাল কালার
                             <div className="text-sm font-black text-rose-500">
                               ৳{group.totalDue.toLocaleString('bn-BD')}
                             </div>
+                          ) : group.totalDue < 0 ? (
+                            // বেশি দিলে সবুজ কালার করে দেখাবে যে এই টাকাটা বেশি দিছে
+                            <div className="text-sm font-black text-emerald-600 dark:text-emerald-400" title="অতিরিক্ত পরিশোধিত (এডজাস্টমেন্ট প্রয়োজন)">
+                              +৳{Math.abs(group.totalDue).toLocaleString('bn-BD')}
+                            </div>
                           ) : (
-                            <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
-                              পরিশোধিত
-                            </span>
+                            // আর যদি সমান সমান হয় তাহলে কোন কিছুই দেখাবে না বকেআর জায়গায়
+                            <span className="text-slate-300 dark:text-slate-700 text-xs font-semibold">—</span>
                           )}
                         </td>
 
@@ -1300,19 +1309,33 @@ export default function AdminFinancePage() {
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-800/60 flex flex-col justify-between">
+                <div className={`p-3.5 rounded-2xl border flex flex-col justify-between ${
+                  activeDetailsGroup.totalDue < 0
+                    ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200/70 dark:border-emerald-800/60'
+                    : 'bg-rose-50/70 dark:bg-rose-950/40 border-rose-200/70 dark:border-rose-800/60'
+                }`}>
                   <div>
-                    <span className="text-xs font-bold text-rose-700 dark:text-rose-300 block">
-                      বর্তমান অবশিষ্ট বকেয়া
+                    <span className={`text-xs font-bold block ${
+                      activeDetailsGroup.totalDue < 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'
+                    }`}>
+                      {activeDetailsGroup.totalDue < 0 ? 'অতিরিক্ত পরিশোধিত (এডজাস্টমেন্ট)' : 'বর্তমান অবশিষ্ট বকেয়া'}
                     </span>
-                    <span className="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 block">
-                      ৳{activeDetailsGroup.totalDue.toLocaleString('bn-BD')}
+                    <span className={`text-xl font-black mt-1 block ${
+                      activeDetailsGroup.totalDue < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                    }`}>
+                      {activeDetailsGroup.totalDue < 0
+                        ? `+৳${Math.abs(activeDetailsGroup.totalDue).toLocaleString('bn-BD')}`
+                        : activeDetailsGroup.totalDue > 0
+                        ? `৳${activeDetailsGroup.totalDue.toLocaleString('bn-BD')}`
+                        : '৳০ (পরিশোধিত)'}
                     </span>
                   </div>
 
-                  <div className="mt-2 pt-2 border-t border-rose-200/50 dark:border-rose-800/50 flex items-center justify-between">
+                  <div className={`mt-2 pt-2 border-t flex items-center justify-between ${
+                    activeDetailsGroup.totalDue < 0 ? 'border-emerald-200/50 dark:border-emerald-800/50' : 'border-rose-200/50 dark:border-rose-800/50'
+                  }`}>
                     <span className="text-[10px] font-bold text-slate-500">
-                      {activeDetailsGroup.latestPayment.isManualPaid ? '✓ ম্যানুয়ালি পেইড' : 'বকেয়া কাউন্ট হচ্ছে'}
+                      {activeDetailsGroup.latestPayment.isManualPaid ? '✓ ম্যানুয়ালি পেইড' : activeDetailsGroup.totalDue < 0 ? 'রিফান্ড / এডজাস্টযোগ্য' : 'বকেয়া কাউন্ট হচ্ছে'}
                     </span>
                     <button
                       type="button"
