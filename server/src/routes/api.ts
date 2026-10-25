@@ -126,32 +126,32 @@ router.get(
 router.post(
   '/enrollments/admin-admit',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.ADMISSIONS_CREATE),
   validateRequest(enrollmentCtrl.adminAdmitStudentSchema),
   enrollmentCtrl.adminAdmitStudent
 );
 router.get(
   '/enrollments/admin-list',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
   enrollmentCtrl.getAdminEnrollments
 );
 router.delete(
   '/enrollments/:enrollmentId',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.ADMISSIONS_REMOVE),
   enrollmentCtrl.removeStudentFromBatch
 );
 router.post(
   '/enrollments/cancel',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.ADMISSIONS_REMOVE),
   enrollmentCtrl.removeStudentFromBatch
 );
 router.post(
   '/enrollments/shift',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.ADMISSIONS_SHIFT),
   enrollmentCtrl.shiftStudentBatch
 );
 
@@ -159,14 +159,14 @@ router.post(
 router.post(
   '/finance/collect-payment',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.FINANCE_COLLECT),
   validateRequest(financeCtrl.collectPaymentSchema),
   financeCtrl.collectPayment
 );
 router.get(
   '/finance/admin-payments',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.FINANCE_VIEW),
   financeCtrl.getAdminPayments
 );
 router.get(
@@ -188,19 +188,19 @@ router.post(
 router.delete(
   '/finance/payments/:id',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.FINANCE_DELETE),
   financeCtrl.deletePayment
 );
 router.post(
   '/finance/refund-payment',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.FINANCE_REFUND),
   financeCtrl.refundExcessPayment
 );
 router.post(
   '/finance/toggle-paid',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.FINANCE_MANUAL_PAID),
   financeCtrl.toggleManualPaidStatus
 );
 
@@ -309,7 +309,7 @@ router.get('/documents/:fileAssetId/stream', authenticate, docCtrl.streamProtect
 router.post(
   '/exams',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.TEACHER),
+  requirePermission(PERMISSIONS.EXAMS_MANAGE),
   examCtrl.createExam
 );
 router.get('/batches/:batchId/exams', authenticate, examCtrl.getBatchExams);
@@ -319,13 +319,13 @@ router.post('/exams/:examId/submit', authenticate, examCtrl.submitExam);
 router.get(
   '/exams/:examId/submissions',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.TEACHER),
+  requirePermission(PERMISSIONS.EXAMS_EVALUATE),
   examCtrl.getExamSubmissions
 );
 router.put(
   '/exams/attempts/:attemptId/evaluate',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.TEACHER),
+  requirePermission(PERMISSIONS.EXAMS_EVALUATE),
   examCtrl.evaluateStudentAttempt
 );
 router.get('/exams/:examId/my-result', authenticate, examCtrl.getStudentExamResult);
@@ -382,7 +382,7 @@ router.put(
 router.get(
   '/audit-logs',
   authenticate,
-  requireRole(ROLES.SUPERADMIN),
+  requirePermission(PERMISSIONS.AUDIT_LOGS_VIEW),
   userAdminCtrl.getAuditLogs
 );
 
@@ -396,26 +396,26 @@ router.get('/jobs/:slug', jobCtrl.getJobPostBySlug);
 router.get(
   '/admin/jobs',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.JOBS_VIEW),
   jobCtrl.getAdminJobPosts
 );
 router.post(
   '/admin/jobs',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.JOBS_MANAGE),
   validateRequest(jobCtrl.jobPostSchema),
   jobCtrl.createJobPost
 );
 router.put(
   '/admin/jobs/:id',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.JOBS_MANAGE),
   jobCtrl.updateJobPost
 );
 router.delete(
   '/admin/jobs/:id',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.JOBS_MANAGE),
   jobCtrl.deleteJobPost
 );
 
@@ -423,13 +423,13 @@ router.delete(
 router.post(
   '/admin/jobs/categories',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.JOBS_MANAGE),
   jobCtrl.createJobCategory
 );
 router.delete(
   '/admin/jobs/categories/:id',
   authenticate,
-  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  requirePermission(PERMISSIONS.JOBS_MANAGE),
   jobCtrl.deleteJobCategory
 );
 
