@@ -127,7 +127,7 @@ export default function HomePage() {
   const defaultInstructors = [
     {
       name: 'মাহমুদুল হাসান',
-      institution: 'বুয়েট (BUET - CSE)',
+      institution: '',
       department: 'কম্পিউটার সায়েন্স অ্যান্ড ইঞ্জিনিয়ারিং',
       exp: '৮+ বছরের শিক্ষকতা অভিজ্ঞতা',
       subjects: ['উচ্চতর গণিত', 'পদার্থবিজ্ঞান'],
@@ -158,26 +158,44 @@ export default function HomePage() {
       classesCount: '৩২০+ লাইভ ক্লাস',
       photo: '/images/teacher-1.jpg',
     },
+    {
+      name: 'ফারজানা আক্তার',
+      institution: 'বুয়েট (BUET - EEE)',
+      department: 'তড়িৎ ও ইলেকট্রনিক কৌশল',
+      exp: '৬+ বছরের শিক্ষকতা অভিজ্ঞতা',
+      subjects: ['পদার্থবিজ্ঞান', 'উচ্চতর গণিত'],
+      badge: 'কনসেপ্ট স্পেশালিস্ট',
+      studentsCount: '১১,০০০+',
+      classesCount: '৩৬০+ লাইভ ক্লাস',
+      photo: '/images/teacher-2.jpg',
+    },
   ];
 
-  // If DB teachers exist, prioritize them so updates from profile reflect live on homepage
+  // If DB teachers exist, prioritize them, and fill remaining slots from defaultInstructors so 4 cards always show
+  const mappedDbTeachers = dbTeachers.map((t) => ({
+    name: t.name,
+    institution: t.teacherDetails?.institution || '',
+    department: t.teacherDetails?.department || 'বিষয়ভিত্তিক স্পেশালিস্ট',
+    exp: t.teacherDetails?.experience || 'অভিজ্ঞ মেন্টর',
+    subjects:
+      t.teacherDetails?.specialistSubjects && t.teacherDetails.specialistSubjects.length > 0
+        ? t.teacherDetails.specialistSubjects
+        : ['গণিত', 'বিজ্ঞান'],
+    badge: t.teacherDetails?.badge || 'মেন্টর',
+    studentsCount: t.teacherDetails?.studentsCount || '৫,০০০+',
+    classesCount: t.teacherDetails?.classesCount || '২০০+ লাইভ ক্লাস',
+    photo: t.avatarUrl || '',
+  }));
+
   const instructorsList =
-    dbTeachers.length > 0
-      ? dbTeachers.map((t) => ({
-          name: t.name,
-          institution: t.teacherDetails?.institution || 'বুয়েট / ঢাবি / ডিএমসি',
-          department: t.teacherDetails?.department || 'বিষয়ভিত্তিক স্পেশালিস্ট',
-          exp: t.teacherDetails?.experience || 'অভিজ্ঞ মেন্টর',
-          subjects:
-            t.teacherDetails?.specialistSubjects && t.teacherDetails.specialistSubjects.length > 0
-              ? t.teacherDetails.specialistSubjects
-              : ['গণিত', 'বিজ্ঞান'],
-          badge: t.teacherDetails?.badge || 'মেন্টর',
-          studentsCount: t.teacherDetails?.studentsCount || '৫,০০০+',
-          classesCount: t.teacherDetails?.classesCount || '২০০+ লাইভ ক্লাস',
-          photo: t.avatarUrl || '',
-        }))
-      : defaultInstructors;
+    mappedDbTeachers.length >= 4
+      ? mappedDbTeachers
+      : [
+          ...mappedDbTeachers,
+          ...defaultInstructors.filter(
+            (def) => !mappedDbTeachers.some((db) => db.name === def.name)
+          ),
+        ].slice(0, 4);
 
   return (
     <div className="bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
@@ -629,8 +647,8 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {filteredCourses.map((c, idx) => {
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
+              {filteredCourses.slice(0, 4).map((c, idx) => {
                 const instructorName =
                   c.instructors && c.instructors.length > 0
                     ? typeof c.instructors[0] === 'object'
@@ -678,11 +696,11 @@ export default function HomePage() {
                   <Link
                     key={c._id}
                     href={`/courses/${c.slug || c._id}`}
-                    className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
+                    className="cute-course-card group rounded-[22px] sm:rounded-[34px] overflow-hidden flex flex-col justify-between p-1.5 sm:p-3 border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
                   >
                     <div>
                       {/* Top Thumbnail Banner with Smooth Curved Mask */}
-                      <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
+                      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9.5] rounded-[18px] sm:rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
                         <div className={`relative w-full h-full ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`}`}>
                           {c.thumbnailUrl ? (
                             <img
@@ -691,9 +709,9 @@ export default function HomePage() {
                               className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
                             />
                           ) : (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                              <BookOpen className="w-12 h-12 text-white/80 drop-shadow-md mb-2 group-hover:scale-110 transition-transform duration-300" />
-                              <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-6 text-center">
+                              <BookOpen className="w-6 h-6 sm:w-12 sm:h-12 text-white/80 drop-shadow-md mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300" />
+                              <span className="text-white font-black text-xs sm:text-sm drop-shadow-md tracking-wide px-1 sm:px-3 line-clamp-1">
                                 {c.title}
                               </span>
                             </div>
@@ -703,43 +721,44 @@ export default function HomePage() {
                           <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
 
                           {/* Top Badges Overlay */}
-                          <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
+                          <div className="absolute top-1.5 sm:top-2.5 inset-x-1.5 sm:inset-x-2.5 z-20 flex items-center justify-between pointer-events-none gap-1">
                             {/* Grade Level Tag */}
-                            <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
-                              <Sparkles className="w-3 h-3 text-amber-300" />
-                              <span>{c.gradeLevel}</span>
+                            <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1">
+                              <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-300 shrink-0" />
+                              <span className="truncate">{c.gradeLevel}</span>
                             </span>
 
                             {/* Cute Live Indicator */}
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
-                              <span className="relative flex h-2 w-2">
+                            <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] sm:text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
+                              <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                                 <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
-                                <span className="relative m-auto h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                                <span className="relative m-auto h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
                               </span>
-                              <span>লাইভ ব্যাচ</span>
+                              <span className="hidden xs:inline">লাইভ ব্যাচ</span>
+                              <span className="xs:hidden">লাইভ</span>
                             </span>
                           </div>
                         </div>
                       </div>
 
                       {/* Card Content Body */}
-                      <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
+                      <div className="px-2 sm:px-4 pb-2 sm:pb-3 pt-2.5 sm:pt-3.5">
                         {/* Course Title */}
-                        <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        <h3 className="text-xs sm:text-base lg:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 min-h-[2rem] sm:min-h-0">
                           {c.title}
                         </h3>
 
-                        {/* Short Description (Strictly max 1 line with ellipsis) */}
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
-                          {c.description
-                            ? c.description.length > 55
+                        {/* Short Description (Hidden on mobile) */}
+                        {c.description && (
+                          <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
+                            {c.description.length > 55
                               ? c.description.slice(0, 55).trim() + '...'
-                              : c.description
-                            : 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রস্তুতির কোর্স।'}
-                        </p>
+                              : c.description}
+                          </p>
+                        )}
 
-                        {/* Cute Feature Micro-Badges */}
-                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        {/* Feature Micro-Badges (Hidden on mobile) */}
+                        <div className="hidden sm:block mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
                           <div className="flex items-center gap-2">
                             <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                               <PlayCircle className="w-3.5 h-3.5" />
@@ -763,37 +782,37 @@ export default function HomePage() {
                     </div>
 
                     {/* Cute Card Bottom: Enrollment CTA */}
-                    <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                    <div className="p-2 sm:p-4 mt-1 rounded-[16px] sm:rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex flex-row items-center justify-between gap-1.5 sm:gap-3 shadow-inner">
+                      <div className="min-w-0">
+                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block truncate">
                           ভর্তি চলছে
                         </span>
-                        <div className="flex items-baseline gap-1.5 mt-0.5">
+                        <div className="flex items-baseline gap-1 mt-0.5">
                           {c.discountPrice && c.discountPrice > 0 && c.regularPrice && c.regularPrice > c.discountPrice ? (
                             <>
-                              <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                              <span className="text-xs sm:text-lg font-black text-slate-900 dark:text-white">
                                 ৳{c.discountPrice}
                               </span>
-                              <span className="text-[11px] text-slate-400 line-through font-semibold">
+                              <span className="text-[10px] sm:text-[11px] text-slate-400 line-through font-semibold">
                                 ৳{c.regularPrice}
                               </span>
                             </>
                           ) : c.regularPrice || c.courseFee ? (
-                            <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                            <span className="text-xs sm:text-lg font-black text-slate-900 dark:text-white">
                               ৳{c.regularPrice || c.courseFee}
                             </span>
                           ) : (
-                            <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
-                              ফ্রি কোর্স
+                            <span className="text-[11px] sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
+                              ফ্রি
                             </span>
                           )}
                         </div>
                       </div>
 
                       {/* Cute Action Button */}
-                      <div className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102">
+                      <div className="py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-[10px] sm:text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
                         <span>ব্যাচ দেখুন</span>
-                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>
@@ -1067,15 +1086,15 @@ export default function HomePage() {
           </div>
 
           {/* Cute Instructors Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 sm:gap-8">
-            {instructorsList.map((teacher, idx) => (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
+            {instructorsList.slice(0, 4).map((teacher, idx) => (
               <div
                 key={idx}
-                className="group relative p-2.5 sm:p-3 rounded-[34px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2 flex flex-col justify-between"
+                className="group relative p-1.5 sm:p-3 rounded-[22px] sm:rounded-[34px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2 flex flex-col justify-between"
               >
                 <div>
                   {/* Portrait Photo Mask Frame with Gloss Shimmer */}
-                  <div className="relative rounded-[26px] overflow-hidden aspect-[4/3.2] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner flex items-center justify-center">
+                  <div className="relative rounded-[18px] sm:rounded-[26px] overflow-hidden aspect-[4/3.2] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner flex items-center justify-center">
                     {teacher.photo ? (
                       <img
                         src={teacher.photo}
@@ -1098,41 +1117,43 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                     {/* Top Floating Badge */}
-                    <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 pointer-events-none">
-                      <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black shadow-md border border-white/20 flex items-center gap-1.5">
-                        <Sparkles className="w-3 h-3 text-amber-300" />
-                        <span>{teacher.badge}</span>
+                    <div className="absolute top-1.5 sm:top-3 inset-x-1.5 sm:inset-x-3 flex items-center justify-between z-10 pointer-events-none">
+                      <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-black shadow-md border border-white/20 flex items-center gap-1">
+                        <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-300 shrink-0" />
+                        <span className="truncate">{teacher.badge}</span>
                       </span>
 
-                      <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border border-white/30" title="ভেরিফায়েড শিক্ষক">
-                        <Check className="w-4 h-4 stroke-[3]" />
+                      <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border border-white/30 shrink-0" title="ভেরিফায়েড শিক্ষক">
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4 stroke-[3]" />
                       </div>
                     </div>
 
                     {/* Overlaid Institution on bottom of photo */}
-                    <div className="absolute bottom-3 inset-x-3 z-10 pointer-events-none">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-900 dark:text-slate-100 text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15">
-                        <GraduationCap className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                        <span className="truncate">{teacher.institution}</span>
+                    {teacher.institution && (
+                      <div className="absolute bottom-1.5 sm:bottom-3 inset-x-1.5 sm:inset-x-3 z-10 pointer-events-none">
+                        <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-900 dark:text-slate-100 text-[10px] sm:text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15 max-w-full">
+                          <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                          <span className="truncate">{teacher.institution}</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Information Card Body */}
-                  <div className="px-3.5 sm:px-4 pt-4 pb-2">
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <div className="px-2 sm:px-4 pt-2.5 sm:pt-4 pb-1 sm:pb-2">
+                    <h3 className="text-xs sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                       {teacher.name}
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                    <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium truncate">
                       {teacher.department}
                     </p>
 
                     {/* Cute Subjects Badges */}
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {teacher.subjects.map((sub: string, sIdx: number) => (
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2 sm:mt-3">
+                      {teacher.subjects.slice(0, 2).map((sub: string, sIdx: number) => (
                         <span
                           key={sIdx}
-                          className="px-2.5 py-1 rounded-lg bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/70 dark:border-blue-900/60 shadow-2xs"
+                          className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold border border-blue-200/70 dark:border-blue-900/60 shadow-2xs truncate"
                         >
                           {sub}
                         </span>
@@ -1142,13 +1163,13 @@ export default function HomePage() {
                 </div>
 
                 {/* Cute Clean Stats Footer Pill */}
-                <div className="mt-4 p-3 rounded-[22px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-bold shadow-inner">
-                  <div className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <span>{teacher.studentsCount} শিক্ষার্থী</span>
+                <div className="mt-2.5 sm:mt-4 p-2 sm:p-3 rounded-[16px] sm:rounded-[22px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold shadow-inner gap-1">
+                  <div className="flex items-center gap-1 sm:gap-1.5 truncate">
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <span className="truncate">{teacher.studentsCount}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                    <PlayCircle className="w-4 h-4" />
+                  <div className="flex items-center gap-1 sm:gap-1.5 text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <PlayCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>{teacher.classesCount}</span>
                   </div>
                 </div>

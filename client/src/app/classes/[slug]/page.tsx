@@ -451,13 +451,13 @@ export default function DedicatedClassPage() {
                       </h3>
 
                       {/* Short Description */}
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
-                        {c.description
-                          ? c.description.length > 55
+                      {c.description && (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
+                          {c.description.length > 55
                             ? c.description.slice(0, 55).trim() + '...'
-                            : c.description
-                          : 'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বোর্ড প্রস্তুতির কোর্স।'}
-                      </p>
+                            : c.description}
+                        </p>
+                      )}
 
                       {/* Cute Feature Micro-Badges */}
                       <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">

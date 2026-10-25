@@ -219,7 +219,6 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const regularPrice = hasDiscount ? course.regularPrice : null;
 
   const defaultHighlights = [
-    'সম্পূর্ণ অধ্যায়ভিত্তিক বিস্তারিত কনসেপ্ট ও বেসিক ক্লিয়ারিং লাইভ ক্লাস',
     'বোর্ড প্রশ্ন বিশ্লেষণ এবং শীর্ষ স্কুল/কলেজের টেস্ট পেপার সলভিং',
     'সাপ্তাহিক লাইভ ইন্টারঅ্যাক্টিভ ডাউট সলভিং ও রিভিশন সেশন',
     'প্রতিটি ক্লাসের পূর্ণাঙ্গ অধ্যায়ভিত্তিক লেকচার শিট ও ফর্মুলা বুকলেট',

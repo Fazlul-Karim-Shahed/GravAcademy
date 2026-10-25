@@ -47,3 +47,7 @@ desktop.ini
 # Testing & Coverage
 coverage/
 .nyc_output/
+
+# Firebase
+.firebase/
+

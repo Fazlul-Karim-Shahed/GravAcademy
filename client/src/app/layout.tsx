@@ -4,7 +4,6 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Navbar } from '@/components/navigation/Navbar';
-import { MobileBottomNav } from '@/components/navigation/MobileBottomNav';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -39,8 +38,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
-            <main className="min-h-[calc(100vh-4rem)] pb-20 md:pb-0">{children}</main>
-            <MobileBottomNav />
+            <main className="min-h-[calc(100vh-4rem)]">{children}</main>
           </AuthProvider>
         </ThemeProvider>
       </body>
