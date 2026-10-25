@@ -210,13 +210,13 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
           )}
 
           {/* Action Bar (Apply Now & Source) */}
-          <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
             {job.officialWebsite && (
               <a
                 href={job.officialWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <span>অনলাইনে আবেদন করুন</span>
                 <ExternalLink className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
                 href={job.circularPdfUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold border border-slate-200 dark:border-slate-700 shadow-2xs flex items-center gap-2 transition-colors"
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold border border-slate-200 dark:border-slate-700 shadow-2xs flex items-center justify-center gap-2 transition-colors"
               >
                 <Download className="w-4 h-4 text-rose-500" />
                 <span>অফিসিয়াল সার্কুলার PDF</span>
@@ -236,8 +236,8 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
             )}
 
             {isExpired && (
-              <span className="px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center gap-1.5">
-                <AlertCircle className="w-4 h-4" /> এই বিজ্ঞপ্তির আবেদনের সময় শেষ হয়েছে
+              <span className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold border border-rose-200 dark:border-rose-800 flex items-center justify-center gap-1.5 text-center">
+                <AlertCircle className="w-4 h-4 shrink-0" /> এই বিজ্ঞপ্তির আবেদনের সময় শেষ হয়েছে
               </span>
             )}
           </div>

@@ -401,13 +401,13 @@ function CreateBatchContent() {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-end gap-3">
-              <Link href="/admin/batches">
-                <Button type="button" variant="secondary" size="md">
+            <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+              <Link href="/admin/batches" className="w-full sm:w-auto">
+                <Button type="button" variant="secondary" size="md" className="w-full sm:w-auto">
                   Cancel
                 </Button>
               </Link>
-              <Button type="submit" isLoading={submitting} size="md">
+              <Button type="submit" isLoading={submitting} size="md" className="w-full sm:w-auto">
                 Save & Create Batch
               </Button>
             </div>

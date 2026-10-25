@@ -401,18 +401,19 @@ export default function UserPermissionsEditPage() {
           </div>
 
           {/* Sticky Footer Bar with Save Button */}
-          <div className="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xl flex items-center justify-between gap-4">
+          {/* Sticky Footer Bar with Save Button */}
+          <div className="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div className="text-xs text-slate-500 dark:text-slate-400">
               <span className="font-semibold text-slate-900 dark:text-white">{targetUser.name}</span> এর জন্য পারমিশন সেভ করতে প্রস্তুত।
             </div>
 
-            <div className="flex items-center gap-3">
-              <Link href="/admin/settings">
-                <Button type="button" variant="secondary" size="md">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+              <Link href="/admin/settings" className="flex-1 sm:flex-none">
+                <Button type="button" variant="secondary" size="md" className="w-full">
                   বাতিল (Cancel)
                 </Button>
               </Link>
-              <Button type="submit" size="md" isLoading={submitting}>
+              <Button type="submit" size="md" isLoading={submitting} className="flex-1 sm:flex-none">
                 রোল ও পারমিশন সেভ করুন
               </Button>
             </div>

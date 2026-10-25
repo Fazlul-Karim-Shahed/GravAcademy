@@ -778,10 +778,10 @@ export default function CreateExamPage({
           </div>
 
           {/* Submit Actions */}
-          <div className="flex items-center justify-end gap-4 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-4 pt-4">
             <Link
               href={`/classroom/${batchId}/exams`}
-              className="px-6 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-all"
+              className="w-full sm:w-auto text-center px-6 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-all"
             >
               বাতিল করুন
             </Link>
@@ -789,7 +789,7 @@ export default function CreateExamPage({
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all disabled:opacity-50"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? 'প্রকাশ হচ্ছে...' : 'এক্সাম সম্পন্ন ও প্রকাশ করুন'}</span>

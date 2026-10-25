@@ -229,13 +229,13 @@ export default function ScheduleFreeClassPage() {
             </div>
 
             {/* Submit */}
-            <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-end gap-3">
-              <Link href="/free-classes">
-                <Button type="button" variant="secondary" size="md">
+            <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+              <Link href="/free-classes" className="w-full sm:w-auto">
+                <Button type="button" variant="secondary" size="md" className="w-full sm:w-auto">
                   বাতিল
                 </Button>
               </Link>
-              <Button type="submit" isLoading={submitting} size="md">
+              <Button type="submit" isLoading={submitting} size="md" className="w-full sm:w-auto">
                 পাবলিক ফ্রি ক্লাস প্রকাশ করুন
               </Button>
             </div>

@@ -208,7 +208,8 @@ export default function ExamSubmissionsPage({
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
@@ -289,6 +290,63 @@ export default function ExamSubmissionsPage({
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Submissions Cards (<md) */}
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+              {submissions.map((sub) => (
+                <div key={sub._id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <UserAvatar
+                        name={sub.studentId?.name || 'শিক্ষার্থী'}
+                        avatarUrl={sub.studentId?.avatarUrl}
+                        size="md"
+                      />
+                      <div>
+                        <div className="font-black text-sm text-slate-900 dark:text-white">
+                          {sub.studentId?.name}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          {sub.studentId?.studentId ? `#${sub.studentId.studentId}` : sub.studentId?.email}
+                        </div>
+                      </div>
+                    </div>
+                    {sub.isEvaluated ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                        মূল্যায়িত
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 shrink-0">
+                        মূল্যায়ন বাকি
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
+                    <div>
+                      <div className="text-[10px] text-slate-500 font-semibold">MCQ</div>
+                      <div className="text-xs font-black text-blue-600 dark:text-blue-400">{sub.mcqScore}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-500 font-semibold">CQ</div>
+                      <div className="text-xs font-black text-purple-600 dark:text-purple-400">{sub.cqScore}</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-slate-500 font-semibold">মোট</div>
+                      <div className="text-xs font-black text-slate-900 dark:text-white">{sub.totalScore}/{exam?.totalMarks}</div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => openEvaluation(sub)}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs transition-all shadow-sm"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>{sub.isEvaluated ? 'পুনর্মূল্যায়ন করুন' : 'মূল্যায়ন করুন'}</span>
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         )}

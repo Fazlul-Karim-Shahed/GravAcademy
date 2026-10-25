@@ -456,18 +456,18 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             </div>
 
             {/* Quick Actions & Stats */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
               <Link
                 href={`/learn/${hierarchy.batch._id}`}
                 target="_blank"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
               >
-                <Eye className="w-4 h-4 text-slate-500 dark:text-slate-400" /> Preview Student Room
+                <Eye className="w-4 h-4 text-slate-500 dark:text-slate-400" /> Preview Room
               </Link>
               <button
                 type="button"
                 onClick={() => setModuleModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold transition-colors shadow-xs"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold transition-colors shadow-xs"
               >
                 <Plus className="w-4 h-4" /> Add Module
               </button>
@@ -475,7 +475,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-3 gap-4 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                 <Layers className="w-5 h-5" />

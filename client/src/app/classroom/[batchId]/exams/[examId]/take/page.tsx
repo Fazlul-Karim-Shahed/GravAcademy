@@ -474,10 +474,10 @@ export default function TakeExamPage({
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 space-y-4">
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all">
-                    <UploadCloud className="w-4 h-4" />
+              <div className="p-4 sm:p-6 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 space-y-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                  <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all w-full sm:w-auto">
+                    <UploadCloud className="w-4 h-4 shrink-0" />
                     <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'উত্তরপত্র ফাইল আপলোড করুন'}</span>
                     <input
                       type="file"
@@ -488,20 +488,20 @@ export default function TakeExamPage({
                     />
                   </label>
 
-                  <span className="text-xs text-slate-500">অথবা Google Drive লিংক দিন:</span>
+                  <span className="text-xs text-slate-500 text-center sm:text-left">অথবা Google Drive লিংক দিন:</span>
                   <input
                     type="url"
                     placeholder="https://drive.google.com/..."
                     value={studentDocumentUrl}
                     onChange={(e) => setStudentDocumentUrl(e.target.value)}
-                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                    className="w-full sm:flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
                   />
                 </div>
 
                 {studentDocumentUrl && (
-                  <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs flex items-center justify-between">
+                  <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs flex flex-wrap items-center justify-between gap-2">
                     <span className="font-bold flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       উত্তরপত্র যুক্ত হয়েছে
                     </span>
                     <a
@@ -519,16 +519,16 @@ export default function TakeExamPage({
           )}
 
           {/* FINAL SUBMISSION BAR */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-4 px-6 z-40 shadow-xl">
-            <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
-              <div className="text-xs text-slate-500">
+          <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-3 sm:py-4 px-4 sm:px-6 z-40 shadow-xl">
+            <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-[11px] sm:text-xs text-slate-500 text-center sm:text-left">
                 নিশ্চিত হয়ে জমা দিন। সময় শেষ হওয়ার পূর্বেই সাবমিট করা বাধ্যতামূলক।
               </div>
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 <span>{submitting ? 'জমা হচ্ছে...' : 'পরীক্ষা সমাপ্ত ও সাবমিট করুন'}</span>
