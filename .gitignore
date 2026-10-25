@@ -48,6 +48,3 @@ desktop.ini
 coverage/
 .nyc_output/
 
-# Firebase
-.firebase/
-
