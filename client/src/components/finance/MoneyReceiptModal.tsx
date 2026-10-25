@@ -249,16 +249,21 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                       })
                     : '';
 
-                  const installmentLabel = paymentsList.length > 1
+                  const isRefund = item.paymentType === 'refund' || (item.amountPaid || 0) < 0;
+                  const installmentLabel = isRefund
+                    ? 'অতিরিক্ত টাকা রিফান্ড / ফেরত'
+                    : paymentsList.length > 1
                     ? `কিস্তি #${idx + 1} (${item.paymentType === 'admission' ? 'ভর্তি/১ম কিস্তি' : 'বকেয়া পরিশোধ'})`
                     : item.paymentType === 'admission'
                     ? 'ভর্তি ও কোর্স ফি'
                     : 'বকেয়া পরিশোধ / কিস্তি';
 
                   return (
-                    <tr key={item._id || idx}>
+                    <tr key={item._id || idx} className={isRefund ? 'bg-rose-50/40 dark:bg-rose-950/20' : ''}>
                       <td className="py-3.5 px-4 font-semibold text-slate-900 dark:text-white print:text-black">
-                        <div>{installmentLabel}</div>
+                        <div className={isRefund ? 'text-rose-600 dark:text-rose-400 font-bold' : ''}>
+                          {installmentLabel}
+                        </div>
                         {itemDate && (
                           <div className="text-[11px] text-slate-400 print:text-slate-600 font-normal mt-0.5">
                             তারিখ: {itemDate} • রিসিট নং: <span className="font-mono">{item.receiptNo}</span>
@@ -280,8 +285,14 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                           </div>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-black text-slate-900 dark:text-white print:text-black text-base">
-                        ৳{item.amountPaid?.toLocaleString('bn-BD')}
+                      <td className={`py-3.5 px-4 text-right font-black text-base ${
+                        isRefund
+                          ? 'text-rose-600 dark:text-rose-400 print:text-black'
+                          : 'text-slate-900 dark:text-white print:text-black'
+                      }`}>
+                        {isRefund
+                          ? `-৳${Math.abs(item.amountPaid || 0).toLocaleString('bn-BD')}`
+                          : `৳${item.amountPaid?.toLocaleString('bn-BD')}`}
                       </td>
                     </tr>
                   );

@@ -44,7 +44,7 @@ export const collectPaymentSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল ব্যাচ আইডি').optional(),
   amountPaid: z.number().min(0, 'টাকার পরিমাণ ০ বা তার বেশি হতে হবে'),
   paymentMethod: z.enum(['cash', 'bkash', 'nagad', 'rocket', 'bank_transfer', 'other']).default('cash'),
-  paymentType: z.enum(['admission', 'due_payment', 'monthly_fee', 'other']).default('due_payment'),
+  paymentType: z.enum(['admission', 'due_payment', 'monthly_fee', 'refund', 'adjustment', 'other']).default('due_payment'),
   transactionId: z.string().optional().or(z.literal('')),
   senderNumber: z.string().optional().or(z.literal('')),
   documentUrl: z.string().optional().or(z.literal('')),
@@ -1059,4 +1059,116 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     });
   }
 };
+
+/**
+ * Admin: Refund / Adjustment of Excess Payment (রিফান্ড বা অতিরিক্ত টাকা ফেরত)
+ */
+export const refundExcessPayment = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const adminUser = req.user;
+    if (!adminUser) {
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+    }
+
+    const {
+      studentId,
+      batchId,
+      refundAmount,
+      paymentMethod = 'cash',
+      transactionId = '',
+      senderNumber = '',
+      notes = '',
+    } = req.body;
+
+    const numRefund = Number(refundAmount);
+    if (!numRefund || numRefund <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'রিফান্ডের পরিমাণ অবশ্যই ০ টাকার বেশি হতে হবে।',
+      });
+    }
+
+    const student = await User.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
+    }
+
+    let batch = null;
+    let enrollment = null;
+    let totalFee = 0;
+
+    if (batchId) {
+      batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
+      if (batch) {
+        enrollment = await Enrollment.findOne({ studentId, batchId });
+        const courseDoc = batch.courseId as any;
+        const currentCoursePrice = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
+        totalFee = enrollment?.batchFee || currentCoursePrice;
+      }
+    }
+
+    // Previous completed payments for this batch
+    const pastPayments = await Payment.find({
+      studentId,
+      batchId,
+      status: 'completed',
+    });
+    const previousPaid = pastPayments.reduce((acc, p) => acc + (p.amountPaid || 0), 0);
+
+    const newTotalPaid = previousPaid - numRefund;
+    const newDueAmount = Math.max(0, totalFee - newTotalPaid);
+
+    const receiptNo = await generateReceiptNumber();
+
+    const refundPayment = await Payment.create({
+      receiptNo,
+      studentId,
+      batchId: batch?._id,
+      courseId: batch?.courseId,
+      enrollmentId: enrollment?._id,
+      amountPaid: -numRefund,
+      totalFee,
+      dueAmount: newDueAmount,
+      paymentMethod,
+      paymentType: 'refund',
+      transactionId: transactionId.trim(),
+      senderNumber: senderNumber.trim(),
+      notes: notes.trim() || 'অতিরিক্ত টাকা রিফান্ড / ফেরত প্রদান',
+      collectedBy: adminUser._id,
+      paidAt: new Date(),
+      status: 'completed',
+    });
+
+    if (enrollment) {
+      enrollment.paymentFee = newTotalPaid;
+      if (newTotalPaid >= totalFee && totalFee > 0) {
+        enrollment.paymentStatus = 'paid';
+      } else if (newTotalPaid > 0) {
+        enrollment.paymentStatus = 'partial';
+      } else {
+        enrollment.paymentStatus = 'unpaid';
+      }
+      await enrollment.save();
+    }
+
+    const populatedRefund = await Payment.findById(refundPayment._id)
+      .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+      .populate('batchId', 'name fee courseId')
+      .populate('courseId', 'title')
+      .populate('collectedBy', 'name userId role');
+
+    return res.status(201).json({
+      success: true,
+      message: `৳${numRefund.toLocaleString('bn-BD')} সফলভাবে রিফান্ড করা হয়েছে এবং ফাইন্যান্স আপডেট হয়েছে!`,
+      data: populatedRefund,
+    });
+  } catch (error: any) {
+    console.error('refundExcessPayment error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'রিফান্ড প্রক্রিয়াকরণে সমস্যা হয়েছে।',
+    });
+  }
+};
+
 

@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export type PaymentMethod = 'cash' | 'bkash' | 'nagad' | 'rocket' | 'bank_transfer' | 'other';
-export type PaymentType = 'admission' | 'due_payment' | 'monthly_fee' | 'other';
+export type PaymentType = 'admission' | 'due_payment' | 'monthly_fee' | 'refund' | 'adjustment' | 'other';
 export type PaymentStatus = 'completed' | 'pending' | 'refunded';
 
 export interface IPayment extends Document {
@@ -59,7 +59,6 @@ const PaymentSchema = new Schema<IPayment>(
     amountPaid: {
       type: Number,
       required: true,
-      min: 0,
     },
     totalFee: {
       type: Number,
@@ -69,7 +68,6 @@ const PaymentSchema = new Schema<IPayment>(
     dueAmount: {
       type: Number,
       default: 0,
-      min: 0,
     },
     paymentMethod: {
       type: String,
@@ -79,7 +77,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
     paymentType: {
       type: String,
-      enum: ['admission', 'due_payment', 'monthly_fee', 'other'],
+      enum: ['admission', 'due_payment', 'monthly_fee', 'refund', 'adjustment', 'other'],
       default: 'admission',
       index: true,
     },

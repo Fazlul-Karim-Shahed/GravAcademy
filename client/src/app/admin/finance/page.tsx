@@ -172,6 +172,16 @@ export default function AdminFinancePage() {
   const [collectSubmitting, setCollectSubmitting] = useState(false);
   const [collectError, setCollectError] = useState('');
 
+  // Refund / Adjustment Modal State
+  const [refundTargetGroup, setRefundTargetGroup] = useState<GroupedStudentBatchPayment | null>(null);
+  const [refundAmount, setRefundAmount] = useState<number | string>('');
+  const [refundMethod, setRefundMethod] = useState<'cash' | 'bkash' | 'nagad' | 'rocket' | 'bank_transfer' | 'other'>('cash');
+  const [refundTrxId, setRefundTrxId] = useState('');
+  const [refundSender, setRefundSender] = useState('');
+  const [refundNotes, setRefundNotes] = useState('');
+  const [refundSubmitting, setRefundSubmitting] = useState(false);
+  const [refundError, setRefundError] = useState('');
+
   const handleCollectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -249,6 +259,58 @@ export default function AdminFinancePage() {
       alert(err.response?.data?.message || 'স্ট্যাটাস আপডেট করতে ত্রুটি ঘটেছে');
     } finally {
       setTogglingPaidKey(null);
+    }
+  };
+
+  const handleRefundSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRefundError('');
+
+    if (!refundTargetGroup) return;
+
+    const numRefund = Number(refundAmount);
+    if (isNaN(numRefund) || numRefund <= 0) {
+      setRefundError('ফেরতের টাকার পরিমাণ সঠিক নয়');
+      return;
+    }
+
+    setRefundSubmitting(true);
+    try {
+      const studentId = refundTargetGroup.studentId?._id || (refundTargetGroup.studentId as any);
+      const batchId = refundTargetGroup.batchId?._id || (refundTargetGroup.batchId as any);
+
+      const res = await api.post('/finance/refund-payment', {
+        studentId,
+        batchId,
+        refundAmount: numRefund,
+        paymentMethod: refundMethod,
+        transactionId: refundTrxId.trim() || undefined,
+        senderNumber: refundSender.trim() || undefined,
+        notes: refundNotes.trim() || 'অতিরিক্ত টাকা রিফান্ড / ফেরত প্রদান',
+      });
+
+      if (res.data?.success) {
+        alert(res.data?.message || 'টাকা সফলভাবে রিফান্ড করা হয়েছে!');
+        setRefundTargetGroup(null);
+        setRefundAmount('');
+        setRefundTrxId('');
+        setRefundSender('');
+        setRefundNotes('');
+        setActiveDetailsGroup(null);
+
+        // Refetch main list and show refund receipt
+        await fetchPayments();
+        if (res.data.data) {
+          setActiveReceipt(res.data.data);
+        }
+      } else {
+        setRefundError(res.data?.message || 'রিফান্ড প্রক্রিয়াকরণ করা যায়নি');
+      }
+    } catch (err: any) {
+      console.error('Refund submit error:', err);
+      setRefundError(err.response?.data?.message || err.message || 'রিফান্ড প্রক্রিয়াকরণে সমস্যা হয়েছে');
+    } finally {
+      setRefundSubmitting(false);
     }
   };
 
@@ -748,7 +810,7 @@ export default function AdminFinancePage() {
                   <th className="py-4 px-6">ব্যাচ ও কোর্স</th>
                   <th className="py-4 px-6 text-right">মোট পরিশোধ</th>
                   <th className="py-4 px-6 text-right">বকেয়া</th>
-                  <th className="py-4 px-6 text-center">বকেয়া জমা</th>
+                  <th className="py-4 px-6 text-center">অ্যাকশন / জমা</th>
                   <th className="py-4 px-6 text-center">রিসিট</th>
                   <th className="py-4 px-6 text-center">Details</th>
                 </tr>
@@ -857,7 +919,7 @@ export default function AdminFinancePage() {
                           )}
                         </td>
 
-                        {/* বকেয়া জমা (Separate column) */}
+                        {/* অ্যাকশন / জমা বা ফেরত (Separate column) */}
                         <td className="py-4 px-6 text-center">
                           {group.totalDue > 0 ? (
                             <button
@@ -880,6 +942,18 @@ export default function AdminFinancePage() {
                               title="বকেয়া কিস্তি গ্রহণ করুন"
                             >
                               <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
+                            </button>
+                          ) : group.totalDue < 0 ? (
+                            <button
+                              onClick={() => {
+                                setRefundTargetGroup(group);
+                                setRefundAmount(Math.abs(group.totalDue));
+                                setRefundError('');
+                              }}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/70 hover:bg-amber-100 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-200/60 dark:border-amber-800/60 transition-colors cursor-pointer"
+                              title="অতিরিক্ত টাকা শিক্ষার্থীকে ব্যাক / ফেরত দিন"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" /> ফেরত দিন
                             </button>
                           ) : (
                             <span className="text-slate-300 dark:text-slate-700 text-xs">—</span>
@@ -1272,6 +1346,176 @@ export default function AdminFinancePage() {
         </div>
       )}
 
+      {/* Refund / Excess Payment Adjustment Modal */}
+      {refundTargetGroup && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 sm:p-8 overflow-y-auto max-h-[90vh]">
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <RotateCcw className="w-5 h-5 text-amber-500" />
+                অতিরিক্ত টাকা রিফান্ড / ফেরত প্রদান
+              </h2>
+              <button
+                type="button"
+                onClick={() => setRefundTargetGroup(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+              শিক্ষার্থী কোর্স ফি থেকে অতিরিক্ত টাকা পরিশোধ করে থাকলে তা এখান থেকে রিফান্ড এন্ট্রি করুন। এর ফলে বকেয়া ও ফাইন্যান্স স্বয়ংক্রিয়ভাবে ব্যালেন্সড হয়ে যাবে।
+            </p>
+
+            {/* Target Student & Fee Summary */}
+            <div className="mb-5 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="font-extrabold text-amber-900 dark:text-amber-200 block text-sm">
+                    {refundTargetGroup.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
+                  </span>
+                  <span className="font-mono text-slate-500 dark:text-slate-400 text-[11px]">
+                    #{refundTargetGroup.studentId?.userId || 'N/A'} • {refundTargetGroup.batchId?.name || 'ব্যাচ'}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">কোর্স ফি</span>
+                  <span className="font-black text-slate-900 dark:text-white text-xs">
+                    ৳{(refundTargetGroup.latestPayment.totalFee || 0).toLocaleString('bn-BD')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-amber-200/60 dark:border-amber-800/60">
+                <div>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block">মোট পরিশোধিত:</span>
+                  <span className="font-bold text-slate-900 dark:text-white">
+                    ৳{refundTargetGroup.totalAmountPaid.toLocaleString('bn-BD')}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[11px] text-amber-700 dark:text-amber-300 block font-bold">
+                    সর্বোচ্চ ফেরতযোগ্য:
+                  </span>
+                  <span className="font-black text-emerald-600 dark:text-emerald-400">
+                    ৳{Math.abs(refundTargetGroup.totalDue).toLocaleString('bn-BD')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {refundError && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 text-rose-600 text-xs font-semibold">
+                {refundError}
+              </div>
+            )}
+
+            <form onSubmit={handleRefundSubmit} className="space-y-4">
+              {/* Refund Amount & Method */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    ফেরতের পরিমাণ (৳) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={Math.abs(refundTargetGroup.totalDue)}
+                    required
+                    value={refundAmount}
+                    onChange={(e) => setRefundAmount(e.target.value)}
+                    placeholder="যেমন: ৪০০"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    (সর্বোচ্চ ৳{Math.abs(refundTargetGroup.totalDue).toLocaleString('bn-BD')})
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    ফেরত দেওয়ার মাধ্যম
+                  </label>
+                  <select
+                    value={refundMethod}
+                    onChange={(e) => setRefundMethod(e.target.value as any)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  >
+                    <option value="cash">💵 সরাসরি ক্যাশ ফেরত (Cash)</option>
+                    <option value="bkash">📱 বিকাশ সেন্ট (bKash)</option>
+                    <option value="nagad">📱 নগদ (Nagad)</option>
+                    <option value="rocket">📱 রকেট (Rocket)</option>
+                    <option value="bank_transfer">🏦 ব্যাংক ট্রান্সফার (Bank)</option>
+                    <option value="other">অন্যান্য (Other)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* TrxID & Receiver Account */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    TrxID / রেফারেন্স নং (যদি থাকে)
+                  </label>
+                  <input
+                    type="text"
+                    value={refundTrxId}
+                    onChange={(e) => setRefundTrxId(e.target.value)}
+                    placeholder="যেমন: BKASH9X7..."
+                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    শিক্ষার্থীর ফোন / একাউন্ট নং
+                  </label>
+                  <input
+                    type="text"
+                    value={refundSender}
+                    onChange={(e) => setRefundSender(e.target.value)}
+                    placeholder="যেমন: 01712..."
+                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+              </div>
+
+              {/* Refund Notes */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  ফেরতের কারণ বা মন্তব্য
+                </label>
+                <input
+                  type="text"
+                  value={refundNotes}
+                  onChange={(e) => setRefundNotes(e.target.value)}
+                  placeholder="যেমন: কম টাকার কোর্সে শিফট করায় অতিরিক্ত টাকা ফেরত দেওয়া হলো"
+                  className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setRefundTargetGroup(null)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  disabled={refundSubmitting}
+                  className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-extrabold shadow-md transition-all disabled:opacity-60 cursor-pointer flex items-center gap-2"
+                >
+                  {refundSubmitting ? 'প্রসেসিং হচ্ছে...' : 'টাকা ফেরত নিশ্চিত করুন ও ভাউচার রিসিট দিন'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Money Receipt View Modal */}
       <MoneyReceiptModal
         isOpen={!!activeReceipt}
@@ -1408,22 +1652,37 @@ export default function AdminFinancePage() {
                     <span className="text-[10px] font-bold text-slate-500">
                       {activeDetailsGroup.latestPayment.isManualPaid ? '✓ ম্যানুয়ালি পেইড' : activeDetailsGroup.totalDue < 0 ? 'রিফান্ড / এডজাস্টযোগ্য' : 'বকেয়া কাউন্ট হচ্ছে'}
                     </span>
-                    <button
-                      type="button"
-                      disabled={togglingPaidKey === activeDetailsGroup.key}
-                      onClick={() => handleToggleManualPaid(activeDetailsGroup)}
-                      className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer shadow-2xs ${
-                        activeDetailsGroup.latestPayment.isManualPaid
-                          ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
-                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      }`}
-                    >
-                      {togglingPaidKey === activeDetailsGroup.key
-                        ? 'আপডেট হচ্ছে...'
-                        : activeDetailsGroup.latestPayment.isManualPaid
-                        ? 'পেইড প্রত্যাহার করুন'
-                        : 'পেইড করে দিন'}
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      {activeDetailsGroup.totalDue < 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRefundTargetGroup(activeDetailsGroup);
+                            setRefundAmount(Math.abs(activeDetailsGroup.totalDue));
+                            setRefundError('');
+                          }}
+                          className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-white transition-all cursor-pointer shadow-2xs flex items-center gap-1"
+                        >
+                          <RotateCcw className="w-3 h-3" /> টাকা ফেরত দিন
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        disabled={togglingPaidKey === activeDetailsGroup.key}
+                        onClick={() => handleToggleManualPaid(activeDetailsGroup)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer shadow-2xs ${
+                          activeDetailsGroup.latestPayment.isManualPaid
+                            ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
+                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                        }`}
+                      >
+                        {togglingPaidKey === activeDetailsGroup.key
+                          ? 'আপডেট হচ্ছে...'
+                          : activeDetailsGroup.latestPayment.isManualPaid
+                          ? 'পেইড প্রত্যাহার করুন'
+                          : 'পেইড করে দিন'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

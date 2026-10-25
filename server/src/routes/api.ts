@@ -192,6 +192,12 @@ router.delete(
   financeCtrl.deletePayment
 );
 router.post(
+  '/finance/refund-payment',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  financeCtrl.refundExcessPayment
+);
+router.post(
   '/finance/toggle-paid',
   authenticate,
   requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
