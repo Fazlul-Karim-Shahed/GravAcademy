@@ -889,19 +889,30 @@ export default function AdminFinancePage() {
                         {/* Due Amount (Separate column) */}
                         <td className="py-4 px-6 text-right">
                           {group.latestPayment.isManualPaid ? (
-                            <div>
-                              <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs">
-                                ✓ পেইড (পরিশোধিত)
-                              </span>
+                            <div className="text-right">
                               {group.totalDue > 0 ? (
-                                <div className="text-[11px] font-mono text-slate-400 mt-0.5" title="এডমিন কর্তৃক মোট বকেয়া থেকে অব্যাহতিপ্রাপ্ত">
-                                  ৳{group.totalDue.toLocaleString('bn-BD')}
-                                </div>
+                                <>
+                                  <div className="text-sm font-black text-slate-700 dark:text-slate-300">
+                                    ৳{group.totalDue.toLocaleString('bn-BD')}
+                                  </div>
+                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block -mt-0.5">
+                                    (পরিশোধিত)
+                                  </span>
+                                </>
                               ) : group.totalDue < 0 ? (
-                                <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 font-bold" title="অতিরিক্ত পরিশোধ">
-                                  +৳{Math.abs(group.totalDue).toLocaleString('bn-BD')} (অতিরিক্ত)
-                                </div>
-                              ) : null}
+                                <>
+                                  <div className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                                    +৳{Math.abs(group.totalDue).toLocaleString('bn-BD')}
+                                  </div>
+                                  <span className="text-[10px] font-bold text-emerald-600/80 dark:text-emerald-400/80 block -mt-0.5">
+                                    (অতিরিক্ত • পরিশোধিত)
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                  (পরিশোধিত)
+                                </span>
+                              )}
                             </div>
                           ) : group.totalDue > 0 ? (
                             // বকেয়া বাকি থাকলে লাল কালার

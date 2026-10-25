@@ -345,18 +345,29 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                 <div className="text-right">
                   {data.isManualPaid ? (
                     <div>
-                      <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                        পরিশোধিত (Paid)
-                      </span>
                       {netDueAmount > 0 ? (
-                        <div className="text-[10px] text-slate-400 font-mono">
-                          (৳{finalDueAmount.toLocaleString('bn-BD')})
-                        </div>
+                        <>
+                          <div className="text-xs font-black text-slate-700 dark:text-slate-300 print:text-black">
+                            ৳{finalDueAmount.toLocaleString('bn-BD')}
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 print:text-black block -mt-0.5">
+                            (পরিশোধিত)
+                          </span>
+                        </>
                       ) : netDueAmount < 0 ? (
-                        <div className="text-[10px] text-emerald-600 font-mono font-bold">
-                          +৳{Math.abs(netDueAmount).toLocaleString('bn-BD')}
-                        </div>
-                      ) : null}
+                        <>
+                          <div className="text-xs font-black text-emerald-600 dark:text-emerald-400 print:text-black">
+                            +৳{Math.abs(netDueAmount).toLocaleString('bn-BD')}
+                          </div>
+                          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 print:text-black block -mt-0.5">
+                            (পরিশোধিত)
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 print:text-black">
+                          ৳০ (পরিশোধিত)
+                        </span>
+                      )}
                     </div>
                   ) : netDueAmount < 0 ? (
                     <span className="text-emerald-600 dark:text-emerald-400 font-black">
