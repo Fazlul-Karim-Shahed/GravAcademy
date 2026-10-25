@@ -1033,7 +1033,20 @@ export default function AdminFinancePage() {
                 </label>
                 <select
                   value={collectBatchId}
-                  onChange={(e) => setCollectBatchId(e.target.value)}
+                  onChange={(e) => {
+                    const bId = e.target.value;
+                    setCollectBatchId(bId);
+                    if (selectedStudent && bId) {
+                      const matched = groupedPayments.find((g) => {
+                        const sId = g.studentId?._id || (g.studentId as any);
+                        const batId = g.batchId?._id || (g.batchId as any);
+                        return sId === selectedStudent._id && batId === bId;
+                      });
+                      if (matched && matched.totalDue > 0) {
+                        setCollectAmount(matched.totalDue);
+                      }
+                    }
+                  }}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">-- ব্যাচ নির্বাচন করুন (ঐচ্ছিক) --</option>
@@ -1044,6 +1057,64 @@ export default function AdminFinancePage() {
                   ))}
                 </select>
               </div>
+
+              {/* Student Financial Preview (If selected) */}
+              {selectedStudent && (() => {
+                const matchedGroup = groupedPayments.find((g) => {
+                  const sId = g.studentId?._id || (g.studentId as any);
+                  const batId = g.batchId?._id || (g.batchId as any);
+                  return sId === selectedStudent._id && (!collectBatchId || batId === collectBatchId);
+                });
+
+                if (!matchedGroup) return null;
+
+                const isExcess = matchedGroup.totalDue < 0;
+                const isDue = matchedGroup.totalDue > 0;
+
+                return (
+                  <div className={`p-3 rounded-2xl border text-xs flex items-center justify-between transition-all ${
+                    isExcess
+                      ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
+                      : isDue
+                      ? 'bg-rose-50 dark:bg-rose-950/50 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200'
+                      : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  }`}>
+                    <div>
+                      <div className="font-extrabold flex items-center gap-1.5">
+                        <span>মোট পরিশোধিত: ৳{matchedGroup.totalAmountPaid.toLocaleString('bn-BD')}</span>
+                        {matchedGroup.latestPayment.totalFee ? (
+                          <span className="text-[11px] opacity-75">(কোর্স ফি: ৳{matchedGroup.latestPayment.totalFee.toLocaleString('bn-BD')})</span>
+                        ) : null}
+                      </div>
+                      <div className="text-[11px] mt-0.5">
+                        {isExcess ? (
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                            • অতিরিক্ত জমা রয়েছে: +৳{Math.abs(matchedGroup.totalDue).toLocaleString('bn-BD')} (এডজাস্টযোগ্য)
+                          </span>
+                        ) : isDue ? (
+                          <span className="font-bold text-rose-600 dark:text-rose-400">
+                            • অবশিষ্ট বকেয়া: ৳{matchedGroup.totalDue.toLocaleString('bn-BD')}
+                          </span>
+                        ) : (
+                          <span className="text-slate-500 dark:text-slate-400">
+                            • কোনো বকেয়া বা অতিরিক্ত টাকা নেই (সম্পূর্ণ পরিশোধিত)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {isDue && (
+                      <button
+                        type="button"
+                        onClick={() => setCollectAmount(matchedGroup.totalDue)}
+                        className="text-[11px] font-black underline hover:opacity-80 shrink-0 cursor-pointer text-rose-700 dark:text-rose-300"
+                      >
+                        বকেয়া বসান
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Amount & Method */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
