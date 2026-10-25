@@ -132,10 +132,10 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
     : '';
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 print:p-0 print:bg-white print:fixed print:inset-0">
-      <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden print:border-none print:shadow-none print:w-full print:max-w-none print:rounded-none">
-        {/* Top Action Bar (Hidden during print) */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 print:hidden">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:fixed print:inset-0">
+      <div className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden print:border-none print:shadow-none print:w-full print:max-w-none print:rounded-none print:max-h-none">
+        {/* Top Action Bar (Sticky, hidden during print) */}
+        <div className="shrink-0 flex items-center justify-between px-6 py-3.5 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 print:hidden z-10">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-wider">
@@ -145,22 +145,23 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              প্রিন্ট / PDF ডাউনলোড
+              প্রিন্ট / PDF
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700/60 transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700/60 transition-colors cursor-pointer"
+              title="বন্ধ করুন"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Printable Receipt Body */}
-        <div ref={receiptRef} className="p-6 sm:p-8 space-y-6 text-slate-900 dark:text-slate-100 print:text-black print:p-8 print:space-y-4">
+        {/* Printable Receipt Body with smooth scroll inside */}
+        <div ref={receiptRef} className="overflow-y-auto p-6 sm:p-8 space-y-6 text-slate-900 dark:text-slate-100 print:text-black print:p-8 print:space-y-4 print:overflow-visible">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b-2 border-dashed border-slate-200 dark:border-slate-800 print:border-slate-400">
             <div>
