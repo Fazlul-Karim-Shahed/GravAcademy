@@ -31,6 +31,7 @@ import {
   GraduationCap,
   Building2,
   X,
+  Trash2,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
@@ -203,6 +204,54 @@ export default function AdminFinancePage() {
       setCollectError(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে।');
     } finally {
       setUploadingCollectDoc(false);
+    }
+  };
+
+  const [deletingPaymentId, setDeletingPaymentId] = useState<string | null>(null);
+
+  const handleDeletePayment = async (paymentId: string, receiptNo: string, amount: number) => {
+    if (!paymentId || paymentId.startsWith('due_')) {
+      alert('এটি একটি বকেয়া নোটিশ, কোনো রেকর্ডকৃত লেনদেন নয়।');
+      return;
+    }
+
+    const confirmMsg = `আপনি কি নিশ্চিত যে রিসিট "${receiptNo}" (৳${amount.toLocaleString('bn-BD')}) ডিলিট করতে চান?\n\nএটি ডিলিট করলে শিক্ষার্থীর পরিশোধিত টাকার পরিমাণ হ্রাস পাবে এবং বকেয়া পুনরায় হিসাব হবে।`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeletingPaymentId(paymentId);
+    try {
+      const res = await api.delete(`/finance/payments/${paymentId}`);
+      if (res.data?.success) {
+        alert('পেমেন্ট ট্রানজ্যাকশনটি সফলভাবে মুছে ফেলা হয়েছে!');
+        
+        // Update activeDetailsGroup if currently open
+        if (activeDetailsGroup) {
+          const remainingInGroup = activeDetailsGroup.payments.filter((p) => p._id !== paymentId);
+          if (remainingInGroup.length === 0) {
+            setActiveDetailsGroup(null);
+          } else {
+            const newTotalPaid = remainingInGroup.reduce((s, p) => s + (p.amountPaid || 0), 0);
+            const studentFee = activeDetailsGroup.latestPayment.totalFee || 0;
+            const newDue = Math.max(0, studentFee - newTotalPaid);
+            setActiveDetailsGroup({
+              ...activeDetailsGroup,
+              payments: remainingInGroup,
+              totalAmountPaid: newTotalPaid,
+              totalDue: newDue,
+            });
+          }
+        }
+
+        // Refetch main list and summary stats
+        fetchPayments();
+      } else {
+        alert(res.data?.message || 'পেমেন্ট মুছে ফেলা সম্ভব হয়নি');
+      }
+    } catch (err: any) {
+      console.error('Delete payment error:', err);
+      alert(err.response?.data?.message || 'পেমেন্ট ডিলিট করতে ত্রুটি ঘটেছে');
+    } finally {
+      setDeletingPaymentId(null);
     }
   };
 
@@ -1281,19 +1330,33 @@ export default function AdminFinancePage() {
                             )}
                           </div>
 
-                          {p.amountPaid > 0 && (
-                            <button
-                              onClick={() => {
-                                setActiveDetailsGroup(null);
-                                setActiveReceipt(p);
-                                setActiveReceiptPayments([p]);
-                              }}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
-                              title="শুধুমাত্র এই কিস্তির রিসিট দেখুন"
-                            >
-                              <Printer className="w-3 h-3" /> রিসিট
-                            </button>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {p.amountPaid > 0 && (
+                              <button
+                                onClick={() => {
+                                  setActiveDetailsGroup(null);
+                                  setActiveReceipt(p);
+                                  setActiveReceiptPayments([p]);
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
+                                title="শুধুমাত্র এই কিস্তির রিসিট দেখুন"
+                              >
+                                <Printer className="w-3 h-3" /> রিসিট
+                              </button>
+                            )}
+
+                            {p._id && !p._id.startsWith('due_') && (
+                              <button
+                                disabled={deletingPaymentId === p._id}
+                                onClick={() => handleDeletePayment(p._id, p.receiptNo, p.amountPaid || 0)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/70 hover:bg-rose-100 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-200/60 dark:border-rose-800/60 transition-colors cursor-pointer disabled:opacity-50"
+                                title="ভুল ট্রানজ্যাকশনটি মুছে ফেলুন"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                <span>{deletingPaymentId === p._id ? 'মুছছে...' : 'ডিলিট'}</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );

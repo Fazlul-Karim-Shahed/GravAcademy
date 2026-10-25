@@ -912,3 +912,67 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
     });
   }
 };
+
+/**
+ * Delete Payment / Transaction (Admin / Superadmin)
+ * Used to correct mistakenly entered transactions or duplicate entries.
+ */
+export const deletePayment = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'ভুল পেমেন্ট আইডি' });
+    }
+
+    const payment = await Payment.findById(id);
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'লেনদেনটি পাওয়া যায়নি' });
+    }
+
+    const { studentId, batchId, amountPaid } = payment;
+
+    // Delete the payment document
+    await Payment.findByIdAndDelete(id);
+
+    // If linked to an enrollment, update enrollment's total paid and status
+    if (studentId && batchId) {
+      const remainingPayments = await Payment.find({
+        studentId,
+        batchId,
+        status: 'completed',
+      });
+
+      const remainingTotalPaid = remainingPayments.reduce(
+        (sum, p) => sum + (p.amountPaid || 0),
+        0
+      );
+
+      const enrollment = await Enrollment.findOne({ studentId, batchId });
+      if (enrollment) {
+        enrollment.paymentFee = remainingTotalPaid;
+        const targetFee = enrollment.batchFee || 0;
+
+        if (remainingTotalPaid >= targetFee && targetFee > 0) {
+          enrollment.paymentStatus = 'paid';
+        } else if (remainingTotalPaid > 0) {
+          enrollment.paymentStatus = 'partial';
+        } else {
+          enrollment.paymentStatus = 'unpaid';
+        }
+        await enrollment.save();
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'লেনদেনটি সফলভাবে মুছে ফেলা হয়েছে এবং বকেয়া হিসাব হালনাগাদ করা হয়েছে!',
+    });
+  } catch (error: any) {
+    console.error('deletePayment error:', error);
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'লেনদেন মুছে ফেলতে ত্রুটি ঘটেছে',
+    });
+  }
+};

@@ -167,6 +167,12 @@ router.post(
   upload.single('document'),
   financeCtrl.uploadPaymentDocument
 );
+router.delete(
+  '/finance/payments/:id',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  financeCtrl.deletePayment
+);
 
 // --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---
 router.get('/classrooms/:batchId', authenticate, classroomCtrl.getClassroomOverview);
