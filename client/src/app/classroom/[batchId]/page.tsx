@@ -26,6 +26,9 @@ import {
   AlertCircle,
   RefreshCw,
   FileText,
+  UserMinus,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
@@ -123,6 +126,11 @@ export default function BatchClassroomPage({
     students: [],
   });
   const [loadingMembers, setLoadingMembers] = useState(false);
+  const [studentToRemove, setStudentToRemove] = useState<MemberUser | null>(null);
+  const [removingStudent, setRemovingStudent] = useState(false);
+  const [removeNotice, setRemoveNotice] = useState('');
+
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -195,6 +203,30 @@ export default function BatchClassroomPage({
       console.error('Failed to load members:', err);
     } finally {
       setLoadingMembers(false);
+    }
+  };
+
+  const handleConfirmRemoveStudent = async () => {
+    if (!studentToRemove) return;
+    setRemovingStudent(true);
+    try {
+      const res = await api.post('/enrollments/cancel', {
+        batchId,
+        studentId: studentToRemove._id,
+      });
+
+      if (res.data?.success) {
+        setRemoveNotice(`${studentToRemove.name} কে এই ব্যাচ থেকে রিমুভ করা হয়েছে।`);
+        setTimeout(() => setRemoveNotice(''), 5000);
+        // Refresh members list & overview counts
+        await loadMembers();
+        await loadOverview();
+        setStudentToRemove(null);
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'শিক্ষার্থীকে রিমুভ করা সম্ভব হয়নি।');
+    } finally {
+      setRemovingStudent(false);
     }
   };
 
@@ -731,6 +763,14 @@ export default function BatchClassroomPage({
               </div>
             </div>
 
+            {/* Removal Notification */}
+            {removeNotice && (
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-rose-500 shrink-0" />
+                <span>{removeNotice}</span>
+              </div>
+            )}
+
             {loadingMembers ? (
               <div className="py-12 text-center text-slate-400 text-xs font-semibold">
                 মেম্বার তালিকা লোড হচ্ছে...
@@ -768,25 +808,38 @@ export default function BatchClassroomPage({
                 {members.students.map((s) => (
                   <div
                     key={s._id}
-                    className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5 hover:border-emerald-300 transition-colors"
+                    className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3 hover:border-emerald-300 transition-colors group"
                   >
-                    <UserAvatar
-                      name={s.name}
-                      avatarUrl={s.avatarUrl}
-                      role="student"
-                      size="lg"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
-                          {s.name}
+                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                      <UserAvatar
+                        name={s.name}
+                        avatarUrl={s.avatarUrl}
+                        role="student"
+                        size="lg"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
+                            {s.name}
+                          </span>
+                          {roleBadge('student')}
+                        </div>
+                        <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
+                          {s.userId ? `ID: ${s.userId}` : 'শিক্ষার্থী'}
                         </span>
-                        {roleBadge('student')}
                       </div>
-                      <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
-                        {s.userId ? `ID: ${s.userId}` : 'শিক্ষার্থী'}
-                      </span>
                     </div>
+
+                    {/* Admin Action: Remove Student from Batch */}
+                    {isAdmin && (
+                      <button
+                        onClick={() => setStudentToRemove(s)}
+                        title="এই ব্যাচ/কোর্স থেকে রিমুভ করুন"
+                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50 transition-all shrink-0 cursor-pointer"
+                      >
+                        <UserMinus className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 ))}
 
@@ -797,6 +850,76 @@ export default function BatchClassroomPage({
         )}
 
       </div>
+
+      {/* ================= MODAL: REMOVE STUDENT CONFIRMATION ================= */}
+      {studentToRemove && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  কোর্স/ব্যাচ থেকে রিমুভ করবেন?
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  ভুলবশত ভর্তি বাতিলকরণ
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 mb-4 space-y-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-500">শিক্ষার্থী:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{studentToRemove.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">আইডি:</span>
+                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToRemove.userId || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">বর্তমান ব্যাচ:</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-300">{batch?.name}</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+              আপনি কি নিশ্চিত যে এই শিক্ষার্থীকে এই ব্যাচ থেকে বাতিল করতে চান? শিক্ষার্থী আর এই ক্লাসরুম, লেকচার ও এক্সামে প্রবেশ করতে পারবে না এবং ব্যাচের আসন খালি হবে।
+            </p>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={removingStudent}
+                onClick={() => setStudentToRemove(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                disabled={removingStudent}
+                onClick={handleConfirmRemoveStudent}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 active:scale-95 transition-all disabled:opacity-50"
+              >
+                {removingStudent ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>রিমুভ হচ্ছে...</span>
+                  </>
+                ) : (
+                  <>
+                    <UserMinus className="w-3.5 h-3.5" />
+                    <span>হ্যাঁ, রিমুভ করুন</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* ================= MODAL: CREATE ANNOUNCEMENT ================= */}
       {showAnnounceModal && (

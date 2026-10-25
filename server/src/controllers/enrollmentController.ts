@@ -562,3 +562,67 @@ export const getAdminEnrollments = async (req: AuthenticatedRequest, res: Respon
   }
 };
 
+/**
+ * Admin action to remove/cancel student enrollment from a batch/course.
+ * Supports either enrollmentId (in params) OR { batchId, studentId } in body/query.
+ */
+export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const adminUser = req.user;
+    if (!adminUser) {
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+    }
+
+    const { enrollmentId } = req.params;
+    const { batchId, studentId, reason } = req.body || {};
+
+    let enrollment = null;
+
+    if (enrollmentId && mongoose.Types.ObjectId.isValid(enrollmentId)) {
+      enrollment = await Enrollment.findById(enrollmentId);
+    } else if (batchId && studentId) {
+      enrollment = await Enrollment.findOne({
+        batchId,
+        studentId,
+        status: { $in: ['enrolled', 'completed', 'pending'] },
+      });
+    }
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'কোনো সক্রিয় এনরোলমেন্ট বা ভর্তি রেকর্ড পাওয়া যায়নি।',
+      });
+    }
+
+    const prevStatus = enrollment.status;
+    enrollment.status = 'cancelled';
+    enrollment.notes = enrollment.notes
+      ? `${enrollment.notes} | Cancelled by Admin ${adminUser.name} (${adminUser.userId || adminUser.email}) on ${new Date().toISOString()}: ${reason || 'Removed from batch'}`
+      : `Cancelled by Admin ${adminUser.name} (${adminUser.userId || adminUser.email}) on ${new Date().toISOString()}: ${reason || 'Removed from batch'}`;
+
+    await enrollment.save();
+
+    // Decrement batch currentStudents count if batch tracks it
+    await Batch.findByIdAndUpdate(enrollment.batchId, {
+      $inc: { currentStudents: -1 },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'শিক্ষার্থীকে সফলভাবে ব্যাচ/কোর্স থেকে রিমুভ করা হয়েছে।',
+      data: {
+        enrollmentId: enrollment._id,
+        previousStatus: prevStatus,
+        status: enrollment.status,
+      },
+    });
+  } catch (error: any) {
+    console.error('removeStudentFromBatch error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'শিক্ষার্থীকে রিমুভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+    });
+  }
+};
+

@@ -136,6 +136,18 @@ router.get(
   requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
   enrollmentCtrl.getAdminEnrollments
 );
+router.delete(
+  '/enrollments/:enrollmentId',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  enrollmentCtrl.removeStudentFromBatch
+);
+router.post(
+  '/enrollments/cancel',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  enrollmentCtrl.removeStudentFromBatch
+);
 
 // --- FINANCE & PAYMENT ROUTES ---
 router.post(

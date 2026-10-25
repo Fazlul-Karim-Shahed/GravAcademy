@@ -26,6 +26,8 @@ import {
   FileText,
   DollarSign,
   Upload,
+  UserMinus,
+  AlertTriangle,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
@@ -168,6 +170,11 @@ export default function AdminAdmissionsPage() {
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
   const [copiedId, setCopiedId] = useState(false);
   const [copiedPass, setCopiedPass] = useState(false);
+
+  // Cancellation State
+  const [admissionToCancel, setAdmissionToCancel] = useState<EnrollmentRecord | null>(null);
+  const [cancellingAdmission, setCancellingAdmission] = useState(false);
+  const [cancelNotice, setCancelNotice] = useState('');
 
   // Handle direct file upload for payment document
   const handleDocumentFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -408,6 +415,26 @@ export default function AdminAdmissionsPage() {
       console.error('Failed to load admissions:', e);
     } finally {
       setLoadingAdmissions(false);
+    }
+  };
+
+  const handleConfirmCancelAdmission = async () => {
+    if (!admissionToCancel) return;
+    setCancellingAdmission(true);
+    try {
+      const res = await api.delete(`/enrollments/${admissionToCancel._id}`);
+      if (res.data?.success) {
+        setCancelNotice(
+          `${admissionToCancel.studentId?.name || 'শিক্ষার্থী'} কে ব্যাচ থেকে সফলভাবে রিমুভ করা হয়েছে।`
+        );
+        setTimeout(() => setCancelNotice(''), 5000);
+        setAdmissionToCancel(null);
+        await fetchRecentAdmissions(searchQuery);
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'ভর্তি বাতিল করা সম্ভব হয়নি।');
+    } finally {
+      setCancellingAdmission(false);
     }
   };
 
@@ -1094,6 +1121,14 @@ export default function AdminAdmissionsPage() {
                 </div>
               </div>
 
+              {/* Cancellation notice */}
+              {cancelNotice && (
+                <div className="mb-2 p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                  <span>{cancelNotice}</span>
+                </div>
+              )}
+
               {/* List */}
               <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
                 {loadingAdmissions ? (
@@ -1109,7 +1144,7 @@ export default function AdminAdmissionsPage() {
                   recentAdmissions.map((adm) => (
                     <div
                       key={adm._id}
-                      className="p-3 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3"
+                      className="p-3 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3 group"
                     >
                       {/* Left: Info */}
                       <div className="min-w-0 flex-1">
@@ -1137,26 +1172,37 @@ export default function AdminAdmissionsPage() {
                         </div>
                       </div>
 
-                      {/* Right: Fee & Status */}
-                      <div className="text-right shrink-0">
-                        <div className="text-sm font-bold text-slate-900 dark:text-white">
-                          ৳{adm.paymentFee?.toLocaleString('bn-BD') || 0}
-                        </div>
-                        <span
-                          className={`text-[11px] font-medium inline-block mt-0.5 ${
-                            adm.paymentStatus === 'paid'
-                              ? 'text-emerald-600 dark:text-emerald-400'
+                      {/* Right: Fee & Status & Actions */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="text-right">
+                          <div className="text-sm font-bold text-slate-900 dark:text-white">
+                            ৳{adm.paymentFee?.toLocaleString('bn-BD') || 0}
+                          </div>
+                          <span
+                            className={`text-[11px] font-medium inline-block mt-0.5 ${
+                              adm.paymentStatus === 'paid'
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : adm.paymentStatus === 'partial'
+                                ? 'text-amber-600 dark:text-amber-400'
+                                : 'text-rose-600 dark:text-rose-400'
+                            }`}
+                          >
+                            {adm.paymentStatus === 'paid'
+                              ? 'পরিশোধিত'
                               : adm.paymentStatus === 'partial'
-                              ? 'text-amber-600 dark:text-amber-400'
-                              : 'text-rose-600 dark:text-rose-400'
-                          }`}
+                              ? 'আংশিক'
+                              : 'বকেয়া'}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setAdmissionToCancel(adm)}
+                          title="ভর্তি বাতিল / কোর্স থেকে রিমুভ করুন"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50 transition-colors cursor-pointer"
                         >
-                          {adm.paymentStatus === 'paid'
-                            ? 'পরিশোধিত'
-                            : adm.paymentStatus === 'partial'
-                            ? 'আংশিক'
-                            : 'বকেয়া'}
-                        </span>
+                          <UserMinus className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))
@@ -1167,6 +1213,80 @@ export default function AdminAdmissionsPage() {
           </div>
 
         </div>
+
+        {/* MODAL: CANCEL ENROLLMENT CONFIRMATION */}
+        {admissionToCancel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    ভর্তি বাতিল / কোর্স থেকে রিমুভ
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    ভুলবশত ভর্তি বা কোর্স এন্ট্রি বাতিল
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 mb-4 space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">শিক্ষার্থী:</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{admissionToCancel.studentId?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">আইডি:</span>
+                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">#{admissionToCancel.studentId?.userId || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">ব্যাচ:</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{admissionToCancel.batchId?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">কোর্স:</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{admissionToCancel.courseId?.title}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                আপনি কি নিশ্চিত যে এই শিক্ষার্থীকে এই ব্যাচ/কোর্স থেকে বের করে দিতে চান? এর ফলে শিক্ষার্থী এই কোর্সের ক্লাসরুম ও কন্টেন্টে প্রবেশ করতে পারবে না এবং ব্যাচের আসন খালি হবে।
+              </p>
+
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  disabled={cancellingAdmission}
+                  onClick={() => setAdmissionToCancel(null)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="button"
+                  disabled={cancellingAdmission}
+                  onClick={handleConfirmCancelAdmission}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {cancellingAdmission ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>বাতিল হচ্ছে...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserMinus className="w-3.5 h-3.5" />
+                      <span>হ্যাঁ, রিমুভ করুন</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         {/* SUCCESS CONFIRMATION MODAL WITH CREDENTIALS */}
         {successModalData && (
