@@ -148,6 +148,12 @@ router.post(
   requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
   enrollmentCtrl.removeStudentFromBatch
 );
+router.post(
+  '/enrollments/shift',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  enrollmentCtrl.shiftStudentBatch
+);
 
 // --- FINANCE & PAYMENT ROUTES ---
 router.post(
@@ -184,6 +190,12 @@ router.delete(
   authenticate,
   requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
   financeCtrl.deletePayment
+);
+router.post(
+  '/finance/toggle-paid',
+  authenticate,
+  requireRole(ROLES.SUPERADMIN, ROLES.ADMIN),
+  financeCtrl.toggleManualPaidStatus
 );
 
 // --- CLASSROOM, ANNOUNCEMENTS & DISCUSSION ROUTES ---

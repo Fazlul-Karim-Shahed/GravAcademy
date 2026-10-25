@@ -20,6 +20,7 @@ export interface IPayment extends Document {
   senderNumber?: string; // Phone number or Bank account from which payment was sent
   documentUrl?: string; // Receipt screenshot or document link
   status: PaymentStatus;
+  isManualPaid?: boolean;
   notes?: string;
   collectedBy: mongoose.Types.ObjectId; // Admin or Staff who processed the payment
   paidAt: Date;
@@ -99,6 +100,10 @@ const PaymentSchema = new Schema<IPayment>(
       enum: ['completed', 'pending', 'refunded'],
       default: 'completed',
       index: true,
+    },
+    isManualPaid: {
+      type: Boolean,
+      default: false,
     },
     notes: {
       type: String,

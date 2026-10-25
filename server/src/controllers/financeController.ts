@@ -252,8 +252,10 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
     // Helper to calculate total due across all enrollments using their locked batchFee snapshot
     const calculateSystemTotalDue = async () => {
+      // Exclude cancelled and manually-paid enrollments from system total due
       const activeEnrollments = await Enrollment.find({
         status: { $in: ['enrolled', 'completed'] },
+        isManualPaid: { $ne: true },
       })
         .populate('courseId', 'courseFee regularPrice discountPrice')
         .lean();
@@ -300,7 +302,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         Payment.find({ status: 'completed' }).select('studentId batchId amountPaid').lean(),
         Enrollment.find({ status: { $in: ['enrolled', 'completed'] } })
           .populate('courseId', 'courseFee regularPrice discountPrice')
-          .select('studentId batchId batchFee courseId')
+          .select('studentId batchId batchFee courseId isManualPaid paymentStatus')
           .lean(),
       ]);
 
@@ -341,10 +343,15 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         const totalPaidForThisBatch = studentBatchPaidMap.get(key) || (p.amountPaid || 0);
         const dynamicDue = Math.max(0, effectiveBatchFee - totalPaidForThisBatch);
 
+        // Determine if marked manual paid
+        const isManuallyMarkedPaid = Boolean(enr?.isManualPaid || p.isManualPaid);
+
         return {
           ...p,
           totalFee: effectiveBatchFee,
           dueAmount: dynamicDue,
+          isManualPaid: isManuallyMarkedPaid,
+          enrollmentId: enr?._id || p.enrollmentId,
         };
       });
     };
@@ -976,3 +983,80 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
     });
   }
 };
+
+/**
+ * Admin action to toggle or mark student's enrollment/payment as 'paid' (isManualPaid).
+ * Rule 2:
+ * "এডমিন চাইলে কোন স্টুডেন্টকে পেইড করে দিতে পারে। অর্থাৎ ধরো কোন কোর্সের প্রাইস ৫০০ টাকা কিন্তু স্টুডেন্ট দিল ২০০ টাকা তখন তো সিস্টেম অটো ডিটেক্ট করবে পার্সিয়াল। কিন্তু এডমিন চাইলে ম্যানুয়ালি সেটাকে পেইড করে দিতে পারে। যদি সেটাকে এডমিন পেইড করে দেয় তাহলে ওই বকেয়া বিলটা ফাইন্যান্সে মোট বকেয়ায় আর যোগ হবে না। কিন্তু তার মানে এই না যে তার টাকা ২০০ টাকা কি তুমি ৫০০ টাকা বানাই দিবা। ফাইন্যান্সে সবই ঠিক থাকবে তার রো-তে ২০০ পরিশোধ ও ৩০০ বকেয়া দেখাবে কিন্তু স্ট্যাটাস 'পরিশোধিত' (পেইড) হয়ে যাবে। মোট বকেয়ায় ওইটা আর কাউন্ট হবে না।"
+ */
+export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const adminUser = req.user;
+    if (!adminUser) {
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+    }
+
+    const { studentId, batchId, enrollmentId, isManualPaid = true } = req.body;
+
+    let enrollment = null;
+    if (enrollmentId && mongoose.Types.ObjectId.isValid(enrollmentId)) {
+      enrollment = await Enrollment.findById(enrollmentId);
+    } else if (studentId && batchId) {
+      enrollment = await Enrollment.findOne({ studentId, batchId });
+    }
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'শিক্ষার্থীর এনরোলমেন্ট রেকর্ড পাওয়া যায়নি।',
+      });
+    }
+
+    enrollment.isManualPaid = Boolean(isManualPaid);
+    if (isManualPaid) {
+      enrollment.paymentStatus = 'paid';
+    } else {
+      // Re-evaluate based on actual payments
+      const payments = await Payment.find({
+        studentId: enrollment.studentId,
+        batchId: enrollment.batchId,
+        status: 'completed',
+      });
+      const totalPaid = payments.reduce((sum, p) => sum + (p.amountPaid || 0), 0);
+      const fee = enrollment.batchFee || 0;
+      if (totalPaid >= fee && fee > 0) {
+        enrollment.paymentStatus = 'paid';
+      } else if (totalPaid > 0) {
+        enrollment.paymentStatus = 'partial';
+      } else {
+        enrollment.paymentStatus = 'unpaid';
+      }
+    }
+
+    await enrollment.save();
+
+    // Also sync existing payments isManualPaid flag
+    await Payment.updateMany(
+      { studentId: enrollment.studentId, batchId: enrollment.batchId },
+      { $set: { isManualPaid: Boolean(isManualPaid) } }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: isManualPaid
+        ? 'শিক্ষার্থীকে সফলভাবে পেইড (পরিশোধিত) হিসেবে চিহ্নিত করা হয়েছে। মোট বকেয়া থেকে এই বকেয়া বাদ দেওয়া হয়েছে।'
+        : 'পেইড স্ট্যাটাস সফলভাবে প্রত্যাহার করা হয়েছে।',
+      data: {
+        isManualPaid: enrollment.isManualPaid,
+        paymentStatus: enrollment.paymentStatus,
+      },
+    });
+  } catch (error: any) {
+    console.error('toggleManualPaidStatus error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+    });
+  }
+};
+

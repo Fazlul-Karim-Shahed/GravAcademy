@@ -565,6 +565,7 @@ export const getAdminEnrollments = async (req: AuthenticatedRequest, res: Respon
 /**
  * Admin action to remove/cancel student enrollment from a batch/course.
  * Supports either enrollmentId (in params) OR { batchId, studentId } in body/query.
+ * Rule 1: "আমি যদি ক্লাস রুম থেকে রিমুভ করে দেই ওর ওই ব্যাচের যেই ট্রানজেকশনগুলো করছিল টাকা পয়সা রিলেটেড সেগুলো ডিলিট হয়ে যাবে এবং ফাইন্যান্সও নতুন করে আপডেট হবে"
  */
 export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -596,23 +597,35 @@ export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Res
     }
 
     const prevStatus = enrollment.status;
+    const targetStudentId = enrollment.studentId;
+    const targetBatchId = enrollment.batchId;
+
+    // 1. Delete all transactions/payments associated with this student and batch
+    const deletePaymentResult = await Payment.deleteMany({
+      studentId: targetStudentId,
+      batchId: targetBatchId,
+    });
+
+    // 2. Mark enrollment as cancelled (or delete enrollment record)
     enrollment.status = 'cancelled';
+    enrollment.paymentFee = 0;
     enrollment.notes = enrollment.notes
-      ? `${enrollment.notes} | Cancelled by Admin ${adminUser.name} (${adminUser.userId || adminUser.email}) on ${new Date().toISOString()}: ${reason || 'Removed from batch'}`
-      : `Cancelled by Admin ${adminUser.name} (${adminUser.userId || adminUser.email}) on ${new Date().toISOString()}: ${reason || 'Removed from batch'}`;
+      ? `${enrollment.notes} | Removed & deleted payments (${deletePaymentResult.deletedCount} transactions) by Admin ${adminUser.name} on ${new Date().toISOString()}: ${reason || 'Removed from batch'}`
+      : `Removed & deleted payments (${deletePaymentResult.deletedCount} transactions) by Admin ${adminUser.name} on ${new Date().toISOString()}: ${reason || 'Removed from batch'}`;
 
     await enrollment.save();
 
-    // Decrement batch currentStudents count if batch tracks it
-    await Batch.findByIdAndUpdate(enrollment.batchId, {
+    // Decrement batch currentStudents count
+    await Batch.findByIdAndUpdate(targetBatchId, {
       $inc: { currentStudents: -1 },
     });
 
     return res.status(200).json({
       success: true,
-      message: 'শিক্ষার্থীকে সফলভাবে ব্যাচ/কোর্স থেকে রিমুভ করা হয়েছে।',
+      message: 'শিক্ষার্থীকে ব্যাচ থেকে রিমুভ করা হয়েছে এবং সংশ্লিষ্ট ট্রানজ্যাকশনগুলো মুছে ফাইন্যান্স আপডেট করা হয়েছে।',
       data: {
         enrollmentId: enrollment._id,
+        deletedTransactionsCount: deletePaymentResult.deletedCount,
         previousStatus: prevStatus,
         status: enrollment.status,
       },
@@ -625,4 +638,130 @@ export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Res
     });
   }
 };
+
+/**
+ * Admin action to SHIFT a student to another batch (same course or different course).
+ * Rule 1:
+ * - Admin can shift student to a different batch in the same course OR to a batch in a new course.
+ * - When shifted, the new batchFee is set to the current price of target course (discountPrice ?? courseFee ?? regularPrice).
+ * - Existing payments are linked to the new batch and course, ensuring continuity while financial due recalculates with new batchFee.
+ * - Batch student counts for both old and new batches are updated.
+ */
+export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const adminUser = req.user;
+    if (!adminUser) {
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+    }
+
+    const { enrollmentId, studentId, currentBatchId, targetBatchId, targetCourseId, reason } = req.body || {};
+
+    let enrollment = null;
+    if (enrollmentId && mongoose.Types.ObjectId.isValid(enrollmentId)) {
+      enrollment = await Enrollment.findById(enrollmentId);
+    } else if (studentId && currentBatchId) {
+      enrollment = await Enrollment.findOne({
+        studentId,
+        batchId: currentBatchId,
+        status: { $in: ['enrolled', 'completed', 'pending'] },
+      });
+    }
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'শিক্ষার্থীর বর্তমান কোনো সক্রিয় ভর্তি রেকর্ড পাওয়া যায়নি।',
+      });
+    }
+
+    if (!targetBatchId) {
+      return res.status(400).json({
+        success: false,
+        message: 'শিফট করার জন্য নতুন ব্যাচ নির্ধারণ করা আবশ্যক।',
+      });
+    }
+
+    const targetBatch = await Batch.findById(targetBatchId).populate('courseId');
+    if (!targetBatch) {
+      return res.status(404).json({
+        success: false,
+        message: 'উদ্দিষ্ট নতুন ব্যাচ খুঁজে পাওয়া যায়নি।',
+      });
+    }
+
+    const targetCourse = (targetBatch.courseId as any) || (await Course.findById(targetBatch.courseId));
+    if (!targetCourse) {
+      return res.status(404).json({
+        success: false,
+        message: 'উদ্দিষ্ট ব্যাচের কোর্স তথ্য পাওয়া যায়নি।',
+      });
+    }
+
+    // Determine current live price of target course at the moment of shift
+    const currentTargetCourseFee =
+      targetCourse.discountPrice !== undefined && targetCourse.discountPrice !== null
+        ? targetCourse.discountPrice
+        : targetCourse.courseFee !== undefined && targetCourse.courseFee !== null
+        ? targetCourse.courseFee
+        : targetCourse.regularPrice || 0;
+
+    const oldBatchId = enrollment.batchId;
+    const oldCourseId = enrollment.courseId;
+    const studentObjectId = enrollment.studentId;
+
+    // Check if student is already enrolled in targetBatch
+    if (oldBatchId.toString() === targetBatch._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: 'শিক্ষার্থী ইতিমধ্যেই এই ব্যাচে ভর্তি আছে।',
+      });
+    }
+
+    // Update enrollment with new batch, course and snapshot of current fee
+    enrollment.batchId = targetBatch._id;
+    enrollment.courseId = targetCourse._id;
+    enrollment.batchFee = currentTargetCourseFee;
+    enrollment.notes = enrollment.notes
+      ? `${enrollment.notes} | Shifted from Batch ${oldBatchId} to ${targetBatch.name} by Admin ${adminUser.name} on ${new Date().toISOString()}: ${reason || 'Batch shifted'}`
+      : `Shifted from Batch ${oldBatchId} to ${targetBatch.name} by Admin ${adminUser.name} on ${new Date().toISOString()}: ${reason || 'Batch shifted'}`;
+
+    await enrollment.save();
+
+    // Re-link previous completed payments for this enrollment to the new batch and course
+    await Payment.updateMany(
+      { studentId: studentObjectId, batchId: oldBatchId },
+      {
+        $set: {
+          batchId: targetBatch._id,
+          courseId: targetCourse._id,
+          totalFee: currentTargetCourseFee,
+        },
+      }
+    );
+
+    // Update batch capacities
+    await Batch.findByIdAndUpdate(oldBatchId, { $inc: { currentStudents: -1 } });
+    await Batch.findByIdAndUpdate(targetBatch._id, { $inc: { currentStudents: 1 } });
+
+    return res.status(200).json({
+      success: true,
+      message: `শিক্ষার্থীকে সফলভাবে "${targetBatch.name}" (${targetCourse.title}) ব্যাচে শিফট করা হয়েছে। নতুন ব্যাচ ফি: ৳${currentTargetCourseFee.toLocaleString('bn-BD')}`,
+      data: {
+        enrollmentId: enrollment._id,
+        newBatchId: targetBatch._id,
+        newBatchName: targetBatch.name,
+        newCourseId: targetCourse._id,
+        newCourseTitle: targetCourse.title,
+        newBatchFee: currentTargetCourseFee,
+      },
+    });
+  } catch (error: any) {
+    console.error('shiftStudentBatch error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'ব্যাচ পরিবর্তন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+    });
+  }
+};
+
 

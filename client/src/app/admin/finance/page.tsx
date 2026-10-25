@@ -207,6 +207,51 @@ export default function AdminFinancePage() {
     }
   };
 
+  const [togglingPaidKey, setTogglingPaidKey] = useState<string | null>(null);
+
+  const handleToggleManualPaid = async (group: GroupedStudentBatchPayment) => {
+    const studentId = group.studentId?._id || (group.studentId as any);
+    const batchId = group.batchId?._id || (group.batchId as any);
+    const currentlyManualPaid = Boolean(group.latestPayment.isManualPaid);
+    const willBePaid = !currentlyManualPaid;
+
+    const confirmMsg = willBePaid
+      ? `আপনি কি "${group.studentId?.name}" এর এই কোর্সের ফি ম্যানুয়ালি "পরিশোধিত" (Paid) করতে চান?\n\n• পরিশোধিত করলে মোট বকেয়ার (Due) হিসেব থেকে এই বকেয়াটি বাদ হয়ে যাবে।\n• তবে শিক্ষার্থীর রো-তে পরিশোধিত ও বকেয়ার অংক যথারীতি প্রদর্শিত থাকবে।`
+      : `আপনি কি "${group.studentId?.name}" এর ম্যানুয়াল পেইড স্ট্যাটাস প্রত্যাহার করতে চান?\n\n• এর ফলে বকেয়া থাকলে তা পুনরায় সিস্টেমের মোট বকেয়াতে যোগ হবে।`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setTogglingPaidKey(group.key);
+    try {
+      const res = await api.post('/finance/toggle-paid', {
+        studentId,
+        batchId,
+        isManualPaid: willBePaid,
+      });
+
+      if (res.data?.success) {
+        // Refetch main list and summary stats
+        await fetchPayments();
+        if (activeDetailsGroup && activeDetailsGroup.key === group.key) {
+          setActiveDetailsGroup({
+            ...activeDetailsGroup,
+            latestPayment: {
+              ...activeDetailsGroup.latestPayment,
+              isManualPaid: willBePaid,
+            },
+          });
+        }
+      } else {
+        alert(res.data?.message || 'স্ট্যাটাস আপডেট করা সম্ভব হয়নি');
+      }
+    } catch (err: any) {
+      console.error('Toggle manual paid error:', err);
+      alert(err.response?.data?.message || 'স্ট্যাটাস আপডেট করতে ত্রুটি ঘটেছে');
+    } finally {
+      setTogglingPaidKey(null);
+    }
+  };
+
   const [deletingPaymentId, setDeletingPaymentId] = useState<string | null>(null);
 
   const handleDeletePayment = async (paymentId: string, receiptNo: string, amount: number) => {
@@ -254,6 +299,7 @@ export default function AdminFinancePage() {
       setDeletingPaymentId(null);
     }
   };
+
 
   useEffect(() => {
     fetchPayments();
@@ -780,7 +826,18 @@ export default function AdminFinancePage() {
 
                         {/* Due Amount (Separate column) */}
                         <td className="py-4 px-6 text-right">
-                          {group.totalDue > 0 ? (
+                          {group.latestPayment.isManualPaid ? (
+                            <div>
+                              <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs">
+                                ✓ পেইড (পরিশোধিত)
+                              </span>
+                              {group.totalDue > 0 && (
+                                <div className="text-[11px] font-mono text-slate-400 mt-0.5" title="এডমিন কর্তৃক মোট বকেয়া থেকে অব্যাহতিপ্রাপ্ত">
+                                  বকেয়া: ৳{group.totalDue.toLocaleString('bn-BD')}
+                                </div>
+                              )}
+                            </div>
+                          ) : group.totalDue > 0 ? (
                             <div className="text-sm font-bold text-rose-500">
                               বকেয়া: ৳{group.totalDue.toLocaleString('bn-BD')}
                             </div>
@@ -1243,16 +1300,37 @@ export default function AdminFinancePage() {
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-800/60">
-                  <span className="text-xs font-bold text-rose-700 dark:text-rose-300 block">
-                    বর্তমান অবশিষ্ট বকেয়া
-                  </span>
-                  <span className="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 block">
-                    ৳{activeDetailsGroup.totalDue.toLocaleString('bn-BD')}
-                  </span>
-                  <span className="text-[11px] text-rose-600/80 font-medium">
-                    {activeDetailsGroup.totalDue > 0 ? 'বকেয়া পরিশোধযোগ্য' : 'সম্পূর্ণ পরিশোধিত'}
-                  </span>
+                <div className="p-3.5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-800/60 flex flex-col justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-rose-700 dark:text-rose-300 block">
+                      বর্তমান অবশিষ্ট বকেয়া
+                    </span>
+                    <span className="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 block">
+                      ৳{activeDetailsGroup.totalDue.toLocaleString('bn-BD')}
+                    </span>
+                  </div>
+
+                  <div className="mt-2 pt-2 border-t border-rose-200/50 dark:border-rose-800/50 flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-500">
+                      {activeDetailsGroup.latestPayment.isManualPaid ? '✓ ম্যানুয়ালি পেইড' : 'বকেয়া কাউন্ট হচ্ছে'}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={togglingPaidKey === activeDetailsGroup.key}
+                      onClick={() => handleToggleManualPaid(activeDetailsGroup)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer shadow-2xs ${
+                        activeDetailsGroup.latestPayment.isManualPaid
+                          ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      }`}
+                    >
+                      {togglingPaidKey === activeDetailsGroup.key
+                        ? 'আপডেট হচ্ছে...'
+                        : activeDetailsGroup.latestPayment.isManualPaid
+                        ? 'পেইড প্রত্যাহার করুন'
+                        : 'পেইড করে দিন'}
+                    </button>
+                  </div>
                 </div>
               </div>
 

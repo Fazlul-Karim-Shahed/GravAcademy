@@ -57,6 +57,8 @@ export interface PaymentReceiptData {
     userId?: string;
     role?: string;
   };
+  isManualPaid?: boolean;
+  enrollmentId?: string;
   allPayments?: PaymentReceiptData[];
 }
 
@@ -321,9 +323,24 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                 <span>সর্বমোট পরিশোধিত:</span>
                 <span>৳{totalPaidAcrossAll.toLocaleString('bn-BD')}</span>
               </div>
-              <div className="flex justify-between text-xs font-bold text-rose-600 dark:text-rose-400 print:text-black border-t border-slate-200 dark:border-slate-700 pt-1.5">
-                <span>অবশিষ্ট বকেয়া (Due):</span>
-                <span>৳{finalDueAmount.toLocaleString('bn-BD')}</span>
+              <div className="flex justify-between items-center text-xs font-bold text-rose-600 dark:text-rose-400 print:text-black border-t border-slate-200 dark:border-slate-700 pt-1.5">
+                <span>অবশিষ্ট বকেয়া:</span>
+                <div className="text-right">
+                  {data.isManualPaid ? (
+                    <div>
+                      <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        পরিশোধিত (Paid)
+                      </span>
+                      {finalDueAmount > 0 && (
+                        <div className="text-[10px] text-slate-400 font-mono">
+                          (৳{finalDueAmount.toLocaleString('bn-BD')})
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <span>৳{finalDueAmount.toLocaleString('bn-BD')}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

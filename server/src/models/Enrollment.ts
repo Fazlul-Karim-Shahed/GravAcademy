@@ -12,6 +12,7 @@ export interface IEnrollment extends Document {
   batchFee?: number; // Snapshot of course price at the time of student enrollment
   paymentFee?: number;
   paymentStatus?: 'paid' | 'unpaid' | 'partial';
+  isManualPaid?: boolean; // When true, admin manually marked as paid so excluded from system total due
   enrolledBy?: mongoose.Types.ObjectId; // Admin who enrolled
   createdAt: Date;
   updatedAt: Date;
@@ -64,6 +65,10 @@ const EnrollmentSchema = new Schema<IEnrollment>(
       type: String,
       enum: ['paid', 'unpaid', 'partial'],
       default: 'paid',
+    },
+    isManualPaid: {
+      type: Boolean,
+      default: false,
     },
     enrolledBy: {
       type: Schema.Types.ObjectId,
