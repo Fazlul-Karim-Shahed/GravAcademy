@@ -1638,30 +1638,42 @@ export default function AdminFinancePage() {
                 <div className={`p-3.5 rounded-2xl border flex flex-col justify-between ${
                   activeDetailsGroup.totalDue < 0
                     ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200/70 dark:border-emerald-800/60'
+                    : activeDetailsGroup.totalDue === 0
+                    ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-200/60 dark:border-emerald-800/50'
                     : 'bg-rose-50/70 dark:bg-rose-950/40 border-rose-200/70 dark:border-rose-800/60'
                 }`}>
                   <div>
                     <span className={`text-xs font-bold block ${
-                      activeDetailsGroup.totalDue < 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'
+                      activeDetailsGroup.totalDue <= 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'
                     }`}>
-                      {activeDetailsGroup.totalDue < 0 ? 'অতিরিক্ত পরিশোধিত (এডজাস্টমেন্ট)' : 'বর্তমান অবশিষ্ট বকেয়া'}
+                      {activeDetailsGroup.totalDue < 0
+                        ? 'অতিরিক্ত পরিশোধিত (এডজাস্টমেন্ট)'
+                        : activeDetailsGroup.totalDue === 0
+                        ? 'পেমেন্ট অবস্থা'
+                        : 'বর্তমান অবশিষ্ট বকেয়া'}
                     </span>
                     <span className={`text-xl font-black mt-1 block ${
-                      activeDetailsGroup.totalDue < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                      activeDetailsGroup.totalDue <= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                     }`}>
                       {activeDetailsGroup.totalDue < 0
                         ? `+৳${Math.abs(activeDetailsGroup.totalDue).toLocaleString('bn-BD')}`
                         : activeDetailsGroup.totalDue > 0
                         ? `৳${activeDetailsGroup.totalDue.toLocaleString('bn-BD')}`
-                        : '৳০ (পরিশোধিত)'}
+                        : 'সম্পূর্ণ পরিশোধিত'}
                     </span>
                   </div>
 
                   <div className={`mt-2 pt-2 border-t flex items-center justify-between ${
-                    activeDetailsGroup.totalDue < 0 ? 'border-emerald-200/50 dark:border-emerald-800/50' : 'border-rose-200/50 dark:border-rose-800/50'
+                    activeDetailsGroup.totalDue <= 0 ? 'border-emerald-200/50 dark:border-emerald-800/50' : 'border-rose-200/50 dark:border-rose-800/50'
                   }`}>
                     <span className="text-[10px] font-bold text-slate-500">
-                      {activeDetailsGroup.latestPayment.isManualPaid ? '✓ ম্যানুয়ালি পেইড' : activeDetailsGroup.totalDue < 0 ? 'রিফান্ড / এডজাস্টযোগ্য' : 'বকেয়া কাউন্ট হচ্ছে'}
+                      {activeDetailsGroup.totalDue === 0
+                        ? '✓ কোনো বকেয়া নেই'
+                        : activeDetailsGroup.latestPayment.isManualPaid
+                        ? '✓ ম্যানুয়ালি পেইড'
+                        : activeDetailsGroup.totalDue < 0
+                        ? 'রিফান্ড / এডজাস্টযোগ্য'
+                        : 'বকেয়া কাউন্ট হচ্ছে'}
                     </span>
                     <div className="flex items-center gap-1.5">
                       {activeDetailsGroup.totalDue < 0 && (
@@ -1677,22 +1689,24 @@ export default function AdminFinancePage() {
                           <RotateCcw className="w-3 h-3" /> টাকা ফেরত দিন
                         </button>
                       )}
-                      <button
-                        type="button"
-                        disabled={togglingPaidKey === activeDetailsGroup.key}
-                        onClick={() => handleToggleManualPaid(activeDetailsGroup)}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer shadow-2xs ${
-                          activeDetailsGroup.latestPayment.isManualPaid
-                            ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
-                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                        }`}
-                      >
-                        {togglingPaidKey === activeDetailsGroup.key
-                          ? 'আপডেট হচ্ছে...'
-                          : activeDetailsGroup.latestPayment.isManualPaid
-                          ? 'পেইড প্রত্যাহার করুন'
-                          : 'পেইড করে দিন'}
-                      </button>
+                      {activeDetailsGroup.totalDue !== 0 && (
+                        <button
+                          type="button"
+                          disabled={togglingPaidKey === activeDetailsGroup.key}
+                          onClick={() => handleToggleManualPaid(activeDetailsGroup)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer shadow-2xs ${
+                            activeDetailsGroup.latestPayment.isManualPaid
+                              ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
+                              : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                          }`}
+                        >
+                          {togglingPaidKey === activeDetailsGroup.key
+                            ? 'আপডেট হচ্ছে...'
+                            : activeDetailsGroup.latestPayment.isManualPaid
+                            ? 'পেইড প্রত্যাহার করুন'
+                            : 'পেইড করে দিন'}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
