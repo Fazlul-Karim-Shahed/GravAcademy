@@ -540,13 +540,13 @@ export default function AdminFinancePage() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsCollectModalOpen(true)}
+            <Link
+              href="/admin/admissions"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               নতুন পেমেন্ট / বকেয়া গ্রহণ
-            </button>
+            </Link>
           </div>
         </div>
 
