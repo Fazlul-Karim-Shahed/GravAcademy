@@ -833,13 +833,13 @@ export default function AdminFinancePage() {
                               </span>
                               {group.totalDue > 0 && (
                                 <div className="text-[11px] font-mono text-slate-400 mt-0.5" title="এডমিন কর্তৃক মোট বকেয়া থেকে অব্যাহতিপ্রাপ্ত">
-                                  বকেয়া: ৳{group.totalDue.toLocaleString('bn-BD')}
+                                  ৳{group.totalDue.toLocaleString('bn-BD')}
                                 </div>
                               )}
                             </div>
                           ) : group.totalDue > 0 ? (
-                            <div className="text-sm font-bold text-rose-500">
-                              বকেয়া: ৳{group.totalDue.toLocaleString('bn-BD')}
+                            <div className="text-sm font-black text-rose-500">
+                              ৳{group.totalDue.toLocaleString('bn-BD')}
                             </div>
                           ) : (
                             <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
