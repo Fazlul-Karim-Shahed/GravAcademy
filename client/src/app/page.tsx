@@ -783,15 +783,16 @@ export default function HomePage() {
                     </div>
 
                     {/* Cute Card Bottom: Enrollment CTA */}
-                    <div className="p-2 sm:p-4 mt-1 rounded-[16px] sm:rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex flex-row items-center justify-between gap-1.5 sm:gap-3 shadow-inner">
-                      <div className="hidden sm:block min-w-0">
-                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block truncate">
+                    <div className="p-0 sm:p-4 mt-2 sm:mt-1 rounded-none sm:rounded-[24px] border-0 sm:border sm:border-slate-200/70 dark:sm:border-slate-800/80 bg-transparent sm:bg-slate-50/80 dark:sm:bg-slate-900/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5 sm:gap-3 shadow-none sm:shadow-inner">
+                      {/* Price Section */}
+                      <div className="min-w-0 flex items-center justify-between sm:block px-1 sm:px-0 mb-0.5 sm:mb-0">
+                        <span className="text-[9px] sm:text-[10px] font-medium sm:font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate">
                           ভর্তি চলছে
                         </span>
-                        <div className="flex items-baseline gap-1 mt-0.5">
+                        <div className="flex items-baseline gap-1 sm:mt-0.5">
                           {c.discountPrice && c.discountPrice > 0 && c.regularPrice && c.regularPrice > c.discountPrice ? (
                             <>
-                              <span className="text-xs sm:text-lg font-black text-slate-900 dark:text-white">
+                              <span className="text-xs sm:text-lg font-black text-blue-600 dark:text-blue-400 sm:text-slate-900 sm:dark:text-white">
                                 ৳{c.discountPrice}
                               </span>
                               <span className="text-[10px] sm:text-[11px] text-slate-400 line-through font-semibold">
@@ -799,7 +800,7 @@ export default function HomePage() {
                               </span>
                             </>
                           ) : c.regularPrice || c.courseFee ? (
-                            <span className="text-xs sm:text-lg font-black text-slate-900 dark:text-white">
+                            <span className="text-xs sm:text-lg font-black text-blue-600 dark:text-blue-400 sm:text-slate-900 sm:dark:text-white">
                               ৳{c.regularPrice || c.courseFee}
                             </span>
                           ) : (
@@ -810,7 +811,7 @@ export default function HomePage() {
                         </div>
                       </div>
 
-                      {/* Cute Action Button */}
+                      {/* Action Button */}
                       <div className="w-full sm:w-auto py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-semibold sm:font-black text-[11px] sm:text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
                         <span>ব্যাচ দেখুন</span>
                         <ChevronRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
