@@ -380,6 +380,13 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       const existingEnrollmentIdsWithPayment = new Set(
         paymentsWithDue.map((p) => p.enrollmentId?.toString()).filter(Boolean)
       );
+      const existingStudentBatchKeys = new Set(
+        paymentsWithDue.map((p) => {
+          const s = p.studentId?._id?.toString() || p.studentId?.toString() || '';
+          const b = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
+          return `${s}_${b}`;
+        })
+      );
 
       // Create synthetic payment receipt objects for unpaid/self-enrolled students without payment records yet
       const syntheticDues: any[] = [];
@@ -390,7 +397,8 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         const paid = enr.paymentFee || 0;
         const dueAmount = Math.max(0, currentCoursePrice - paid);
 
-        if (dueAmount > 0 && !existingEnrollmentIdsWithPayment.has(enr._id.toString())) {
+        const enrKey = `${enr.studentId?._id?.toString() || enr.studentId?.toString()}_${enr.batchId?._id?.toString() || enr.batchId?.toString() || 'no_batch'}`;
+        if (dueAmount > 0 && !enr.isManualPaid && !existingEnrollmentIdsWithPayment.has(enr._id.toString()) && !existingStudentBatchKeys.has(enrKey)) {
           if (search) {
             const searchStr = (search as string).trim().toLowerCase();
             const sName = (enr.studentId as any)?.name?.toLowerCase() || '';
@@ -412,6 +420,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             totalFee: currentCoursePrice,
             dueAmount,
             totalPaid: paid,
+            isManualPaid: Boolean(enr.isManualPaid),
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
@@ -534,6 +543,13 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       const existingEnrollmentIdsWithPayment = new Set(
         allPayments.map((p) => p.enrollmentId?.toString()).filter(Boolean)
       );
+      const existingStudentBatchKeys = new Set(
+        allPayments.map((p) => {
+          const s = p.studentId?._id?.toString() || p.studentId?.toString() || '';
+          const b = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
+          return `${s}_${b}`;
+        })
+      );
 
       // Add synthetic unpaid items for enrollments that don't have a payment record yet
       const syntheticUnpaid: any[] = [];
@@ -544,7 +560,8 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         const paid = enr.paymentFee || 0;
         const dueAmount = Math.max(0, currentCoursePrice - paid);
 
-        if (!existingEnrollmentIdsWithPayment.has(enr._id.toString())) {
+        const enrKey = `${enr.studentId?._id?.toString() || enr.studentId?.toString()}_${enr.batchId?._id?.toString() || enr.batchId?.toString() || 'no_batch'}`;
+        if (!existingEnrollmentIdsWithPayment.has(enr._id.toString()) && !existingStudentBatchKeys.has(enrKey)) {
           if (search) {
             const searchStr = (search as string).trim().toLowerCase();
             const sName = (enr.studentId as any)?.name?.toLowerCase() || '';
@@ -566,6 +583,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             totalFee: currentCoursePrice,
             dueAmount,
             totalPaid: paid,
+            isManualPaid: Boolean(enr.isManualPaid),
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',

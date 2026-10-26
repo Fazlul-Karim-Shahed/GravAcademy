@@ -430,6 +430,11 @@ export default function AdminFinancePage() {
   const handleCardClick = (type: 'total' | 'today' | 'due') => {
     if (cardFilterType === type) {
       setCardFilterType('none'); // Toggle off if clicked again -> returns to all/reset view
+      if (dateRangePreset === 'today') {
+        setDateRangePreset('all');
+        setStartDate('');
+        setEndDate('');
+      }
     } else {
       setCardFilterType(type);
       if (type === 'today') {
