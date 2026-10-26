@@ -812,9 +812,9 @@ export default function HomePage() {
                       </div>
 
                       {/* Action Button */}
-                      <div className="w-full sm:w-auto py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-semibold sm:font-black text-[11px] sm:text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
+                      <div className="w-full sm:w-auto py-1.5 sm:py-2.5 px-0 sm:px-4 rounded-none sm:rounded-xl bg-transparent sm:bg-gradient-to-r sm:from-blue-600 sm:via-indigo-600 sm:to-purple-600 sm:group-hover:from-blue-700 sm:group-hover:to-purple-700 text-blue-600 dark:text-blue-400 sm:text-white font-semibold sm:font-black text-xs shadow-none sm:shadow-md sm:shadow-blue-500/20 sm:group-hover:shadow-blue-500/35 transition-all flex items-center justify-center sm:justify-center gap-1 shrink-0 group-hover:scale-102">
                         <span>ব্যাচ দেখুন</span>
-                        <ChevronRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>
