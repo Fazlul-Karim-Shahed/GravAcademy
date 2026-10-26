@@ -542,22 +542,22 @@ export default function BatchClassroomPage({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             {/* Left 8 Cols: Simple & Clean Chat Thread */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-xs flex flex-col h-[640px]">
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6 shadow-xs flex flex-col h-[580px] sm:h-[640px] max-w-full overflow-hidden">
               
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4 gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                     ব্যাচ ডিসকাশন রুম
                   </h3>
                 </div>
-                <span className="text-[11px] text-slate-400">
-                  ক্লাসের পড়া, প্রশ্ন ও মতামত শেয়ার করুন
+                <span className="text-[10px] sm:text-[11px] text-slate-400 shrink-0 text-right">
+                  প্রশ্ন ও মতামত শেয়ার করুন
                 </span>
               </div>
 
               {/* Message List */}
-              <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-w-0">
                 {messages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
                     <MessageSquare className="w-12 h-12 mb-2 opacity-40 text-blue-500" />
@@ -578,9 +578,9 @@ export default function BatchClassroomPage({
                           {msg.senderName.slice(0, 2).toUpperCase()}
                         </div>
 
-                        <div className={`max-w-[75%] ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
-                          <div className="flex items-center gap-1.5 mb-1 text-[11px]">
-                            <span className="font-bold text-slate-800 dark:text-slate-200">
+                        <div className={`max-w-[85%] sm:max-w-[75%] ${isMe ? 'items-end' : 'items-start'} flex flex-col min-w-0`}>
+                          <div className="flex items-center gap-1.5 mb-1 text-[11px] flex-wrap">
+                            <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
                               {msg.senderName}
                             </span>
                             {roleBadge(msg.senderRole)}
@@ -593,7 +593,7 @@ export default function BatchClassroomPage({
                           </div>
 
                           <div
-                            className={`p-3.5 rounded-2xl text-xs leading-relaxed font-medium ${
+                            className={`p-3.5 rounded-2xl text-xs leading-relaxed font-medium break-words max-w-full ${
                               isMe
                                 ? 'bg-blue-600 text-white rounded-tr-xs shadow-xs'
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-tl-xs'
@@ -609,20 +609,21 @@ export default function BatchClassroomPage({
               </div>
 
               {/* Message Input Box */}
-              <form onSubmit={handleSendMessage} className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 flex items-center gap-2">
+              <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="আপনার বার্তা বা প্রশ্ন লিখুন..."
-                  className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim() || sendingMsg}
-                  className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors shrink-0"
+                  className="px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors shrink-0 cursor-pointer"
+                  title="পাঠান"
                 >
-                  <span>পাঠান</span>
+                  <span className="hidden xs:inline sm:inline">পাঠান</span>
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </form>
