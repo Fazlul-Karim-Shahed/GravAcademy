@@ -722,7 +722,7 @@ export default function HomePage() {
                           <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
 
                           {/* Top Badges Overlay */}
-                          <div className="absolute top-1.5 sm:top-2.5 inset-x-1.5 sm:inset-x-2.5 z-20 flex items-center justify-between pointer-events-none gap-1">
+                          <div className="hidden sm:flex absolute top-1.5 sm:top-2.5 inset-x-1.5 sm:inset-x-2.5 z-20 items-center justify-between pointer-events-none gap-1">
                             {/* Grade Level Tag */}
                             <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1">
                               <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-300 shrink-0" />
@@ -745,7 +745,7 @@ export default function HomePage() {
                       {/* Card Content Body */}
                       <div className="px-2 sm:px-4 pb-2 sm:pb-3 pt-2.5 sm:pt-3.5">
                         {/* Course Title */}
-                        <h3 className="text-xs sm:text-base lg:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 min-h-[2rem] sm:min-h-0">
+                        <h3 className="text-[11px] sm:text-base lg:text-lg font-normal sm:font-black text-slate-900 dark:text-white leading-tight sm:leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 min-h-[1.75rem] sm:min-h-0">
                           {c.title}
                         </h3>
 
@@ -784,7 +784,7 @@ export default function HomePage() {
 
                     {/* Cute Card Bottom: Enrollment CTA */}
                     <div className="p-2 sm:p-4 mt-1 rounded-[16px] sm:rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex flex-row items-center justify-between gap-1.5 sm:gap-3 shadow-inner">
-                      <div className="min-w-0">
+                      <div className="hidden sm:block min-w-0">
                         <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block truncate">
                           ভর্তি চলছে
                         </span>
@@ -811,7 +811,7 @@ export default function HomePage() {
                       </div>
 
                       {/* Cute Action Button */}
-                      <div className="py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-[10px] sm:text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
+                      <div className="w-full sm:w-auto py-1.5 sm:py-2.5 px-2 sm:px-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-semibold sm:font-black text-[11px] sm:text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
                         <span>ব্যাচ দেখুন</span>
                         <ChevronRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
