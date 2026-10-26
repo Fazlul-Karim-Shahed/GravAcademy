@@ -163,7 +163,7 @@ export const Navbar: React.FC = () => {
       }`}
     >
       <div
-        className={`mx-auto h-16 flex items-center justify-between pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl transition-all duration-500 ease-out ${
+        className={`relative z-30 mx-auto h-16 flex items-center justify-between pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl transition-all duration-500 ease-out ${
           isScrolled
             ? 'w-full rounded-none border-b sm:border sm:w-[94%] max-w-[1700px] sm:rounded-full border-slate-200/90 dark:border-slate-800/90 shadow-xs sm:shadow-[0_10px_35px_rgba(0,0,0,0.08)] sm:dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] px-4 sm:px-6 md:px-8'
             : 'w-full max-w-full rounded-none border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs px-4 sm:px-8 lg:px-12'
@@ -495,7 +495,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি লিংক: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) - ড্যাশবোর্ড রিলেটেড পেজগুলোতে লুকানো থাকবে */}
       {!isDashboardRoute && (
-        <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 relative pointer-events-auto">
+        <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 relative z-10 pointer-events-auto">
         <div className="flex items-center justify-center gap-5 sm:gap-6">
           
           {/* সকল কোর্স Link with Dropdown Trigger */}
