@@ -57,24 +57,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = Cookies.get('grav_token');
-    const savedUser = Cookies.get('grav_user');
+    const savedToken = Cookies.get('grav_token') || (typeof window !== 'undefined' ? localStorage.getItem('grav_token') : null);
+    const savedUser = Cookies.get('grav_user') || (typeof window !== 'undefined' ? localStorage.getItem('grav_user') : null);
 
     if (savedToken && savedUser) {
       try {
         setToken(savedToken);
         setUser(JSON.parse(savedUser));
+        // Ensure both cookies and localStorage are synced
+        Cookies.set('grav_token', savedToken, { expires: 7, sameSite: 'lax' });
+        Cookies.set('grav_user', savedUser, { expires: 7, sameSite: 'lax' });
       } catch (e) {
         Cookies.remove('grav_token');
         Cookies.remove('grav_user');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('grav_token');
+          localStorage.removeItem('grav_user');
+        }
       }
     }
     setLoading(false);
   }, []);
 
   const login = (newToken: string, newUser: User) => {
-    Cookies.set('grav_token', newToken, { expires: 7, secure: true, sameSite: 'strict' });
-    Cookies.set('grav_user', JSON.stringify(newUser), { expires: 7, secure: true, sameSite: 'strict' });
+    Cookies.set('grav_token', newToken, { expires: 7, sameSite: 'lax' });
+    Cookies.set('grav_user', JSON.stringify(newUser), { expires: 7, sameSite: 'lax' });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('grav_token', newToken);
+      localStorage.setItem('grav_user', JSON.stringify(newUser));
+    }
     setToken(newToken);
     setUser(newUser);
   };
@@ -82,6 +93,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     Cookies.remove('grav_token');
     Cookies.remove('grav_user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('grav_token');
+      localStorage.removeItem('grav_user');
+    }
     setToken(null);
     setUser(null);
     if (typeof window !== 'undefined') {
@@ -93,7 +108,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser((prev) => {
       if (!prev) return null;
       const merged = { ...prev, ...updatedFields };
-      Cookies.set('grav_user', JSON.stringify(merged), { expires: 7, secure: true, sameSite: 'strict' });
+      Cookies.set('grav_user', JSON.stringify(merged), { expires: 7, sameSite: 'lax' });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('grav_user', JSON.stringify(merged));
+      }
       return merged;
     });
   };

@@ -198,15 +198,7 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       copyFromBatchId,
     } = req.body;
 
-    // Helper to generate a random 3-4-3 Google Meet room code (e.g. meet.google.com/abc-defg-hij)
-    const generateMeetUrl = () => {
-      const chars = 'abcdefghijklmnopqrstuvwxyz';
-      const randSeg = (len: number) =>
-        Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-      return `https://meet.google.com/${randSeg(3)}-${randSeg(4)}-${randSeg(3)}`;
-    };
-
-    const finalMeetingUrl = meetingUrl && meetingUrl.trim().length > 0 ? meetingUrl.trim() : generateMeetUrl();
+    const finalMeetingUrl = meetingUrl && meetingUrl.trim().length > 0 ? meetingUrl.trim() : '';
 
     // 1. Create the new destination Batch record
     const newBatch = await Batch.create({

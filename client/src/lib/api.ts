@@ -13,7 +13,7 @@ export const api = axios.create({
 
 // Attach Authorization Bearer token automatically if present
 api.interceptors.request.use((config) => {
-  const token = Cookies.get('grav_token');
+  const token = Cookies.get('grav_token') || (typeof window !== 'undefined' ? localStorage.getItem('grav_token') : null);
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }

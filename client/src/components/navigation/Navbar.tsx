@@ -41,6 +41,7 @@ export const Navbar: React.FC = () => {
   const mobileDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const profileMenuRef = React.useRef<HTMLDivElement | null>(null);
+  const [isScrolled, setIsScrolled] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -48,6 +49,10 @@ export const Navbar: React.FC = () => {
 
     const handleUpdate = () => {
       getSharedAcademicClasses().then((data) => setClasses(data || []));
+    };
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,11 +70,15 @@ export const Navbar: React.FC = () => {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('grav_classes_updated', handleUpdate);
+      window.addEventListener('scroll', handleScroll, { passive: true });
       document.addEventListener('mousedown', handleClickOutside);
+      // Run once on mount
+      handleScroll();
     }
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('grav_classes_updated', handleUpdate);
+        window.removeEventListener('scroll', handleScroll);
         document.removeEventListener('mousedown', handleClickOutside);
       }
     };
@@ -148,8 +157,18 @@ export const Navbar: React.FC = () => {
     pathname?.startsWith('/profile');
 
   return (
-    <header className="sticky top-0 sm:top-3 z-50 w-full px-0 sm:px-2 pointer-events-none transition-all duration-300">
-      <div className="w-full sm:w-[94%] max-w-[1700px] mx-auto rounded-none sm:rounded-[32px] md:rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b sm:border border-slate-200/90 dark:border-slate-800/90 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.45)] px-4 sm:px-6 md:px-8 h-16 flex items-center justify-between pointer-events-auto transition-all">
+    <header
+      className={`sticky top-0 z-50 w-full pointer-events-none transition-all duration-500 ease-out ${
+        isScrolled ? 'sm:pt-3' : 'pt-0'
+      }`}
+    >
+      <div
+        className={`mx-auto h-16 flex items-center justify-between pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl transition-all duration-500 ease-out ${
+          isScrolled
+            ? 'w-[94%] max-w-[1700px] rounded-[32px] md:rounded-full border border-slate-200/90 dark:border-slate-800/90 shadow-[0_10px_35px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] px-4 sm:px-6 md:px-8'
+            : 'w-full max-w-full rounded-none border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs px-4 sm:px-8 lg:px-12'
+        }`}
+      >
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-2.5">
           <SiteLogo size="md" showText={false} />

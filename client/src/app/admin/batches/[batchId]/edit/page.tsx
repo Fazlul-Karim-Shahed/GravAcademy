@@ -337,28 +337,6 @@ export default function EditBatchPage() {
               </div>
             </div>
 
-            {/* Google Meet Classroom Link */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  গুগল মিট ক্লাসরুম লিংক (Google Meet URL)
-                </label>
-                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200/60 dark:border-emerald-800/60">
-                  অটো-জেনারেটেড / কাস্টম
-                </span>
-              </div>
-              <input
-                type="url"
-                value={form.meetingUrl}
-                onChange={(e) => setForm({ ...form, meetingUrl: e.target.value })}
-                placeholder="https://meet.google.com/xxx-yyyy-zzz"
-                className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-              />
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                এই ব্যাচের সকল ক্লাসের জন্য শিক্ষার্থীরা তাদের ক্লাসরুম এবং রুটিন থেকে সরাসরি এই গুগল মিট লিংকে প্রবেশ করে ক্লাসে যোগ দিতে পারবে।
-              </p>
-            </div>
-
             {/* Action Buttons */}
             <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
               <Link

@@ -330,10 +330,10 @@ export default function FreeClassesPage() {
 
                         {/* Top Badges Overlay */}
                         <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
-                          {/* Platform Tag */}
+                          {/* Live Class Tag */}
                           <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
-                            <Video className="w-3 h-3 text-amber-300" />
-                            <span>{cls.provider === 'google_meet' ? 'Google Meet' : 'Zoom'}</span>
+                            <Video className="w-3 h-3 text-emerald-400" />
+                            <span>লাইভ ক্লাস</span>
                           </span>
 
                           {/* Live Free Badge */}
@@ -473,18 +473,7 @@ export default function FreeClassesPage() {
                 helperText="ফ্রি ক্লাসের থাম্বনেইল ছবি সরাসরি ড্রাইভে আপলোড করুন।"
               />
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  মিটিং লিংক (Google Meet / Zoom URL) *
-                </label>
-                <input
-                  type="url"
-                  required
-                  value={editMeetingUrl}
-                  onChange={(e) => setEditMeetingUrl(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
+
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">

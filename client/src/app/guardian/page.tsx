@@ -119,7 +119,7 @@ export default function GuardianPortalPage() {
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between">
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">SSC Physics Live Problem Solving</h4>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">Tomorrow • 7:30 PM (Google Meet)</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">Tomorrow • 7:30 PM (Live Class)</span>
                 </div>
                 <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-500/20 text-xs font-bold">
                   Scheduled

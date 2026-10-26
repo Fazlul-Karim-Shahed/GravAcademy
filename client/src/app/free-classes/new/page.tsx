@@ -157,47 +157,6 @@ export default function ScheduleFreeClassPage() {
               helperText="ফ্রি ক্লাসের কার্ডে প্রদর্শনের জন্য ছবি আপলোড করুন, ফাইলটি সরাসরি ড্রাইভে সেভ হবে।"
             />
 
-            {/* Platform & Meeting URL */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  প্ল্যাটফর্ম
-                </label>
-                <select
-                  value={form.provider}
-                  onChange={(e) => setForm({ ...form, provider: e.target.value as any })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
-                >
-                  <option value="google_meet">Google Meet</option>
-                  <option value="zoom">Zoom Video</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  সরাসরি জয়েন লিংক (Meeting URL)
-                </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={form.meetingUrl}
-                    onChange={(e) => setForm({ ...form, meetingUrl: e.target.value })}
-                    placeholder={
-                      form.provider === 'google_meet'
-                        ? 'e.g. https://meet.google.com/abc-defg-hij'
-                        : 'https://zoom.us/j/...'
-                    }
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                  />
-                </div>
-                {form.provider === 'google_meet' && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
-                    খালি রাখলে সিস্টেম স্বয়ংক্রিয়ভাবে Google Meet লিংক তৈরি করবে।
-                  </p>
-                )}
-              </div>
-            </div>
-
             {/* Start Time & Duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>

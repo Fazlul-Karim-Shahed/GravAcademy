@@ -33,6 +33,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { LiveKitClassroomModal } from '@/components/classroom/LiveKitClassroomModal';
 
 interface BatchInfo {
   _id: string;
@@ -138,6 +139,7 @@ export default function BatchClassroomPage({
   const [loadingBatchesForShift, setLoadingBatchesForShift] = useState(false);
   const [selectedTargetBatchId, setSelectedTargetBatchId] = useState('');
   const [shiftingStudent, setShiftingStudent] = useState(false);
+  const [isJitsiOpen, setIsJitsiOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
@@ -439,18 +441,16 @@ export default function BatchClassroomPage({
 
             {/* Quick Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
-              {batch.meetingUrl && (
-                <a
-                  href={batch.meetingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all"
-                >
-                  <Video className="w-4 h-4" />
-                  <span>Google Meet ক্লাসরুম</span>
-                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-                </a>
-              )}
+              {/* Live Classroom Button */}
+              <button
+                type="button"
+                onClick={() => setIsJitsiOpen(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all cursor-pointer"
+                title="সরাসরি লাইভ ক্লাসে যুক্ত হোন"
+              >
+                <Video className="w-4 h-4" />
+                <span>লাইভ ক্লাস</span>
+              </button>
 
               <Link
                 href={`/classroom/${batchId}/exams`}
@@ -1175,6 +1175,18 @@ export default function BatchClassroomPage({
             </form>
           </div>
         </div>
+      )}
+
+      {/* Native LiveKit WebRTC Classroom Modal */}
+      {batch && (
+        <LiveKitClassroomModal
+          isOpen={isJitsiOpen}
+          onClose={() => setIsJitsiOpen(false)}
+          roomName={`Batch-${batchId}`}
+          displayName={user?.name || 'শিক্ষার্থী'}
+          email={user?.email || ''}
+          subjectTitle={`${batch.name} — লাইভ ক্লাস`}
+        />
       )}
 
     </div>

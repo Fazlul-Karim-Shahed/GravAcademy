@@ -232,19 +232,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                 <span>ভিউ ক্লাসরুম</span>
               </Link>
 
-              {data.batch.meetingUrl && (
-                <a
-                  href={data.batch.meetingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 active:scale-95 text-white text-xs font-black shadow-md shadow-emerald-600/30 transition-all"
-                  title="Google Meet-এ লাইভ ক্লাসরুমে প্রবেশ করুন"
-                >
-                  <Video className="w-4 h-4" />
-                  <span>Google Meet ক্লাসরুম</span>
-                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-                </a>
-              )}
+
             </div>
           </div>
         </div>

@@ -66,18 +66,7 @@ export const createLiveClass = async (req: AuthenticatedRequest, res: Response) 
     const data = req.body;
     const teacherId = req.user?._id;
 
-    // Helper to generate a random 3-4-3 Google Meet room code (e.g. meet.google.com/abc-defg-hij)
-    const generateMeetUrl = () => {
-      const chars = 'abcdefghijklmnopqrstuvwxyz';
-      const randSeg = (len: number) =>
-        Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-      return `https://meet.google.com/${randSeg(3)}-${randSeg(4)}-${randSeg(3)}`;
-    };
-
-    let meetingUrl = data.meetingUrl?.trim();
-    if (!meetingUrl && data.provider === 'google_meet') {
-      meetingUrl = generateMeetUrl();
-    }
+    const meetingUrl = data.meetingUrl?.trim() || '';
 
     const liveClass = await LiveClass.create({
       ...data,

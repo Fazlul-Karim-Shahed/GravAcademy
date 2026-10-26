@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@livekit/components-react": "^2.9.24",
+    "@livekit/components-styles": "^1.2.0",
     "@tiptap/extension-color": "^3.32.0",
     "@tiptap/extension-highlight": "^3.32.0",
     "@tiptap/extension-link": "^3.32.0",
@@ -21,6 +23,8 @@
     "axios": "^1.20.0",
     "clsx": "^2.1.1",
     "js-cookie": "^3.0.8",
+    "livekit-client": "^2.23.0",
+    "livekit-server-sdk": "^2.19.2",
     "lucide-react": "^1.61.0",
     "next": "16.4.2",
     "next-themes": "^0.4.6",
