@@ -15,7 +15,6 @@ import {
   Sun,
   Moon,
   ChevronDown,
-  Sparkles,
   ArrowRight,
   Compass,
   ChevronRight,
@@ -104,6 +103,22 @@ export const Navbar: React.FC = () => {
     }, 250);
   };
 
+  const profileTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleProfileMouseEnter = () => {
+    if (profileTimeoutRef.current) {
+      clearTimeout(profileTimeoutRef.current);
+      profileTimeoutRef.current = null;
+    }
+    setIsProfileOpen(true);
+  };
+
+  const handleProfileMouseLeave = () => {
+    profileTimeoutRef.current = setTimeout(() => {
+      setIsProfileOpen(false);
+    }, 250);
+  };
+
   const getDashboardLink = () => {
     if (!user) return '/login';
     switch (user.role) {
@@ -121,9 +136,20 @@ export const Navbar: React.FC = () => {
     }
   };
 
+  // Determine if the current route is part of any dashboard or internal portal
+  const isDashboardRoute =
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/teacher') ||
+    pathname?.startsWith('/guardian') ||
+    pathname?.startsWith('/employee') ||
+    pathname?.startsWith('/classroom') ||
+    pathname?.startsWith('/learn') ||
+    pathname?.startsWith('/profile');
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/90 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="sticky top-0 sm:top-3 z-50 w-full px-0 sm:px-2 pointer-events-none transition-all duration-300">
+      <div className="w-full sm:w-[94%] max-w-[1700px] mx-auto rounded-none sm:rounded-[32px] md:rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b sm:border border-slate-200/90 dark:border-slate-800/90 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgb(0,0,0,0.45)] px-4 sm:px-6 md:px-8 h-16 flex items-center justify-between pointer-events-auto transition-all">
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-2.5">
           <SiteLogo size="md" showText={false} />
@@ -159,7 +185,7 @@ export const Navbar: React.FC = () => {
                 isDropdownOpen ? 'text-blue-600 dark:text-blue-400' : ''
               }`}
             >
-              <span>সকল কোর্স</span>
+              <span>সকল ক্লাস</span>
               <button
                 type="button"
                 onClick={(e) => {
@@ -178,38 +204,43 @@ export const Navbar: React.FC = () => {
               </button>
             </Link>
 
-            {/* Hover Flyout Panel (নেভিগেশন কপাট) */}
+            {/* Hover Flyout Panel (নেভিগেশন কপাট) - প্রিমিয়াম প্রশস্ত ৫-কলাম ডিজাইন */}
             {isDropdownOpen && (
               <div
-                className="absolute top-full left-1/2 -translate-x-1/2 pt-2.5 w-[380px] sm:w-[440px] z-50 animate-in fade-in zoom-in-95 duration-150"
+                className="absolute top-full left-1/2 -translate-x-1/2 pt-2.5 w-[94vw] max-w-5xl z-50 animate-in fade-in zoom-in-95 duration-150"
               >
-                <div className="relative rounded-[24px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-2xl overflow-hidden p-4">
+                <div className="relative rounded-3xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden p-5 sm:p-6">
                   {/* Subtle ambient lighting */}
-                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-indigo-500/10 dark:bg-indigo-400/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -top-16 -right-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-indigo-500/10 dark:bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
 
                   {/* Header info */}
-                  <div className="relative z-10 flex items-center justify-between pb-3 mb-2.5 border-b border-slate-100 dark:border-slate-800 px-1">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/60">
-                        <GraduationCap className="w-3.5 h-3.5" />
+                  <div className="relative z-10 flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800/80 px-1">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200/60 dark:border-blue-800/60 shadow-2xs">
+                        <GraduationCap className="w-4 h-4" />
                       </div>
-                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                        শ্রেণি অনুযায়ী ব্রাউজ করুন
-                      </span>
+                      <div>
+                        <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider block leading-none">
+                          শ্রেণি অনুযায়ী ব্রাউজ করুন
+                        </span>
+                        <span className="text-[10.5px] text-slate-400 font-medium block mt-1">
+                          আপনার কাঙ্ক্ষিত শ্রেণির সম্পূর্ণ কোর্স ও শিক্ষণ সামগ্রী এক্সপ্লোর করুন
+                        </span>
+                      </div>
                     </div>
                     <Link
                       href="/courses"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                      className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1.5 transition-colors group/all px-3 py-1.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/40"
                     >
                       <span>সকল কোর্স</span>
-                      <ArrowRight className="w-3 h-3" />
+                      <ArrowRight className="w-3.5 h-3.5 group-hover/all:translate-x-1 transition-transform" />
                     </Link>
                   </div>
 
-                  {/* Grid of Academic Classes */}
-                  <div className="relative z-10 grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-0.5">
+                  {/* Clean Links Grid: 5 Columns on large screens, 3-4 on medium screens */}
+                  <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 max-h-[420px] overflow-y-auto pr-1">
                     {classes.map((cls) => {
                       const slug = getClassSlug(cls);
                       return (
@@ -217,34 +248,37 @@ export const Navbar: React.FC = () => {
                           key={cls._id}
                           href={`/classes/${slug}`}
                           onClick={() => setIsDropdownOpen(false)}
-                          className="group/item flex items-center justify-between p-2.5 rounded-2xl bg-slate-50/70 hover:bg-blue-50/80 dark:bg-slate-800/50 dark:hover:bg-blue-950/40 border border-slate-200/70 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-600/60 transition-all duration-200"
+                          className="group/link flex items-center gap-2.5 p-2.5 rounded-2xl transition-all duration-200 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 border border-slate-200/50 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900/50 hover:shadow-sm cursor-pointer"
                         >
-                          <div className="min-w-0 pr-2">
-                            <span className="block text-xs font-black text-slate-800 dark:text-slate-100 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors truncate">
+                          {/* Class Icon with sleek subtle boxy shape on hover */}
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-slate-200/70 dark:border-slate-700/60 shadow-2xs group-hover/link:bg-blue-600 group-hover/link:text-white group-hover/link:border-blue-600 group-hover/link:scale-105 transition-all duration-200">
+                            <BookOpen className="w-4 h-4 transition-transform group-hover/link:rotate-3" />
+                          </div>
+
+                          {/* Link Text (Single clean title, no 'কারিকুলাম ও ব্যাচ' subtitle) */}
+                          <div className="min-w-0 flex-1">
+                            <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors truncate">
                               {cls.name}
                             </span>
-                            <span className="block text-[10px] text-slate-400 font-medium truncate">
-                              {cls.subtitle || cls.description || 'কারিকুলাম ও ব্যাচ'}
-                            </span>
                           </div>
-                          <div className="w-6 h-6 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 group-hover/item:translate-x-0.5 transition-all shrink-0 border border-slate-200/60 dark:border-slate-700/60 shadow-2xs">
-                            <ArrowRight className="w-3 h-3" />
-                          </div>
+
+                          <ChevronRight className="w-3 h-3 text-slate-400 opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-all shrink-0" />
                         </Link>
                       );
                     })}
                   </div>
 
                   {/* Footer Action */}
-                  <div className="relative z-10 mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] px-1 text-slate-500 dark:text-slate-400">
-                    <span>লাইভ ক্লাস, লেকচার শিট ও মেগা মডেল টেস্ট</span>
+                  <div className="relative z-10 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] px-1 text-slate-500 dark:text-slate-400">
+                    <span>লাইভ ইন্টারঅ্যাক্টিভ ক্লাস, লেকচার শিট ও মেগা মডেল টেস্ট</span>
                     <Link
                       href="/free-classes"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                      className="font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5 transition-colors"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>ফ্রি ডেমো</span>
+                      <span>ফ্রি ডেমো ক্লাস</span>
+                      <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>
                 </div>
@@ -286,12 +320,17 @@ export const Navbar: React.FC = () => {
           </button>
 
           {mounted && user ? (
-            <div className="relative" ref={profileMenuRef}>
+            <div
+              className="relative"
+              ref={profileMenuRef}
+              onMouseEnter={handleProfileMouseEnter}
+              onMouseLeave={handleProfileMouseLeave}
+            >
               {/* Profile Avatar Button */}
               <button
                 type="button"
                 onClick={() => setIsProfileOpen((prev) => !prev)}
-                className="rounded-2xl transition-transform hover:scale-105 focus:outline-none cursor-pointer"
+                className="rounded-2xl transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0.5"
                 aria-label="ইউজার প্রোফাইল মেনু"
               >
                 <UserAvatar
@@ -302,11 +341,16 @@ export const Navbar: React.FC = () => {
                 />
               </button>
 
-              {/* Profile Dropdown Menu */}
+              {/* Profile Dropdown Menu (pt-2.5 transparent bridge for seamless hover) */}
               {isProfileOpen && (
-                <div className="absolute right-0 top-full mt-3 w-72 rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-blue-900/10 dark:shadow-black/40 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150">
-                  {/* Ambient accent blob */}
-                  <div className="absolute -top-10 -right-10 w-28 h-28 bg-blue-500/15 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
+                <div
+                  onMouseEnter={handleProfileMouseEnter}
+                  onMouseLeave={handleProfileMouseLeave}
+                  className="absolute right-0 top-full pt-2 w-72 z-50 animate-in fade-in zoom-in-95 duration-150"
+                >
+                  <div className="rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-blue-900/10 dark:shadow-black/40 overflow-hidden">
+                    {/* Ambient accent blob */}
+                    <div className="absolute -top-10 -right-10 w-28 h-28 bg-blue-500/15 dark:bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
 
                   {/* User Profile Summary */}
                   <div className="relative p-4 pb-3 border-b border-slate-100 dark:border-slate-800/80">
@@ -408,7 +452,8 @@ export const Navbar: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -429,8 +474,9 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি লিংক: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) */}
-      <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 relative">
+      {/* Mobile Sub Navigation Row (ছোট স্ক্রিনে ৩টি লিংক: সকল কোর্স, ফ্রি ক্লাস, জব সার্কুলার) - ড্যাশবোর্ড রিলেটেড পেজগুলোতে লুকানো থাকবে */}
+      {!isDashboardRoute && (
+        <div className="md:hidden border-t border-slate-200/70 dark:border-slate-800/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 relative pointer-events-auto">
         <div className="flex items-center justify-center gap-5 sm:gap-6">
           
           {/* সকল কোর্স Link with Dropdown Trigger */}
@@ -440,47 +486,31 @@ export const Navbar: React.FC = () => {
             onMouseEnter={handleMobileMouseEnter}
             onMouseLeave={handleMobileMouseLeave}
           >
-            <Link
-              href="/courses"
-              onClick={(e) => {
-                // Toggle on click/tap
-                if (!isMobileDropdownOpen) {
-                  // e.preventDefault();
-                }
-              }}
-              className={`text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1 py-1 cursor-pointer ${
+            <button
+              type="button"
+              onClick={() => setIsMobileDropdownOpen((prev) => !prev)}
+              className={`text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5 py-1 cursor-pointer select-none ${
                 pathname?.startsWith('/courses') || pathname?.startsWith('/classes') || isMobileDropdownOpen
                   ? 'text-blue-600 dark:text-blue-400 font-bold'
                   : 'text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
-              <span>সকল কোর্স</span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileDropdownOpen((prev) => !prev);
-                }}
-                className="p-0.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
-                aria-label="কোর্স মেনু খুলুন"
-              >
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    isMobileDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
-                  }`}
-                />
-              </button>
-            </Link>
+              <span>সকল ক্লাস</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isMobileDropdownOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : 'text-slate-400'
+                }`}
+              />
+            </button>
 
             {/* Mobile Dropdown Menu (ঠিক ১ পিক্সেল নিচে স্ন্যাগ পজিশন) */}
             {isMobileDropdownOpen && (
               <div
                 onMouseEnter={handleMobileMouseEnter}
                 onMouseLeave={handleMobileMouseLeave}
-                className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+1px)] w-[88vw] max-w-[420px] z-50 rounded-2xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150"
+                className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+1px)] w-[92vw] max-w-[480px] z-50 rounded-3xl bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl p-4 animate-in fade-in zoom-in-95 duration-150"
               >
-                <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 dark:border-slate-800/80 px-1">
                   <span className="text-xs font-black text-slate-800 dark:text-white">
                     শ্রেণি অনুযায়ী কারিকুলাম
                   </span>
@@ -489,12 +519,12 @@ export const Navbar: React.FC = () => {
                     onClick={() => setIsMobileDropdownOpen(false)}
                     className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                   >
-                    <span>সকল কোর্স পেজ</span>
+                    <span>সকল কোর্স</span>
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto pr-0.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[60vh] overflow-y-auto pr-0.5">
                   {classes.map((cls) => {
                     const slug = getClassSlug(cls);
                     return (
@@ -502,14 +532,16 @@ export const Navbar: React.FC = () => {
                         key={cls._id}
                         href={`/classes/${slug}`}
                         onClick={() => setIsMobileDropdownOpen(false)}
-                        className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 border border-slate-200/70 dark:border-slate-700/60 hover:border-blue-300 dark:hover:border-blue-600/60 transition-all"
+                        className="group/moblink flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors"
                       >
-                        <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
-                          {cls.name}
-                        </span>
-                        <span className="block text-[10px] text-slate-400 truncate">
-                          {cls.subtitle || 'কোর্স ও ব্যাচ'}
-                        </span>
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-slate-200/60 dark:border-slate-700/60 group-hover/moblink:bg-blue-600 group-hover/moblink:text-white group-hover/moblink:border-blue-600 transition-all">
+                          <BookOpen className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 group-hover/moblink:text-blue-600 dark:group-hover/moblink:text-blue-400 truncate">
+                            {cls.name}
+                          </span>
+                        </div>
                       </Link>
                     );
                   })}
@@ -551,6 +583,7 @@ export const Navbar: React.FC = () => {
           </Link>
         </div>
       </div>
+      )}
     </header>
   );
 };

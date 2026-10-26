@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { formatDriveImageUrl } from '@/lib/drive';
@@ -8,7 +8,6 @@ import { SiteLogo } from '@/components/common/SiteLogo';
 import {
   BookOpen,
   GraduationCap,
-  Sparkles,
   ArrowRight,
   PlayCircle,
   FileText,
@@ -35,6 +34,91 @@ import {
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { CourseCardFeatures } from '@/components/course/CourseCardFeatures';
+
+// Convert English numbers to Bengali numerals
+function toBengaliNumerals(num: number | string): string {
+  const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return num
+    .toString()
+    .replace(/\d/g, (d) => bengaliDigits[parseInt(d, 10)]);
+}
+
+// Re-animating count-up component on scroll visibility
+function AnimatedCounter({
+  target,
+  suffix = '',
+  prefix = '',
+  duration = 1500,
+  formatComma = false,
+}: {
+  target: number;
+  suffix?: string;
+  prefix?: string;
+  duration?: number;
+  formatComma?: boolean;
+}) {
+  const [count, setCount] = useState<number>(0);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let startTime: number | null = null;
+    let animFrame: number;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Restart counter animation whenever scrolled into view
+          startTime = null;
+          setCount(0);
+
+          const step = (now: number) => {
+            if (!startTime) startTime = now;
+            const progress = Math.min((now - startTime) / duration, 1);
+            // Ease-out cubic formula
+            const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(easeOutProgress * target);
+            setCount(current);
+
+            if (progress < 1) {
+              animFrame = requestAnimationFrame(step);
+            } else {
+              setCount(target);
+            }
+          };
+
+          animFrame = requestAnimationFrame(step);
+        } else {
+          // Reset when out of view so next scroll re-animates smoothly
+          cancelAnimationFrame(animFrame);
+          setCount(0);
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(animFrame);
+    };
+  }, [target, duration]);
+
+  const displayNum = formatComma ? count.toLocaleString('en-US') : count.toString();
+  const bengaliNum = toBengaliNumerals(displayNum);
+
+  return (
+    <span ref={ref} className="inline-block">
+      {prefix}
+      {bengaliNum}
+      {suffix}
+    </span>
+  );
+}
 
 interface Course {
   _id: string;
@@ -50,6 +134,7 @@ interface Course {
   batchCount?: number;
   instructors?: any[];
   curriculumHighlights?: string[];
+  features?: string[];
 }
 
 export default function HomePage() {
@@ -129,7 +214,7 @@ export default function HomePage() {
   const defaultInstructors = [
     {
       name: 'মাহমুদুল হাসান',
-      institution: '',
+      institution: 'বুয়েট (BUET)',
       department: 'কম্পিউটার সায়েন্স অ্যান্ড ইঞ্জিনিয়ারিং',
       exp: '৮+ বছরের শিক্ষকতা অভিজ্ঞতা',
       subjects: ['উচ্চতর গণিত', 'পদার্থবিজ্ঞান'],
@@ -173,21 +258,29 @@ export default function HomePage() {
     },
   ];
 
-  // If DB teachers exist, prioritize them, and fill remaining slots from defaultInstructors so 4 cards always show
-  const mappedDbTeachers = dbTeachers.map((t) => ({
-    name: t.name,
-    institution: t.teacherDetails?.institution || '',
-    department: t.teacherDetails?.department || 'বিষয়ভিত্তিক স্পেশালিস্ট',
-    exp: t.teacherDetails?.experience || 'অভিজ্ঞ মেন্টর',
-    subjects:
+  // If DB teachers exist, prioritize them, and fill missing fields or slots from defaultInstructors
+  const mappedDbTeachers = dbTeachers.map((t, idx) => {
+    // If backend teacher has missing fields, fallback to corresponding default instructor data
+    const fallback = defaultInstructors[idx % defaultInstructors.length];
+    const institution = t.teacherDetails?.institution?.trim() || fallback.institution;
+    const department = t.teacherDetails?.department?.trim() || fallback.department;
+    const subjects =
       t.teacherDetails?.specialistSubjects && t.teacherDetails.specialistSubjects.length > 0
         ? t.teacherDetails.specialistSubjects
-        : ['গণিত', 'বিজ্ঞান'],
-    badge: t.teacherDetails?.badge || 'মেন্টর',
-    studentsCount: t.teacherDetails?.studentsCount || '৫,০০০+',
-    classesCount: t.teacherDetails?.classesCount || '২০০+ লাইভ ক্লাস',
-    photo: t.avatarUrl || '',
-  }));
+        : fallback.subjects;
+
+    return {
+      name: t.name || fallback.name,
+      institution,
+      department,
+      exp: t.teacherDetails?.experience || fallback.exp,
+      subjects,
+      badge: t.teacherDetails?.badge || fallback.badge,
+      studentsCount: t.teacherDetails?.studentsCount || fallback.studentsCount,
+      classesCount: t.teacherDetails?.classesCount || fallback.classesCount,
+      photo: t.avatarUrl || fallback.photo,
+    };
+  });
 
   const instructorsList =
     mappedDbTeachers.length >= 4
@@ -203,7 +296,7 @@ export default function HomePage() {
     <div className="bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
 
       {/* 2. COSMIC GLOWING HORIZON HERO SECTION (Inspired by 10 Minute School) */}
-      <section className="relative overflow-hidden cosmic-hero-bg text-white py-12 lg:py-0 lg:min-h-[calc(100vh-4rem)] lg:flex lg:flex-col lg:items-center lg:justify-center">
+      <section className="relative overflow-hidden cosmic-hero-bg text-white py-12 md:py-0 md:-mt-20 md:pt-20 lg:-mt-24 lg:pt-24 md:min-h-[calc(100vh+5rem)] lg:min-h-[calc(100vh+6rem)] flex flex-col items-center justify-center">
         
         {/* Deep space radial ambient lighting & celestial nebula glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[550px] bg-gradient-to-b from-rose-950/50 via-red-950/25 to-transparent blur-3xl pointer-events-none -z-10" />
@@ -558,26 +651,87 @@ export default function HomePage() {
 
       </section>
 
-      {/* 3. KEY METRICS STRIP (Appears right after hero upon scrolling) */}
-      <section className="relative z-20 bg-slate-900 border-y border-slate-800 text-white py-8 sm:py-10 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-800">
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-blue-400">১০,০০০+</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">নিবন্ধিত শিক্ষার্থী</div>
+      {/* 3. KEY METRICS SHOWCASE (Compact, Centered, Background Watermark Icons, Scroll-triggered Counter Animation) */}
+      <section className="relative z-30 -mt-8 sm:-mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative rounded-[24px] sm:rounded-[32px] bg-white/95 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 sm:p-5 md:p-6 overflow-hidden">
+          {/* Subtle Ambient Glow Blobs */}
+          <div className="absolute -top-16 -left-16 w-40 h-40 bg-blue-500/10 dark:bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 w-40 h-40 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+            
+            {/* Metric 1: Students */}
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-blue-500/40 dark:hover:border-blue-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+              {/* Background Watermark Icon */}
+              <div className="absolute -right-3 -bottom-3 text-blue-500/10 dark:text-blue-400/10 pointer-events-none group-hover:scale-115 group-hover:text-blue-500/15 dark:group-hover:text-blue-400/15 transition-all duration-500">
+                <Users className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                  <AnimatedCounter target={10000} suffix="+" formatComma={true} />
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2">
+                  নিবন্ধিত শিক্ষার্থী
+                </div>
+              </div>
             </div>
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">৫০০+</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">রেকর্ডেড লেকচার ও ক্লাস</div>
+
+            {/* Metric 2: Classes */}
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-emerald-500/40 dark:hover:border-emerald-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+              {/* Background Watermark Icon */}
+              <div className="absolute -right-3 -bottom-3 text-emerald-500/10 dark:text-emerald-400/10 pointer-events-none group-hover:scale-115 group-hover:text-emerald-500/15 dark:group-hover:text-emerald-400/15 transition-all duration-500">
+                <PlayCircle className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                  <AnimatedCounter target={500} suffix="+" />
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2">
+                  রেকর্ডেড লেকচার ও ক্লাস
+                </div>
+              </div>
             </div>
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-amber-400">১০০%</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">সিলেবাস ও টেস্ট পেপার</div>
+
+            {/* Metric 3: Syllabus */}
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-amber-500/40 dark:hover:border-amber-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+              {/* Background Watermark Icon */}
+              <div className="absolute -right-3 -bottom-3 text-amber-500/10 dark:text-amber-400/10 pointer-events-none group-hover:scale-115 group-hover:text-amber-500/15 dark:group-hover:text-amber-400/15 transition-all duration-500">
+                <CheckCircle2 className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                  <AnimatedCounter target={100} suffix="%" />
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2">
+                  সিলেবাস ও টেস্ট পেপার
+                </div>
+              </div>
             </div>
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-purple-400">২৪/৭</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">মেন্টরশিপ ও ডাউট সলভ</div>
+
+            {/* Metric 4: Mentorship */}
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-purple-500/40 dark:hover:border-purple-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+              {/* Background Watermark Icon */}
+              <div className="absolute -right-3 -bottom-3 text-purple-500/10 dark:text-purple-400/10 pointer-events-none group-hover:scale-115 group-hover:text-purple-500/15 dark:group-hover:text-purple-400/15 transition-all duration-500">
+                <MessageCircle className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
+              </div>
+
+              <div className="relative z-10">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                  <span className="inline-flex items-center">
+                    <AnimatedCounter target={24} />
+                    <span className="mx-0.5 text-slate-400 font-light">/</span>
+                    <AnimatedCounter target={7} />
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-2">
+                  মেন্টরশিপ ও ডাউট সলভ
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -729,18 +883,8 @@ export default function HomePage() {
                           <div className="hidden sm:flex absolute top-1.5 sm:top-2.5 inset-x-1.5 sm:inset-x-2.5 z-20 items-center justify-between pointer-events-none gap-1">
                             {/* Grade Level Tag */}
                             <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1">
-                              <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-300 shrink-0" />
+                              <GraduationCap className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-300 shrink-0" />
                               <span className="truncate">{c.gradeLevel}</span>
-                            </span>
-
-                            {/* Cute Live Indicator */}
-                            <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] sm:text-[11px] font-black shadow-md border border-slate-200/60 dark:border-white/15">
-                              <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
-                                <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75" />
-                                <span className="relative m-auto h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
-                              </span>
-                              <span className="hidden xs:inline">লাইভ ব্যাচ</span>
-                              <span className="xs:hidden">লাইভ</span>
                             </span>
                           </div>
                         </div>
@@ -763,25 +907,8 @@ export default function HomePage() {
                         )}
 
                         {/* Feature Micro-Badges (Hidden on mobile) */}
-                        <div className="hidden sm:block mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                              <PlayCircle className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="line-clamp-1">লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                              <FileText className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="line-clamp-1">অধ্যায়ভিত্তিক লেকচার শিট ও নোট</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                              <Award className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="line-clamp-1">অনলাইন উইকলি টেস্ট ও এনালাইসিস</span>
-                          </div>
+                        <div className="hidden sm:block mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                          <CourseCardFeatures features={c.features} />
                         </div>
                       </div>
                     </div>
@@ -816,9 +943,9 @@ export default function HomePage() {
                       </div>
 
                       {/* Action Button */}
-                      <div className="w-full sm:w-auto py-1.5 sm:py-2.5 px-0 sm:px-4 rounded-none sm:rounded-xl bg-transparent sm:bg-gradient-to-r sm:from-blue-600 sm:via-indigo-600 sm:to-purple-600 sm:group-hover:from-blue-700 sm:group-hover:to-purple-700 text-blue-600 dark:text-blue-400 sm:text-white font-semibold sm:font-black text-xs shadow-none sm:shadow-md sm:shadow-blue-500/20 sm:group-hover:shadow-blue-500/35 transition-all flex items-center justify-center sm:justify-center gap-1 shrink-0 group-hover:scale-102">
+                      <div className="w-full sm:w-auto py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-blue-600 sm:bg-gradient-to-r sm:from-blue-600 sm:via-indigo-600 sm:to-purple-600 sm:group-hover:from-blue-700 sm:group-hover:to-purple-700 text-white font-bold sm:font-black text-xs shadow-md shadow-blue-500/25 sm:group-hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
                         <span>ব্যাচ দেখুন</span>
-                        <ChevronRight className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>
@@ -878,7 +1005,7 @@ export default function HomePage() {
                   {/* Bottom cute tag overlay */}
                   <div className="absolute bottom-3.5 inset-x-3.5 z-10 flex items-center justify-between pointer-events-none">
                     <div className="px-3.5 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15 flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <Video className="w-3.5 h-3.5 text-blue-500" />
                       <span>টু-ওয়ে অডিও ও স্ক্রিন শেয়ার</span>
                     </div>
                   </div>
@@ -1051,7 +1178,7 @@ export default function HomePage() {
 
                   {/* Top cute tag overlay */}
                   <div className="absolute top-3.5 left-3.5 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-black border border-white/25 shadow-lg">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <Award className="w-3.5 h-3.5 text-amber-300" />
                     <span>সাপ্তাহিক মডেল টেস্ট</span>
                   </div>
 
@@ -1119,29 +1246,31 @@ export default function HomePage() {
                   <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
                 </div>
 
-                {/* Information Body: Name, University, Subject with Middle Alignment */}
-                <div className="w-full px-1 pt-3 pb-2 flex flex-col items-center text-center">
-                  {/* Teacher Name */}
-                  <h3 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-full">
-                    {teacher.name}
-                  </h3>
+                {/* Information Body: Name, University + Department, Teaching Subject Below */}
+                <div className="w-full px-1.5 pt-3 pb-2 flex flex-col items-center text-center flex-1 justify-between">
+                  <div>
+                    {/* Teacher Name */}
+                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                      {teacher.name}
+                    </h3>
 
-                  {/* University / Institution */}
-                  {teacher.institution ? (
-                    <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 truncate max-w-full">
-                      {teacher.institution}
-                    </p>
-                  ) : teacher.department ? (
-                    <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 truncate max-w-full">
-                      {teacher.department}
-                    </p>
-                  ) : null}
+                    {/* University & Studying Subject (e.g. ঢাকা বিশ্ববিদ্যালয়, রসায়ন বিভাগ) */}
+                    {(teacher.institution || teacher.department) && (
+                      <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 leading-snug break-words">
+                        {teacher.institution && teacher.department
+                          ? `${teacher.institution}, ${teacher.department}`
+                          : teacher.institution || teacher.department}
+                      </p>
+                    )}
+                  </div>
 
-                  {/* Subject */}
+                  {/* Teaching Subject (সে কোন সাবজেক্টে পড়ায় - একটু নিচে ক্লিয়ার ব্যাজ হিসেবে) */}
                   {teacher.subjects && teacher.subjects.length > 0 && (
-                    <p className="text-[11px] sm:text-xs font-medium text-blue-600 dark:text-blue-400 mt-0.5 truncate max-w-full">
-                      {teacher.subjects.join(', ')}
-                    </p>
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 w-full flex items-center justify-center">
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 text-[10px] sm:text-[11px] font-bold border border-blue-200/60 dark:border-blue-800/60 leading-tight">
+                        {teacher.subjects.join(' • ')}
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>

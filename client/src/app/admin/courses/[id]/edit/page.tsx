@@ -15,10 +15,11 @@ import {
   Check,
   Plus,
   Trash2,
-  Sparkles,
+  ListFilter,
 } from 'lucide-react';
 
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+import { AVAILABLE_FEATURE_ICONS, DEFAULT_CARD_FEATURES, parseFeatureItem } from '@/components/course/CourseCardFeatures';
 
 interface TeacherUser {
   _id: string;
@@ -59,6 +60,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   });
 
   const [newHighlight, setNewHighlight] = useState('');
+  const [newFeature, setNewFeature] = useState('');
+  const [newFeatureIcon, setNewFeatureIcon] = useState('play');
 
   const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
   const gradeOptions = academicClasses.map((ac) => ac.name);
@@ -159,6 +162,34 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     }));
   };
 
+  const addFeature = () => {
+    if (!newFeature.trim()) return;
+    const formatted = `icon:${newFeatureIcon}|${newFeature.trim()}`;
+    setForm((prev) => ({
+      ...prev,
+      features: [...(prev.features || []), formatted],
+    }));
+    setNewFeature('');
+  };
+
+  const removeFeature = (idx: number) => {
+    setForm((prev) => ({
+      ...prev,
+      features: (prev.features || []).filter((_, i) => i !== idx),
+    }));
+  };
+
+  const restoreDefaultFeatures = () => {
+    setForm((prev) => ({
+      ...prev,
+      features: [
+        'icon:play|লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ',
+        'icon:sheet|অধ্যায়ভিত্তিক লেকচার শিট ও নোট',
+        'icon:exam|অনলাইন উইকলি টেস্ট ও এনালাইসিস',
+      ],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -171,6 +202,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         courseFee: Number(form.courseFee) || 0,
         instructors: form.instructors || [],
         curriculumHighlights: form.curriculumHighlights || [],
+        features: form.features || [],
       };
       console.log('Submitting updated course payload:', payload);
       const res = await api.put(`/courses/${resolvedParams.id}`, payload);
@@ -446,7 +478,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
             {/* CURRICULUM HIGHLIGHTS & OUTCOMES */}
             <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800">
               <div className="flex items-center gap-2 mb-2 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-indigo-500" />
+                <BookOpen className="w-4 h-4 text-indigo-500" />
                 <span>What Students Will Learn (Syllabus Highlights)</span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
@@ -490,6 +522,88 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                 />
                 <Button type="button" size="sm" onClick={addHighlight} variant="secondary">
                   <Plus className="w-3.5 h-3.5 mr-1" /> Add
+                </Button>
+              </div>
+            </div>
+
+            {/* COURSE CARD MICRO-FEATURES (কার্ডের ৩টি লাইন ও আইকন) */}
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/90 dark:border-slate-800">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                  <ListFilter className="w-4 h-4 text-blue-500" />
+                  <span>কোর্স কার্ড ফিচারসমূহ (Course Card Features)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={restoreDefaultFeatures}
+                  className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                >
+                  ডিফল্ট ৩টি লাইন ফিরিয়ে আনুন
+                </button>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                হোমপেজ ও ক্যাটালগে কোর্সের কার্ডে যেসব ৩টি হাইলাইট লাইন ও আইকন প্রদর্শিত হয়, তা এখানে পরিবর্তন করুন। ফাঁকা রাখলে স্বয়ংক্রিয়ভাবে ডিফল্ট লাইনগুলো ব্যবহৃত হবে।
+              </p>
+
+              {/* Existing Features List */}
+              <div className="space-y-2 mb-4">
+                {(form.features || []).map((feat, idx) => {
+                  const { text, IconComponent, colorBg, colorText } = parseFeatureItem(feat, idx);
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 shadow-2xs"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className={`w-6 h-6 rounded-lg ${colorBg} ${colorText} flex items-center justify-center shrink-0`}>
+                          <IconComponent className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="font-semibold truncate">{text}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFeature(idx)}
+                        className="text-slate-400 hover:text-rose-500 transition-colors p-1"
+                        title="মুছুন"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Add New Feature Line */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                {/* Icon Selector */}
+                <select
+                  value={newFeatureIcon}
+                  onChange={(e) => setNewFeatureIcon(e.target.value)}
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+                >
+                  {Object.entries(AVAILABLE_FEATURE_ICONS).map(([key, item]) => (
+                    <option key={key} value={key}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="text"
+                  value={newFeature}
+                  onChange={(e) => setNewFeature(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addFeature();
+                    }
+                  }}
+                  placeholder="যেমন: অধ্যায়ভিত্তিক লেকচার শিট ও নোট"
+                  className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                />
+
+                <Button type="button" size="sm" onClick={addFeature} variant="secondary">
+                  <Plus className="w-3.5 h-3.5 mr-1" /> যোগ করুন
                 </Button>
               </div>
             </div>

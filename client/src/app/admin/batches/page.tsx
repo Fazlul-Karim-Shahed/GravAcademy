@@ -21,9 +21,11 @@ import {
   MessageSquare,
   Filter,
   X,
+  GraduationCap,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { ScheduleSlot } from '@/lib/schedule';
+import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 
 interface Batch {
   _id: string;
@@ -55,6 +57,8 @@ function AdminBatchesContent() {
   const { user } = useAuth();
   const [batches, setBatches] = useState<Batch[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
+  const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedCourseId, setSelectedCourseId] = useState<string>(initialCourseId);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -75,12 +79,14 @@ function AdminBatchesContent() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [batchesRes, coursesRes] = await Promise.all([
+      const [batchesRes, coursesRes, classList] = await Promise.all([
         api.get('/batches'),
         api.get('/courses'),
+        getSharedAcademicClasses(),
       ]);
       if (batchesRes.data.success) setBatches(batchesRes.data.data);
       if (coursesRes.data.success) setCourses(coursesRes.data.data);
+      if (classList) setAcademicClasses(classList);
     } catch (err) {
       console.error('Error fetching admin data', err);
     } finally {
@@ -105,10 +111,55 @@ function AdminBatchesContent() {
     }
   };
 
+  // 1. Only show classes for which courses actually exist in the database
+  const classesWithCourses = React.useMemo(() => {
+    const classNamesSet = new Set<string>();
+    courses.forEach((c) => {
+      if (c.gradeLevel && c.gradeLevel.trim()) {
+        classNamesSet.add(c.gradeLevel.trim());
+      }
+    });
+
+    // Match with academicClasses if available, or fallback to class names
+    const result: { id: string; name: string }[] = [];
+    classNamesSet.forEach((name) => {
+      const match = academicClasses.find((ac) => ac.name.trim().toLowerCase() === name.toLowerCase());
+      result.push({
+        id: match ? match._id : name,
+        name: match ? match.name : name,
+      });
+    });
+
+    // Sort logically
+    return result.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  }, [courses, academicClasses]);
+
+  // 2. Courses filtered dynamically by selected class
+  const availableCourses = React.useMemo(() => {
+    if (selectedClass === 'all') return courses;
+    return courses.filter((c) => c.gradeLevel?.trim().toLowerCase() === selectedClass.trim().toLowerCase());
+  }, [courses, selectedClass]);
+
   const filteredBatches = batches.filter((b) => {
-    if (selectedCourseId === 'all') return true;
-    const cId = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId._id : b.courseId;
-    return String(cId) === String(selectedCourseId);
+    const courseObj = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId : null;
+    const cId = courseObj ? courseObj._id : b.courseId;
+    const grade = courseObj?.gradeLevel;
+
+    // Filter by Class
+    if (selectedClass !== 'all') {
+      if (!grade || grade.trim().toLowerCase() !== selectedClass.trim().toLowerCase()) {
+        return false;
+      }
+    }
+
+    // Filter by Course
+    if (selectedCourseId !== 'all') {
+      if (String(cId) !== String(selectedCourseId)) {
+        return false;
+      }
+    }
+
+    return true;
   });
 
   return (
@@ -157,31 +208,82 @@ function AdminBatchesContent() {
         {/* Filter Bar */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
-              <Filter className="w-4 h-4 text-blue-500" />
-              <span>কোর্স অনুযায়ী ফিল্টার:</span>
+            {/* ১. ক্লাস অনুযায়ী ফিল্টার */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                <GraduationCap className="w-4 h-4 text-indigo-500" />
+                <span>ক্লাস:</span>
+              </div>
+              <select
+                value={selectedClass}
+                onChange={(e) => {
+                  const newClass = e.target.value;
+                  setSelectedClass(newClass);
+                  // If selected course doesn't match new class, reset course filter
+                  if (newClass !== 'all' && selectedCourseId !== 'all') {
+                    const currentCourse = courses.find((c) => c._id === selectedCourseId);
+                    if (currentCourse && currentCourse.gradeLevel?.trim().toLowerCase() !== newClass.trim().toLowerCase()) {
+                      setSelectedCourseId('all');
+                    }
+                  }
+                }}
+                className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer"
+              >
+                <option value="all">সকল ক্লাস (All Classes)</option>
+                {classesWithCourses.map((cls) => (
+                  <option key={cls.id} value={cls.name}>
+                    {cls.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <select
-              value={selectedCourseId}
-              onChange={(e) => setSelectedCourseId(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer max-w-xs"
-            >
-              <option value="all">সকল কোর্স (All Courses)</option>
-              {courses.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.gradeLevel} - {c.title}
-                </option>
-              ))}
-            </select>
+            {/* সেপারেটর পাইপ */}
+            <span className="hidden sm:inline-block w-px h-5 bg-slate-200 dark:bg-slate-800" />
 
-            {selectedCourseId !== 'all' && (
+            {/* ২. কোর্স অনুযায়ী ফিল্টার */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                <Filter className="w-4 h-4 text-blue-500" />
+                <span>কোর্স:</span>
+              </div>
+
+              <select
+                value={selectedCourseId}
+                onChange={(e) => {
+                  const cid = e.target.value;
+                  setSelectedCourseId(cid);
+                  // Auto-sync class filter if a specific course is picked
+                  if (cid !== 'all') {
+                    const picked = courses.find((c) => c._id === cid);
+                    if (picked?.gradeLevel && selectedClass === 'all') {
+                      setSelectedClass(picked.gradeLevel);
+                    }
+                  }
+                }}
+                className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer max-w-xs truncate"
+              >
+                <option value="all">সকল কোর্স (All Courses)</option>
+                {availableCourses.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.gradeLevel} - {c.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Reset Filter Button */}
+            {(selectedCourseId !== 'all' || selectedClass !== 'all') && (
               <button
-                onClick={() => setSelectedCourseId('all')}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+                onClick={() => {
+                  setSelectedCourseId('all');
+                  setSelectedClass('all');
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-bold transition-colors cursor-pointer"
+                title="সকল ফিল্টার মুছুন"
               >
                 <X className="w-3.5 h-3.5" />
-                <span>ফিল্টার মুছুন</span>
+                <span>ফিল্টার রিসেট</span>
               </button>
             )}
           </div>

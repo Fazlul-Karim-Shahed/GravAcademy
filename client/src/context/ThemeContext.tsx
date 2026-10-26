@@ -7,7 +7,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="light"
+      defaultTheme="dark"
       enableSystem={false}
       storageKey="grav_theme"
       disableTransitionOnChange={false}
@@ -20,7 +20,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = () => {
   const { theme, setTheme, resolvedTheme } = useNextTheme();
   
-  const currentTheme = (resolvedTheme || theme || 'light') as 'light' | 'dark';
+  const currentTheme = (resolvedTheme || theme || 'dark') as 'light' | 'dark';
 
   const toggleTheme = () => {
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');

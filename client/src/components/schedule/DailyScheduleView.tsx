@@ -52,12 +52,14 @@ interface DailyScheduleViewProps {
   role?: 'admin' | 'teacher' | 'student';
   title?: string;
   subtitle?: string;
+  layout?: 'auto' | 'table' | 'cards';
 }
 
 export default function DailyScheduleView({
   role = 'student',
   title = "আজকের ও সাপ্তাহিক ক্লাস শিডিউল",
   subtitle,
+  layout = 'auto',
 }: DailyScheduleViewProps) {
   const { user } = useAuth();
   const [data, setData] = useState<DailyScheduleData | null>(null);
@@ -185,18 +187,149 @@ export default function DailyScheduleView({
         })}
       </div>
 
-      {/* Class Schedule Cards Grid */}
+      {/* Class Schedule Content: Table View (Admin / Monitoring) vs Cards View */}
       {currentClasses.length === 0 ? (
-        <div className="text-center py-10 px-4 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800">
-          <Calendar className="w-9 h-9 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-          <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300">
+        <div className="text-center py-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800">
+          <Calendar className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+          <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">
             {currentDayLabel} এ কোনো ক্লাসের শিডিউল নেই
           </h4>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-400 mt-1">
             অন্যান্য দিনের বার নির্বাচন করে সেই দিনের ক্লাস রুটিন দেখুন।
           </p>
         </div>
+      ) : (layout === 'table' || (layout === 'auto' && role === 'admin')) ? (
+        /* Modern Glassmorphic Responsive Table for Admin Monitoring */
+        <div className="overflow-hidden rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white/70 dark:bg-slate-950/60 shadow-sm backdrop-blur-md">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-100/70 dark:bg-slate-900/80 text-[12px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                  <th className="py-3.5 px-4 sm:px-6">সময় ও স্থিতি</th>
+                  <th className="py-3.5 px-4">ব্যাচ ও শ্রেণি</th>
+                  <th className="py-3.5 px-4 hidden md:table-cell">কোর্স ও বিষয়</th>
+                  <th className="py-3.5 px-4 hidden lg:table-cell">শিক্ষক</th>
+                  <th className="py-3.5 px-4 text-center">লাইভ ক্লাস</th>
+                  <th className="py-3.5 px-4 sm:px-6 text-right">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+                {currentClasses.map((item, index) => {
+                  const hasMeetUrl = Boolean(item.meetingUrl);
+                  return (
+                    <tr
+                      key={`${item.batchId}-${index}`}
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                    >
+                      {/* সময় ও স্থিতি */}
+                      <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
+                            <Clock className="w-3.5 h-3.5" />
+                          </span>
+                          <div>
+                            <span className="font-extrabold text-slate-800 dark:text-white block text-xs">
+                              {formatTo12Hour(item.startTime)}
+                            </span>
+                            {item.endTime && (
+                              <span className="text-[11px] text-slate-400 block font-medium">
+                                হতে {formatTo12Hour(item.endTime)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* ব্যাচ ও শ্রেণি */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-slate-900 dark:text-slate-100 text-xs">
+                            {item.batchName}
+                          </span>
+                          {item.course?.gradeLevel && (
+                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80">
+                              {item.course.gradeLevel}
+                            </span>
+                          )}
+                        </div>
+                        {/* Mobile visible course subtitle */}
+                        <div className="md:hidden text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                          {item.course?.title || 'কোর্স'}
+                        </div>
+                        {item.topic && (
+                          <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
+                            <BookOpen className="w-3 h-3 shrink-0" />
+                            <span className="truncate max-w-[200px]">{item.topic}</span>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* কোর্স ও বিষয় */}
+                      <td className="py-3.5 px-4 hidden md:table-cell">
+                        <div className="font-semibold text-slate-700 dark:text-slate-200 max-w-[220px] truncate" title={item.course?.title}>
+                          {item.course?.title || '—'}
+                        </div>
+                        {item.course?.subject && (
+                          <span className="text-[11px] text-slate-400 font-medium">
+                            বিষয়: {item.course.subject}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* শিক্ষক */}
+                      <td className="py-3.5 px-4 hidden lg:table-cell">
+                        {item.assignedTeachers && item.assignedTeachers.length > 0 ? (
+                          <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-semibold">
+                            <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className="truncate max-w-[140px]">
+                              {item.assignedTeachers.map((t) => t.name).join(', ')}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 text-[11px] font-medium">—</span>
+                        )}
+                      </td>
+
+                      {/* লাইভ ক্লাসরুম লিংক */}
+                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        {hasMeetUrl ? (
+                          <a
+                            href={item.meetingUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-xs hover:shadow-emerald-500/20 active:scale-95 transition-all"
+                            title="সরাসরি গুগল মিট ক্লাসে প্রবেশ করুন"
+                          >
+                            <Video className="w-3.5 h-3.5" />
+                            <span>মিট লিঙ্ক</span>
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 text-[11px] font-medium">
+                            অনুপস্থিত
+                          </span>
+                        )}
+                      </td>
+
+                      {/* অ্যাকশন */}
+                      <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+                        <Link
+                          href={`/admin/batches/${item.batchId}/edit`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors text-xs"
+                          title="ব্যাচ ও ক্লাসের সময়সূচী পরিবর্তন করুন"
+                        >
+                          <span>ম্যানেজ</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       ) : (
+        /* Regular Card Grid (For Students or Default Card Layout) */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {currentClasses.map((item, index) => (
             <div

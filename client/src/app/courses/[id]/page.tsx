@@ -20,10 +20,10 @@ import {
   FileText,
   Award,
   Check,
-  Edit,
+  CheckCircle,
   PhoneCall,
+  Edit,
   ShieldCheck,
-  Sparkles,
   AlertCircle,
   Loader2,
   X,
@@ -632,7 +632,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                                 onClick={() => handleEnrollClick(batch)}
                                 className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
                               >
-                                <Sparkles className="w-4 h-4 text-amber-300" />
+                                <CheckCircle className="w-4 h-4 text-emerald-300" />
                                 <span>এনরোল করুন</span>
                                 <ArrowRight className="w-4 h-4" />
                               </button>

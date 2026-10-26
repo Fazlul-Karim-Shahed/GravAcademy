@@ -15,7 +15,6 @@ import {
   Users,
   Search,
   Filter,
-  Sparkles,
   PlayCircle,
   Radio,
   BookOpen,
@@ -333,7 +332,7 @@ export default function FreeClassesPage() {
                         <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
                           {/* Platform Tag */}
                           <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
-                            <Sparkles className="w-3 h-3 text-amber-300" />
+                            <Video className="w-3 h-3 text-amber-300" />
                             <span>{cls.provider === 'google_meet' ? 'Google Meet' : 'Zoom'}</span>
                           </span>
 

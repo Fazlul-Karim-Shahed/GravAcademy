@@ -10,7 +10,7 @@ import {
   FileCheck2,
   CheckCircle2,
   Clock,
-  Sparkles,
+  PhoneCall,
   ArrowRight,
   Video,
   PlayCircle,
@@ -273,7 +273,7 @@ export default function StudentDashboard() {
         <div className="rounded-[30px] p-5 sm:p-6 bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25">
-              <Sparkles className="w-5 h-5 text-amber-300" />
+              <PhoneCall className="w-5 h-5" />
             </div>
             <div>
               <span className="font-black text-sm text-slate-900 dark:text-white block">ক্লাস বা পড়া বুঝতে যেকোনো সমস্যায় সার্বক্ষণিক সহায়তা</span>
