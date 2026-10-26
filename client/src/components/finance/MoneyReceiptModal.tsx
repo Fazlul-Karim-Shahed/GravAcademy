@@ -90,7 +90,17 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   if (!isOpen || !data) return null;
 
   const handlePrint = () => {
+    const originalTitle = document.title;
+    // Set file name for browser's "Save as PDF"
+    const studentName = data.studentId?.name ? `-${data.studentId.name.replace(/[^a-zA-Z0-9\u0980-\u09FF]/g, '_')}` : '';
+    document.title = `${data.receiptNo || 'Money-Receipt'}${studentName}`;
+
     window.print();
+
+    // Restore title after print dialog closes
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
   };
 
   // Determine payments list: if allPayments passed or data.allPayments exists with items, use that; otherwise fallback to [data]
@@ -133,8 +143,29 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
     : '';
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:fixed print:inset-0">
-      <div className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden print:border-none print:shadow-none print:w-full print:max-w-none print:rounded-none print:max-h-none">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:static print:overflow-visible print:z-auto">
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 12mm 15mm;
+          }
+          html, body {
+            background: #ffffff !important;
+            color: #000000 !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          /* Hide all page background contents when printing modal */
+          body > *:not(#__next):not(div.fixed) {
+            display: none !important;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+        }
+      `}</style>
+      <div className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden print:border-none print:shadow-none print:w-full print:max-w-none print:rounded-none print:max-h-none print:static print:overflow-visible">
         {/* Top Action Bar (Sticky, hidden during print) */}
         <div className="shrink-0 flex items-center justify-between px-6 py-3.5 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 print:hidden z-10">
           <div className="flex items-center gap-2">
