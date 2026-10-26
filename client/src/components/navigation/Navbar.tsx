@@ -172,11 +172,11 @@ export const Navbar: React.FC = () => {
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-2.5">
           <SiteLogo size="md" showText={false} />
-          <div className="hidden sm:block">
-            <span className="font-extrabold text-slate-900 dark:text-white text-base tracking-tight block leading-tight">
+          <div>
+            <span className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base tracking-tight block leading-tight">
               {settings.siteName || 'গ্র্যাভ একাডেমি'}
             </span>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium leading-tight">
+            <span className="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-tight">
               {settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার'}
             </span>
           </div>
