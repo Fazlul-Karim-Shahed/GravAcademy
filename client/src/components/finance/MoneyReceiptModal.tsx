@@ -21,6 +21,7 @@ export interface PaymentReceiptData {
   amountPaid: number;
   totalFee?: number;
   dueAmount?: number;
+  totalPaid?: number;
   paymentMethod: string;
   paymentType?: string;
   transactionId?: string;

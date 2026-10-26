@@ -123,22 +123,29 @@ export default function AdminFinancePage() {
 
     // Final pass: Compute student's locked batchFee snapshot and due = max(0, studentBatchFee - totalAmountPaid)
     map.forEach((item) => {
-      const courseDoc = item.courseId || item.latestPayment.courseId;
-      // Prioritize the locked student tuition fee (batchFee snapshot) returned in latestPayment.totalFee
-      const studentBatchFee =
-        (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0)
-          ? item.latestPayment.totalFee
-          : courseDoc?.discountPrice ??
-            courseDoc?.courseFee ??
-            courseDoc?.regularPrice ??
-            0;
+      // If server pre-calculated lifetime totalPaid for this student & batch, prioritize it over date-filtered slice
+      if (item.latestPayment.totalPaid !== undefined) {
+        item.totalAmountPaid = item.latestPayment.totalPaid;
+      }
 
-      if (studentBatchFee > 0) {
-        item.totalDue = studentBatchFee - item.totalAmountPaid;
-        item.latestPayment.totalFee = studentBatchFee;
-        item.latestPayment.dueAmount = Math.max(0, item.totalDue);
-      } else if (item.latestPayment.dueAmount !== undefined) {
+      // If server pre-calculated lifetime dueAmount, prioritize it directly to avoid date-filtered slice distortion
+      if (item.latestPayment.dueAmount !== undefined) {
         item.totalDue = item.latestPayment.dueAmount;
+      } else {
+        const courseDoc = item.courseId || item.latestPayment.courseId;
+        const studentBatchFee =
+          (item.latestPayment.totalFee !== undefined && item.latestPayment.totalFee > 0)
+            ? item.latestPayment.totalFee
+            : courseDoc?.discountPrice ??
+              courseDoc?.courseFee ??
+              courseDoc?.regularPrice ??
+              0;
+
+        if (studentBatchFee > 0) {
+          item.totalDue = studentBatchFee - item.totalAmountPaid;
+          item.latestPayment.totalFee = studentBatchFee;
+          item.latestPayment.dueAmount = Math.max(0, item.totalDue);
+        }
       }
     });
 

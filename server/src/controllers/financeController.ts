@@ -350,6 +350,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           ...p,
           totalFee: effectiveBatchFee,
           dueAmount: dynamicDue,
+          totalPaid: totalPaidForThisBatch,
           isManualPaid: isManuallyMarkedPaid,
           enrollmentId: enr?._id || p.enrollmentId,
         };
@@ -410,6 +411,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             amountPaid: paid,
             totalFee: currentCoursePrice,
             dueAmount,
+            totalPaid: paid,
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
@@ -563,6 +565,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             amountPaid: paid,
             totalFee: currentCoursePrice,
             dueAmount,
+            totalPaid: paid,
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
