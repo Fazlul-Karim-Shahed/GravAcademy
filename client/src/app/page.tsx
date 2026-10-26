@@ -242,10 +242,10 @@ export default function HomePage() {
           <span className="shooting-star meteor-4" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col justify-center flex-1 py-6 lg:py-10">
           
           {/* Glowing Planetary Horizon Half-Arch (Semi-circular atmospheric curvature) */}
-          <div className="relative mx-auto max-w-4xl pt-6 pb-6">
+          <div className="relative mx-auto max-w-4xl pt-2 sm:pt-4 pb-2 sm:pb-4">
             
             {/* The Half-Circle Horizon Curved Arc - Crowned elegantly OVER the top of the heading */}
             <div 
@@ -285,8 +285,8 @@ export default function HomePage() {
           </div>
 
           {/* GLOSSY CLASS CARDS ROW */}
-          <div className="mt-6 sm:mt-10 lg:mt-12">
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-x-4 sm:gap-x-6 md:gap-x-6 lg:gap-x-7 gap-y-6 sm:gap-y-8 max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="mt-6 sm:mt-10 lg:mt-14">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-x-4 sm:gap-x-6 lg:gap-x-8 gap-y-6 sm:gap-y-8 max-w-[1260px] mx-auto px-1 sm:px-4">
               
               {/* Card 1: HSC 26 */}
               <div 
@@ -298,12 +298,12 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-amber aspect-[1/1.05] sm:aspect-[1/1.08] flex flex-col items-center justify-between border-2 border-amber-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-amber aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-amber-400/30 overflow-hidden">
                   
                   {/* Ultra-soft realistic feathered crystal sheen beam */}
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" />
                   
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0369a1] p-2 sm:p-3.5 lg:p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0369a1] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     {/* Top glass bubble shine */}
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
@@ -315,12 +315,12 @@ export default function HomePage() {
                     <span className="text-[10px] sm:text-xs font-black tracking-widest text-sky-100 uppercase drop-shadow-md z-10">
                       HSC
                     </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
                       <span>২৬</span>
                     </div>
                   </div>
                   
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-amber-300 transition-colors z-10">
+                  <span className="text-[11px] sm:text-xs md:text-sm lg:text-[15px] font-extrabold text-slate-100 mt-2 sm:mt-3 tracking-wide group-hover:text-amber-300 transition-colors z-10">
                     HSC ২৬
                   </span>
                 </div>
@@ -341,11 +341,11 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-sky aspect-[1/1.05] sm:aspect-[1/1.08] flex flex-col items-center justify-between border-2 border-sky-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-sky aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-sky-400/30 overflow-hidden">
                   
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '4s' }} />
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#60a5fa] via-[#2563eb] to-[#1d4ed8] p-2 sm:p-3.5 lg:p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#60a5fa] via-[#2563eb] to-[#1d4ed8] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
                     {/* Tilted Artistic Icon on the Right Side as Background */}
@@ -356,7 +356,7 @@ export default function HomePage() {
                     <span className="text-[10px] sm:text-xs font-black tracking-widest text-blue-100 uppercase drop-shadow-md z-10">
                       HSC
                     </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
                       <span>২৭</span>
                     </div>
                   </div>
@@ -381,11 +381,11 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-blue aspect-[1/1.05] sm:aspect-[1/1.08] flex flex-col items-center justify-between border-2 border-cyan-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-blue aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-cyan-400/30 overflow-hidden">
                   
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '8s' }} />
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0f766e] p-2 sm:p-3.5 lg:p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0f766e] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
                     {/* Tilted Artistic Icon on the Right Side as Background */}
@@ -396,7 +396,7 @@ export default function HomePage() {
                     <span className="text-[10px] sm:text-xs font-black tracking-widest text-cyan-100 uppercase drop-shadow-md z-10">
                       HSC
                     </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
                       <span>২৮</span>
                     </div>
                   </div>
@@ -421,11 +421,11 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-orange aspect-[1/1.05] sm:aspect-[1/1.08] flex flex-col items-center justify-between border-2 border-orange-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-orange aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-orange-400/30 overflow-hidden">
                   
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '12s' }} />
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#fb923c] via-[#ea580c] to-[#c2410c] p-2 sm:p-3.5 lg:p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#fb923c] via-[#ea580c] to-[#c2410c] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
                     {/* Tilted Artistic Icon on the Right Side as Background */}
@@ -436,7 +436,7 @@ export default function HomePage() {
                     <span className="text-[10px] sm:text-xs font-black tracking-widest text-orange-100 uppercase drop-shadow-md z-10">
                       SSC
                     </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
                       <span>২৭</span>
                     </div>
                   </div>
@@ -461,11 +461,11 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-emerald aspect-[1/1.05] sm:aspect-[1/1.08] flex flex-col items-center justify-between border-2 border-emerald-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-emerald aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-emerald-400/30 overflow-hidden">
                   
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '16s' }} />
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#34d399] via-[#059669] to-[#047857] p-2 sm:p-3.5 lg:p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#34d399] via-[#059669] to-[#047857] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
                     {/* Tilted Artistic Icon on the Right Side as Background */}
@@ -476,7 +476,7 @@ export default function HomePage() {
                     <span className="text-[9px] sm:text-[11px] font-black tracking-widest text-emerald-100 uppercase drop-shadow-md z-10">
                       CLASS
                     </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
                       <span>৯</span>
                     </div>
                   </div>
@@ -501,11 +501,11 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-teal aspect-[1/1.05] sm:aspect-[1/1.08] flex flex-col items-center justify-between border-2 border-teal-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-teal aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-teal-400/30 overflow-hidden">
                   
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '20s' }} />
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#2dd4bf] via-[#0d9488] to-[#115e59] p-2 sm:p-3.5 lg:p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#2dd4bf] via-[#0d9488] to-[#115e59] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
                     {/* Tilted Artistic Icon on the Right Side as Background */}
@@ -535,7 +535,7 @@ export default function HomePage() {
           </div>
 
           {/* Action CTAs: Free Class and All Courses Button */}
-          <div className="mt-10 sm:mt-14 lg:mt-16 pb-6 lg:pb-8 flex flex-wrap items-center justify-center gap-4 sm:gap-5">
+          <div className="mt-12 sm:mt-16 lg:mt-24 pb-8 lg:pb-14 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <Link
               href="/free-classes"
               className="px-8 py-3.5 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-500/35 hover:shadow-emerald-500/50 hover:scale-105 transition-all flex items-center gap-2.5"
