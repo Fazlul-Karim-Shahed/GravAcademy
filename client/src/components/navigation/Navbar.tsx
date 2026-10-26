@@ -24,11 +24,14 @@ import {
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { SiteLogo } from '@/components/common/SiteLogo';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { settings } = useSiteSettings();
   const [mounted, setMounted] = React.useState(false);
   const [classes, setClasses] = React.useState<AcademicClassItem[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -123,15 +126,13 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo / Brand */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
-            <GraduationCap className="w-5 h-5" />
-          </div>
-          <div>
+          <SiteLogo size="md" showText={false} />
+          <div className="hidden sm:block">
             <span className="font-extrabold text-slate-900 dark:text-white text-base tracking-tight block leading-tight">
-              গ্র্যাভ একাডেমি
+              {settings.siteName || 'গ্র্যাভ একাডেমি'}
             </span>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium leading-tight">
-              ক্লাস ৬ – ১২ একাডেমিক কেয়ার
+              {settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার'}
             </span>
           </div>
         </Link>
@@ -413,7 +414,7 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="px-3.5 py-1.5 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors"
+                className="hidden sm:inline-block px-3.5 py-1.5 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors"
               >
                 লগইন
               </Link>

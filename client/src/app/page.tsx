@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { formatDriveImageUrl } from '@/lib/drive';
+import { SiteLogo } from '@/components/common/SiteLogo';
 import {
   BookOpen,
   GraduationCap,
@@ -1336,9 +1337,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-indigo-950/80">
             <div>
               <div className="flex items-center gap-2.5 text-white font-extrabold text-base mb-3">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
-                  <GraduationCap className="w-4 h-4" />
-                </div>
+                <SiteLogo size="sm" showText={false} />
                 <span className="tracking-tight">Grav Academy</span>
               </div>
               <p className="text-slate-400 leading-relaxed mb-4">

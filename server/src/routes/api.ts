@@ -18,6 +18,7 @@ import * as classroomCtrl from '../controllers/classroomController';
 import * as enrollmentCtrl from '../controllers/enrollmentController';
 import * as jobCtrl from '../controllers/jobPostController';
 import * as financeCtrl from '../controllers/financeController';
+import * as settingCtrl from '../controllers/settingController';
 
 const router = Router();
 const upload = multer({
@@ -437,6 +438,15 @@ router.delete(
   authenticate,
   requirePermission(PERMISSIONS.JOBS_MANAGE),
   jobCtrl.deleteJobCategory
+);
+
+// --- SYSTEM & SITE SETTINGS ROUTES ---
+router.get('/settings', settingCtrl.getSiteSettings);
+router.put(
+  '/admin/settings',
+  authenticate,
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  settingCtrl.updateSiteSettings
 );
 
 export default router;

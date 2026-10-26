@@ -19,6 +19,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { SiteLogo } from '@/components/common/SiteLogo';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
+import { DriveFileUpload } from '@/components/ui/DriveFileUpload';
+import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 
 interface UserRecord {
   _id: string;
@@ -35,7 +39,44 @@ type TabType = 'users' | 'homepage' | 'general' | 'notifications';
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
+  const { settings, updateSettings, loading: loadingSettings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<TabType>('users');
+
+  // Site Settings state
+  const [logoUrl, setLogoUrl] = useState(settings.logoUrl || '');
+  const [siteName, setSiteName] = useState(settings.siteName || '');
+  const [siteTagline, setSiteTagline] = useState(settings.siteTagline || '');
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (settings) {
+      setLogoUrl(settings.logoUrl || '');
+      setSiteName(settings.siteName || 'Grav Academy');
+      setSiteTagline(settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার');
+    }
+  }, [settings]);
+
+  const handleSaveSiteSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    setSaveSuccess(false);
+    try {
+      const ok = await updateSettings({
+        logoUrl,
+        siteName,
+        siteTagline,
+      });
+      if (ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3500);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   // Users state
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -424,20 +465,123 @@ export default function AdminSettingsPage() {
 
             {/* TAB: GENERAL SETTINGS */}
             {activeTab === 'general' && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  সাধারণ সেটিংস
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
-                    <span className="text-slate-400 block mb-0.5">প্ল্যাটফর্মের নাম</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">GravAcademy</span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
-                    <span className="text-slate-400 block mb-0.5">সার্ভার স্ট্যাটাস</span>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">সক্রিয় (Active)</span>
-                  </div>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-6">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                    সাধারণ সেটিংস ও ব্র্যান্ডিং
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    এখানে লোগো বা সাইটের নাম পরিবর্তন করলে তা নেভিগেশন বার, ফুটার, লগইন ও পুরো ওয়েবসাইটে তাৎক্ষণিকভাবে কার্যকর হবে।
+                  </p>
                 </div>
+
+                {saveSuccess && (
+                  <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2.5 animate-in fade-in duration-200">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                    <span>সেটিংস ও লোগো সফলভাবে আপডেট হয়েছে এবং পুরো ওয়েবসাইটে প্রয়োগ করা হয়েছে!</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSaveSiteSettings} className="space-y-6">
+                  {/* Live Logo Preview Box */}
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
+                    <div className="space-y-1 text-center sm:text-left">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                        লাইভ প্রিভিউ (বর্তমান লোগো)
+                      </span>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        নিচে ছবি আপলোড করলে বা লিংক দিলে লোগো এখানে প্রদর্শিত হবে।
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold overflow-hidden shadow-md shadow-blue-500/20 shrink-0">
+                        {logoUrl ? (
+                          <img
+                            src={logoUrl}
+                            alt="Logo Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <ImageIcon className="w-6 h-6 text-white/90" />
+                        )}
+                      </div>
+                      <div>
+                        <span className="font-extrabold text-sm text-slate-900 dark:text-white block leading-tight">
+                          {siteName || 'Grav Academy'}
+                        </span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">
+                          {siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Upload Logo using Google Drive / File Picker */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                      ওয়েবসাইট লোগো (Google Drive / ডিরেক্ট ইমেজ আপলোড)
+                    </label>
+                    <DriveFileUpload
+                      value={logoUrl}
+                      onChange={(url) => setLogoUrl(url)}
+                      label="লোগো ফাইল আপলোড করুন"
+                      placeholder="https://drive.google.com/... অথবা আপনার কম্পিউটার থেকে লোগো নির্বাচন করুন"
+                      helperText="স্বচ্ছ ব্যাকগ্রাউন্ডসহ PNG বা স্কয়ার সাইজের লোগো (যেমন: 512x512) সবচেয়ে সুন্দর দেখাবে।"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    />
+                  </div>
+
+                  {/* Site Name and Tagline */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        প্ল্যাটফর্মের নাম (Site Name)
+                      </label>
+                      <input
+                        type="text"
+                        value={siteName}
+                        onChange={(e) => setSiteName(e.target.value)}
+                        placeholder="Grav Academy"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        ট্যাগলাইন (Tagline / সাবটাইটেল)
+                      </label>
+                      <input
+                        type="text"
+                        value={siteTagline}
+                        onChange={(e) => setSiteTagline(e.target.value)}
+                        placeholder="ক্লাস ৬ – ১২ একাডেমিক কেয়ার"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Save Button */}
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={savingSettings}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-blue-500/20 disabled:opacity-50 transition-all cursor-pointer"
+                    >
+                      {savingSettings ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>সংরক্ষণ করা হচ্ছে...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          <span>সেটিংস ও লোগো সংরক্ষণ করুন</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
             )}
 

@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
 import { GraduationCap, Mail, Lock, AlertCircle, Loader2, UserCheck, Hash } from 'lucide-react';
+import { SiteLogo } from '@/components/common/SiteLogo';
 
 function LoginForm() {
   const router = useRouter();
@@ -81,8 +82,8 @@ function LoginForm() {
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-7">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-500/30 mb-4 border border-white/20">
-            <GraduationCap className="w-8 h-8" />
+          <div className="flex justify-center mb-4">
+            <SiteLogo size="xl" showText={false} className="border border-white/20 shadow-xl shadow-blue-500/30" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             লগইন করুন
