@@ -1093,90 +1093,54 @@ export default function HomePage() {
             {instructorsList.slice(0, 4).map((teacher, idx) => (
               <div
                 key={idx}
-                className="group relative p-1.5 sm:p-3 rounded-[22px] sm:rounded-[34px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2 flex flex-col justify-between"
+                className="group relative p-2 sm:p-3.5 rounded-[22px] sm:rounded-[30px] bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center"
               >
-                <div>
-                  {/* Portrait Photo Mask Frame with Gloss Shimmer */}
-                  <div className="relative rounded-[18px] sm:rounded-[26px] overflow-hidden aspect-[4/3.2] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner flex items-center justify-center">
-                    {teacher.photo ? (
-                      <img
-                        src={teacher.photo}
-                        alt={teacher.name}
-                        className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
-                      />
-                    ) : (
-                      <UserAvatar
-                        name={teacher.name}
-                        role="teacher"
-                        size="xl"
-                        className="w-full h-full rounded-none"
-                      />
-                    )}
-                    
-                    {/* Gloss Sheen Shine Across Photo */}
-                    <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+                {/* Portrait Photo */}
+                <div className="relative rounded-[16px] sm:rounded-[22px] overflow-hidden aspect-[4/3.5] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner flex items-center justify-center">
+                  {teacher.photo ? (
+                    <img
+                      src={teacher.photo}
+                      alt={teacher.name}
+                      className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
+                    />
+                  ) : (
+                    <UserAvatar
+                      name={teacher.name}
+                      role="teacher"
+                      size="xl"
+                      className="w-full h-full rounded-none"
+                    />
+                  )}
+                  
+                  {/* Gloss Sheen Shine Across Photo */}
+                  <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
+                </div>
 
-                    {/* Gradient vignette at bottom */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                {/* Information Body: Name, University, Subject with Middle Alignment */}
+                <div className="w-full px-1 pt-3 pb-2 flex flex-col items-center text-center">
+                  {/* Teacher Name */}
+                  <h3 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate max-w-full">
+                    {teacher.name}
+                  </h3>
 
-                    {/* Top Floating Badge */}
-                    <div className="absolute top-1.5 sm:top-3 inset-x-1.5 sm:inset-x-3 flex items-center justify-between z-10 pointer-events-none">
-                      <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[10px] sm:text-[11px] font-black shadow-md border border-white/20 flex items-center gap-1">
-                        <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-300 shrink-0" />
-                        <span className="truncate">{teacher.badge}</span>
-                      </span>
-
-                      <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border border-white/30 shrink-0" title="ভেরিফায়েড শিক্ষক">
-                        <Check className="w-3 h-3 sm:w-4 sm:h-4 stroke-[3]" />
-                      </div>
-                    </div>
-
-                    {/* Overlaid Institution on bottom of photo */}
-                    {teacher.institution && (
-                      <div className="absolute bottom-1.5 sm:bottom-3 inset-x-1.5 sm:inset-x-3 z-10 pointer-events-none">
-                        <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-900 dark:text-slate-100 text-[10px] sm:text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15 max-w-full">
-                          <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                          <span className="truncate">{teacher.institution}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Information Card Body */}
-                  <div className="px-2 sm:px-4 pt-2.5 sm:pt-4 pb-1 sm:pb-2">
-                    <h3 className="text-xs sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                      {teacher.name}
-                    </h3>
-                    <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium truncate">
+                  {/* University / Institution */}
+                  {teacher.institution ? (
+                    <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 truncate max-w-full">
+                      {teacher.institution}
+                    </p>
+                  ) : teacher.department ? (
+                    <p className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 truncate max-w-full">
                       {teacher.department}
                     </p>
+                  ) : null}
 
-                    {/* Cute Subjects Badges */}
-                    <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2 sm:mt-3">
-                      {teacher.subjects.slice(0, 2).map((sub: string, sIdx: number) => (
-                        <span
-                          key={sIdx}
-                          className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold border border-blue-200/70 dark:border-blue-900/60 shadow-2xs truncate"
-                        >
-                          {sub}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  {/* Subject */}
+                  {teacher.subjects && teacher.subjects.length > 0 && (
+                    <p className="text-[11px] sm:text-xs font-medium text-blue-600 dark:text-blue-400 mt-0.5 truncate max-w-full">
+                      {teacher.subjects.join(', ')}
+                    </p>
+                  )}
                 </div>
-
-                {/* Cute Clean Stats Footer Pill */}
-                <div className="mt-2.5 sm:mt-4 p-2 sm:p-3 rounded-[16px] sm:rounded-[22px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 font-bold shadow-inner gap-1">
-                  <div className="flex items-center gap-1 sm:gap-1.5 truncate">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                    <span className="truncate">{teacher.studentsCount}</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-1.5 text-emerald-600 dark:text-emerald-400 shrink-0">
-                    <PlayCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{teacher.classesCount}</span>
-                  </div>
-                </div>
-
               </div>
             ))}
           </div>
