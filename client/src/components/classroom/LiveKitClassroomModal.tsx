@@ -79,13 +79,47 @@ export function LiveKitClassroomModal({
     };
   }, [isOpen, roomName, displayName]);
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Sync state if user exits fullscreen via Escape key or browser UI
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   if (!isOpen) return null;
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (containerRef.current) {
+          await containerRef.current.requestFullscreen();
+        }
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      // Fallback for browsers that block requestFullscreen
+      setIsFullscreen((prev) => !prev);
+    }
+  };
 
   const handleRequestClose = () => {
     setShowConfirmClose(true);
   };
 
-  const handleConfirmExit = () => {
+  const handleConfirmExit = async () => {
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch (_) {}
+    }
     setShowConfirmClose(false);
     onClose();
   };
@@ -93,50 +127,50 @@ export function LiveKitClassroomModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-2 sm:p-4 animate-in fade-in duration-200">
       <div
+        ref={containerRef}
         className={`relative w-full bg-slate-900 border border-slate-700/80 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ${
           isFullscreen
-            ? 'fixed inset-0 rounded-none border-none h-screen'
+            ? 'fixed inset-0 !rounded-none !border-none h-screen w-screen !max-w-none !max-h-none z-[9999]'
             : 'max-w-6xl h-[90vh] max-h-[880px]'
         }`}
       >
-        {/* Modal Top Bar */}
-        <div className="h-14 bg-slate-950/95 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
-          <div className="flex items-center gap-2.5">
-            <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              <Video className="w-4 h-4" />
-            </span>
-            <div>
-              <h3 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                <span>{subjectTitle}</span>
-                <span className="px-2 py-0.5 text-[10px] bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 font-medium">
-                  Native WebRTC
-                </span>
-              </h3>
+        {/* Modal Top Bar - hidden completely in Fullscreen mode */}
+        {!isFullscreen && (
+          <div className="h-14 bg-slate-950/95 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+            <div className="flex items-center gap-2.5">
+              <span className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <Video className="w-4 h-4" />
+              </span>
+              <div>
+                <h3 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                  <span>{subjectTitle}</span>
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Fullscreen Toggle */}
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                title="সম্পূর্ণ মনিটর ফুলস্ক্রিন করুন"
+              >
+                <Maximize2 className="w-4 h-4" />
+              </button>
+
+              {/* Close Modal */}
+              <button
+                type="button"
+                onClick={handleRequestClose}
+                className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                title="বন্ধ করুন"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            {/* Fullscreen Toggle */}
-            <button
-              type="button"
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              title={isFullscreen ? 'মিনিমাইজ' : 'ফুল স্ক্রিন'}
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
-
-            {/* Close Modal */}
-            <button
-              type="button"
-              onClick={handleRequestClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-              title="বন্ধ করুন"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* Video Area */}
         <div className="relative flex-1 w-full h-full bg-slate-950 overflow-hidden flex flex-col">
