@@ -159,13 +159,13 @@ export const Navbar: React.FC = () => {
   return (
     <header
       className={`sticky top-0 z-50 w-full pointer-events-none transition-all duration-500 ease-out ${
-        isScrolled ? 'sm:pt-3' : 'pt-0'
+        isScrolled ? 'pt-0 sm:pt-3' : 'pt-0'
       }`}
     >
       <div
         className={`mx-auto h-16 flex items-center justify-between pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl transition-all duration-500 ease-out ${
           isScrolled
-            ? 'w-[94%] max-w-[1700px] rounded-[32px] md:rounded-full border border-slate-200/90 dark:border-slate-800/90 shadow-[0_10px_35px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] px-4 sm:px-6 md:px-8'
+            ? 'w-full rounded-none border-b sm:border sm:w-[94%] max-w-[1700px] sm:rounded-full border-slate-200/90 dark:border-slate-800/90 shadow-xs sm:shadow-[0_10px_35px_rgba(0,0,0,0.08)] sm:dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] px-4 sm:px-6 md:px-8'
             : 'w-full max-w-full rounded-none border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs px-4 sm:px-8 lg:px-12'
         }`}
       >
