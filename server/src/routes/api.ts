@@ -319,6 +319,12 @@ router.post(
   requirePermission(PERMISSIONS.EXAMS_MANAGE),
   examCtrl.createExam
 );
+router.put(
+  '/exams/:examId',
+  authenticate,
+  requirePermission(PERMISSIONS.EXAMS_MANAGE),
+  examCtrl.updateExam
+);
 router.get('/batches/:batchId/exams', authenticate, examCtrl.getBatchExams);
 router.get('/exams/:examId', authenticate, examCtrl.getExamDetails);
 router.get('/exams/:examId/take', authenticate, examCtrl.getStudentExamQuestions);

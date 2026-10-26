@@ -20,16 +20,26 @@ import {
   Sparkles,
   HelpCircle,
   FileCheck,
+  Image as ImageIcon,
+  Copy,
+  FileSpreadsheet,
 } from 'lucide-react';
 
-interface MCQQuestionInput {
+export interface MCQQuestionOptionInput {
+  optionId: string;
+  text: string;
+  imageUrl?: string;
+}
+
+export interface MCQQuestionInput {
   questionText: string;
-  options: { optionId: string; text: string }[];
+  imageUrl?: string;
+  options: MCQQuestionOptionInput[];
   correctOptionId: string;
   marks: number;
 }
 
-interface CQQuestionInput {
+export interface CQQuestionInput {
   questionText: string;
   marks: number;
 }
@@ -72,15 +82,23 @@ export default function CreateExamPage({
   // System Questions Mode: 'mcq' | 'cq' | 'both'
   const [questionMode, setQuestionMode] = useState<'mcq' | 'cq' | 'both'>('mcq');
 
+  // Bulk Import modal / text
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+
+  // Uploading image tracking: key = 'q_idx' or 'opt_idx_optidx'
+  const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
+
   // MCQ Questions State
   const [mcqQuestions, setMcqQuestions] = useState<MCQQuestionInput[]>([
     {
       questionText: '',
+      imageUrl: '',
       options: [
-        { optionId: 'opt_1', text: '' },
-        { optionId: 'opt_2', text: '' },
-        { optionId: 'opt_3', text: '' },
-        { optionId: 'opt_4', text: '' },
+        { optionId: 'opt_1', text: '', imageUrl: '' },
+        { optionId: 'opt_2', text: '', imageUrl: '' },
+        { optionId: 'opt_3', text: '', imageUrl: '' },
+        { optionId: 'opt_4', text: '', imageUrl: '' },
       ],
       correctOptionId: 'opt_1',
       marks: 1,
@@ -94,6 +112,30 @@ export default function CreateExamPage({
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  // Upload image to server
+  const handleImageUpload = async (
+    file: File,
+    onSuccess: (url: string) => void,
+    key: string
+  ) => {
+    setUploadingImageKey(key);
+    try {
+      const formData = new FormData();
+      formData.append('document', file);
+      const res = await api.post('/finance/upload-document', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (res.data?.success && res.data.data?.fileUrl) {
+        onSuccess(res.data.data.fileUrl);
+      }
+    } catch (err: any) {
+      console.error('Image upload failed:', err);
+      alert(err.response?.data?.message || 'ছবি আপলোড করতে ব্যর্থ হয়েছে');
+    } finally {
+      setUploadingImageKey(null);
+    }
+  };
 
   // Handle Question Paper Upload via API
   const handlePaperUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,16 +169,46 @@ export default function CreateExamPage({
       ...prev,
       {
         questionText: '',
+        imageUrl: '',
         options: [
-          { optionId: 'opt_1', text: '' },
-          { optionId: 'opt_2', text: '' },
-          { optionId: 'opt_3', text: '' },
-          { optionId: 'opt_4', text: '' },
+          { optionId: `opt_${Date.now()}_1`, text: '', imageUrl: '' },
+          { optionId: `opt_${Date.now()}_2`, text: '', imageUrl: '' },
+          { optionId: `opt_${Date.now()}_3`, text: '', imageUrl: '' },
+          { optionId: `opt_${Date.now()}_4`, text: '', imageUrl: '' },
         ],
-        correctOptionId: 'opt_1',
+        correctOptionId: `opt_${Date.now()}_1`,
         marks: 1,
       },
     ]);
+  };
+
+  const duplicateMcqQuestion = (index: number) => {
+    const target = mcqQuestions[index];
+    if (!target) return;
+    const timestamp = Date.now();
+    const clonedOptions = target.options.map((opt, i) => ({
+      ...opt,
+      optionId: `opt_${timestamp}_${i + 1}`,
+    }));
+    const targetOptIndex = target.options.findIndex((o) => o.optionId === target.correctOptionId);
+    const newCorrectId =
+      targetOptIndex >= 0 && clonedOptions[targetOptIndex]
+        ? clonedOptions[targetOptIndex].optionId
+        : clonedOptions[0].optionId;
+
+    const cloned: MCQQuestionInput = {
+      questionText: `${target.questionText} (কপি)`,
+      imageUrl: target.imageUrl || '',
+      options: clonedOptions,
+      correctOptionId: newCorrectId,
+      marks: target.marks,
+    };
+
+    setMcqQuestions((prev) => {
+      const copy = [...prev];
+      copy.splice(index + 1, 0, cloned);
+      return copy;
+    });
   };
 
   const removeMcqQuestion = (index: number) => {
@@ -151,10 +223,55 @@ export default function CreateExamPage({
     });
   };
 
+  const updateMcqImageUrl = (index: number, url: string) => {
+    setMcqQuestions((prev) => {
+      const copy = [...prev];
+      copy[index].imageUrl = url;
+      return copy;
+    });
+  };
+
+  const addOptionToQuestion = (qIdx: number) => {
+    setMcqQuestions((prev) => {
+      const copy = [...prev];
+      const optNum = copy[qIdx].options.length + 1;
+      copy[qIdx].options.push({
+        optionId: `opt_${Date.now()}_${optNum}`,
+        text: '',
+        imageUrl: '',
+      });
+      return copy;
+    });
+  };
+
+  const removeOptionFromQuestion = (qIdx: number, optIdx: number) => {
+    setMcqQuestions((prev) => {
+      const copy = [...prev];
+      if (copy[qIdx].options.length <= 2) {
+        alert('কমপক্ষে ২টি অপশন থাকতে হবে!');
+        return prev;
+      }
+      const removedId = copy[qIdx].options[optIdx].optionId;
+      copy[qIdx].options.splice(optIdx, 1);
+      if (copy[qIdx].correctOptionId === removedId) {
+        copy[qIdx].correctOptionId = copy[qIdx].options[0].optionId;
+      }
+      return copy;
+    });
+  };
+
   const updateMcqOption = (qIdx: number, optIdx: number, text: string) => {
     setMcqQuestions((prev) => {
       const copy = [...prev];
       copy[qIdx].options[optIdx].text = text;
+      return copy;
+    });
+  };
+
+  const updateMcqOptionImage = (qIdx: number, optIdx: number, imageUrl: string) => {
+    setMcqQuestions((prev) => {
+      const copy = [...prev];
+      copy[qIdx].options[optIdx].imageUrl = imageUrl;
       return copy;
     });
   };
@@ -173,6 +290,87 @@ export default function CreateExamPage({
       copy[index].marks = marks;
       return copy;
     });
+  };
+
+  // Bulk Question Parser: Supports standard text format
+  const handleBulkParse = () => {
+    if (!bulkText.trim()) return;
+
+    try {
+      const blocks = bulkText.split(/\n\s*\n+/);
+      const parsedQuestions: MCQQuestionInput[] = [];
+
+      for (const block of blocks) {
+        const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
+        if (lines.length < 3) continue;
+
+        let questionText = lines[0].replace(/^(\d+[\.\)]|\#\d+)\s*/, '');
+        const options: MCQQuestionOptionInput[] = [];
+        let correctLetter = 'A';
+
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i];
+          const ansMatch = line.match(/^(?:উত্তর|Ans|Answer)\s*[:：\-]?\s*([A-Da-dক-ঘ1-4])/i);
+          if (ansMatch) {
+            correctLetter = ansMatch[1].toUpperCase();
+            continue;
+          }
+
+          const optMatch = line.match(/^([A-Da-dক-ঘ1-4]|\([A-Da-dক-ঘ1-4]\))[\.\)\s\-]+(.*)/);
+          if (optMatch) {
+            const letter = optMatch[1].replace(/[\(\)]/g, '').toUpperCase();
+            const text = optMatch[2].trim();
+            options.push({
+              optionId: `opt_${Date.now()}_${options.length + 1}`,
+              text: text || letter,
+              imageUrl: '',
+            });
+          } else if (line) {
+            // If it starts without letter indicator
+            options.push({
+              optionId: `opt_${Date.now()}_${options.length + 1}`,
+              text: line,
+              imageUrl: '',
+            });
+          }
+        }
+
+        if (options.length >= 2) {
+          let correctIdx = 0;
+          if (correctLetter === 'B' || correctLetter === 'খ' || correctLetter === '2') correctIdx = 1;
+          else if (correctLetter === 'C' || correctLetter === 'গ' || correctLetter === '3') correctIdx = 2;
+          else if (correctLetter === 'D' || correctLetter === 'ঘ' || correctLetter === '4') correctIdx = 3;
+
+          if (correctIdx >= options.length) correctIdx = 0;
+
+          parsedQuestions.push({
+            questionText,
+            imageUrl: '',
+            options,
+            correctOptionId: options[correctIdx].optionId,
+            marks: 1,
+          });
+        }
+      }
+
+      if (parsedQuestions.length > 0) {
+        setMcqQuestions((prev) => {
+          // If first item was blank default, replace it
+          if (prev.length === 1 && !prev[0].questionText.trim()) {
+            return parsedQuestions;
+          }
+          return [...prev, ...parsedQuestions];
+        });
+        setShowBulkModal(false);
+        setBulkText('');
+        alert(`সফলভাবে ${parsedQuestions.length} টি বহুনির্বাচনি প্রশ্ন যুক্ত করা হয়েছে!`);
+      } else {
+        alert('কোনো বৈধ প্রশ্ন খুঁজে পাওয়া যায়নি। দয়া করে ফরম্যাটটি পরীক্ষা করুন।');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('টেক্সট পার্স করতে সমস্যা হয়েছে।');
+    }
   };
 
   // CQ Question Builders
@@ -256,59 +454,72 @@ export default function CreateExamPage({
 
       if (examType === 'system_questions') {
         if (questionMode === 'mcq' || questionMode === 'both') {
-          payload.mcqQuestions = mcqQuestions;
+          payload.mcqQuestions = mcqQuestions.map((q, idx) => ({
+            questionText: q.questionText,
+            imageUrl: q.imageUrl || '',
+            options: q.options.map((opt) => ({
+              optionId: opt.optionId,
+              text: opt.text,
+              imageUrl: opt.imageUrl || '',
+            })),
+            correctOptionId: q.correctOptionId,
+            marks: q.marks,
+            order: idx,
+          }));
         }
+
         if (questionMode === 'cq' || questionMode === 'both') {
           payload.cqQuestions = cqQuestions;
         }
       }
 
       const res = await api.post('/exams', payload);
+
       if (res.data?.success) {
         router.push(`/classroom/${batchId}/exams`);
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.response?.data?.message || 'এক্সাম তৈরি করতে ব্যর্থ হয়েছে');
+      setErrorMessage(
+        err.response?.data?.message || 'এক্সাম তৈরি করতে সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।'
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24">
-      {/* Top Banner */}
-      <div className="cosmic-hero-bg text-white pt-8 pb-10 mb-8 border-b border-white/10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-3">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3">
             <Link
               href={`/classroom/${batchId}/exams`}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
+              className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 transition-colors shadow-sm"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-5 h-5" />
             </Link>
-            <span className="text-xs font-bold text-amber-300 bg-amber-950/60 border border-amber-500/40 px-3 py-1 rounded-full">
-              টিচার পোর্টাল • এক্সাম ক্রিয়েটর
-            </span>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-rose-500" />
+                <span>নতুন এক্সাম তৈরি ও পাবলিশ</span>
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                সহজে এবং দ্রুত বহুনির্বাচনি (MCQ) ও সৃজনশীল প্রশ্নপত্র তৈরি করুন
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
-            নতুন পরীক্ষা তৈরি ও শিডিউল করুন
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
-            কোশ্চেন পেপার আপলোড করুন অথবা সিস্টেমের মাধ্যমে MCQ ও CQ প্রশ্নপত্র ডিজাইন করুন
-          </p>
         </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-3 shadow-sm">
+          <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-3 shadow-sm">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* STEP 1: Basic Information */}
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
@@ -317,30 +528,30 @@ export default function CreateExamPage({
               </div>
               <div>
                 <h2 className="text-base font-black text-slate-900 dark:text-white">
-                  মৌলিক তথ্য ও সময় নির্ধারণ
+                  মৌলিক তথ্য ও শিডিউলিং (Basic Information)
                 </h2>
-                <p className="text-xs text-slate-500">পরীক্ষার নাম, সময়সীমা এবং পূর্ণমান নির্ধারণ করুন</p>
+                <p className="text-xs text-slate-500">পরীক্ষার নাম, সময়সীমা এবং নম্বর বণ্টন</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  পরীক্ষার নাম / শিরোনাম <span className="text-rose-500">*</span>
+                  পরীক্ষার নাম (Exam Title) <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="যেমন: অধ্যায় ১ ও ২ উইকলি টেস্ট"
+                  placeholder="যেমন: পদার্থবিজ্ঞান ১ম অধ্যায় - উইকলি মডেল টেস্ট"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  পরীক্ষার সময়কাল (মিনিট) <span className="text-rose-500">*</span>
+                  পরীক্ষার সময়কাল (মিনিটে) <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -448,17 +659,19 @@ export default function CreateExamPage({
                 <h2 className="text-base font-black text-slate-900 dark:text-white">
                   প্রশ্নপত্রের ধরন ও তৈরি পদ্ধতি
                 </h2>
-                <p className="text-xs text-slate-500">প্রশ্নপত্র আপলোড করবেন নাকি সিস্টেমে তৈরি করবেন নির্বাচন করুন</p>
+                <p className="text-xs text-slate-500">
+                  সরাসরি ওয়েবসাইটে MCQ/CQ তৈরি করুন অথবা রেডি প্রশ্নপত্র আপলোড করুন
+                </p>
               </div>
             </div>
 
-            {/* Toggle Delivery Mode */}
+            {/* Choose Exam Type */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <label
-                className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
+                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 ${
                   examType === 'upload_paper'
-                    ? 'border-purple-600 bg-purple-50/50 dark:bg-purple-950/30'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                    ? 'border-purple-600 bg-purple-50/40 dark:bg-purple-950/20 shadow-sm'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                 }`}
               >
                 <input
@@ -472,19 +685,19 @@ export default function CreateExamPage({
                 <div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <UploadCloud className="w-4 h-4 text-purple-600" />
-                    <span>কোশ্চেন পেপার আপলোড</span>
+                    <span>প্রশ্নপত্র ফাইল / PDF আপলোড</span>
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                    আপনার তৈরি করা প্রশ্নপত্রের ছবি বা PDF ডকুমেন্ট আপলোড করুন। শিক্ষার্থীরা দেখে লিখে সাবমিট করবে।
+                    আগে থেকেই প্রস্তুতকৃত প্রশ্নপত্র (PDF/Image) আপলোড করুন। শিক্ষার্থীরা দেখে খাতায় উত্তর লিখবে।
                   </p>
                 </div>
               </label>
 
               <label
-                className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
+                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 ${
                   examType === 'system_questions'
-                    ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/30'
-                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                    ? 'border-blue-600 bg-blue-50/40 dark:bg-blue-950/20 shadow-sm'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                 }`}
               >
                 <input
@@ -501,7 +714,7 @@ export default function CreateExamPage({
                     <span>সিস্টেমের মাধ্যমে প্রশ্ন তৈরি</span>
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                    সরাসরি ওয়েবসাইটে MCQ, রচনামূলক (CQ) বা উভয় পদ্ধতির প্রশ্ন যুক্ত করুন।
+                    সরাসরি ওয়েবসাইটে MCQ, রচনামূলক (CQ) বা উভয় পদ্ধতির প্রশ্ন ছবি ও টেক্সটসহ যুক্ত করুন।
                   </p>
                 </div>
               </label>
@@ -608,32 +821,42 @@ export default function CreateExamPage({
                 {/* Section A: MCQ Builder */}
                 {(questionMode === 'mcq' || questionMode === 'both') && (
                   <div className="border-t border-slate-200/80 dark:border-slate-800 pt-6 space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
                       <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
                         <FileCheck className="w-4 h-4 text-blue-600" />
                         <span>বহুনির্বাচনি প্রশ্নসমূহ (MCQ Questions) - {mcqQuestions.length} টি</span>
                       </h3>
-                      <button
-                        type="button"
-                        onClick={addMcqQuestion}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-all"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>MCQ যোগ করুন</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowBulkModal(true)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-all cursor-pointer"
+                        >
+                          <FileSpreadsheet className="w-3.5 h-3.5" />
+                          <span>একসাথে পেস্ট করুন (Bulk Paste)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={addMcqQuestion}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-all cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>MCQ যোগ করুন</span>
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       {mcqQuestions.map((q, qIdx) => (
                         <div
                           key={qIdx}
-                          className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 relative"
+                          className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 relative shadow-sm"
                         >
                           <div className="flex items-center justify-between mb-3">
                             <span className="text-xs font-black text-blue-600 dark:text-blue-400">
                               প্রশ্ন নং #{qIdx + 1}
                             </span>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3">
                               <div className="flex items-center gap-1.5 text-xs text-slate-500">
                                 <span>নম্বর:</span>
                                 <input
@@ -645,11 +868,19 @@ export default function CreateExamPage({
                                   className="w-14 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-center text-xs font-bold"
                                 />
                               </div>
+                              <button
+                                type="button"
+                                onClick={() => duplicateMcqQuestion(qIdx)}
+                                className="text-slate-500 hover:text-blue-600 p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                                title="প্রশ্ন ক্লোন / ডুপ্লিকেট করুন"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
                               {mcqQuestions.length > 1 && (
                                 <button
                                   type="button"
                                   onClick={() => removeMcqQuestion(qIdx)}
-                                  className="text-rose-500 hover:text-rose-700 p-1"
+                                  className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-slate-700 transition-colors"
                                   title="প্রশ্ন মুছুন"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -658,49 +889,197 @@ export default function CreateExamPage({
                             </div>
                           </div>
 
-                          <input
-                            type="text"
-                            required
-                            placeholder={`প্রশ্ন লিখুন (যেমন: পর্যায় সারণির প্রথম মৌল কোনটি?)`}
-                            value={q.questionText}
-                            onChange={(e) => updateMcqText(qIdx, e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
+                          {/* Question Text & Optional Image */}
+                          <div className="space-y-2 mb-3">
+                            <textarea
+                              rows={2}
+                              required
+                              placeholder="প্রশ্ন লিখুন (যেমন: পর্যায় সারণির প্রথম মৌল কোনটি? অথবা নিচের উদ্দীপক বা চিত্রটি লক্ষ্য কর...)"
+                              value={q.questionText}
+                              onChange={(e) => updateMcqText(qIdx, e.target.value)}
+                              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+
+                            {/* Question Image Attachment Bar */}
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                              <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-all">
+                                <ImageIcon className="w-3.5 h-3.5 text-blue-500" />
+                                <span>
+                                  {uploadingImageKey === `q_${qIdx}`
+                                    ? 'আপলোড হচ্ছে...'
+                                    : q.imageUrl
+                                    ? 'প্রশ্নের ছবি পরিবর্তন'
+                                    : 'প্রশ্নে ছবি যুক্ত করুন (ডায়াগ্রাম/চিত্র)'}
+                                </span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  disabled={uploadingImageKey === `q_${qIdx}`}
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      handleImageUpload(
+                                        file,
+                                        (url) => updateMcqImageUrl(qIdx, url),
+                                        `q_${qIdx}`
+                                      );
+                                    }
+                                  }}
+                                />
+                              </label>
+
+                              {q.imageUrl && (
+                                <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-xl border border-blue-200 dark:border-blue-900">
+                                  <img
+                                    src={q.imageUrl}
+                                    alt="Question Diagram"
+                                    className="w-6 h-6 object-cover rounded"
+                                  />
+                                  <a
+                                    href={q.imageUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[11px] text-blue-600 underline font-semibold max-w-[140px] truncate"
+                                  >
+                                    ছবি দেখুন
+                                  </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateMcqImageUrl(qIdx, '')}
+                                    className="text-rose-500 hover:text-rose-700 text-xs ml-1 font-bold"
+                                    title="ছবি মুছুন"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
 
                           {/* Options grid */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            {q.options.map((opt, optIdx) => (
-                              <div
-                                key={opt.optionId}
-                                className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${
-                                  q.correctOptionId === opt.optionId
-                                    ? 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/40'
-                                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
-                                }`}
+                          <div className="space-y-2 mt-4">
+                            <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1 flex items-center justify-between">
+                              <span>অপশনসমূহ (যেকোনো অপশনকে সঠিক উত্তর হিসেবে মার্ক করতে বৃত্তে ক্লিক করুন):</span>
+                              <button
+                                type="button"
+                                onClick={() => addOptionToQuestion(qIdx)}
+                                className="text-blue-600 dark:text-blue-400 hover:underline text-[11px] font-bold flex items-center gap-1"
                               >
-                                <input
-                                  type="radio"
-                                  name={`correct_opt_${qIdx}`}
-                                  checked={q.correctOptionId === opt.optionId}
-                                  onChange={() => setCorrectOption(qIdx, opt.optionId)}
-                                  title="সঠিক উত্তর হিসেবে চিহ্নিত করুন"
-                                  className="accent-emerald-600 cursor-pointer"
-                                />
-                                <input
-                                  type="text"
-                                  required
-                                  placeholder={`অপশন ${String.fromCharCode(65 + optIdx)}`}
-                                  value={opt.text}
-                                  onChange={(e) => updateMcqOption(qIdx, optIdx, e.target.value)}
-                                  className="flex-1 bg-transparent text-xs font-semibold focus:outline-none"
-                                />
-                                {q.correctOptionId === opt.optionId && (
-                                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60">
-                                    সঠিক
-                                  </span>
-                                )}
-                              </div>
-                            ))}
+                                <Plus className="w-3 h-3" />
+                                <span>আরও অপশন যুক্ত করুন</span>
+                              </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                              {q.options.map((opt, optIdx) => {
+                                const isCorrect = q.correctOptionId === opt.optionId;
+                                const optKey = `opt_${qIdx}_${optIdx}`;
+                                return (
+                                  <div
+                                    key={opt.optionId}
+                                    className={`p-2.5 rounded-xl border transition-all ${
+                                      isCorrect
+                                        ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 ring-1 ring-emerald-500'
+                                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        type="radio"
+                                        id={`radio_${qIdx}_${opt.optionId}`}
+                                        name={`correct_opt_${qIdx}`}
+                                        checked={isCorrect}
+                                        onChange={() => setCorrectOption(qIdx, opt.optionId)}
+                                        title="সঠিক উত্তর হিসেবে চিহ্নিত করতে ক্লিক করুন"
+                                        className="w-4 h-4 accent-emerald-600 cursor-pointer shrink-0"
+                                      />
+                                      <span className="text-xs font-black text-slate-500 w-5 shrink-0">
+                                        {String.fromCharCode(65 + optIdx)})
+                                      </span>
+                                      <input
+                                        type="text"
+                                        required
+                                        placeholder={`অপশন ${String.fromCharCode(65 + optIdx)} এর টেক্সট`}
+                                        value={opt.text}
+                                        onChange={(e) =>
+                                          updateMcqOption(qIdx, optIdx, e.target.value)
+                                        }
+                                        className="flex-1 bg-transparent text-xs font-semibold focus:outline-none"
+                                      />
+
+                                      {/* Image upload icon for option */}
+                                      <label
+                                        title="অপশনে ছবি যুক্ত করুন"
+                                        className="cursor-pointer text-slate-400 hover:text-blue-600 p-1 rounded transition-colors shrink-0"
+                                      >
+                                        <ImageIcon className="w-3.5 h-3.5" />
+                                        <input
+                                          type="file"
+                                          accept="image/*"
+                                          disabled={uploadingImageKey === optKey}
+                                          className="hidden"
+                                          onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                              handleImageUpload(
+                                                file,
+                                                (url) => updateMcqOptionImage(qIdx, optIdx, url),
+                                                optKey
+                                              );
+                                            }
+                                          }}
+                                        />
+                                      </label>
+
+                                      {/* Delete option if > 2 */}
+                                      {q.options.length > 2 && (
+                                        <button
+                                          type="button"
+                                          onClick={() => removeOptionFromQuestion(qIdx, optIdx)}
+                                          className="text-slate-400 hover:text-rose-500 p-1 rounded shrink-0"
+                                          title="অপশনটি মুছে ফেলুন"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      )}
+
+                                      {isCorrect && (
+                                        <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded bg-emerald-200/80 dark:bg-emerald-900/80 shrink-0">
+                                          সঠিক উত্তর
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Option image preview if attached */}
+                                    {opt.imageUrl && (
+                                      <div className="mt-2 pl-7 flex items-center gap-2">
+                                        <img
+                                          src={opt.imageUrl}
+                                          alt={`Option ${optIdx + 1}`}
+                                          className="w-8 h-8 object-cover rounded border border-slate-200 dark:border-slate-700"
+                                        />
+                                        <a
+                                          href={opt.imageUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="text-[10px] text-blue-600 underline font-semibold truncate max-w-[120px]"
+                                        >
+                                          ছবি প্রিভিউ
+                                        </a>
+                                        <button
+                                          type="button"
+                                          onClick={() => updateMcqOptionImage(qIdx, optIdx, '')}
+                                          className="text-rose-500 hover:text-rose-700 text-[10px] font-bold"
+                                        >
+                                          মুছুন
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -719,7 +1098,7 @@ export default function CreateExamPage({
                       <button
                         type="button"
                         onClick={addCqQuestion}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-all"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-all cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>CQ যোগ করুন</span>
@@ -763,7 +1142,7 @@ export default function CreateExamPage({
                           <textarea
                             rows={3}
                             required
-                            placeholder={`উদ্দীপক ও প্রশ্ন লিখুন (যেমন: ক. অমুক কি? খ. ব্যাখ্যা কর... ইত্যাদি)`}
+                            placeholder="উদ্দীপক ও প্রশ্ন লিখুন (যেমন: ক. অমুক কি? খ. ব্যাখ্যা কর... ইত্যাদি)"
                             value={q.questionText}
                             onChange={(e) => updateCqText(cIdx, e.target.value)}
                             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -796,6 +1175,65 @@ export default function CreateExamPage({
             </button>
           </div>
         </form>
+
+        {/* Modal: Bulk Paste MCQ */}
+        {showBulkModal && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileSpreadsheet className="w-5 h-5 text-purple-600" />
+                  <span>একসাথে একাধিক MCQ পেস্ট করুন (Bulk Import)</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowBulkModal(false)}
+                  className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="text-xs text-slate-500 space-y-1 bg-purple-50/60 dark:bg-purple-950/30 p-3 rounded-xl border border-purple-200/50 dark:border-purple-800/50">
+                <div className="font-bold text-purple-700 dark:text-purple-300">ফরম্যাট নির্দেশিকা:</div>
+                <div>প্রতিটি প্রশ্নের পর অপশন (A, B, C, D বা ক, খ, গ, ঘ) এবং নিচে সঠিক উত্তর (Ans: B) লিখুন।</div>
+                <div className="text-[11px] font-mono text-slate-600 dark:text-slate-400 mt-1">
+                  ১. বাংলাদেশের রাজধানী কোনটি?<br />
+                  A) চট্টগ্রাম<br />
+                  B) ঢাকা<br />
+                  C) খুলনা<br />
+                  D) সিলেট<br />
+                  Ans: B
+                </div>
+              </div>
+
+              <textarea
+                rows={10}
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+                placeholder="এখানে আপনার প্রশ্নগুলো কপি করে পেস্ট করুন..."
+                className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              />
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowBulkModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBulkParse}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20"
+                >
+                  প্রশ্নগুলো কনভার্ট করুন
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

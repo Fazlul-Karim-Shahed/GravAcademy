@@ -24,6 +24,7 @@ export interface IExamination extends Document {
   questionMode?: 'mcq' | 'cq' | 'both';
   questionPaperUrl?: string;
   cqQuestions?: ICQQuestion[];
+  questionsVersion?: number;
   createdBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -65,6 +66,7 @@ const ExaminationSchema = new Schema<IExamination>(
         marks: { type: Number, required: true, default: 10 },
       },
     ],
+    questionsVersion: { type: Number, default: 1 },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -79,12 +81,14 @@ export const Examination = mongoose.model<IExamination>('Examination', Examinati
 export interface IQuestionOption {
   optionId: string;
   text: string;
+  imageUrl?: string;
 }
 
 export interface IQuestion extends Document {
   _id: mongoose.Types.ObjectId;
   examId: mongoose.Types.ObjectId;
   questionText: string;
+  imageUrl?: string;
   options: IQuestionOption[];
   correctOptionId: string; // Excluded from student responses
   explanation?: string;
@@ -101,10 +105,12 @@ const QuestionSchema = new Schema<IQuestion>(
       index: true,
     },
     questionText: { type: String, required: true },
+    imageUrl: { type: String, default: '' },
     options: [
       {
         optionId: { type: String, required: true },
         text: { type: String, required: true },
+        imageUrl: { type: String, default: '' },
       },
     ],
     correctOptionId: { type: String, required: true, select: false }, // Security: Never send to students

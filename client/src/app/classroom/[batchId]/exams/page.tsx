@@ -308,10 +308,18 @@ export default function ExamRoomPage({
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/classroom/${batchId}/exams/${exam._id}/submissions`}
-                          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all"
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all"
                         >
                           <Users className="w-4 h-4" />
-                          <span>খাতা মূল্যায়ন ও রেজাল্ট</span>
+                          <span>খাতা ও রেজাল্ট</span>
+                        </Link>
+                        <Link
+                          href={`/classroom/${batchId}/exams/${exam._id}/edit`}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700"
+                          title="প্রশ্নপত্র এডিট করুন"
+                        >
+                          <FileText className="w-4 h-4 text-blue-500" />
+                          <span>এডিট</span>
                         </Link>
                       </div>
                     ) : attempt ? (

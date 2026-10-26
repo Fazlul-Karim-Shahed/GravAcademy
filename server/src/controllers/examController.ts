@@ -11,11 +11,13 @@ import { ROLES } from '../types/roles';
 const optionSchema = z.object({
   optionId: z.string().min(1),
   text: z.string().min(1),
+  imageUrl: z.string().optional(),
 });
 
 // Schema for MCQ Question
 const mcqQuestionSchema = z.object({
   questionText: z.string().min(1),
+  imageUrl: z.string().optional(),
   options: z.array(optionSchema).min(2),
   correctOptionId: z.string().min(1),
   explanation: z.string().optional(),
@@ -28,6 +30,106 @@ const cqQuestionSchema = z.object({
   questionText: z.string().min(1),
   marks: z.number().min(1).default(10),
 });
+
+// Update Examination Schema
+export const updateExamSchema = z.object({
+  title: z.string().min(3).optional(),
+  instructions: z.string().optional(),
+  durationMinutes: z.number().min(1).optional(),
+  totalMarks: z.number().min(1).optional(),
+  passMarks: z.number().min(0).optional(),
+  negativeMarkPerWrong: z.number().min(0).optional(),
+  startWindow: z.string().datetime().optional(),
+  endWindow: z.string().datetime().optional(),
+  attemptLimit: z.number().min(1).optional(),
+  randomizeQuestions: z.boolean().optional(),
+  isPublished: z.boolean().optional(),
+  examType: z.enum(['upload_paper', 'system_questions']).optional(),
+  questionMode: z.enum(['mcq', 'cq', 'both']).optional(),
+  questionPaperUrl: z.string().optional(),
+  mcqQuestions: z.array(mcqQuestionSchema).optional(),
+  cqQuestions: z.array(cqQuestionSchema).optional(),
+});
+
+/**
+ * Update an existing examination and its questions (Teacher / Admin)
+ * Can be edited even after publishing or during live exam!
+ * Automatically increments questionsVersion to notify online students.
+ */
+export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { examId } = req.params;
+    const body = updateExamSchema.parse(req.body);
+
+    const exam = await Examination.findById(examId);
+    if (!exam) {
+      return res.status(404).json({ success: false, message: 'এক্সাম পাওয়া যায়নি' });
+    }
+
+    if (body.title !== undefined) exam.title = body.title.trim();
+    if (body.instructions !== undefined) exam.instructions = body.instructions.trim();
+    if (body.durationMinutes !== undefined) exam.durationMinutes = body.durationMinutes;
+    if (body.totalMarks !== undefined) exam.totalMarks = body.totalMarks;
+    if (body.passMarks !== undefined) exam.passMarks = body.passMarks;
+    if (body.negativeMarkPerWrong !== undefined) exam.negativeMarkPerWrong = body.negativeMarkPerWrong;
+    if (body.startWindow !== undefined) exam.startWindow = new Date(body.startWindow);
+    if (body.endWindow !== undefined) exam.endWindow = new Date(body.endWindow);
+    if (body.attemptLimit !== undefined) exam.attemptLimit = body.attemptLimit;
+    if (body.randomizeQuestions !== undefined) exam.randomizeQuestions = body.randomizeQuestions;
+    if (body.isPublished !== undefined) exam.isPublished = body.isPublished;
+    if (body.examType !== undefined) exam.examType = body.examType;
+    if (body.questionMode !== undefined) exam.questionMode = body.questionMode;
+    if (body.questionPaperUrl !== undefined) exam.questionPaperUrl = body.questionPaperUrl;
+    if (body.cqQuestions !== undefined) exam.cqQuestions = body.cqQuestions;
+
+    // Increment questions version for real-time client sync
+    exam.questionsVersion = (exam.questionsVersion || 1) + 1;
+    await exam.save();
+
+    // If mcqQuestions is provided, replace/update Question documents
+    if (body.mcqQuestions !== undefined) {
+      await Question.deleteMany({ examId: exam._id });
+
+      if (body.mcqQuestions.length > 0) {
+        const questionDocs = body.mcqQuestions.map((q, idx) => ({
+          examId: exam._id,
+          questionText: q.questionText,
+          imageUrl: q.imageUrl || '',
+          options: q.options.map(opt => ({
+            optionId: opt.optionId,
+            text: opt.text,
+            imageUrl: opt.imageUrl || '',
+          })),
+          correctOptionId: q.correctOptionId,
+          explanation: q.explanation || '',
+          marks: q.marks,
+          order: q.order ?? idx,
+        }));
+
+        await Question.insertMany(questionDocs);
+      }
+    }
+
+    const updatedQuestions = await Question.find({ examId: exam._id })
+      .select('+correctOptionId')
+      .sort({ order: 1 });
+
+    return res.status(200).json({
+      success: true,
+      message: 'এক্সাম ও প্রশ্নপত্র সফলভাবে আপডেট করা হয়েছে',
+      data: {
+        exam,
+        questions: updatedQuestions,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error updating exam:', error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ success: false, message: error.errors[0]?.message || 'Invalid exam data' });
+    }
+    return res.status(500).json({ success: false, message: error?.message || 'Failed to update exam' });
+  }
+};
 
 // Create Examination Schema
 export const createExamSchema = z.object({
@@ -88,7 +190,12 @@ export const createExam = async (req: AuthenticatedRequest, res: Response) => {
       const questionDocs = body.mcqQuestions.map((q, idx) => ({
         examId: exam._id,
         questionText: q.questionText,
-        options: q.options,
+        imageUrl: q.imageUrl || '',
+        options: q.options.map(opt => ({
+          optionId: opt.optionId,
+          text: opt.text,
+          imageUrl: opt.imageUrl || '',
+        })),
         correctOptionId: q.correctOptionId,
         explanation: q.explanation || '',
         marks: q.marks,
@@ -171,7 +278,18 @@ export const getExamDetails = async (req: AuthenticatedRequest, res: Response) =
       return res.status(404).json({ success: false, message: 'এক্সাম পাওয়া যায়নি' });
     }
 
-    return res.status(200).json({ success: true, data: exam });
+    // Also fetch questions if teacher/admin wants to edit/view
+    const questions = await Question.find({ examId })
+      .select('+correctOptionId')
+      .sort({ order: 1 });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        exam,
+        questions,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch exam details' });
   }
@@ -236,7 +354,7 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
 
     // Fetch MCQ questions without correct answers
     const questions = await Question.find({ examId })
-      .select('questionText options marks order')
+      .select('questionText imageUrl options marks order')
       .sort({ order: 1 });
 
     return res.status(200).json({
@@ -257,6 +375,7 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
           questionMode: exam.questionMode,
           questionPaperUrl: exam.questionPaperUrl,
           cqQuestions: exam.cqQuestions,
+          questionsVersion: exam.questionsVersion || 1,
         },
         mcqQuestions: questions,
       },

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, useRef, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -18,12 +18,22 @@ import {
   Award,
   HelpCircle,
   ExternalLink,
+  RefreshCw,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
+
+interface MCQQuestionOption {
+  optionId: string;
+  text: string;
+  imageUrl?: string;
+}
 
 interface MCQQuestion {
   _id: string;
   questionText: string;
-  options: { optionId: string; text: string }[];
+  imageUrl?: string;
+  options: MCQQuestionOption[];
   marks: number;
   order: number;
 }
@@ -48,6 +58,7 @@ interface ExamData {
   questionMode?: 'mcq' | 'cq' | 'both';
   questionPaperUrl?: string;
   cqQuestions?: CQQuestion[];
+  questionsVersion?: number;
 }
 
 export default function TakeExamPage({
@@ -76,6 +87,30 @@ export default function TakeExamPage({
   const [submitting, setSubmitting] = useState(false);
   const [submittedNotice, setSubmittedNotice] = useState('');
 
+  // Live Sync & Network tracking
+  const [isLiveSyncing, setIsLiveSyncing] = useState(false);
+  const [liveUpdatedAlert, setLiveUpdatedAlert] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+  const questionsVersionRef = useRef<number>(1);
+
+  // Storage key for local draft persistence
+  const studentIdentifier = user?.id || user?.userId || 'guest';
+  const storageKey = `grav_exam_draft_${examId}_${studentIdentifier}`;
+
+  // Track network online / offline
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push(`/login?redirect=/classroom/${batchId}/exams/${examId}/take`);
@@ -86,20 +121,42 @@ export default function TakeExamPage({
     }
   }, [examId, user, authLoading]);
 
-  // Load Exam and verify schedule
+  // Load Exam and verify schedule + restore draft
   const loadExam = async () => {
     setLoading(true);
     setError('');
     try {
       const res = await api.get(`/exams/${examId}/take`);
       if (res.data?.success) {
-        const { exam, mcqQuestions } = res.data.data;
-        setExam(exam);
-        setMcqQuestions(mcqQuestions || []);
+        const { exam: examData, mcqQuestions: questions } = res.data.data;
+        setExam(examData);
+        setMcqQuestions(questions || []);
+        questionsVersionRef.current = examData.questionsVersion || 1;
 
-        // Calculate timer remaining from duration
-        // Initial timer in seconds
-        setTimeLeft(exam.durationMinutes * 60);
+        // Restore draft answers and timer from localStorage if present
+        let restoredTimeLeft = examData.durationMinutes * 60;
+        if (storageKey && typeof window !== 'undefined') {
+          try {
+            const rawDraft = localStorage.getItem(storageKey);
+            if (rawDraft) {
+              const draft = JSON.parse(rawDraft);
+              if (draft.selectedAnswers) setSelectedAnswers(draft.selectedAnswers);
+              if (draft.cqAnswers) setCqAnswers(draft.cqAnswers);
+              if (draft.studentDocumentUrl) setStudentDocumentUrl(draft.studentDocumentUrl);
+              if (typeof draft.timeLeft === 'number' && draft.timeLeft > 0) {
+                // Adjust for elapsed time since draft saved
+                const elapsedSeconds = draft.savedAt
+                  ? Math.floor((Date.now() - draft.savedAt) / 1000)
+                  : 0;
+                restoredTimeLeft = Math.max(5, draft.timeLeft - elapsedSeconds);
+              }
+            }
+          } catch (e) {
+            console.error('Failed to read draft from localStorage:', e);
+          }
+        }
+
+        setTimeLeft(restoredTimeLeft);
       }
     } catch (err: any) {
       console.error(err);
@@ -108,6 +165,52 @@ export default function TakeExamPage({
       setLoading(false);
     }
   };
+
+  // Auto save draft to localStorage whenever answers or timer change
+  useEffect(() => {
+    if (!storageKey || loading || submitting) return;
+
+    try {
+      const draftData = {
+        selectedAnswers,
+        cqAnswers,
+        studentDocumentUrl,
+        timeLeft,
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(storageKey, JSON.stringify(draftData));
+    } catch (e) {
+      console.error('Failed to save exam draft to localStorage:', e);
+    }
+  }, [selectedAnswers, cqAnswers, studentDocumentUrl, timeLeft, storageKey, loading, submitting]);
+
+  // Live Question Sync (Silent Background Polling every 7 seconds)
+  // If teacher edits questions during live exam, questions update smoothly without wipe
+  useEffect(() => {
+    if (loading || submitting || !exam) return;
+
+    const syncInterval = setInterval(async () => {
+      try {
+        const res = await api.get(`/exams/${examId}/take`);
+        if (res.data?.success) {
+          const { exam: latestExam, mcqQuestions: latestQuestions } = res.data.data;
+          const newVersion = latestExam.questionsVersion || 1;
+
+          if (newVersion !== questionsVersionRef.current) {
+            questionsVersionRef.current = newVersion;
+            setExam((prev) => (prev ? { ...prev, ...latestExam } : latestExam));
+            setMcqQuestions(latestQuestions || []);
+            setLiveUpdatedAlert(true);
+            setTimeout(() => setLiveUpdatedAlert(false), 5000);
+          }
+        }
+      } catch (e) {
+        // Silent fail on background poll (e.g. temporary offline)
+      }
+    }, 7000);
+
+    return () => clearInterval(syncInterval);
+  }, [examId, loading, submitting, exam]);
 
   // Live Timer Countdown
   useEffect(() => {
@@ -200,6 +303,12 @@ export default function TakeExamPage({
 
       const res = await api.post(`/exams/${examId}/submit`, payload);
       if (res.data?.success) {
+        // Clear local storage draft upon successful submission
+        if (storageKey) {
+          try {
+            localStorage.removeItem(storageKey);
+          } catch (e) {}
+        }
         setSubmittedNotice(res.data.message || 'পরীক্ষা সফলভাবে জমা দেওয়া হয়েছে!');
         setTimeout(() => {
           router.push(`/classroom/${batchId}/exams/${examId}/result`);
@@ -253,7 +362,7 @@ export default function TakeExamPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
-      <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-3 shadow-sm">
+      <div className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-3 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -267,9 +376,15 @@ export default function TakeExamPage({
               <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white line-clamp-1">
                 {exam.title}
               </h1>
-              <p className="text-[11px] text-slate-500 font-semibold">
-                পূর্ণমান: {exam.totalMarks} • পাস মার্ক: {exam.passMarks}
-              </p>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-semibold">
+                <span>পূর্ণমান: {exam.totalMarks} • পাস: {exam.passMarks}</span>
+                {!isOnline && (
+                  <span className="inline-flex items-center gap-1 text-rose-500 font-bold">
+                    <WifiOff className="w-3 h-3" />
+                    <span>ইন্টারনেট বিচ্ছিন্ন (অ্যানসার সেভ আছে)</span>
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -290,6 +405,27 @@ export default function TakeExamPage({
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        {/* Live Question Update Alert Banner */}
+        {liveUpdatedAlert && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-3 animate-bounce">
+            <RefreshCw className="w-4 h-4 text-emerald-600 shrink-0 animate-spin" />
+            <div className="font-bold">
+              শিক্ষক প্রশ্নপত্র আপডেট করেছেন এবং আপনার স্ক্রিনে তা রিয়েল-টাইমে যুক্ত হয়েছে! আপনার দেওয়া পূর্ববর্তী উত্তর সুরক্ষিত রয়েছে।
+            </div>
+          </div>
+        )}
+
+        {/* Offline indicator message if connection drops */}
+        {!isOnline && (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs flex items-center gap-3">
+            <WifiOff className="w-5 h-5 text-amber-600 shrink-0" />
+            <div>
+              <span className="font-bold">ইন্টারনেট সংযোগ সাময়িকভাবে বিচ্ছিন্ন: </span>
+              চিন্তা করবেন না, আপনার সিলেক্ট করা সমস্ত উত্তর লোকাল স্টোরেজে নিরাপদে সংরক্ষিত হচ্ছে। পেজ রিলোড হলেও কোনো উত্তর হারাবে না!
+            </div>
+          </div>
+        )}
+
         {/* Exam Instructions Banner */}
         {exam.instructions && (
           <div className="mb-6 p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-xs text-blue-900 dark:text-blue-300 flex items-start gap-3">
@@ -378,6 +514,18 @@ export default function TakeExamPage({
                         </span>
                       </div>
 
+                      {/* Optional Question Image Attachment */}
+                      {q.imageUrl && (
+                        <div className="my-3 max-w-md rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                          <img
+                            src={q.imageUrl}
+                            alt={`Question ${idx + 1} Diagram`}
+                            className="w-full max-h-72 object-contain bg-white dark:bg-slate-900 p-2"
+                          />
+                        </div>
+                      )}
+
+                      {/* Options Grid */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                         {q.options.map((opt, optIdx) => {
                           const isSelected = selectedAnswers[q._id] === opt.optionId;
@@ -386,22 +534,35 @@ export default function TakeExamPage({
                               key={opt.optionId}
                               type="button"
                               onClick={() => handleSelectOption(q._id, opt.optionId)}
-                              className={`flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                              className={`flex flex-col gap-2 p-3 rounded-xl border text-left transition-all ${
                                 isSelected
                                   ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/70 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-600'
                                   : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300'
                               }`}
                             >
-                              <div
-                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                                  isSelected
-                                    ? 'border-blue-600 bg-blue-600 text-white'
-                                    : 'border-slate-300 dark:border-slate-600'
-                                }`}
-                              >
-                                {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                    isSelected
+                                      ? 'border-blue-600 bg-blue-600 text-white'
+                                      : 'border-slate-300 dark:border-slate-600'
+                                  }`}
+                                >
+                                  {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                                </div>
+                                <span className="text-xs font-semibold">{opt.text}</span>
                               </div>
-                              <span className="text-xs font-semibold">{opt.text}</span>
+
+                              {/* Option Image if available */}
+                              {opt.imageUrl && (
+                                <div className="pl-8 pt-1 max-w-[200px]">
+                                  <img
+                                    src={opt.imageUrl}
+                                    alt={`Option ${optIdx + 1}`}
+                                    className="max-h-28 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-1"
+                                  />
+                                </div>
+                              )}
                             </button>
                           );
                         })}
@@ -448,10 +609,10 @@ export default function TakeExamPage({
 
                       <textarea
                         rows={4}
-                        placeholder="এখানে আপনার উত্তর টাইপ করুন (অথবা সম্পূর্ণ উত্তরপত্র নিচে আপলোড করুন)..."
+                        placeholder="আপনার উত্তর এখানে টাইপ করুন (অথবা নিচে সম্পূর্ণ উত্তরপত্র আপলোড করতে পারেন)..."
                         value={cqAnswers[idx] || ''}
                         onChange={(e) => handleCqTextChange(idx, e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none"
                       />
                     </div>
                   ))}
@@ -459,7 +620,7 @@ export default function TakeExamPage({
               </div>
             )}
 
-          {/* SECTION 4: DOCUMENT / HANDWRITTEN ANSWER SHEET SUBMISSION */}
+          {/* SECTION 4: STUDENT ANSWER SHEET UPLOAD (CQ / PAPER MODE) */}
           {(exam.examType === 'upload_paper' ||
             exam.questionMode === 'cq' ||
             exam.questionMode === 'both') && (
@@ -467,18 +628,18 @@ export default function TakeExamPage({
               <div className="pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
                 <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <UploadCloud className="w-5 h-5 text-emerald-600" />
-                  <span>উত্তরপত্রের ডকুমেন্ট / ছবি সাবমিট করুন</span>
+                  <span>উত্তরপত্রের ছবি বা PDF আপলোড (Answer Sheet Upload)</span>
                 </h2>
                 <p className="text-xs text-slate-500">
-                  খাতায় লেখা উত্তরের ছবি তুলে বা PDF আকারে আপলোড করুন। শিক্ষক দেখে মূল্যায়ন করবেন।
+                  খাতায় লেখা উত্তরের ছবি তুলুন বা PDF বানিয়ে এখানে আপলোড করুন
                 </p>
               </div>
 
-              <div className="p-4 sm:p-6 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 space-y-4">
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                  <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md transition-all w-full sm:w-auto">
-                    <UploadCloud className="w-4 h-4 shrink-0" />
-                    <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'উত্তরপত্র ফাইল আপলোড করুন'}</span>
+              <div className="p-6 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 space-y-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all">
+                    <UploadCloud className="w-4 h-4" />
+                    <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'উত্তরপত্র আপলোড করুন'}</span>
                     <input
                       type="file"
                       accept="image/*,application/pdf"
@@ -487,30 +648,29 @@ export default function TakeExamPage({
                       className="hidden"
                     />
                   </label>
-
-                  <span className="text-xs text-slate-500 text-center sm:text-left">অথবা Google Drive লিংক দিন:</span>
+                  <span className="text-xs text-slate-500">অথবা সরাসরি ফাইল লিংক দিন:</span>
                   <input
                     type="url"
                     placeholder="https://drive.google.com/..."
                     value={studentDocumentUrl}
                     onChange={(e) => setStudentDocumentUrl(e.target.value)}
-                    className="w-full sm:flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
                   />
                 </div>
 
                 {studentDocumentUrl && (
-                  <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-bold flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      উত্তরপত্র যুক্ত হয়েছে
+                  <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-xs flex items-center justify-between">
+                    <span className="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      উত্তরপত্র যুক্ত করা হয়েছে
                     </span>
                     <a
                       href={studentDocumentUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="underline font-semibold"
+                      className="text-blue-600 underline font-semibold"
                     >
-                      ডকুমেন্ট ভিউ করুন
+                      উত্তরপত্র প্রিভিউ
                     </a>
                   </div>
                 )}
@@ -518,22 +678,19 @@ export default function TakeExamPage({
             </div>
           )}
 
-          {/* FINAL SUBMISSION BAR */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-3 sm:py-4 px-4 sm:px-6 z-40 shadow-xl">
-            <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-[11px] sm:text-xs text-slate-500 text-center sm:text-left">
-                নিশ্চিত হয়ে জমা দিন। সময় শেষ হওয়ার পূর্বেই সাবমিট করা বাধ্যতামূলক।
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50"
-              >
-                <Send className="w-4 h-4" />
-                <span>{submitting ? 'জমা হচ্ছে...' : 'পরীক্ষা সমাপ্ত ও সাবমিট করুন'}</span>
-              </button>
-            </div>
+          {/* SUBMIT BUTTON BAR */}
+          <div className="flex items-center justify-between pt-4">
+            <span className="text-xs text-slate-500 font-medium">
+              আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে সংরক্ষিত রয়েছে
+            </span>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <Send className="w-4 h-4" />
+              <span>{submitting ? 'জমা দেওয়া হচ্ছে...' : 'পরীক্ষা সম্পন্ন ও জমা দিন'}</span>
+            </button>
           </div>
         </form>
       </div>
