@@ -649,8 +649,8 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
-              {filteredCourses.slice(0, 4).map((c, idx) => {
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
+              {filteredCourses.slice(0, 6).map((c, idx) => {
                 const instructorName =
                   c.instructors && c.instructors.length > 0
                     ? typeof c.instructors[0] === 'object'
@@ -698,7 +698,9 @@ export default function HomePage() {
                   <Link
                     key={c._id}
                     href={`/courses/${c.slug || c._id}`}
-                    className="cute-course-card group rounded-[22px] sm:rounded-[34px] overflow-hidden flex flex-col justify-between p-1.5 sm:p-3 border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
+                    className={`cute-course-card group rounded-[22px] sm:rounded-[34px] overflow-hidden ${
+                      idx >= 4 ? 'hidden lg:flex' : 'flex'
+                    } flex-col justify-between p-1.5 sm:p-3 border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300`}
                   >
                     <div>
                       {/* Top Thumbnail Banner with Smooth Curved Mask */}
