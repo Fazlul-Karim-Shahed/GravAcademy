@@ -202,7 +202,7 @@ export default function HomePage() {
     <div className="bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
 
       {/* 2. COSMIC GLOWING HORIZON HERO SECTION (Inspired by 10 Minute School) */}
-      <section className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-20 lg:pt-16 lg:pb-28">
+      <section className="relative overflow-hidden cosmic-hero-bg text-white pt-8 pb-12 lg:pt-10 lg:pb-0 lg:min-h-[calc(100vh-4rem)] lg:flex lg:flex-col lg:justify-between">
         
         {/* Deep space radial ambient lighting & celestial nebula glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[550px] bg-gradient-to-b from-rose-950/50 via-red-950/25 to-transparent blur-3xl pointer-events-none -z-10" />
@@ -535,7 +535,7 @@ export default function HomePage() {
           </div>
 
           {/* Action CTAs: Free Class and All Courses Button */}
-          <div className="mt-10 sm:mt-12 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-8 sm:mt-10 lg:mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/free-classes"
               className="px-7 py-3 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all flex items-center gap-2"
@@ -554,30 +554,31 @@ export default function HomePage() {
           </div>
 
         </div>
-      </section>
 
-      {/* 3. KEY METRICS STRIP */}
-      <section className="bg-slate-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-800">
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-blue-400">১০,০০০+</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">নিবন্ধিত শিক্ষার্থী</div>
-            </div>
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">৫০০+</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">রেকর্ডেড লেকচার ও ক্লাস</div>
-            </div>
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-amber-400">১০০%</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">সিলেবাস ও টেস্ট পেপার</div>
-            </div>
-            <div className="pt-3 md:pt-0">
-              <div className="text-2xl sm:text-3xl font-extrabold text-purple-400">২৪/৭</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">মেন্টরশিপ ও ডাউট সলভ</div>
+        {/* 3. KEY METRICS STRIP (Docked at the bottom of the hero for a full first-viewport impression on large screens) */}
+        <div className="relative z-10 w-full mt-10 lg:mt-8 pt-5 pb-6 lg:pt-6 lg:pb-6 bg-slate-950/85 backdrop-blur-md border-t border-white/10 shadow-2xl">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-800/80">
+              <div className="pt-3 md:pt-0">
+                <div className="text-2xl sm:text-3xl font-extrabold text-blue-400">১০,০০০+</div>
+                <div className="text-xs text-slate-400 mt-1 font-medium">নিবন্ধিত শিক্ষার্থী</div>
+              </div>
+              <div className="pt-3 md:pt-0">
+                <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">৫০০+</div>
+                <div className="text-xs text-slate-400 mt-1 font-medium">রেকর্ডেড লেকচার ও ক্লাস</div>
+              </div>
+              <div className="pt-3 md:pt-0">
+                <div className="text-2xl sm:text-3xl font-extrabold text-amber-400">১০০%</div>
+                <div className="text-xs text-slate-400 mt-1 font-medium">সিলেবাস ও টেস্ট পেপার</div>
+              </div>
+              <div className="pt-3 md:pt-0">
+                <div className="text-2xl sm:text-3xl font-extrabold text-purple-400">২৪/৭</div>
+                <div className="text-xs text-slate-400 mt-1 font-medium">মেন্টরশিপ ও ডাউট সলভ</div>
+              </div>
             </div>
           </div>
         </div>
+
       </section>
 
       {/* 4. FEATURED COURSES SECTION (Unified Continuous Flow) */}
