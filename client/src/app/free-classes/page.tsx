@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { formatDriveImageUrl } from '@/lib/drive';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS, hasPermission } from '@/lib/permissions';
 import {
@@ -303,7 +304,7 @@ export default function FreeClassesPage() {
                       {cls.thumbnailUrl ? (
                         <div className="relative w-full h-full">
                           <img
-                            src={cls.thumbnailUrl}
+                            src={formatDriveImageUrl(cls.thumbnailUrl)}
                             alt={cls.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />

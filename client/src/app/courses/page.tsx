@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { formatDriveImageUrl } from '@/lib/drive';
 import {
   BookOpen,
   GraduationCap,
@@ -334,7 +335,7 @@ export default function CoursesCatalogPage() {
                       <div className={`relative w-full h-full ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`}`}>
                         {c.thumbnailUrl ? (
                           <img
-                            src={c.thumbnailUrl}
+                            src={formatDriveImageUrl(c.thumbnailUrl)}
                             alt={c.title}
                             className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
                           />

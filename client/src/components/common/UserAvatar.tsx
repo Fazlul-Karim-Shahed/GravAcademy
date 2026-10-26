@@ -1,5 +1,6 @@
 import React from 'react';
 import { User as UserIcon } from 'lucide-react';
+import { formatDriveImageUrl } from '@/lib/drive';
 
 interface UserAvatarProps {
   name: string;
@@ -41,7 +42,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         className={`${sizeClasses[size]} rounded-2xl overflow-hidden shrink-0 border border-slate-200/80 dark:border-slate-800 shadow-2xs relative bg-slate-100 dark:bg-slate-800 ${className}`}
       >
         <img
-          src={avatarUrl}
+          src={formatDriveImageUrl(avatarUrl)}
           alt={name || 'User'}
           onError={() => setImgError(true)}
           className="w-full h-full object-cover"

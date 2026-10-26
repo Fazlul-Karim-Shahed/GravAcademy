@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { formatDriveImageUrl } from '@/lib/drive';
 import { useAuth } from '@/context/AuthContext';
 import {
   BookOpen,
@@ -238,7 +239,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
         {course.thumbnailUrl ? (
           <>
             <img
-              src={course.thumbnailUrl}
+              src={formatDriveImageUrl(course.thumbnailUrl)}
               alt={course.title}
               className="absolute inset-0 w-full h-full object-cover opacity-20 blur-[1px]"
             />

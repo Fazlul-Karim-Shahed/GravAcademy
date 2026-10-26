@@ -404,9 +404,9 @@ export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => 
       driveFileId = `stub_drive_${Date.now()}`;
     }
 
-    // Google Drive direct image viewable URL
+    // Google Drive direct image viewable URL (using CDN for embeddability)
     const avatarUrl = isDriveConfigured
-      ? `https://drive.google.com/uc?export=view&id=${driveFileId}`
+      ? `https://lh3.googleusercontent.com/d/${driveFileId}`
       : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(req.user.name)}`;
 
     const user = await User.findById(req.user._id);

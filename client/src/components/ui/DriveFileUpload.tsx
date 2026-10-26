@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { api } from '@/lib/api';
+import { formatDriveImageUrl } from '@/lib/drive';
 import { Upload, X, Loader2, Image as ImageIcon, Link as LinkIcon, CheckCircle } from 'lucide-react';
 
 interface DriveFileUploadProps {
@@ -22,6 +23,7 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
   accept = 'image/jpeg,image/png,image/webp,image/gif,application/pdf',
 }) => {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +37,7 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
     }
 
     setUploading(true);
+    setProgress(0);
     setError('');
 
     try {
@@ -43,10 +46,21 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
 
       const res = await api.post('/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setProgress(percentCompleted);
+          }
+        },
       });
 
       if (res.data?.success && res.data?.data) {
-        const uploadedUrl = res.data.data.url || res.data.data.fileUrl || `/api/documents/${res.data.data._id}/stream`;
+        let uploadedUrl = res.data.data.url || res.data.data.fileUrl || `/api/documents/${res.data.data._id}/stream`;
+        if (file.type.startsWith('image/')) {
+          uploadedUrl = formatDriveImageUrl(uploadedUrl);
+        }
         onChange(uploadedUrl);
       } else {
         setError(res.data?.message || 'আপলোড ব্যর্থ হয়েছে।');
@@ -55,6 +69,7 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       setError(err.response?.data?.message || 'ফাইল ড্রাইভে আপলোড করতে সমস্যা হয়েছে।');
     } finally {
       setUploading(false);
+      setProgress(0);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -108,12 +123,12 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-all disabled:opacity-60 shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-all disabled:opacity-75 shrink-0 min-w-[150px]"
         >
           {uploading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>ড্রাইভে আপলোড হচ্ছে...</span>
+              <span>{progress > 0 && progress < 100 ? `আপলোড হচ্ছে ${progress}%` : progress === 100 ? 'প্রসেসিং হচ্ছে...' : 'আপলোড হচ্ছে...'}</span>
             </>
           ) : (
             <>
@@ -124,12 +139,33 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
         </button>
       </div>
 
+      {/* Upload Progress Bar */}
+      {uploading && (
+        <div className="space-y-1.5 pt-1">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping inline-block" />
+              {progress === 100 ? 'সার্ভার ও ড্রাইভে ফাইলটি সংরক্ষণ করা হচ্ছে...' : 'ফাইল আপলোড হচ্ছে...'}
+            </span>
+            <span className="font-bold text-blue-600 dark:text-blue-400 font-mono">
+              {progress}%
+            </span>
+          </div>
+          <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-linear-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${Math.max(progress, 5)}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Image Preview if value looks like image URL */}
       {value && (
         <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
           <div className="w-14 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 relative">
             <img
-              src={value}
+              src={formatDriveImageUrl(value)}
               alt="Preview"
               className="w-full h-full object-cover"
               onError={(e) => {

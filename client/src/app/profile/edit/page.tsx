@@ -69,6 +69,7 @@ export default function ProfileEditPage() {
   // UI state
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarProgress, setAvatarProgress] = useState(0);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleAvatarFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +83,7 @@ export default function ProfileEditPage() {
     }
 
     setUploadingAvatar(true);
+    setAvatarProgress(0);
     setMessage(null);
     try {
       const formData = new FormData();
@@ -89,6 +91,12 @@ export default function ProfileEditPage() {
 
       const res = await api.post('/auth/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setAvatarProgress(percent);
+          }
+        },
       });
 
       if (res.data?.success && res.data.data?.avatarUrl) {
@@ -107,6 +115,7 @@ export default function ProfileEditPage() {
       });
     } finally {
       setUploadingAvatar(false);
+      setAvatarProgress(0);
       // Reset input
       e.target.value = '';
     }
@@ -302,8 +311,9 @@ export default function ProfileEditPage() {
                   className="w-24 h-24 text-2xl shadow-md border-2 border-slate-200 dark:border-slate-800"
                 />
                 {uploadingAvatar && (
-                  <div className="absolute inset-0 bg-slate-900/60 rounded-full flex items-center justify-center">
-                    <RefreshCw className="w-6 h-6 text-white animate-spin" />
+                  <div className="absolute inset-0 bg-slate-900/75 rounded-full flex flex-col items-center justify-center text-white p-1">
+                    <RefreshCw className="w-5 h-5 text-white animate-spin mb-1" />
+                    <span className="text-[11px] font-bold font-mono">{avatarProgress}%</span>
                   </div>
                 )}
               </div>
@@ -316,7 +326,7 @@ export default function ProfileEditPage() {
                       {uploadingAvatar ? (
                         <>
                           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          <span>ড্রাইভে আপলোড হচ্ছে...</span>
+                          <span>{avatarProgress > 0 && avatarProgress < 100 ? `আপলোড হচ্ছে ${avatarProgress}%` : 'ড্রাইভে সংরক্ষণ হচ্ছে...'}</span>
                         </>
                       ) : (
                         <>

@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
+import { formatDriveImageUrl } from '@/lib/drive';
 import { useAuth } from '@/context/AuthContext';
 import {
   BookOpen,
@@ -303,7 +304,7 @@ function AdminCoursesContent() {
                       {course.thumbnailUrl ? (
                         <>
                           <img
-                            src={course.thumbnailUrl}
+                            src={formatDriveImageUrl(course.thumbnailUrl)}
                             alt={course.title}
                             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                           />

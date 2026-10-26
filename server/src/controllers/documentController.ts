@@ -74,8 +74,11 @@ export const uploadDocument = async (req: AuthenticatedRequest, res: Response) =
       userAgent: req.headers['user-agent'],
     });
 
+    const isImage = file.mimetype.startsWith('image/');
     const directUrl = isDriveConfigured
-      ? `https://drive.google.com/uc?export=view&id=${driveFileId}`
+      ? isImage
+        ? `https://lh3.googleusercontent.com/d/${driveFileId}`
+        : `https://drive.google.com/file/d/${driveFileId}/view`
       : `/api/documents/${fileAsset._id}/stream`;
 
     return res.status(201).json({
