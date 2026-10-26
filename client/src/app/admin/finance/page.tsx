@@ -41,6 +41,8 @@ interface FinancialStats {
   totalTransactions: number;
   totalDue: number;
   todayTotal: number;
+  todayGross?: number;
+  todayRefund?: number;
   todayCount: number;
   byMethod: {
     cash: number;
@@ -83,6 +85,61 @@ export default function AdminFinancePage() {
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
   const [activeReceiptPayments, setActiveReceiptPayments] = useState<PaymentReceiptData[]>([]);
   const [activeDetailsGroup, setActiveDetailsGroup] = useState<GroupedStudentBatchPayment | null>(null);
+  const [loadingHistoryKey, setLoadingHistoryKey] = useState<string | null>(null);
+
+  // Helper to fetch complete payment history for a student and batch
+  const handleOpenReceiptWithHistory = async (group: GroupedStudentBatchPayment) => {
+    const studentId = group.studentId?._id || (group.studentId as any);
+    const batchId = group.batchId?._id || (group.batchId as any);
+
+    setActiveReceipt(group.latestPayment);
+    setActiveReceiptPayments(group.payments);
+
+    if (studentId && batchId && batchId !== 'no_batch') {
+      try {
+        const res = await api.get(`/finance/student-batch-payments?studentId=${studentId}&batchId=${batchId}`);
+        if (res.data?.success && res.data.data?.length > 0) {
+          setActiveReceiptPayments(res.data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch full receipt payments history:', err);
+      }
+    }
+  };
+
+  const handleOpenDetailsWithHistory = async (group: GroupedStudentBatchPayment) => {
+    setActiveDetailsGroup(group);
+
+    const studentId = group.studentId?._id || (group.studentId as any);
+    const batchId = group.batchId?._id || (group.batchId as any);
+
+    if (studentId && batchId && batchId !== 'no_batch') {
+      setLoadingHistoryKey(group.key);
+      try {
+        const res = await api.get(`/finance/student-batch-payments?studentId=${studentId}&batchId=${batchId}`);
+        if (res.data?.success && res.data.data?.length > 0) {
+          const fullPayments: PaymentReceiptData[] = res.data.data;
+          const totalPaid = fullPayments.reduce((sum, p) => sum + (p.amountPaid || 0), 0);
+          const studentFee = group.latestPayment.totalFee || 0;
+          const calculatedDue = studentFee > 0 ? studentFee - totalPaid : group.totalDue;
+
+          setActiveDetailsGroup((prev) => {
+            if (!prev || prev.key !== group.key) return prev;
+            return {
+              ...prev,
+              payments: fullPayments,
+              totalAmountPaid: totalPaid,
+              totalDue: calculatedDue,
+            };
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch full details installment history:', err);
+      } finally {
+        setLoadingHistoryKey(null);
+      }
+    }
+  };
 
   // Group payments so each student in a batch appears once in the list
   const groupedPayments: GroupedStudentBatchPayment[] = React.useMemo(() => {
@@ -613,10 +670,18 @@ export default function AdminFinancePage() {
                 )}
               </div>
               <div className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
-                ৳{stats?.todayTotal?.toLocaleString('bn-BD') || 0}
+                {stats?.todayTotal !== undefined && stats.todayTotal < 0
+                  ? `-৳${Math.abs(stats.todayTotal).toLocaleString('bn-BD')}`
+                  : `৳${stats?.todayTotal?.toLocaleString('bn-BD') || 0}`}
               </div>
               <span className="text-[11px] text-blue-600/80 dark:text-blue-400 font-semibold mt-1 inline-block">
-                আজ {stats?.todayCount || 0} টি রিসিট {cardFilterType === 'today' ? '• ফিল্টার সক্রিয়' : '• ক্লিক করুন'}
+                {stats?.todayRefund && stats.todayRefund > 0 ? (
+                  <>
+                    আদায়: ৳{(stats.todayGross || 0).toLocaleString('bn-BD')} • ফেরত: ৳{stats.todayRefund.toLocaleString('bn-BD')}
+                  </>
+                ) : (
+                  <>আজ {stats?.todayCount || 0} টি রিসিট {cardFilterType === 'today' ? '• ফিল্টার সক্রিয়' : '• ক্লিক করুন'}</>
+                )}
               </span>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-800/60 shrink-0">
@@ -1010,20 +1075,21 @@ export default function AdminFinancePage() {
                       )}
                       {group.totalAmountPaid > 0 && (
                         <button
-                          onClick={() => {
-                            setActiveReceipt(latestP);
-                            setActiveReceiptPayments(group.payments);
-                          }}
+                          onClick={() => handleOpenReceiptWithHistory(group)}
                           className="flex-1 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center gap-1 border border-blue-200/60 dark:border-blue-800/60 cursor-pointer"
                         >
                           <Printer className="w-3.5 h-3.5" /> রিসিট
                         </button>
                       )}
                       <button
-                        onClick={() => setActiveDetailsGroup(group)}
+                        onClick={() => handleOpenDetailsWithHistory(group)}
                         className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700 cursor-pointer"
                       >
-                        <Eye className="w-3.5 h-3.5 text-blue-500" /> Details
+                        {loadingHistoryKey === group.key ? (
+                          <RefreshCw className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+                        ) : (
+                          <Eye className="w-3.5 h-3.5 text-blue-500" />
+                        )} Details
                       </button>
                     </div>
                   </div>
@@ -1218,10 +1284,7 @@ export default function AdminFinancePage() {
                         <td className="py-4 px-6 text-center">
                           {group.totalAmountPaid > 0 ? (
                             <button
-                              onClick={() => {
-                                setActiveReceipt(latestP);
-                                setActiveReceiptPayments(group.payments);
-                              }}
+                              onClick={() => handleOpenReceiptWithHistory(group)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
                               title="মানি রিসিট দেখুন ও প্রিন্ট করুন"
                             >
@@ -1235,11 +1298,15 @@ export default function AdminFinancePage() {
                         {/* Details Button */}
                         <td className="py-4 px-6 text-center">
                           <button
-                            onClick={() => setActiveDetailsGroup(group)}
+                            onClick={() => handleOpenDetailsWithHistory(group)}
                             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/70 dark:border-slate-700 transition-colors cursor-pointer shadow-2xs"
                             title="শিক্ষার্থী ও পেমেন্ট হিস্ট্রি দেখুন"
                           >
-                            <Eye className="w-3.5 h-3.5 text-blue-500" /> Details
+                            {loadingHistoryKey === group.key ? (
+                              <RefreshCw className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+                            ) : (
+                              <Eye className="w-3.5 h-3.5 text-blue-500" />
+                            )} Details
                           </button>
                         </td>
                       </tr>
@@ -1957,8 +2024,15 @@ export default function AdminFinancePage() {
 
               {/* Individual Payment History List */}
               <div>
-                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-blue-500" /> পেমেন্ট কিস্তি হিস্ট্রি ({activeDetailsGroup.payments.length} টি)
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-blue-500" /> পেমেন্ট কিস্তি হিস্ট্রি ({activeDetailsGroup.payments.length} টি)
+                  </span>
+                  {loadingHistoryKey && (
+                    <span className="text-[11px] text-blue-500 flex items-center gap-1 font-normal lowercase">
+                      <RefreshCw className="w-3 h-3 animate-spin" /> সব কিস্তি লোড হচ্ছে...
+                    </span>
+                  )}
                 </h4>
 
                 <div className="space-y-2.5">

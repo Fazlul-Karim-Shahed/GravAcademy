@@ -479,6 +479,12 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           $group: {
             _id: null,
             todayTotal: { $sum: '$amountPaid' },
+            todayGross: {
+              $sum: { $cond: [{ $gt: ['$amountPaid', 0] }, '$amountPaid', 0] }
+            },
+            todayRefund: {
+              $sum: { $cond: [{ $lt: ['$amountPaid', 0] }, { $abs: '$amountPaid' }, 0] }
+            },
             todayCount: { $sum: 1 },
           },
         },
@@ -509,6 +515,8 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           totalTransactions: stats.totalTransactions || 0,
           totalDue,
           todayTotal: todayStats[0]?.todayTotal || 0,
+          todayGross: todayStats[0]?.todayGross || 0,
+          todayRefund: todayStats[0]?.todayRefund || 0,
           todayCount: todayStats[0]?.todayCount || 0,
           byMethod: {
             cash: stats.cashRevenue || 0,
@@ -639,6 +647,12 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           $group: {
             _id: null,
             todayTotal: { $sum: '$amountPaid' },
+            todayGross: {
+              $sum: { $cond: [{ $gt: ['$amountPaid', 0] }, '$amountPaid', 0] }
+            },
+            todayRefund: {
+              $sum: { $cond: [{ $lt: ['$amountPaid', 0] }, { $abs: '$amountPaid' }, 0] }
+            },
             todayCount: { $sum: 1 },
           },
         },
@@ -669,6 +683,8 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           totalTransactions: stats.totalTransactions || 0,
           totalDue,
           todayTotal: todayStats[0]?.todayTotal || 0,
+          todayGross: todayStats[0]?.todayGross || 0,
+          todayRefund: todayStats[0]?.todayRefund || 0,
           todayCount: todayStats[0]?.todayCount || 0,
           byMethod: {
             cash: stats.cashRevenue || 0,
@@ -731,6 +747,12 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         $group: {
           _id: null,
           todayTotal: { $sum: '$amountPaid' },
+          todayGross: {
+            $sum: { $cond: [{ $gt: ['$amountPaid', 0] }, '$amountPaid', 0] }
+          },
+          todayRefund: {
+            $sum: { $cond: [{ $lt: ['$amountPaid', 0] }, { $abs: '$amountPaid' }, 0] }
+          },
           todayCount: { $sum: 1 },
         },
       },
@@ -761,6 +783,8 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         totalTransactions: stats.totalTransactions || 0,
         totalDue,
         todayTotal: todayStats[0]?.todayTotal || 0,
+        todayGross: todayStats[0]?.todayGross || 0,
+        todayRefund: todayStats[0]?.todayRefund || 0,
         todayCount: todayStats[0]?.todayCount || 0,
         byMethod: {
           cash: stats.cashRevenue || 0,
@@ -782,6 +806,53 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 /**
  * Get Single Payment / Receipt by ID or ReceiptNo
  */
+/**
+ * Get All Historical Payments for a Specific Student and Batch
+ * Used by Admin Details modal and Money Receipt modal to guarantee full installment history
+ */
+export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { studentId, batchId } = req.query;
+
+    if (!studentId) {
+      return res.status(400).json({ success: false, message: 'শিক্ষার্থী আইডি আবশ্যক' });
+    }
+
+    const query: any = {
+      studentId,
+      status: 'completed',
+    };
+    if (batchId && batchId !== 'no_batch') {
+      query.batchId = batchId;
+    }
+
+    const payments = await Payment.find(query)
+      .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+      .populate('batchId', 'name fee courseId')
+      .populate('courseId', 'title courseFee regularPrice discountPrice')
+      .populate('collectedBy', 'name userId role')
+      .sort({ paidAt: 1, createdAt: 1 })
+      .lean();
+
+    // Also get enrollment info if exists
+    let enrollment = null;
+    if (batchId && batchId !== 'no_batch') {
+      enrollment = await Enrollment.findOne({ studentId, batchId })
+        .populate('courseId', 'title courseFee regularPrice discountPrice')
+        .lean();
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: payments,
+      enrollment,
+    });
+  } catch (error: any) {
+    console.error('getStudentBatchPayments error:', error);
+    return res.status(500).json({ success: false, message: 'পেমেন্ট বিবরণী লোড করা যায়নি' });
+  }
+};
+
 export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -793,7 +864,7 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
     const payment = await Payment.findOne(query)
       .populate('studentId', 'name userId phone email avatarUrl studentDetails')
       .populate('batchId', 'name fee courseId')
-      .populate('courseId', 'title')
+      .populate('courseId', 'title courseFee regularPrice discountPrice')
       .populate('collectedBy', 'name userId role')
       .lean();
 
@@ -809,9 +880,31 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
       return res.status(403).json({ success: false, message: 'এই রিসিট দেখার অনুমতি আপনার নেই' });
     }
 
+    // Also fetch all historical payments for this student and batch to form complete installment list
+    let allPayments: any[] = [];
+    const studentId = (payment.studentId as any)?._id || payment.studentId;
+    const batchId = (payment.batchId as any)?._id || payment.batchId;
+
+    if (studentId && batchId) {
+      allPayments = await Payment.find({
+        studentId,
+        batchId,
+        status: 'completed',
+      })
+        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
+        .populate('batchId', 'name fee courseId')
+        .populate('courseId', 'title courseFee regularPrice discountPrice')
+        .populate('collectedBy', 'name userId role')
+        .sort({ paidAt: 1, createdAt: 1 })
+        .lean();
+    } else {
+      allPayments = [payment];
+    }
+
     return res.status(200).json({
       success: true,
       data: payment,
+      allPayments,
     });
   } catch (error: any) {
     console.error('getPaymentReceipt error:', error);

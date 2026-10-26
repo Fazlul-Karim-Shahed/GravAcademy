@@ -175,6 +175,12 @@ router.get(
   financeCtrl.getMyPayments
 );
 router.get(
+  '/finance/student-batch-payments',
+  authenticate,
+  requirePermission(PERMISSIONS.FINANCE_VIEW),
+  financeCtrl.getStudentBatchPayments
+);
+router.get(
   '/finance/receipts/:id',
   authenticate,
   financeCtrl.getPaymentReceipt
