@@ -2,6 +2,7 @@ import { Response } from 'express';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 import { Batch } from '../models/Batch';
+import { Course } from '../models/Course';
 import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
 import { Announcement } from '../models/Announcement';
@@ -93,12 +94,37 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
     }
 
     const batch = await Batch.findById(batchId)
-      .populate('courseId', 'title slug gradeLevel subject')
-      .populate('assignedTeachers', 'name email avatarUrl');
+      .populate({
+        path: 'courseId',
+        select: 'title slug gradeLevel subject instructors',
+        populate: {
+          path: 'instructors',
+          select: 'name email role userId avatarUrl',
+        },
+      })
+      .populate('assignedTeachers', 'name email role userId avatarUrl');
 
     if (!batch) {
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
+
+    // Merge directly assigned teachers and course faculty instructors
+    const teacherMap = new Map<string, any>();
+    if (Array.isArray(batch.assignedTeachers)) {
+      batch.assignedTeachers.forEach((t: any) => {
+        if (t?._id) teacherMap.set(t._id.toString(), t);
+      });
+    }
+    const courseDoc = batch.courseId as any;
+    if (courseDoc && Array.isArray(courseDoc.instructors)) {
+      courseDoc.instructors.forEach((ins: any) => {
+        if (ins?._id && !teacherMap.has(ins._id.toString())) {
+          teacherMap.set(ins._id.toString(), ins);
+        }
+      });
+    }
+    const combinedTeachers = Array.from(teacherMap.values());
+    batch.assignedTeachers = combinedTeachers as any;
 
     const studentCount = await Enrollment.countDocuments({
       batchId,
@@ -112,9 +138,9 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
       data: {
         batch,
         memberCounts: {
-          teachersCount: batch.assignedTeachers?.length || 0,
+          teachersCount: combinedTeachers.length,
           studentsCount: studentCount,
-          totalMembers: (batch.assignedTeachers?.length || 0) + studentCount,
+          totalMembers: combinedTeachers.length + studentCount,
         },
         announcementCount,
       },
@@ -139,10 +165,37 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
-    const batch = await Batch.findById(batchId).populate('assignedTeachers', 'name userId role avatarUrl');
+    const batch = await Batch.findById(batchId)
+      .populate('assignedTeachers', 'name userId role avatarUrl email')
+      .populate({
+        path: 'courseId',
+        select: 'instructors',
+        populate: {
+          path: 'instructors',
+          select: 'name userId role avatarUrl email',
+        },
+      });
+
     if (!batch) {
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
+
+    // Merge directly assigned batch teachers with parent course instructors
+    const teacherMap = new Map<string, any>();
+    if (Array.isArray(batch.assignedTeachers)) {
+      batch.assignedTeachers.forEach((t: any) => {
+        if (t?._id) teacherMap.set(t._id.toString(), t);
+      });
+    }
+    const courseDoc = batch.courseId as any;
+    if (courseDoc && Array.isArray(courseDoc.instructors)) {
+      courseDoc.instructors.forEach((ins: any) => {
+        if (ins?._id && !teacherMap.has(ins._id.toString())) {
+          teacherMap.set(ins._id.toString(), ins);
+        }
+      });
+    }
+    const combinedTeachers = Array.from(teacherMap.values());
 
     const enrollments = await Enrollment.find({
       batchId,
@@ -158,9 +211,9 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
     return res.status(200).json({
       success: true,
       data: {
-        teachers: batch.assignedTeachers || [],
+        teachers: combinedTeachers,
         students,
-        totalCount: (batch.assignedTeachers?.length || 0) + students.length,
+        totalCount: combinedTeachers.length + students.length,
       },
     });
   } catch (error: any) {
@@ -214,7 +267,17 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
       return res.status(403).json({ success: false, message: 'Access denied to post announcements' });
     }
 
-    const batch = await Batch.findById(batchId).populate('assignedTeachers', 'email');
+    const batch = await Batch.findById(batchId)
+      .populate('assignedTeachers', 'email')
+      .populate({
+        path: 'courseId',
+        select: 'instructors',
+        populate: {
+          path: 'instructors',
+          select: 'email',
+        },
+      });
+
     if (!batch) {
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
@@ -231,8 +294,11 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
       isPinned: !!isPinned,
     });
 
-    // Collect all member emails in the batch
-    const teacherEmails = (batch.assignedTeachers as any[])?.map((t) => t.email).filter(Boolean) || [];
+    // Collect all member emails in the batch (both batch teachers and course instructors)
+    const directTeacherEmails = (batch.assignedTeachers as any[])?.map((t) => t.email).filter(Boolean) || [];
+    const courseDoc = batch.courseId as any;
+    const courseInstructorEmails = (courseDoc?.instructors as any[])?.map((t) => t.email).filter(Boolean) || [];
+    const teacherEmails = Array.from(new Set([...directTeacherEmails, ...courseInstructorEmails]));
 
     const enrollments = await Enrollment.find({
       batchId,
