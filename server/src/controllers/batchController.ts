@@ -485,7 +485,7 @@ export const getScheduleOverview = async (req: AuthenticatedRequest, res: Respon
               day: slot.day,
               startTime: slot.startTime,
               endTime: slot.endTime || '',
-              topic: slot.topic || '',
+              topic: slot.topic?.trim() || 'Lecture Day',
               meetingUrl: b.meetingUrl || '',
             });
           }

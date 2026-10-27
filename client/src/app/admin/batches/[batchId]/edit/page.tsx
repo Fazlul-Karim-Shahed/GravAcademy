@@ -86,7 +86,12 @@ export default function EditBatchPage() {
           courseId: cId,
           status: b.status || 'draft',
           scheduleText: b.scheduleText || '',
-          weeklySchedule: Array.isArray(b.weeklySchedule) ? b.weeklySchedule : [],
+          weeklySchedule: Array.isArray(b.weeklySchedule)
+            ? b.weeklySchedule.map((s: any) => ({
+                ...s,
+                topic: s.topic?.trim() || 'Lecture Day',
+              }))
+            : [],
           capacity: b.capacity || 40,
           meetingUrl: b.meetingUrl || '',
         });
@@ -127,7 +132,10 @@ export default function EditBatchPage() {
         courseId: form.courseId,
         status: form.status,
         scheduleText: finalScheduleText,
-        weeklySchedule: form.weeklySchedule,
+        weeklySchedule: form.weeklySchedule.map((s) => ({
+          ...s,
+          topic: s.topic?.trim() || 'Lecture Day',
+        })),
         capacity: Number(form.capacity),
         meetingUrl: form.meetingUrl.trim(),
       };

@@ -99,7 +99,7 @@ export default function WeeklyScheduleBuilder({ slots, onChange }: WeeklySchedul
       day,
       startTime: '07:00 PM',
       endTime: '08:30 PM',
-      topic: '',
+      topic: 'Lecture Day',
     };
     onChange([...slots, newSlot]);
   };
@@ -218,25 +218,24 @@ export default function WeeklyScheduleBuilder({ slots, onChange }: WeeklySchedul
                 </div>
               </div>
 
-              {/* Optional Topic / Note Row */}
+              {/* Topic / Note Row */}
               <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center gap-2">
                 <BookOpen className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
                 <input
                   type="text"
-                  value={slot.topic || ''}
+                  value={slot.topic ?? 'Lecture Day'}
                   onChange={(e) => handleUpdateSlot(idx, { topic: e.target.value })}
-                  placeholder="ঐচ্ছিক ক্লাসের পাঠ্য বিষয় / টপিক (যেমন: প্রবলেম সলভিং, অধ্যায় ১ আলোচনা)"
+                  placeholder="ক্লাসের পাঠ্য বিষয় / টপিক (যেমন: Lecture Day)"
                   className="w-full bg-transparent text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                 />
-                {slot.topic && (
+                {slot.topic && slot.topic !== 'Lecture Day' && (
                   <button
                     type="button"
-                    onClick={() => handleUpdateSlot(idx, { topic: '' })}
-                    className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-500 shrink-0 px-2 py-0.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                    title="টপিক ক্লিয়ার করুন"
+                    onClick={() => handleUpdateSlot(idx, { topic: 'Lecture Day' })}
+                    className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 shrink-0 px-2 py-0.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    title="রিসেট করে Lecture Day করুন"
                   >
-                    <X className="w-3 h-3" />
-                    <span>মুছুন</span>
+                    <span>ডিফল্ট</span>
                   </button>
                 )}
               </div>

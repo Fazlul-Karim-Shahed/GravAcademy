@@ -67,7 +67,7 @@ const BatchSchema = new Schema<IBatch>(
         },
         startTime: { type: String, required: true, trim: true },
         endTime: { type: String, trim: true },
-        topic: { type: String, trim: true },
+        topic: { type: String, trim: true, default: 'Lecture Day' },
       },
     ],
     sourceBatchId: { type: Schema.Types.ObjectId, ref: 'Batch' },

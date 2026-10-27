@@ -148,7 +148,10 @@ function CreateBatchContent() {
         courseId: form.courseId,
         status: form.status,
         scheduleText: finalScheduleText,
-        weeklySchedule: form.weeklySchedule,
+        weeklySchedule: form.weeklySchedule.map((s) => ({
+          ...s,
+          topic: s.topic?.trim() || 'Lecture Day',
+        })),
         capacity: Number(form.capacity),
       };
 
