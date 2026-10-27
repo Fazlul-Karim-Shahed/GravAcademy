@@ -154,7 +154,6 @@ export default function TeacherPanelPage() {
         <DailyScheduleView
           role="teacher"
           title="শিক্ষক ক্লাস শিডিউল ও ব্যাচ রুটিন"
-          subtitle="আজকে আপনার কোন কোন ব্যাচের ক্লাস আছে এবং সারা সপ্তাহের বিস্তারিত সময়সূচী"
         />
 
         {/* Batches Management */}

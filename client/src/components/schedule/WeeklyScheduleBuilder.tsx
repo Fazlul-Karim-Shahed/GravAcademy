@@ -122,9 +122,6 @@ export default function WeeklyScheduleBuilder({ slots, onChange }: WeeklySchedul
             <Calendar className="w-4 h-4 text-indigo-500" />
             সাপ্তাহিক রুটিন ও নির্দিষ্ট ক্লাসের সময়সূচী (Day & Time Slots)
           </h4>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-            প্রতিটি দিনের জন্য আলাদা সময় (১২-ঘণ্টা AM / PM) ও বিষয় নির্ধারণ করুন।
-          </p>
         </div>
 
         <button
