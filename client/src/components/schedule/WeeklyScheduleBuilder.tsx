@@ -8,7 +8,7 @@ import {
   parse12HourTime,
   build12HourTime,
 } from '@/lib/schedule';
-import { Calendar, Clock, Plus, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Plus, Trash2, BookOpen, X } from 'lucide-react';
 
 interface WeeklyScheduleBuilderProps {
   slots: ScheduleSlot[];
@@ -166,10 +166,10 @@ export default function WeeklyScheduleBuilder({ slots, onChange }: WeeklySchedul
               key={idx}
               className="p-4 rounded-2xl bg-slate-50/90 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 transition-all hover:border-indigo-300 dark:hover:border-indigo-800 shadow-2xs"
             >
-              {/* Clean Proportioned Responsive Grid without Note Section */}
+              {/* Responsive Grid for Day, Times, and Delete */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 items-end">
-                {/* 1. Day Column (Span 5 on Desktop) */}
-                <div className="lg:col-span-5">
+                {/* 1. Day Column (Span 4 on Desktop) */}
+                <div className="lg:col-span-4">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
                     বার / দিন (Day)
                   </label>
@@ -204,17 +204,41 @@ export default function WeeklyScheduleBuilder({ slots, onChange }: WeeklySchedul
                   />
                 </div>
 
-                {/* 4. Delete Action (Span 1 on Desktop) */}
-                <div className="lg:col-span-1 flex items-center justify-end sm:justify-center">
+                {/* 4. Delete Action (Span 2 on Desktop) */}
+                <div className="lg:col-span-2 flex items-center justify-end sm:justify-center">
                   <button
                     type="button"
                     onClick={() => handleRemoveSlot(idx)}
-                    className="p-2.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors h-10 w-10 flex items-center justify-center border border-transparent hover:border-rose-200 dark:hover:border-rose-900"
+                    className="p-2.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors h-10 w-full flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-900 text-xs font-semibold"
                     title="Remove this slot"
                   >
                     <Trash2 className="w-4 h-4" />
+                    <span>মুছুন</span>
                   </button>
                 </div>
+              </div>
+
+              {/* Optional Topic / Note Row */}
+              <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center gap-2">
+                <BookOpen className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 shrink-0" />
+                <input
+                  type="text"
+                  value={slot.topic || ''}
+                  onChange={(e) => handleUpdateSlot(idx, { topic: e.target.value })}
+                  placeholder="ঐচ্ছিক ক্লাসের পাঠ্য বিষয় / টপিক (যেমন: প্রবলেম সলভিং, অধ্যায় ১ আলোচনা)"
+                  className="w-full bg-transparent text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
+                />
+                {slot.topic && (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateSlot(idx, { topic: '' })}
+                    className="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-500 shrink-0 px-2 py-0.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                    title="টপিক ক্লিয়ার করুন"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>মুছুন</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}

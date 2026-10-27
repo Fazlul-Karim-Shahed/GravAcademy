@@ -310,8 +310,7 @@ export default function AdminDashboardPage() {
         {/* Global Daily & Weekly Class Schedule Overview */}
         <DailyScheduleView
           role="admin"
-          title="অ্যাকাডেমির দৈনিক ও সাপ্তাহিক ক্লাস মনিটরিং"
-          subtitle="আজকে কোন কোন সময়ে কোন ব্যাচের ক্লাস রয়েছে এবং পুরো সপ্তাহের লাইভ ক্লাসের সূচী এক নজরে দেখুন"
+          title="দৈনিক ও সাপ্তাহিক ক্লাস মনিটরিং"
         />
 
       </div>

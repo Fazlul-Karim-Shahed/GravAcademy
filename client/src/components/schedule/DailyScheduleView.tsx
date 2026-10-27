@@ -207,7 +207,7 @@ export default function DailyScheduleView({
                 <tr className="border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-100/70 dark:bg-slate-900/80 text-[12px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
                   <th className="py-3.5 px-4 sm:px-6">সময় ও স্থিতি</th>
                   <th className="py-3.5 px-4">ব্যাচ ও শ্রেণি</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">কোর্স ও বিষয়</th>
+                  <th className="py-3.5 px-4 hidden md:table-cell">কোর্স, বিষয় ও টপিক</th>
                   <th className="py-3.5 px-4 hidden lg:table-cell">শিক্ষক</th>
                   <th className="py-3.5 px-4 text-center">লাইভ ক্লাস</th>
                   <th className="py-3.5 px-4 sm:px-6 text-right">অ্যাকশন</th>
@@ -252,28 +252,40 @@ export default function DailyScheduleView({
                             </span>
                           )}
                         </div>
-                        {/* Mobile visible course subtitle */}
-                        <div className="md:hidden text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-                          {item.course?.title || 'কোর্স'}
-                        </div>
-                        {item.topic && (
-                          <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
-                            <BookOpen className="w-3 h-3 shrink-0" />
-                            <span className="truncate max-w-[200px]">{item.topic}</span>
+                        {/* Mobile visible course & topic subtitle */}
+                        <div className="md:hidden space-y-0.5 mt-1">
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                            {item.course?.title || 'কোর্স'}
                           </div>
-                        )}
+                          {item.topic && (
+                            <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
+                              <BookOpen className="w-2.5 h-2.5 shrink-0" />
+                              <span className="truncate max-w-[180px]">টপিক: {item.topic}</span>
+                            </div>
+                          )}
+                        </div>
                       </td>
 
-                      {/* কোর্স ও বিষয় */}
+                      {/* কোর্স, বিষয় ও টপিক */}
                       <td className="py-3.5 px-4 hidden md:table-cell">
                         <div className="font-semibold text-slate-700 dark:text-slate-200 max-w-[220px] truncate" title={item.course?.title}>
                           {item.course?.title || '—'}
                         </div>
-                        {item.course?.subject && (
-                          <span className="text-[11px] text-slate-400 font-medium">
-                            বিষয়: {item.course.subject}
-                          </span>
-                        )}
+                        <div className="flex flex-col gap-0.5 mt-0.5">
+                          {item.course?.subject && (
+                            <span className="text-[11px] text-slate-400 font-medium">
+                              বিষয়: {item.course.subject}
+                            </span>
+                          )}
+                          {item.topic && (
+                            <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
+                              <BookOpen className="w-3 h-3 shrink-0" />
+                              <span className="truncate max-w-[200px]" title={item.topic}>
+                                টপিক: {item.topic}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </td>
 
                       {/* শিক্ষক */}
@@ -369,8 +381,8 @@ export default function DailyScheduleView({
                 {/* Topic if specified */}
                 {item.topic && (
                   <div className="text-xs text-slate-600 dark:text-slate-300 bg-white/70 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 font-medium flex items-center gap-2">
-                    <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span className="truncate">{item.topic}</span>
+                    <BookOpen className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                    <span className="truncate">টপিক: {item.topic}</span>
                   </div>
                 )}
               </div>
