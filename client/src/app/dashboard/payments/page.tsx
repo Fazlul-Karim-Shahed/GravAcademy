@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { formatBDDate } from '@/lib/dateUtils';
 import {
   ArrowLeft,
   CreditCard,
@@ -138,7 +139,7 @@ export default function StudentPaymentsPage() {
             ) : (
               payments.map((p) => {
                 const payDate = p.paidAt
-                  ? new Date(p.paidAt).toLocaleDateString('bn-BD', {
+                  ? formatBDDate(p.paidAt, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',

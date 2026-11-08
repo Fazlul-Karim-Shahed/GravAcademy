@@ -1,3 +1,8 @@
+// Force the whole backend process (logs, cron-style intervals, any local-time
+// Date formatting that doesn't pass an explicit timeZone) to run in
+// Bangladesh Standard Time, regardless of what timezone the host VM is set to.
+process.env.TZ = 'Asia/Dhaka';
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -168,7 +173,7 @@ const setupSelfPing = () => {
           headers: { 'User-Agent': 'GravAcademy-KeepAlive-Bot/1.0' },
         });
         if (res.ok) {
-          console.log(`[Keep-Alive] Self ping success at ${new Date().toLocaleTimeString()} - Status: ${res.status}`);
+          console.log(`[Keep-Alive] Self ping success at ${new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Dhaka' })} - Status: ${res.status}`);
         } else {
           console.warn(`[Keep-Alive] Self ping returned status ${res.status}`);
         }

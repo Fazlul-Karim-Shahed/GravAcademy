@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useId } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { formatBDDate } from '@/lib/dateUtils';
 import {
   ArrowLeft,
   DollarSign,
@@ -307,7 +308,9 @@ export default function AdminFinancePage() {
         // Refetch main list and summary stats
         await fetchPayments();
         if (activeDetailsGroup && activeDetailsGroup.key === group.key) {
-          setActiveDetailsGroup({
+          // Re-pull the fresh installment history/totals instead of patching
+          // just the isManualPaid flag, so the drawer never shows stale totals.
+          await handleOpenDetailsWithHistory({
             ...activeDetailsGroup,
             latestPayment: {
               ...activeDetailsGroup.latestPayment,
@@ -954,7 +957,7 @@ export default function AdminFinancePage() {
               groupedPayments.map((group) => {
                 const latestP = group.latestPayment;
                 const payDate = group.lastPaymentDate
-                  ? new Date(group.lastPaymentDate).toLocaleDateString('bn-BD', {
+                  ? formatBDDate(group.lastPaymentDate, {
                       month: 'short',
                       day: 'numeric',
                       year: 'numeric',
@@ -2038,7 +2041,7 @@ export default function AdminFinancePage() {
                 <div className="space-y-2.5">
                   {activeDetailsGroup.payments.map((p, idx) => {
                     const payDateStr = p.paidAt || p.createdAt
-                      ? new Date(p.paidAt || p.createdAt || '').toLocaleDateString('bn-BD', {
+                      ? formatBDDate(p.paidAt || p.createdAt || '', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric',

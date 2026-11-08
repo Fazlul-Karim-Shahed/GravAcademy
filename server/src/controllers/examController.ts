@@ -397,6 +397,53 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
     const exam = await Examination.findById(examId);
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
 
+    const isTeacherOrAdmin =
+      user?.role === ROLES.SUPERADMIN ||
+      user?.role === ROLES.ADMIN ||
+      user?.role === ROLES.TEACHER;
+
+    if (!isTeacherOrAdmin) {
+      if (!exam.isPublished) {
+        return res.status(404).json({ success: false, message: 'Exam not found or unpublished' });
+      }
+
+      const isEnrolled = await Enrollment.findOne({
+        studentId: user?._id,
+        batchId: exam.batchId,
+        status: 'enrolled',
+      });
+      if (!isEnrolled) {
+        return res.status(403).json({ success: false, message: 'Not enrolled in this batch' });
+      }
+
+      const now = new Date();
+      if (now < new Date(exam.startWindow)) {
+        return res.status(403).json({
+          success: false,
+          message: 'এক্সামটি এখনও শুরু হয়নি। নির্ধারিত সময়ে প্রবেশ করুন।',
+        });
+      }
+      if (now > new Date(exam.endWindow)) {
+        return res.status(403).json({
+          success: false,
+          message: 'এক্সামের সময়সীমা শেষ হয়ে গেছে।',
+        });
+      }
+
+      const existingAttempts = await ExamAttempt.countDocuments({
+        examId: exam._id,
+        studentId: user?._id,
+        status: { $in: ['submitted', 'evaluated'] },
+      });
+      if (existingAttempts >= (exam.attemptLimit || 1)) {
+        return res.status(400).json({
+          success: false,
+          message: 'আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।',
+          alreadySubmitted: true,
+        });
+      }
+    }
+
     // Fetch questions WITH correctOptionId for server-side grading
     const questions = await Question.find({ examId }).select('+correctOptionId');
 
@@ -518,7 +565,15 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
     }
 
     const exam: any = attempt.examId;
-    const parsedCQScore = Number(cqScore) || 0;
+
+    const cqMaxMarks = Array.isArray(exam?.cqQuestions) && exam.cqQuestions.length > 0
+      ? exam.cqQuestions.reduce((sum: number, q: any) => sum + (Number(q.marks) || 0), 0)
+      : Math.max(0, (exam?.totalMarks || 0) - (attempt.mcqScore || 0));
+
+    let parsedCQScore = Number(cqScore);
+    if (!Number.isFinite(parsedCQScore)) parsedCQScore = 0;
+    parsedCQScore = Math.min(Math.max(parsedCQScore, 0), cqMaxMarks);
+
     const finalTotalScore = (attempt.mcqScore || 0) + parsedCQScore;
     const passed = finalTotalScore >= (exam?.passMarks || 40);
 
@@ -564,8 +619,20 @@ export const getStudentExamResult = async (req: AuthenticatedRequest, res: Respo
       return res.status(404).json({ success: false, message: 'ফলাফল পাওয়া যায়নি' });
     }
 
-    // Optional: Return question explanations if exam is completed
-    const questions = await Question.find({ examId }).select('questionText options correctOptionId explanation marks');
+    // Only reveal the answer key once the student has no attempts left, or the exam window has closed.
+    // Otherwise a student could read correctOptionId here and reuse it on a later attempt.
+    const usedAttempts = await ExamAttempt.countDocuments({
+      examId,
+      studentId: user?._id,
+      status: { $in: ['submitted', 'evaluated'] },
+    });
+    const examClosed = new Date() > new Date(exam.endWindow);
+    const noAttemptsLeft = usedAttempts >= (exam.attemptLimit || 1);
+    const canRevealAnswerKey = noAttemptsLeft || examClosed;
+
+    const questions = canRevealAnswerKey
+      ? await Question.find({ examId }).select('questionText options correctOptionId explanation marks')
+      : await Question.find({ examId }).select('questionText options marks');
 
     return res.status(200).json({
       success: true,
@@ -573,6 +640,7 @@ export const getStudentExamResult = async (req: AuthenticatedRequest, res: Respo
         exam,
         attempt,
         questions,
+        answerKeyWithheld: !canRevealAnswerKey,
       },
     });
   } catch (error) {

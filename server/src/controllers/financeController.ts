@@ -6,37 +6,34 @@ import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
 import { Course } from '../models/Course';
 import { User } from '../models/User';
+import { AuditLog } from '../models/AuditLog';
+import { ReceiptCounter } from '../models/ReceiptCounter';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 /**
  * Generate unique receipt number: REC-YYMMDD-XXXX
+ * Uses Bangladesh (Asia/Dhaka) date and an atomic counter document so two
+ * concurrent payment collections never race on the same sequence number.
  */
 export const generateReceiptNumber = async (): Promise<string> => {
-  const now = new Date();
-  const year = now.getFullYear().toString().slice(-2);
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
-  const datePrefix = `REC-${year}${month}${day}`;
+  const dhakaDateParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Dhaka',
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
 
-  const lastPayment = await Payment.findOne({
-    receiptNo: new RegExp(`^${datePrefix}-`),
-  })
-    .sort({ createdAt: -1 })
-    .select('receiptNo')
-    .lean();
+  const partMap: Record<string, string> = {};
+  for (const p of dhakaDateParts) partMap[p.type] = p.value;
+  const datePrefix = `REC-${partMap.year}${partMap.month}${partMap.day}`;
 
-  let nextSequence = 1;
-  if (lastPayment && lastPayment.receiptNo) {
-    const parts = lastPayment.receiptNo.split('-');
-    if (parts.length === 3) {
-      const currentSeq = parseInt(parts[2], 10);
-      if (!isNaN(currentSeq)) {
-        nextSequence = currentSeq + 1;
-      }
-    }
-  }
+  const counter = await ReceiptCounter.findOneAndUpdate(
+    { _id: datePrefix },
+    { $inc: { seq: 1 } },
+    { upsert: true, new: true }
+  );
 
-  return `${datePrefix}-${nextSequence.toString().padStart(3, '0')}`;
+  return `${datePrefix}-${counter.seq.toString().padStart(3, '0')}`;
 };
 
 export const collectPaymentSchema = z.object({
@@ -872,11 +869,22 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
       return res.status(404).json({ success: false, message: 'মানি রিসিট পাওয়া যায়নি' });
     }
 
-    // Authorization: Superadmin, Admin, or the student himself
-    const isOwner = user?._id?.toString() === (payment.studentId as any)?._id?.toString();
+    // Authorization: Superadmin, Admin, the student himself, or a guardian linked to the student
+    const paymentStudentId = (payment.studentId as any)?._id?.toString();
+    const isOwner = user?._id?.toString() === paymentStudentId;
     const isAdmin = ['superadmin', 'admin'].includes(user?.role || '');
 
-    if (!isOwner && !isAdmin) {
+    let isLinkedGuardian = false;
+    if (!isOwner && !isAdmin && user?.role === 'guardian' && paymentStudentId) {
+      const guardianDoc = await User.findById(user._id).select('guardianDetails').lean();
+      isLinkedGuardian = Boolean(
+        guardianDoc?.guardianDetails?.linkedStudents?.some(
+          (sid: any) => sid.toString() === paymentStudentId
+        )
+      );
+    }
+
+    if (!isOwner && !isAdmin && !isLinkedGuardian) {
       return res.status(403).json({ success: false, message: 'এই রিসিট দেখার অনুমতি আপনার নেই' });
     }
 
@@ -917,9 +925,26 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
  */
 export const getMyPayments = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const studentId = req.user?._id;
-    if (!studentId) {
+    const user = req.user;
+    if (!user) {
       return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+    }
+
+    // Guardians may pass ?studentId=<wardId> to view a linked ward's payments.
+    let studentId: any = user._id;
+    const requestedStudentId = req.query.studentId as string | undefined;
+    if (requestedStudentId && requestedStudentId !== user._id.toString()) {
+      if (user.role !== 'guardian') {
+        return res.status(403).json({ success: false, message: 'এই তথ্য দেখার অনুমতি আপনার নেই' });
+      }
+      const guardianDoc = await User.findById(user._id).select('guardianDetails').lean();
+      const isLinked = guardianDoc?.guardianDetails?.linkedStudents?.some(
+        (sid: any) => sid.toString() === requestedStudentId
+      );
+      if (!isLinked) {
+        return res.status(403).json({ success: false, message: 'এই শিক্ষার্থীর তথ্য দেখার অনুমতি আপনার নেই' });
+      }
+      studentId = requestedStudentId;
     }
 
     const payments = await Payment.find({ studentId, status: 'completed' })
@@ -1041,6 +1066,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
 export const deletePayment = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
+    const adminUser = req.user;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: 'ভুল পেমেন্ট আইডি' });
@@ -1051,10 +1077,19 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
       return res.status(404).json({ success: false, message: 'লেনদেনটি পাওয়া যায়নি' });
     }
 
-    const { studentId, batchId, amountPaid } = payment;
+    const { studentId, batchId, amountPaid, receiptNo } = payment;
 
     // Delete the payment document
     await Payment.findByIdAndDelete(id);
+
+    await AuditLog.create({
+      actorId: adminUser?._id,
+      actorEmail: adminUser?.email,
+      action: 'FINANCE_PAYMENT_DELETE',
+      resourceType: 'Payment',
+      resourceId: id,
+      metadata: { studentId, batchId, amountPaid, receiptNo },
+    });
 
     // If linked to an enrollment, update enrollment's total paid and status
     if (studentId && batchId) {
@@ -1155,6 +1190,19 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
       { $set: { isManualPaid: Boolean(isManualPaid) } }
     );
 
+    await AuditLog.create({
+      actorId: adminUser._id,
+      actorEmail: adminUser.email,
+      action: 'FINANCE_MANUAL_PAID_TOGGLE',
+      resourceType: 'Enrollment',
+      resourceId: enrollment._id.toString(),
+      metadata: {
+        studentId: enrollment.studentId,
+        batchId: enrollment.batchId,
+        isManualPaid: enrollment.isManualPaid,
+      },
+    });
+
     return res.status(200).json({
       success: true,
       message: isManualPaid
@@ -1204,7 +1252,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
 
     const student = await User.findById(studentId);
     if (!student) {
-      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
+      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
     }
 
     let batch = null;
@@ -1228,6 +1276,13 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
       status: 'completed',
     });
     const previousPaid = pastPayments.reduce((acc, p) => acc + (p.amountPaid || 0), 0);
+
+    if (numRefund > previousPaid) {
+      return res.status(400).json({
+        success: false,
+        message: `রিফান্ডের পরিমাণ শিক্ষার্থীর সর্বোচ্চ পরিশোধিত টাকার (৳${previousPaid}) চেয়ে বেশি হতে পারবে না।`,
+      });
+    }
 
     const newTotalPaid = previousPaid - numRefund;
     const newDueAmount = Math.max(0, totalFee - newTotalPaid);
@@ -1270,6 +1325,21 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
       .populate('batchId', 'name fee courseId')
       .populate('courseId', 'title')
       .populate('collectedBy', 'name userId role');
+
+    await AuditLog.create({
+      actorId: adminUser._id,
+      actorEmail: adminUser.email,
+      action: 'FINANCE_REFUND',
+      resourceType: 'Payment',
+      resourceId: refundPayment._id.toString(),
+      metadata: {
+        studentId,
+        batchId,
+        refundAmount: numRefund,
+        previousPaid,
+        newTotalPaid,
+      },
+    });
 
     return res.status(201).json({
       success: true,

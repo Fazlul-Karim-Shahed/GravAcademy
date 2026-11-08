@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { formatBDTime } from '@/lib/dateUtils';
 import {
   Users,
   Award,
@@ -112,6 +113,13 @@ export default function ExamSubmissionsPage({
     }
   };
 
+  const getCqMaxMarks = (sub: SubmissionItem) => {
+    if (exam?.cqQuestions && exam.cqQuestions.length > 0) {
+      return exam.cqQuestions.reduce((sum, q) => sum + (Number(q.marks) || 0), 0);
+    }
+    return Math.max(0, (exam?.totalMarks || 0) - (sub.mcqScore || 0));
+  };
+
   const openEvaluation = (sub: SubmissionItem) => {
     setSelectedSub(sub);
     setEvalCqScore(sub.cqScore || 0);
@@ -123,8 +131,10 @@ export default function ExamSubmissionsPage({
     if (!selectedSub) return;
     setSavingEval(true);
     try {
+      const cqMax = getCqMaxMarks(selectedSub);
+      const clampedCqScore = Math.min(Math.max(Number(evalCqScore) || 0, 0), cqMax);
       const res = await api.put(`/exams/attempts/${selectedSub._id}/evaluate`, {
-        cqScore: Number(evalCqScore),
+        cqScore: clampedCqScore,
         teacherFeedback: evalFeedback.trim(),
       });
 
@@ -136,8 +146,8 @@ export default function ExamSubmissionsPage({
             item._id === selectedSub._id
               ? {
                   ...item,
-                  cqScore: Number(evalCqScore),
-                  totalScore: (item.mcqScore || 0) + Number(evalCqScore),
+                  cqScore: clampedCqScore,
+                  totalScore: (item.mcqScore || 0) + clampedCqScore,
                   teacherFeedback: evalFeedback.trim(),
                   isEvaluated: true,
                   status: 'evaluated',
@@ -247,7 +257,7 @@ export default function ExamSubmissionsPage({
                       </td>
 
                       <td className="py-3.5 px-4 text-slate-500">
-                        {new Date(sub.submittedAt).toLocaleTimeString('bn-BD', {
+                        {formatBDTime(sub.submittedAt, {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
@@ -429,14 +439,20 @@ export default function ExamSubmissionsPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/60">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                    CQ / লিখিত অংশের নম্বর <span className="text-rose-500">*</span>
+                    CQ / লিখিত অংশের নম্বর (সর্বোচ্চ {getCqMaxMarks(selectedSub)}) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
                     step="0.5"
                     min="0"
+                    max={getCqMaxMarks(selectedSub)}
                     value={evalCqScore}
-                    onChange={(e) => setEvalCqScore(Number(e.target.value))}
+                    onChange={(e) => {
+                      const raw = Number(e.target.value);
+                      const cqMax = getCqMaxMarks(selectedSub);
+                      const clamped = Number.isFinite(raw) ? Math.min(Math.max(raw, 0), cqMax) : 0;
+                      setEvalCqScore(clamped);
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                   <p className="text-[11px] text-slate-500 mt-1">

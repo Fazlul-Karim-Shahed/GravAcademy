@@ -14,6 +14,7 @@ import {
   FileText,
   ExternalLink,
 } from 'lucide-react';
+import { formatBDDate, formatBDTime } from '@/lib/dateUtils';
 
 export interface PaymentReceiptData {
   _id: string;
@@ -128,15 +129,15 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   const finalDueAmount = Math.max(0, netDueAmount);
 
   const receiptDate = data.paidAt || data.createdAt
-    ? new Date(data.paidAt || data.createdAt!).toLocaleDateString('bn-BD', {
+    ? formatBDDate(data.paidAt || data.createdAt!, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       })
-    : new Date().toLocaleDateString('bn-BD');
+    : formatBDDate(new Date());
 
   const receiptTime = data.paidAt || data.createdAt
-    ? new Date(data.paidAt || data.createdAt!).toLocaleTimeString('bn-BD', {
+    ? formatBDTime(data.paidAt || data.createdAt!, {
         hour: '2-digit',
         minute: '2-digit',
       })
@@ -275,7 +276,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 print:divide-slate-300">
                 {paymentsList.map((item, idx) => {
                   const itemDate = item.paidAt || item.createdAt
-                    ? new Date(item.paidAt || item.createdAt!).toLocaleDateString('bn-BD', {
+                    ? formatBDDate(item.paidAt || item.createdAt!, {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric',
