@@ -51,3 +51,4 @@ Whenever **ANY** backend file in `server/` is modified (controllers, routes, mod
 - **Live Video / Classroom:** LiveKit Cloud (`wss://gravacademy-1apvh2ag.livekit.cloud`)
 - **Web Server Reverse Proxy:** Nginx with Let's Encrypt SSL/TLSv1.3 and HTTP/2 proxying port `5000`.
 - **System Service:** `pm2-ubuntu.service` runs on startup and manages auto-resurrection.
+
