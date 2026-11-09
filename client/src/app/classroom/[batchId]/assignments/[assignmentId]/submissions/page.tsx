@@ -440,36 +440,78 @@ export default function AssignmentSubmissionsPage({
                       </span>
                     </div>
 
-                    {/* Student Written Text Note */}
+                    {/* Student Written Text Note (Rendered with HTML / Rich formatting) */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 uppercase tracking-wider">
                         শিক্ষার্থীর টেক্সট উত্তর / সমাধান:
                       </label>
-                      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto">
-                        {selectedSub.submissionText || 'কোনো লিখিত উত্তর উল্লেখ করা হয়নি।'}
+                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed max-h-60 overflow-y-auto">
+                        {selectedSub.submissionText ? (
+                          <div
+                            className="prose prose-xs sm:prose-sm dark:prose-invert max-w-none"
+                            dangerouslySetInnerHTML={{ __html: selectedSub.submissionText }}
+                          />
+                        ) : (
+                          <p className="text-slate-400 italic">কোনো লিখিত টেক্সট উত্তর উল্লেখ করা হয়নি।</p>
+                        )}
                       </div>
                     </div>
 
-                    {/* Attached File */}
-                    {selectedSub.fileUrl && (
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                          সংযুক্ত অ্যাসাইনমেন্ট ফাইল (Google Drive):
-                        </label>
-                        <a
-                          href={selectedSub.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center justify-between p-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold transition-colors"
-                        >
-                          <span className="flex items-center gap-2 truncate">
-                            <File className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{selectedSub.fileName || 'ডকুমেন্ট ফাইল'}</span>
-                          </span>
-                          <ExternalLink className="w-4 h-4 shrink-0" />
-                        </a>
-                      </div>
-                    )}
+                    {/* Attached File (Google Drive / Cloud Document) */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 uppercase tracking-wider">
+                        শিক্ষার্থীর আপলোডকৃত ডকুমেন্ট / খাতা (Google Drive):
+                      </label>
+                      {selectedSub.fileUrl ? (
+                        <div className="space-y-3">
+                          <a
+                            href={selectedSub.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-between p-3.5 rounded-2xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all shadow-xs"
+                          >
+                            <span className="flex items-center gap-2.5 truncate">
+                              <File className="w-4 h-4 shrink-0 text-blue-600" />
+                              <span className="truncate">
+                                {selectedSub.fileName || 'শিক্ষার্থীর মূল ডকুমেন্ট / ফাইল (PDF/Image)'}
+                              </span>
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[11px] bg-blue-600 text-white px-2.5 py-1 rounded-lg shrink-0 ml-2">
+                              <span>ড্রাইভে খুলুন</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </span>
+                          </a>
+
+                          {/* Live In-App Iframe Preview for Drive Documents / PDFs / Images */}
+                          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950">
+                            <div className="p-2 bg-slate-200 dark:bg-slate-800/80 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-between">
+                              <span>সরাসরি প্রিভিউ (Live Preview)</span>
+                              <a
+                                href={selectedSub.fileUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-[10px]"
+                              >
+                                নতুন ট্যাবে খুলুন <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                            <iframe
+                              src={
+                                selectedSub.fileUrl.includes('drive.google.com/file/d/')
+                                  ? selectedSub.fileUrl.replace('/view', '/preview')
+                                  : selectedSub.fileUrl
+                              }
+                              className="w-full h-80 border-0"
+                              title="Student Submitted Document Preview"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 italic">
+                          শিক্ষার্থী আলাদা কোনো ড্রাইভ ফাইল সংযুক্ত করেনি (শুধুমাত্র টেক্সট উত্তর জমা দিয়েছে)।
+                        </div>
+                      )}
+                    </div>
 
                     {/* Evaluation Form */}
                     <form onSubmit={handleSaveGrade} className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-4">
