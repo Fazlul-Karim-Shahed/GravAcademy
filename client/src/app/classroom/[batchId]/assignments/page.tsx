@@ -533,27 +533,27 @@ export default function AssignmentRoomPage({
                         <FileCheck className="w-3.5 h-3.5" />
                         <span>সাবমিশন ও মূল্যায়ন ({assignment.submissionStats?.total || 0})</span>
                       </Link>
-                    ) : (
+                    ) : isOverdue && !assignment.allowLateSubmission && !mySub ? (
                       <button
                         type="button"
-                        onClick={() => {
-                          setActiveAssignmentForSubmit(assignment);
-                          setStudentNotes(mySub?.submissionText || '');
-                          setStudentFileUrl(mySub?.fileUrl || '');
-                          setStudentFileName(mySub?.fileName || '');
-                        }}
-                        disabled={isOverdue && !assignment.allowLateSubmission && !mySub}
+                        disabled
+                        className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 flex items-center justify-center gap-1.5"
+                      >
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>সময় শেষ (Submission Closed)</span>
+                      </button>
+                    ) : (
+                      <Link
+                        href={`/classroom/${batchId}/assignments/${assignment._id}/submit`}
                         className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                          isOverdue && !assignment.allowLateSubmission && !mySub
-                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800'
-                            : mySub
+                          mySub
                             ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer'
                             : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer'
                         }`}
                       >
                         <UploadCloud className="w-3.5 h-3.5" />
-                        <span>{mySub ? 'সাবমিশন আপডেট করুন' : 'অ্যাসাইনমেন্ট জমা দিন'}</span>
-                      </button>
+                        <span>{mySub ? 'সাবমিশন দেখুন বা আপডেট করুন' : 'অ্যাসাইনমেন্ট জমা দিন'}</span>
+                      </Link>
                     )}
                   </div>
                 </div>
