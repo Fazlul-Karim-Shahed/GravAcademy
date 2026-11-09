@@ -33,7 +33,7 @@ export default function EditAssignmentPage({
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
@@ -92,34 +92,29 @@ export default function EditAssignmentPage({
     }
   };
 
-  const handleUploadAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadingAttachment(true);
-    try {
-      const data = new FormData();
-      data.append('file', file);
-
-      const res = await api.post('/documents/upload', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      if (res.data?.success) {
-        const fileAsset = res.data.data;
-        const fileUrl =
-          fileAsset.url || fileAsset.fileUrl || fileAsset.streamUrl || fileAsset.driveDownloadUrl || fileAsset.googleDriveFileId;
-        setFormData((prev) => ({
-          ...prev,
-          attachmentUrl: fileUrl,
-          attachmentName: file.name,
-        }));
-      }
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে');
-    } finally {
-      setUploadingAttachment(false);
+    if (file.size > 25 * 1024 * 1024) {
+      alert('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
+      return;
     }
+
+    setSelectedFile(file);
+    setFormData((prev) => ({
+      ...prev,
+      attachmentName: file.name,
+    }));
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setFormData((prev) => ({
+      ...prev,
+      attachmentUrl: '',
+      attachmentName: '',
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -132,8 +127,32 @@ export default function EditAssignmentPage({
     setSubmitting(true);
     setError('');
     try {
+      let finalAttachmentUrl = formData.attachmentUrl;
+      let finalAttachmentName = formData.attachmentName;
+
+      // Upload file to Google Drive only on submit!
+      if (selectedFile) {
+        const data = new FormData();
+        data.append('file', selectedFile);
+
+        const uploadRes = await api.post('/documents/upload', data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (uploadRes.data?.success && uploadRes.data?.data) {
+          const fileAsset = uploadRes.data.data;
+          finalAttachmentUrl =
+            fileAsset.url || fileAsset.fileUrl || fileAsset.streamUrl || fileAsset.driveDownloadUrl || fileAsset.googleDriveFileId;
+          finalAttachmentName = selectedFile.name;
+        } else {
+          throw new Error(uploadRes.data?.message || 'ফাইলটি ড্রাইভে আপলোড করা যায়নি');
+        }
+      }
+
       const res = await api.put(`/assignments/${assignmentId}`, {
         ...formData,
+        attachmentUrl: finalAttachmentUrl,
+        attachmentName: finalAttachmentName,
         dueDate: new Date(formData.dueDate).toISOString(),
       });
 
@@ -141,7 +160,7 @@ export default function EditAssignmentPage({
         router.push(`/classroom/${batchId}/assignments`);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'অ্যাসাইনমেন্ট আপডেট করতে সমস্যা হয়েছে');
+      setError(err.response?.data?.message || err.message || 'অ্যাসাইনমেন্ট আপডেট করতে সমস্যা হয়েছে');
     } finally {
       setSubmitting(false);
     }
@@ -271,35 +290,52 @@ export default function EditAssignmentPage({
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <input
                       type="file"
-                      onChange={handleUploadAttachment}
-                      disabled={uploadingAttachment}
+                      onChange={handleFileChange}
+                      disabled={submitting}
                       className="text-xs file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
                     />
-                    {uploadingAttachment && (
-                      <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 animate-pulse">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>আপলোড হচ্ছে...</span>
-                      </div>
-                    )}
                   </div>
 
-                  {formData.attachmentUrl && (
+                  {selectedFile ? (
+                    <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
+                      <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
+                        <CheckCircle2 className="w-4 h-4 shrink-0" />
+                        <span className="truncate">নতুন সিলেক্টেড ফাইল: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveFile}
+                        className="text-rose-500 hover:text-rose-700 text-xs font-bold ml-2 shrink-0 cursor-pointer"
+                      >
+                        ফাইল পরিবর্তন বা বাতিল
+                      </button>
+                    </div>
+                  ) : formData.attachmentUrl ? (
                     <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
                       <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
                         <CheckCircle2 className="w-4 h-4 shrink-0" />
-                        <span className="truncate">সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল সংযুক্ত আছে'}</span>
+                        <span className="truncate">বর্তমান সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল সংযুক্ত আছে'}</span>
                       </span>
-                      <a
-                        href={formData.attachmentUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-blue-600 hover:underline flex items-center gap-1 font-semibold shrink-0 ml-2"
-                      >
-                        <span>প্রিভিউ দেখুন</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={formData.attachmentUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-600 hover:underline flex items-center gap-1 font-semibold shrink-0"
+                        >
+                          <span>প্রিভিউ দেখুন</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={handleRemoveFile}
+                          className="text-rose-500 hover:text-rose-700 text-xs font-bold ml-1 shrink-0 cursor-pointer"
+                        >
+                          মুছে ফেলুন
+                        </button>
+                      </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
@@ -325,7 +361,7 @@ export default function EditAssignmentPage({
                 </Link>
                 <button
                   type="submit"
-                  disabled={submitting || uploadingAttachment}
+                  disabled={submitting}
                   className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
                 >
                   {submitting ? (
