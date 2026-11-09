@@ -20,6 +20,8 @@ import * as jobCtrl from '../controllers/jobPostController';
 import * as financeCtrl from '../controllers/financeController';
 import * as settingCtrl from '../controllers/settingController';
 import * as guardianCtrl from '../controllers/guardianController';
+import * as assignmentCtrl from '../controllers/assignmentController';
+import * as marksheetCtrl from '../controllers/marksheetController';
 
 const router = Router();
 const upload = multer({
@@ -348,6 +350,49 @@ router.put(
   examCtrl.evaluateStudentAttempt
 );
 router.get('/exams/:examId/my-result', authenticate, examCtrl.getStudentExamResult);
+
+// --- ASSIGNMENT ROUTES ---
+router.post(
+  '/assignments',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  assignmentCtrl.createAssignment
+);
+router.get('/batches/:batchId/assignments', authenticate, assignmentCtrl.getBatchAssignments);
+router.get('/assignments/:assignmentId', authenticate, assignmentCtrl.getAssignmentDetails);
+router.put(
+  '/assignments/:assignmentId',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  assignmentCtrl.updateAssignment
+);
+router.delete(
+  '/assignments/:assignmentId',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  assignmentCtrl.deleteAssignment
+);
+router.post(
+  '/assignments/:assignmentId/submit',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_SUBMIT),
+  assignmentCtrl.submitAssignment
+);
+router.get(
+  '/assignments/:assignmentId/submissions',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  assignmentCtrl.getAssignmentSubmissions
+);
+router.put(
+  '/assignments/submissions/:submissionId/grade',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  assignmentCtrl.gradeAssignmentSubmission
+);
+
+// --- MARKSHEET & ACADEMIC TRANSCRIPT ROUTES ---
+router.get('/batches/:batchId/marksheet', authenticate, marksheetCtrl.getBatchMarksheet);
 
 // --- LIVE CLASS & FREE PUBLIC CLASSES ROUTES ---
 router.get('/free-classes', liveCtrl.getFreePublicClasses);

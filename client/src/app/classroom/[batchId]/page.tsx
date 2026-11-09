@@ -31,6 +31,7 @@ import {
   AlertTriangle,
   ArrowRightLeft,
   BookOpen,
+  Award,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { LiveKitClassroomModal } from '@/components/classroom/LiveKitClassroomModal';
@@ -458,6 +459,22 @@ export default function BatchClassroomPage({
               >
                 <FileText className="w-4 h-4" />
                 <span>এক্সাম রুম (Exam Room)</span>
+              </Link>
+
+              <Link
+                href={`/classroom/${batchId}/assignments`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white text-xs font-black shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
+              >
+                <Award className="w-4 h-4" />
+                <span>অ্যাসাইনমেন্ট (Assignments)</span>
+              </Link>
+
+              <Link
+                href={`/classroom/${batchId}/marksheet`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black shadow-lg shadow-purple-500/30 active:scale-95 transition-all"
+              >
+                <Award className="w-4 h-4" />
+                <span>মার্কশিট (Marksheet)</span>
               </Link>
 
               <Link

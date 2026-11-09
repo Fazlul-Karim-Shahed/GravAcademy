@@ -9,7 +9,17 @@
     "build:server": "npm --prefix server run build",
     "build:client": "npm --prefix client run build"
   },
-  "keywords": ["lms", "edtech", "grav-academy", "nextjs", "express", "mongodb"],
+  "keywords": [
+    "lms",
+    "edtech",
+    "grav-academy",
+    "nextjs",
+    "express",
+    "mongodb"
+  ],
   "author": "Grav Academy",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  }
 }
