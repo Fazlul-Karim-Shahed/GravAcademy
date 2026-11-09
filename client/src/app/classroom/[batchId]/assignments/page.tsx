@@ -526,16 +526,13 @@ export default function AssignmentRoomPage({
                   {/* Actions */}
                   <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                     {isTeacherOrAdmin ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenReview(assignment)}
-                          className="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                        >
-                          <FileCheck className="w-3.5 h-3.5" />
-                          <span>সাবমিশন ও মূল্যায়ন ({assignment.submissionStats?.total || 0})</span>
-                        </button>
-                      </>
+                      <Link
+                        href={`/classroom/${batchId}/assignments/${assignment._id}/submissions`}
+                        className="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <FileCheck className="w-3.5 h-3.5" />
+                        <span>সাবমিশন ও মূল্যায়ন ({assignment.submissionStats?.total || 0})</span>
+                      </Link>
                     ) : (
                       <button
                         type="button"

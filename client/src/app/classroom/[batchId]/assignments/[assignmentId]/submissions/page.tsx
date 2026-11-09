@@ -1,0 +1,544 @@
+'use client';
+
+import React, { useEffect, useState, use } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import {
+  FileCheck,
+  ArrowLeft,
+  Users,
+  Award,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  ExternalLink,
+  MessageSquare,
+  File,
+  Check,
+  Search,
+  ChevronRight,
+  Filter,
+} from 'lucide-react';
+
+interface SubmissionItem {
+  _id: string;
+  studentId: {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    studentId?: string;
+    avatarUrl?: string;
+  };
+  submittedAt: string;
+  submissionText?: string;
+  fileUrl?: string;
+  fileName?: string;
+  isLate: boolean;
+  isEvaluated: boolean;
+  score?: number;
+  feedback?: string;
+  evaluatedAt?: string;
+}
+
+interface AssignmentDetails {
+  _id: string;
+  title: string;
+  description: string;
+  totalMarks: number;
+  passMarks: number;
+  dueDate: string;
+  allowLateSubmission: boolean;
+  attachmentUrl?: string;
+}
+
+export default function AssignmentSubmissionsPage({
+  params,
+}: {
+  params: Promise<{ batchId: string; assignmentId: string }>;
+}) {
+  const resolvedParams = use(params);
+  const { batchId, assignmentId } = resolvedParams;
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [assignment, setAssignment] = useState<AssignmentDetails | null>(null);
+  const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterMode, setFilterMode] = useState<'all' | 'pending' | 'evaluated'>('all');
+
+  // Selected Submission for Review / Evaluation Drawer
+  const [selectedSub, setSelectedSub] = useState<SubmissionItem | null>(null);
+  const [gradeScore, setGradeScore] = useState<number>(0);
+  const [gradeFeedback, setGradeFeedback] = useState<string>('');
+  const [savingGrade, setSavingGrade] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push(`/login?redirect=/classroom/${batchId}/assignments/${assignmentId}/submissions`);
+      return;
+    }
+    if (user && assignmentId) {
+      loadData();
+    }
+  }, [batchId, assignmentId, user, authLoading]);
+
+  const loadData = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [assignmentRes, subsRes] = await Promise.all([
+        api.get(`/assignments/${assignmentId}`),
+        api.get(`/assignments/${assignmentId}/submissions`),
+      ]);
+
+      if (assignmentRes.data?.success) {
+        setAssignment(assignmentRes.data.data);
+      }
+      if (subsRes.data?.success) {
+        setSubmissions(subsRes.data.data);
+      }
+    } catch (err: any) {
+      console.error('Failed to load assignment submissions:', err);
+      setError(err.response?.data?.message || 'সাবমিশন ও অ্যাসাইনমেন্ট তথ্য লোড করা যায়নি');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectSubmission = (sub: SubmissionItem) => {
+    setSelectedSub(sub);
+    setGradeScore(sub.score || 0);
+    setGradeFeedback(sub.feedback || '');
+    setSaveSuccess(false);
+  };
+
+  const handleSaveGrade = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedSub || !assignment) return;
+
+    if (gradeScore < 0 || gradeScore > assignment.totalMarks) {
+      alert(`নম্বর অবশ্যই ০ থেকে ${assignment.totalMarks} এর মধ্যে হতে হবে।`);
+      return;
+    }
+
+    setSavingGrade(true);
+    try {
+      const res = await api.put(`/assignments/${assignmentId}/grade/${selectedSub._id}`, {
+        score: gradeScore,
+        feedback: gradeFeedback,
+      });
+
+      if (res.data?.success) {
+        setSaveSuccess(true);
+        // Update local state smoothly
+        setSubmissions((prev) =>
+          prev.map((s) =>
+            s._id === selectedSub._id
+              ? {
+                  ...s,
+                  isEvaluated: true,
+                  score: gradeScore,
+                  feedback: gradeFeedback,
+                  evaluatedAt: new Date().toISOString(),
+                }
+              : s
+          )
+        );
+        setSelectedSub((prev) =>
+          prev ? { ...prev, isEvaluated: true, score: gradeScore, feedback: gradeFeedback } : null
+        );
+        setTimeout(() => setSaveSuccess(false), 3000);
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'মূল্যায়ন সংরক্ষণ করতে সমস্যা হয়েছে');
+    } finally {
+      setSavingGrade(false);
+    }
+  };
+
+  // Stats calculation
+  const totalSubmissions = submissions.length;
+  const evaluatedCount = submissions.filter((s) => s.isEvaluated).length;
+  const pendingCount = totalSubmissions - evaluatedCount;
+  const averageScore =
+    evaluatedCount > 0
+      ? Math.round(
+          submissions.filter((s) => s.isEvaluated).reduce((acc, s) => acc + (s.score || 0), 0) /
+            evaluatedCount
+        )
+      : 0;
+
+  // Filtered submissions
+  const filteredSubmissions = submissions.filter((s) => {
+    const matchesSearch =
+      s.studentId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.studentId?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (s.studentId?.studentId && s.studentId.studentId.includes(searchQuery));
+
+    if (!matchesSearch) return false;
+    if (filterMode === 'pending') return !s.isEvaluated;
+    if (filterMode === 'evaluated') return s.isEvaluated;
+    return true;
+  });
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
+      {/* Top Header Bar */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/classroom/${batchId}/assignments`}
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                title="অ্যাসাইনমেন্ট লিস্টে ফিরে যান"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+              <div>
+                <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-0.5">
+                  <Link href={`/classroom/${batchId}`} className="hover:underline">
+                    ক্লাসরুম
+                  </Link>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                  <Link href={`/classroom/${batchId}/assignments`} className="hover:underline">
+                    অ্যাসাইনমেন্ট
+                  </Link>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                  <span className="text-purple-600 dark:text-purple-400">সাবমিশন ও মূল্যায়ন</span>
+                </div>
+                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileCheck className="w-5 h-5 text-purple-600" />
+                  <span>{assignment?.title || 'অ্যাসাইনমেন্ট মূল্যায়ন'}</span>
+                </h1>
+              </div>
+            </div>
+
+            {assignment && (
+              <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300">
+                <Award className="w-4 h-4" />
+                <span>পূর্ণমান: {assignment.totalMarks} | পাস: {assignment.passMarks}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-semibold text-slate-500">সাবমিশন তালিকা লোড হচ্ছে...</p>
+          </div>
+        ) : error ? (
+          <div className="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-sm font-semibold flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <span>{error}</span>
+          </div>
+        ) : (
+          <>
+            {/* KPI Summary Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
+                  <Users className="w-4 h-4 text-blue-500" /> মোট জমা পড়েছে
+                </span>
+                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                  {totalSubmissions} <span className="text-xs font-medium text-slate-500">টি</span>
+                </span>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> মূল্যায়িত
+                </span>
+                <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                  {evaluatedCount} <span className="text-xs font-medium text-slate-500">টি</span>
+                </span>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
+                  <Clock className="w-4 h-4 text-amber-500" /> মূল্যায়ন বাকি
+                </span>
+                <span className="text-2xl font-black text-amber-600 dark:text-amber-400">
+                  {pendingCount} <span className="text-xs font-medium text-slate-500">টি</span>
+                </span>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
+                  <Award className="w-4 h-4 text-purple-500" /> গড় নম্বর
+                </span>
+                <span className="text-2xl font-black text-purple-600 dark:text-purple-400">
+                  {averageScore} <span className="text-xs font-medium text-slate-500">/ {assignment?.totalMarks || 100}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Filter and Search Bar */}
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="শিক্ষার্থীর নাম, ইউজার আইডি অথবা ইমেইল দিয়ে খুঁজুন..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-slate-400" />
+                <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+                  <button
+                    onClick={() => setFilterMode('all')}
+                    className={`px-3 py-1 rounded-lg transition-all ${
+                      filterMode === 'all'
+                        ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-xs font-bold'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    সকল ({totalSubmissions})
+                  </button>
+                  <button
+                    onClick={() => setFilterMode('pending')}
+                    className={`px-3 py-1 rounded-lg transition-all ${
+                      filterMode === 'pending'
+                        ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs font-bold'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    বাকি ({pendingCount})
+                  </button>
+                  <button
+                    onClick={() => setFilterMode('evaluated')}
+                    className={`px-3 py-1 rounded-lg transition-all ${
+                      filterMode === 'evaluated'
+                        ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs font-bold'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    মূল্যায়িত ({evaluatedCount})
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Split Screen Layout: List on Left, Active Evaluation Panel on Right */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Left Column: Submissions Table / List */}
+              <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">
+                  সাবমিশন তালিকা ({filteredSubmissions.length})
+                </h3>
+
+                {filteredSubmissions.length === 0 ? (
+                  <div className="text-center py-12 text-slate-400 text-xs font-semibold">
+                    কোনো শিক্ষার্থীর সাবমিশন পাওয়া যায়নি।
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredSubmissions.map((sub) => {
+                      const isSelected = selectedSub?._id === sub._id;
+                      const subTime = new Date(sub.submittedAt);
+
+                      return (
+                        <div
+                          key={sub._id}
+                          onClick={() => handleSelectSubmission(sub)}
+                          className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col gap-2 ${
+                            isSelected
+                              ? 'border-purple-500 bg-purple-50/40 dark:bg-purple-950/20 shadow-xs'
+                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs">
+                                {sub.studentId?.name?.charAt(0) || 'S'}
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                  {sub.studentId?.name || 'শিক্ষার্থী'}
+                                </h4>
+                                <span className="text-[11px] text-slate-500">
+                                  {sub.studentId?.studentId || sub.studentId?.email}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              {sub.isLate && (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400">
+                                  লেইট
+                                </span>
+                              )}
+                              <span
+                                className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                                  sub.isEvaluated
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
+                                    : 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'
+                                }`}
+                              >
+                                {sub.isEvaluated
+                                  ? `মূল্যায়িত (${sub.score}/${assignment?.totalMarks})`
+                                  : 'অপেক্ষমান'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {subTime.toLocaleString('bn-BD', {
+                                day: 'numeric',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                            {sub.fileUrl && (
+                              <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold">
+                                <File className="w-3 h-3" /> ফাইল সংযুক্ত
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Active Evaluation Form & Answer Review */}
+              <div className="lg:col-span-5 sticky top-24">
+                {selectedSub ? (
+                  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md flex flex-col gap-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                          সাবমিশন পর্যালোচনা
+                        </h3>
+                        <p className="text-xs text-slate-500">{selectedSub.studentId?.name}</p>
+                      </div>
+                      <span
+                        className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                          selectedSub.isEvaluated
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                            : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+                        }`}
+                      >
+                        {selectedSub.isEvaluated ? 'মূল্যায়িত' : 'অমূল্যায়িত'}
+                      </span>
+                    </div>
+
+                    {/* Student Written Text Note */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        শিক্ষার্থীর টেক্সট উত্তর / সমাধান:
+                      </label>
+                      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto">
+                        {selectedSub.submissionText || 'কোনো লিখিত উত্তর উল্লেখ করা হয়নি।'}
+                      </div>
+                    </div>
+
+                    {/* Attached File */}
+                    {selectedSub.fileUrl && (
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          সংযুক্ত অ্যাসাইনমেন্ট ফাইল (Google Drive):
+                        </label>
+                        <a
+                          href={selectedSub.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-between p-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold transition-colors"
+                        >
+                          <span className="flex items-center gap-2 truncate">
+                            <File className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{selectedSub.fileName || 'ডকুমেন্ট ফাইল'}</span>
+                          </span>
+                          <ExternalLink className="w-4 h-4 shrink-0" />
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Evaluation Form */}
+                    <form onSubmit={handleSaveGrade} className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                            প্রদত্ত নম্বর (Marks) *
+                          </label>
+                          <span className="text-[11px] font-semibold text-slate-500">
+                            সর্বোচ্চ: {assignment?.totalMarks}
+                          </span>
+                        </div>
+                        <input
+                          type="number"
+                          required
+                          min={0}
+                          max={assignment?.totalMarks || 100}
+                          value={gradeScore}
+                          onChange={(e) => setGradeScore(Number(e.target.value))}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                          শিক্ষকের মন্তব্য ও দিকনির্দেশনা (Feedback)
+                        </label>
+                        <textarea
+                          rows={3}
+                          placeholder="শিক্ষার্থীকে উন্নতির জন্য পরামর্শ বা উৎসাহমূলক মন্তব্য লিখুন..."
+                          value={gradeFeedback}
+                          onChange={(e) => setGradeFeedback(e.target.value)}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-xs focus:ring-2 focus:ring-purple-500 outline-none"
+                        />
+                      </div>
+
+                      {saveSuccess && (
+                        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+                          <Check className="w-4 h-4" />
+                          <span>নম্বর ও মূল্যায়ন সফলভাবে সংরক্ষিত হয়েছে!</span>
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={savingGrade}
+                        className="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <FileCheck className="w-4 h-4" />
+                        <span>{savingGrade ? 'সংরক্ষণ হচ্ছে...' : 'মূল্যায়ন ও গ্রেড নিশ্চিত করুন'}</span>
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs text-center flex flex-col items-center justify-center">
+                    <FileCheck className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-white">
+                      কোনো সাবমিশন নির্বাচন করা হয়নি
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-1 max-w-xs">
+                      বামপাশের তালিকা থেকে যেকোনো শিক্ষার্থীর সাবমিশনে ক্লিক করুন বিস্তারিত পর্যালোচনা ও নম্বর দেওয়ার জন্য।
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
