@@ -35,6 +35,7 @@ export default function AdminDashboardPage() {
     liveClassesCount: 0,
     admissionsCount: 0,
     jobsCount: 0,
+    financeTotal: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -45,13 +46,14 @@ export default function AdminDashboardPage() {
   const loadOverview = async () => {
     setLoading(true);
     try {
-      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes, jobsRes] = await Promise.all([
+      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes, jobsRes, financeRes] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
         api.get('/users').catch(() => ({ data: { count: 1 } })),
         api.get('/live-classes').catch(() => ({ data: { count: 0 } })),
         api.get('/enrollments/admin-list?limit=1').catch(() => ({ data: { total: 0 } })),
         api.get('/admin/jobs?limit=1').catch(() => ({ data: { total: 0 } })),
+        api.get('/finance/admin-payments?limit=1').catch(() => ({ data: { summary: { totalRevenue: 0 } } })),
       ]);
 
       setStats({
@@ -61,6 +63,7 @@ export default function AdminDashboardPage() {
         liveClassesCount: liveRes.data.count || liveRes.data.data?.length || 0,
         admissionsCount: enrollRes.data.total || 0,
         jobsCount: jobsRes.data.total || 0,
+        financeTotal: financeRes.data.summary?.totalRevenue || 0,
       });
     } catch (e) {
       console.error(e);
@@ -296,7 +299,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  ৳০
+                  ৳{stats.financeTotal.toLocaleString('bn-BD')}
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
                   ফাইন্যান্স ম্যানেজমেন্ট

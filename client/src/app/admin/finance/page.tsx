@@ -4,6 +4,7 @@ import React, { useEffect, useState, useId } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { formatBDDate } from '@/lib/dateUtils';
+import { useAuth } from '@/context/AuthContext';
 import {
   ArrowLeft,
   DollarSign,
@@ -78,11 +79,16 @@ export interface GroupedStudentBatchPayment {
 }
 
 export default function AdminFinancePage() {
+  const { user } = useAuth();
+  const can = (permission: string) => user?.effectivePermissions?.includes(permission) ?? false;
   const [payments, setPayments] = useState<PaymentReceiptData[]>([]);
   const [stats, setStats] = useState<FinancialStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('all');
+  const [confirmDialog, setConfirmDialog] = useState<{ message: string; onConfirm: () => void } | null>(null);
+  const [actionNotice, setActionNotice] = useState('');
+  const [actionErrorMsg, setActionErrorMsg] = useState('');
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
   const [activeReceiptPayments, setActiveReceiptPayments] = useState<PaymentReceiptData[]>([]);
   const [activeDetailsGroup, setActiveDetailsGroup] = useState<GroupedStudentBatchPayment | null>(null);
@@ -294,7 +300,18 @@ export default function AdminFinancePage() {
       ? `আপনি কি "${group.studentId?.name}" এর এই কোর্সের ফি ম্যানুয়ালি "পরিশোধিত" (Paid) করতে চান?\n\n• পরিশোধিত করলে মোট বকেয়ার (Due) হিসেব থেকে এই বকেয়াটি বাদ হয়ে যাবে।\n• তবে শিক্ষার্থীর রো-তে পরিশোধিত ও বকেয়ার অংক যথারীতি প্রদর্শিত থাকবে।`
       : `আপনি কি "${group.studentId?.name}" এর ম্যানুয়াল পেইড স্ট্যাটাস প্রত্যাহার করতে চান?\n\n• এর ফলে বকেয়া থাকলে তা পুনরায় সিস্টেমের মোট বকেয়াতে যোগ হবে।`;
 
-    if (!window.confirm(confirmMsg)) return;
+    setConfirmDialog({
+      message: confirmMsg,
+      onConfirm: () => executeToggleManualPaid(group, studentId, batchId, willBePaid),
+    });
+  };
+
+  const executeToggleManualPaid = async (
+    group: GroupedStudentBatchPayment,
+    studentId: string,
+    batchId: string,
+    willBePaid: boolean
+  ) => {
 
     setTogglingPaidKey(group.key);
     try {
@@ -319,11 +336,11 @@ export default function AdminFinancePage() {
           });
         }
       } else {
-        alert(res.data?.message || 'স্ট্যাটাস আপডেট করা সম্ভব হয়নি');
+        setActionErrorMsg(res.data?.message || 'স্ট্যাটাস আপডেট করা সম্ভব হয়নি');
       }
     } catch (err: any) {
       console.error('Toggle manual paid error:', err);
-      alert(err.response?.data?.message || 'স্ট্যাটাস আপডেট করতে ত্রুটি ঘটেছে');
+      setActionErrorMsg(err.response?.data?.message || 'স্ট্যাটাস আপডেট করতে ত্রুটি ঘটেছে');
     } finally {
       setTogglingPaidKey(null);
     }
@@ -357,7 +374,7 @@ export default function AdminFinancePage() {
       });
 
       if (res.data?.success) {
-        alert(res.data?.message || 'টাকা সফলভাবে রিফান্ড করা হয়েছে!');
+        setActionNotice(res.data?.message || 'টাকা সফলভাবে রিফান্ড করা হয়েছে!');
         setRefundTargetGroup(null);
         setRefundAmount('');
         setRefundTrxId('');
@@ -385,18 +402,21 @@ export default function AdminFinancePage() {
 
   const handleDeletePayment = async (paymentId: string, receiptNo: string, amount: number) => {
     if (!paymentId || paymentId.startsWith('due_')) {
-      alert('এটি একটি বকেয়া নোটিশ, কোনো রেকর্ডকৃত লেনদেন নয়।');
+      setActionErrorMsg('এটি একটি বকেয়া নোটিশ, কোনো রেকর্ডকৃত লেনদেন নয়।');
       return;
     }
 
     const confirmMsg = `আপনি কি নিশ্চিত যে রিসিট "${receiptNo}" (৳${amount.toLocaleString('bn-BD')}) ডিলিট করতে চান?\n\nএটি ডিলিট করলে শিক্ষার্থীর পরিশোধিত টাকার পরিমাণ হ্রাস পাবে এবং বকেয়া পুনরায় হিসাব হবে।`;
-    if (!window.confirm(confirmMsg)) return;
+    setConfirmDialog({ message: confirmMsg, onConfirm: () => executeDeletePayment(paymentId) });
+  };
+
+  const executeDeletePayment = async (paymentId: string) => {
 
     setDeletingPaymentId(paymentId);
     try {
       const res = await api.delete(`/finance/payments/${paymentId}`);
       if (res.data?.success) {
-        alert('পেমেন্ট ট্রানজ্যাকশনটি সফলভাবে মুছে ফেলা হয়েছে!');
+        setActionNotice('পেমেন্ট ট্রানজ্যাকশনটি সফলভাবে মুছে ফেলা হয়েছে!');
         
         // Update activeDetailsGroup if currently open
         if (activeDetailsGroup) {
@@ -419,11 +439,11 @@ export default function AdminFinancePage() {
         // Refetch main list and summary stats
         fetchPayments();
       } else {
-        alert(res.data?.message || 'পেমেন্ট মুছে ফেলা সম্ভব হয়নি');
+        setActionErrorMsg(res.data?.message || 'পেমেন্ট মুছে ফেলা সম্ভব হয়নি');
       }
     } catch (err: any) {
       console.error('Delete payment error:', err);
-      alert(err.response?.data?.message || 'পেমেন্ট ডিলিট করতে ত্রুটি ঘটেছে');
+      setActionErrorMsg(err.response?.data?.message || 'পেমেন্ট ডিলিট করতে ত্রুটি ঘটেছে');
     } finally {
       setDeletingPaymentId(null);
     }
@@ -590,7 +610,39 @@ export default function AdminFinancePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
+        {/* Non-blocking action notice/error banners (replace blocking alert()) */}
+        {actionNotice && (
+          <div className="mb-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <span className="font-bold">{actionNotice}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActionNotice('')}
+              className="text-emerald-600 hover:text-emerald-800 font-black px-2"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+        {actionErrorMsg && (
+          <div className="mb-4 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <span className="font-bold">{actionErrorMsg}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActionErrorMsg('')}
+              className="text-rose-600 hover:text-rose-800 font-black px-2"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* Navigation & Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3">
@@ -1989,7 +2041,7 @@ export default function AdminFinancePage() {
                         : 'বকেয়া কাউন্ট হচ্ছে'}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      {activeDetailsGroup.totalDue < 0 && (
+                      {activeDetailsGroup.totalDue < 0 && can('finance.refund') && (
                         <button
                           type="button"
                           onClick={() => {
@@ -2002,7 +2054,7 @@ export default function AdminFinancePage() {
                           <RotateCcw className="w-3 h-3" /> টাকা ফেরত দিন
                         </button>
                       )}
-                      {activeDetailsGroup.totalDue !== 0 && (
+                      {activeDetailsGroup.totalDue !== 0 && can('finance.manual_paid') && (
                         <button
                           type="button"
                           disabled={togglingPaidKey === activeDetailsGroup.key}
@@ -2121,7 +2173,7 @@ export default function AdminFinancePage() {
                               </button>
                             )}
 
-                            {p._id && !p._id.startsWith('due_') && (
+                            {p._id && !p._id.startsWith('due_') && can('finance.delete') && (
                               <button
                                 disabled={deletingPaymentId === p._id}
                                 onClick={() => handleDeletePayment(p._id, p.receiptNo, p.amountPaid || 0)}
@@ -2152,6 +2204,37 @@ export default function AdminFinancePage() {
                 className="px-5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
               >
                 বন্ধ করুন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generic confirm dialog (non-blocking, replaces window.confirm()) */}
+      {confirmDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mb-4 whitespace-pre-line">
+              {confirmDialog.message}
+            </h3>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmDialog(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const action = confirmDialog.onConfirm;
+                  setConfirmDialog(null);
+                  action();
+                }}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
+              >
+                নিশ্চিত করুন
               </button>
             </div>
           </div>

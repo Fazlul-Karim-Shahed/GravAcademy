@@ -16,6 +16,8 @@ import {
   UserCheck,
   UserPlus,
   Filter,
+  Link2,
+  X,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
@@ -76,6 +78,118 @@ export default function AdminUsersPage() {
     fetchUsers(1);
   };
 
+  // Guardian <-> Student linking modal
+  const [linkModalGuardian, setLinkModalGuardian] = useState<UserRecord | null>(null);
+  const [allStudents, setAllStudents] = useState<UserRecord[]>([]);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+  const [loadingLinkModal, setLoadingLinkModal] = useState(false);
+  const [savingLink, setSavingLink] = useState(false);
+  const [linkError, setLinkError] = useState('');
+  const [linkStudentSearch, setLinkStudentSearch] = useState('');
+
+  const openLinkModal = async (guardian: UserRecord) => {
+    setLinkModalGuardian(guardian);
+    setLinkError('');
+    setLinkStudentSearch('');
+    setLoadingLinkModal(true);
+    try {
+      const [guardianRes, studentsRes] = await Promise.all([
+        api.get(`/users/${guardian._id}`),
+        api.get('/users', { params: { role: 'student', limit: 500 } }),
+      ]);
+      const linked = (guardianRes.data?.data?.guardianDetails?.linkedStudents || []) as any[];
+      setSelectedStudentIds(linked.map((s: any) => (typeof s === 'string' ? s : s._id)));
+      setAllStudents(studentsRes.data?.data || []);
+    } catch (e) {
+      setLinkError('তথ্য লোড করতে সমস্যা হয়েছে');
+    } finally {
+      setLoadingLinkModal(false);
+    }
+  };
+
+  const toggleStudentSelection = (studentId: string) => {
+    setSelectedStudentIds((prev) =>
+      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId]
+    );
+  };
+
+  const saveGuardianLinks = async () => {
+    if (!linkModalGuardian) return;
+    setSavingLink(true);
+    setLinkError('');
+    try {
+      const res = await api.put(`/users/${linkModalGuardian._id}/link-students`, {
+        studentIds: selectedStudentIds,
+      });
+      if (res.data?.success) {
+        setLinkModalGuardian(null);
+      } else {
+        setLinkError(res.data?.message || 'সংযোগ আপডেট করা যায়নি');
+      }
+    } catch (err: any) {
+      setLinkError(err.response?.data?.message || 'সংযোগ আপডেট করতে সমস্যা হয়েছে');
+    } finally {
+      setSavingLink(false);
+    }
+  };
+
+  const filteredModalStudents = allStudents.filter((s) => {
+    if (!linkStudentSearch.trim()) return true;
+    const q = linkStudentSearch.trim().toLowerCase();
+    return s.name.toLowerCase().includes(q) || (s.userId || '').toLowerCase().includes(q);
+  });
+
+  // Create Staff Account (Teacher / Guardian / Employee) modal
+  const [showCreateStaffModal, setShowCreateStaffModal] = useState(false);
+  const [staffName, setStaffName] = useState('');
+  const [staffEmail, setStaffEmail] = useState('');
+  const [staffPhone, setStaffPhone] = useState('');
+  const [staffPassword, setStaffPassword] = useState('');
+  const [staffRole, setStaffRole] = useState<'teacher' | 'guardian' | 'employee'>('teacher');
+  const [creatingStaff, setCreatingStaff] = useState(false);
+  const [createStaffError, setCreateStaffError] = useState('');
+  const [createStaffSuccess, setCreateStaffSuccess] = useState('');
+
+  const resetStaffForm = () => {
+    setStaffName('');
+    setStaffEmail('');
+    setStaffPhone('');
+    setStaffPassword('');
+    setStaffRole('teacher');
+    setCreateStaffError('');
+  };
+
+  const handleCreateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreateStaffError('');
+    setCreatingStaff(true);
+    try {
+      const res = await api.post('/users/create-staff', {
+        name: staffName.trim(),
+        email: staffEmail.trim() || undefined,
+        phone: staffPhone.trim() || undefined,
+        password: staffPassword,
+        role: staffRole,
+      });
+      if (res.data?.success) {
+        setCreateStaffSuccess(`"${staffName}" সফলভাবে তৈরি হয়েছে (ID: ${res.data.data?.userId})`);
+        resetStaffForm();
+        fetchUsers(1);
+        setPage(1);
+        setTimeout(() => {
+          setShowCreateStaffModal(false);
+          setCreateStaffSuccess('');
+        }, 1800);
+      } else {
+        setCreateStaffError(res.data?.message || 'অ্যাকাউন্ট তৈরি করা যায়নি');
+      }
+    } catch (err: any) {
+      setCreateStaffError(err.response?.data?.message || 'অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে');
+    } finally {
+      setCreatingStaff(false);
+    }
+  };
+
   const handleRoleChange = (role: string) => {
     setSelectedRole(role);
     setPage(1);
@@ -115,6 +229,14 @@ export default function AdminUsersPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowCreateStaffModal(true)}
+              className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>নতুন স্টাফ তৈরি করুন</span>
+            </button>
             <Link
               href="/admin/admissions"
               className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
@@ -245,6 +367,17 @@ export default function AdminUsersPage() {
                     </span>
                   </div>
 
+                  {u.role === 'guardian' && (
+                    <button
+                      type="button"
+                      onClick={() => openLinkModal(u)}
+                      className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/70 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors border border-amber-200/70 dark:border-amber-800 shadow-2xs"
+                    >
+                      <Link2 className="w-3.5 h-3.5" />
+                      <span>শিক্ষার্থী লিংক করুন</span>
+                    </button>
+                  )}
+
                   <Link
                     href={`/admin/users/${u._id}/permissions`}
                     className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-slate-700 shadow-2xs"
@@ -362,14 +495,26 @@ export default function AdminUsersPage() {
 
                       {/* Action */}
                       <td className="py-3.5 px-4 sm:px-6 text-right">
-                        <Link
-                          href={`/admin/users/${u._id}/permissions`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors shadow-2xs"
-                        >
-                          <Key className="w-3.5 h-3.5" />
-                          <span>পারমিশন ও কন্ট্রোল</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </Link>
+                        <div className="inline-flex items-center gap-2">
+                          {u.role === 'guardian' && (
+                            <button
+                              type="button"
+                              onClick={() => openLinkModal(u)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/70 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors shadow-2xs"
+                            >
+                              <Link2 className="w-3.5 h-3.5" />
+                              <span>শিক্ষার্থী লিংক করুন</span>
+                            </button>
+                          )}
+                          <Link
+                            href={`/admin/users/${u._id}/permissions`}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors shadow-2xs"
+                          >
+                            <Key className="w-3.5 h-3.5" />
+                            <span>পারমিশন ও কন্ট্রোল</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -435,6 +580,215 @@ export default function AdminUsersPage() {
         </div>
 
       </div>
+
+      {/* Create Staff Account Modal (Teacher / Guardian / Employee) */}
+      {showCreateStaffModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 className="text-sm font-black text-slate-900 dark:text-white">নতুন স্টাফ অ্যাকাউন্ট তৈরি করুন</h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCreateStaffModal(false);
+                  resetStaffForm();
+                }}
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateStaff} className="p-5 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">রোল</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { id: 'teacher', label: 'শিক্ষক' },
+                    { id: 'guardian', label: 'অভিভাবক' },
+                    { id: 'employee', label: 'কর্মচারী' },
+                  ] as const).map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setStaffRole(r.id)}
+                      className={`py-2 rounded-xl text-xs font-bold transition-colors ${
+                        staffRole === r.id
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">পূর্ণ নাম *</label>
+                <input
+                  type="text"
+                  required
+                  value={staffName}
+                  onChange={(e) => setStaffName(e.target.value)}
+                  placeholder="যেমন: রাকিব আল হাসান"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">ইমেইল</label>
+                  <input
+                    type="email"
+                    value={staffEmail}
+                    onChange={(e) => setStaffEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল</label>
+                  <input
+                    type="text"
+                    value={staffPhone}
+                    onChange={(e) => setStaffPhone(e.target.value)}
+                    placeholder="017XXXXXXXX"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 -mt-2">ইমেইল অথবা মোবাইলের মধ্যে অন্তত একটি দিতে হবে</p>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">পাসওয়ার্ড *</label>
+                <input
+                  type="text"
+                  required
+                  minLength={6}
+                  value={staffPassword}
+                  onChange={(e) => setStaffPassword(e.target.value)}
+                  placeholder="কমপক্ষে ৬ অক্ষর"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {createStaffError && (
+                <div className="text-xs text-rose-600 font-bold">{createStaffError}</div>
+              )}
+              {createStaffSuccess && (
+                <div className="text-xs text-emerald-600 font-bold">{createStaffSuccess}</div>
+              )}
+
+              <button
+                type="submit"
+                disabled={creatingStaff}
+                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
+              >
+                {creatingStaff ? 'তৈরি হচ্ছে...' : 'অ্যাকাউন্ট তৈরি করুন'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Guardian <-> Student Link Modal */}
+      {linkModalGuardian && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                  "{linkModalGuardian.name}" এর জন্য শিক্ষার্থী লিংক করুন
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  এই অভিভাবক শুধু নিচে নির্বাচিত শিক্ষার্থীদের তথ্য দেখতে পারবেন
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLinkModalGuardian(null)}
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={linkStudentSearch}
+                  onChange={(e) => setLinkStudentSearch(e.target.value)}
+                  placeholder="নাম বা আইডি দিয়ে শিক্ষার্থী খুঁজুন..."
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-1.5">
+              {loadingLinkModal ? (
+                <div className="text-center py-10 text-slate-400 text-xs font-medium">লোড হচ্ছে...</div>
+              ) : filteredModalStudents.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 text-xs font-medium">কোনো শিক্ষার্থী পাওয়া যায়নি</div>
+              ) : (
+                filteredModalStudents.map((s) => {
+                  const checked = selectedStudentIds.includes(s._id);
+                  return (
+                    <label
+                      key={s._id}
+                      className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-colors ${
+                        checked
+                          ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800'
+                          : 'bg-slate-50 dark:bg-slate-950/40 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleStudentSelection(s._id)}
+                        className="w-4 h-4 accent-blue-600"
+                      />
+                      <div className="min-w-0">
+                        <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{s.name}</div>
+                        <div className="text-[11px] text-slate-500">#{s.userId || '—'}</div>
+                      </div>
+                    </label>
+                  );
+                })
+              )}
+            </div>
+
+            {linkError && (
+              <div className="px-4 pb-2 text-xs text-rose-600 font-bold">{linkError}</div>
+            )}
+
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-xs text-slate-500 font-medium">
+                {selectedStudentIds.length} জন নির্বাচিত
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLinkModalGuardian(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="button"
+                  disabled={savingLink || loadingLinkModal}
+                  onClick={saveGuardianLinks}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
+                >
+                  {savingLink ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

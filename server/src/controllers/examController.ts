@@ -49,7 +49,10 @@ export const updateExamSchema = z.object({
   questionPaperUrl: z.string().optional(),
   mcqQuestions: z.array(mcqQuestionSchema).optional(),
   cqQuestions: z.array(cqQuestionSchema).optional(),
-});
+}).refine(
+  (data) => data.passMarks === undefined || data.totalMarks === undefined || data.passMarks <= data.totalMarks,
+  { message: 'পাস মার্ক মোট নম্বরের চেয়ে বেশি হতে পারবে না', path: ['passMarks'] }
+);
 
 /**
  * Update an existing examination and its questions (Teacher / Admin)
@@ -150,7 +153,10 @@ export const createExamSchema = z.object({
   questionPaperUrl: z.string().optional(),
   mcqQuestions: z.array(mcqQuestionSchema).optional(),
   cqQuestions: z.array(cqQuestionSchema).optional(),
-});
+}).refine(
+  (data) => data.passMarks <= data.totalMarks,
+  { message: 'পাস মার্ক মোট নম্বরের চেয়ে বেশি হতে পারবে না', path: ['passMarks'] }
+);
 
 /**
  * Create a new examination (Teacher / Admin)

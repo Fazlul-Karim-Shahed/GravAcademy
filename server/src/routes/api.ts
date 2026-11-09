@@ -19,6 +19,7 @@ import * as enrollmentCtrl from '../controllers/enrollmentController';
 import * as jobCtrl from '../controllers/jobPostController';
 import * as financeCtrl from '../controllers/financeController';
 import * as settingCtrl from '../controllers/settingController';
+import * as guardianCtrl from '../controllers/guardianController';
 
 const router = Router();
 const upload = multer({
@@ -397,6 +398,19 @@ router.put(
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.updateUserRole
 );
+router.put(
+  '/users/:id/link-students',
+  authenticate,
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  userAdminCtrl.linkGuardianStudents
+);
+router.post(
+  '/users/create-staff',
+  authenticate,
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  userAdminCtrl.createStaffAccount
+);
+router.get('/guardian/overview', authenticate, guardianCtrl.getGuardianOverview);
 router.get(
   '/audit-logs',
   authenticate,

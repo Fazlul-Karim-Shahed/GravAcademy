@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
-import { ROLES } from '../types/roles';
+import { ROLES, getEffectivePermissions } from '../types/roles';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 // Validation Schemas
@@ -204,6 +204,7 @@ export const login = async (req: Request, res: Response) => {
           role: user.role,
           avatarUrl: user.avatarUrl,
           customPermissions: user.customPermissions,
+          effectivePermissions: getEffectivePermissions(user.role, user.customPermissions),
         },
       },
     });
@@ -242,6 +243,7 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
           teacherDetails: user.teacherDetails,
           studentDetails: user.studentDetails,
           customPermissions: user.customPermissions,
+          effectivePermissions: getEffectivePermissions(user.role, user.customPermissions),
           guardianDetails: user.guardianDetails,
           employeeDetails: user.employeeDetails,
           createdAt: user.createdAt,
@@ -336,6 +338,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
           teacherDetails: user.teacherDetails,
           studentDetails: user.studentDetails,
           customPermissions: user.customPermissions,
+          effectivePermissions: getEffectivePermissions(user.role, user.customPermissions),
         },
       },
     });

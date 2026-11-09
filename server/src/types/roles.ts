@@ -425,3 +425,18 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
     PERMISSIONS.JOBS_VIEW,
   ],
 };
+
+/**
+ * Computes the full set of permission keys a user actually has:
+ * role defaults + custom overrides (superadmin implicitly has every permission).
+ */
+export function getEffectivePermissions(
+  role: UserRole,
+  customPermissions?: PermissionKey[]
+): PermissionKey[] {
+  if (role === ROLES.SUPERADMIN) {
+    return Object.values(PERMISSIONS);
+  }
+  const roleDefaults = ROLE_DEFAULT_PERMISSIONS[role] || [];
+  return Array.from(new Set([...roleDefaults, ...(customPermissions || [])]));
+}

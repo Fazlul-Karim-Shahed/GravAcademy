@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { toDatetimeLocalValue } from '@/lib/dateUtils';
 import {
   FileText,
   ArrowLeft,
@@ -66,12 +67,12 @@ export default function CreateExamPage({
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
     d.setMinutes(d.getMinutes() + 10);
-    return d.toISOString().slice(0, 16);
+    return toDatetimeLocalValue(d);
   });
   const [endDate, setEndDate] = useState(() => {
     const d = new Date();
     d.setHours(d.getHours() + 2);
-    return d.toISOString().slice(0, 16);
+    return toDatetimeLocalValue(d);
   });
 
   // Question Creation Options

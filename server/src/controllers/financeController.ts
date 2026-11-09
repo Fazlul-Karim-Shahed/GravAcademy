@@ -247,6 +247,19 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
 
+    // Synthetic "due" rows (enrollments with no real Payment record yet) have no real
+    // paymentMethod/batchId/date of their own, so including them while one of those filters
+    // is active would silently add unfiltered rows to the paginated result, making
+    // totalCount/totalPages inconsistent with what the active filter implies.
+    const hasNonSearchFilterActive = Boolean(
+      (paymentMethod && paymentMethod !== 'all') ||
+      (paymentType && paymentType !== 'all') ||
+      (batchId && batchId !== 'all') ||
+      studentId ||
+      startDate ||
+      endDate
+    );
+
     // Helper to calculate total due across all enrollments using their locked batchFee snapshot
     const calculateSystemTotalDue = async () => {
       // Exclude cancelled and manually-paid enrollments from system total due
@@ -387,7 +400,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
       // Create synthetic payment receipt objects for unpaid/self-enrolled students without payment records yet
       const syntheticDues: any[] = [];
-      for (const enr of dueEnrollments) {
+      for (const enr of hasNonSearchFilterActive ? [] : dueEnrollments) {
         const courseDoc = enr.courseId as any;
         const currentCoursePrice =
           courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
@@ -558,7 +571,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
       // Add synthetic unpaid items for enrollments that don't have a payment record yet
       const syntheticUnpaid: any[] = [];
-      for (const enr of dueEnrollments) {
+      for (const enr of hasNonSearchFilterActive ? [] : dueEnrollments) {
         const courseDoc = enr.courseId as any;
         const currentCoursePrice =
           courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { toDatetimeLocalValue } from '@/lib/dateUtils';
 import {
   FileText,
   ArrowLeft,
@@ -118,10 +119,10 @@ export default function EditExamPage({
         setNegativeMarkPerWrong(exam.negativeMarkPerWrong || 0);
 
         if (exam.startWindow) {
-          setStartDate(new Date(exam.startWindow).toISOString().slice(0, 16));
+          setStartDate(toDatetimeLocalValue(exam.startWindow));
         }
         if (exam.endWindow) {
-          setEndDate(new Date(exam.endWindow).toISOString().slice(0, 16));
+          setEndDate(toDatetimeLocalValue(exam.endWindow));
         }
 
         setExamType(exam.examType || 'system_questions');

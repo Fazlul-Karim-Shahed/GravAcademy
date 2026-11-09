@@ -132,9 +132,14 @@ export default function EditLessonPage({
       return;
     }
 
+    const cleanYtId = cleanYouTubeInput(youtubeVideoId);
+    if (cleanYtId && !/^[A-Za-z0-9_-]{11}$/.test(cleanYtId)) {
+      setMessage({ type: 'error', text: 'YouTube ভিডিও লিংক বা আইডি সঠিক নয়। সঠিক YouTube লিংক বা ১১ অক্ষরের ভিডিও আইডি দিন।' });
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const cleanYtId = cleanYouTubeInput(youtubeVideoId);
       const formattedResources = resources.map((r) => ({
         title: r.title,
         type: r.type,

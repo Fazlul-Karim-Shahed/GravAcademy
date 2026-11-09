@@ -31,6 +31,7 @@ export interface User {
     guardianPhone?: string;
   };
   customPermissions?: string[];
+  effectivePermissions?: string[];
 }
 
 interface AuthContextType {

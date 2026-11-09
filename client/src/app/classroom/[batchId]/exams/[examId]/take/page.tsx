@@ -86,6 +86,9 @@ export default function TakeExamPage({
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submittedNotice, setSubmittedNotice] = useState('');
+  const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
+  const [autoSubmitNotice, setAutoSubmitNotice] = useState('');
+  const [actionError, setActionError] = useState('');
 
   // Live Sync & Network tracking
   const [isLiveSyncing, setIsLiveSyncing] = useState(false);
@@ -263,22 +266,20 @@ export default function TakeExamPage({
       }
     } catch (err: any) {
       console.error(err);
-      alert('উত্তরপত্রের ফাইল আপলোড করতে সমস্যা হয়েছে');
+      setActionError('উত্তরপত্রের ফাইল আপলোড করতে সমস্যা হয়েছে');
     } finally {
       setUploadingDoc(false);
     }
   };
 
   const handleAutoSubmit = () => {
-    alert('⚠️ পরীক্ষার সময় শেষ হয়ে গিয়েছে! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা দেওয়া হচ্ছে।');
+    setAutoSubmitNotice('⚠️ পরীক্ষার সময় শেষ হয়ে গিয়েছে! আপনার উত্তর স্বয়ংক্রিয়ভাবে জমা দেওয়া হচ্ছে।');
     submitFinalExam();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (confirm('আপনি কি নিশ্চিত যে আপনার উত্তরপত্র জমা দিতে চান?')) {
-      submitFinalExam();
-    }
+    setShowConfirmSubmit(true);
   };
 
   const submitFinalExam = async () => {
@@ -316,7 +317,7 @@ export default function TakeExamPage({
       }
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.message || 'উত্তরপত্র জমা দিতে ব্যর্থ হয়েছে');
+      setActionError(err.response?.data?.message || 'উত্তরপত্র জমা দিতে ব্যর্থ হয়েছে');
       setSubmitting(false);
     }
   };
@@ -423,6 +424,31 @@ export default function TakeExamPage({
               <span className="font-bold">ইন্টারনেট সংযোগ সাময়িকভাবে বিচ্ছিন্ন: </span>
               চিন্তা করবেন না, আপনার সিলেক্ট করা সমস্ত উত্তর লোকাল স্টোরেজে নিরাপদে সংরক্ষিত হচ্ছে। পেজ রিলোড হলেও কোনো উত্তর হারাবে না!
             </div>
+          </div>
+        )}
+
+        {/* Auto-submit notice (non-blocking, replaces blocking alert()) */}
+        {autoSubmitNotice && (
+          <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <div className="font-bold">{autoSubmitNotice}</div>
+          </div>
+        )}
+
+        {/* Action error notice (non-blocking, replaces blocking alert()) */}
+        {actionError && (
+          <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <span className="font-bold">{actionError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActionError('')}
+              className="text-rose-600 hover:text-rose-800 font-black px-2"
+            >
+              ✕
+            </button>
           </div>
         )}
 
@@ -694,6 +720,39 @@ export default function TakeExamPage({
           </div>
         </form>
       </div>
+
+      {/* Non-blocking confirm-submit modal (replaces blocking window.confirm()) */}
+      {showConfirmSubmit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mb-2">
+              পরীক্ষা জমা দেওয়া নিশ্চিত করুন
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+              আপনি কি নিশ্চিত যে আপনার উত্তরপত্র জমা দিতে চান?
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConfirmSubmit(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConfirmSubmit(false);
+                  submitFinalExam();
+                }}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
+              >
+                হ্যাঁ, জমা দিন
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
