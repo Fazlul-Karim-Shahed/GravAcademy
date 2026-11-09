@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import TextEditor from '@/components/ui/TextEditor';
 import {
   FileText,
   PlusCircle,
@@ -438,9 +439,12 @@ export default function AssignmentRoomPage({
                     <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-2 mb-2">
                       {assignment.title}
                     </h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 leading-relaxed">
-                      {assignment.description || 'কোনো বিবরণ দেওয়া নেই'}
-                    </p>
+                    {assignment.description && (
+                      <div
+                        className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 leading-relaxed prose prose-xs dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: assignment.description }}
+                      />
+                    )}
 
                     <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
                       <div className="flex items-center justify-between">
@@ -565,7 +569,7 @@ export default function AssignmentRoomPage({
       {/* ================= MODAL: Teacher Create / Edit Assignment ================= */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl p-6 sm:p-7 shadow-2xl relative max-h-[92vh] overflow-y-auto">
             <button
               onClick={() => setShowCreateModal(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
@@ -595,15 +599,16 @@ export default function AssignmentRoomPage({
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  নির্দেশনা ও বিস্তারিত প্রশ্ন
+                  নির্দেশনা ও বিস্তারিত প্রশ্ন (রিচ টেক্সট এডিটর)
                 </label>
-                <textarea
-                  rows={4}
-                  placeholder="শিক্ষার্থীদের কী কী নির্দেশনা মেনে হোমওয়ার্ক সম্পন্ন করতে হবে তা উল্লেখ করুন..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                />
+                <div className="mt-1">
+                  <TextEditor
+                    value={formData.description}
+                    onChange={(val) => setFormData({ ...formData, description: val })}
+                    placeholder="শিক্ষার্থীদের কী কী নির্দেশনা মেনে হোমওয়ার্ক সম্পন্ন করতে হবে তা লিখুন (হেডিং, লিস্ট, বোল্ড ইত্যাদি ব্যবহার করতে পারেন)..."
+                    minHeight="180px"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
