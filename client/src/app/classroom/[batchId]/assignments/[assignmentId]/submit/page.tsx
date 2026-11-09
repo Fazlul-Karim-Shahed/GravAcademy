@@ -225,20 +225,48 @@ export default function StudentAssignmentSubmitPage({
             <div className="lg:col-span-2 space-y-6">
               {/* Previous Submission Status Banner */}
               {mySub && (
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3 ${
+                    mySub.isEvaluated
+                      ? 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800'
+                      : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800'
+                  }`}
+                >
+                  <CheckCircle2
+                    className={`w-5 h-5 shrink-0 mt-0.5 ${
+                      mySub.isEvaluated
+                        ? 'text-purple-600 dark:text-purple-400'
+                        : 'text-emerald-600 dark:text-emerald-400'
+                    }`}
+                  />
                   <div className="text-xs text-slate-700 dark:text-slate-300">
-                    <p className="font-bold text-emerald-800 dark:text-emerald-300">
-                      আপনি ইতোমধ্যেই এই অ্যাসাইনমেন্ট জমা দিয়েছেন!
+                    <p
+                      className={`font-bold ${
+                        mySub.isEvaluated
+                          ? 'text-purple-900 dark:text-purple-200 text-sm'
+                          : 'text-emerald-800 dark:text-emerald-300'
+                      }`}
+                    >
+                      {mySub.isEvaluated
+                        ? 'এই অ্যাসাইনমেন্টটি শিক্ষক কর্তৃক মূল্যায়িত ও চূড়ান্ত হয়েছে!'
+                        : 'আপনি ইতোমধ্যেই এই অ্যাসাইনমেন্ট জমা দিয়েছেন!'}
                     </p>
                     <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                      নিচে থেকে আপনার উত্তর পরিবর্তন বা আপডেট করে পুনরায় সাবমিট করতে পারেন।
+                      {mySub.isEvaluated
+                        ? 'যেহেতু শিক্ষক ইতোমধ্যে আপনার খাতা মূল্যায়ন করে নম্বর প্রদান করেছেন, তাই এই অ্যাসাইনমেন্টটি আর নতুন করে পরিবর্তন বা পুনরায় জমা দেওয়া যাবে না।'
+                        : 'নিচে থেকে আপনার উত্তর পরিবর্তন বা আপডেট করে পুনরায় সাবমিট করতে পারেন।'}
                     </p>
                     {mySub.isEvaluated && (
-                      <p className="mt-2 font-bold text-emerald-700 dark:text-emerald-400">
-                        প্রাপ্ত নম্বর: {mySub.score} / {assignment.totalMarks}{' '}
-                        {mySub.feedback && `(মন্তব্য: "${mySub.feedback}")`}
-                      </p>
+                      <div className="mt-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800/60">
+                        <span className="font-extrabold text-purple-700 dark:text-purple-300 text-xs">
+                          প্রাপ্ত মার্কস: {mySub.score} / {assignment.totalMarks}
+                        </span>
+                        {mySub.feedback && (
+                          <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-300 italic">
+                            শিক্ষকের মন্তব্য: "{mySub.feedback}"
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -340,23 +368,30 @@ export default function StudentAssignmentSubmitPage({
                     >
                       ফিরে যান
                     </Link>
-                    <button
-                      type="submit"
-                      disabled={submittingWork || (isOverdue && !assignment.allowLateSubmission && !mySub)}
-                      className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-                    >
-                      {submittingWork ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>জমা দেওয়া হচ্ছে...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" />
-                          <span>{mySub ? 'সাবমিশন আপডেট নিশ্চিত করুন' : 'নিশ্চিত অ্যাসাইনমেন্ট জমা দিন'}</span>
-                        </>
-                      )}
-                    </button>
+                    {mySub?.isEvaluated ? (
+                      <div className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-bold flex items-center gap-2 cursor-not-allowed border border-slate-200 dark:border-slate-700">
+                        <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                        <span>মূল্যায়ন সম্পন্ন (সাবমিশন লক করা)</span>
+                      </div>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={submittingWork || (isOverdue && !assignment.allowLateSubmission && !mySub)}
+                        className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                      >
+                        {submittingWork ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>জমা দেওয়া হচ্ছে...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            <span>{mySub ? 'সাবমিশন আপডেট নিশ্চিত করুন' : 'নিশ্চিত অ্যাসাইনমেন্ট জমা দিন'}</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </form>
               </div>
