@@ -307,6 +307,32 @@ export default function AdminDashboardPage() {
               </div>
             </Link>
 
+            {/* Card 8: Audit Log — superadmin only, same as the backend route */}
+            {user?.role === 'superadmin' && (
+              <Link
+                href="/admin/audit-logs"
+                className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-rose-400/80 dark:hover:border-rose-500/60 transition-all duration-300 flex flex-col justify-between"
+              >
+                <ShieldCheck className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-rose-500/10 dark:group-hover:text-rose-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+
+                <div className="relative z-10 flex items-center justify-between mb-3">
+                  <div className="w-9 h-9 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-100 dark:border-rose-900/50 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 group-hover:translate-x-0.5 transition-all" />
+                </div>
+
+                <div className="relative z-10">
+                  <div className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-1.5">
+                    অডিট লগ
+                  </div>
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
+                    সব সেনসিটিভ অ্যাকশনের রেকর্ড
+                  </div>
+                </div>
+              </Link>
+            )}
+
           </div>
         </div>
 
