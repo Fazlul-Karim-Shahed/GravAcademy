@@ -279,6 +279,21 @@ export default function AssignmentRoomPage({
     }
   };
 
+  // Delete Assignment
+  const handleDeleteAssignment = async (assignmentId: string) => {
+    if (!confirm('আপনি কি নিশ্চিতভাবে এই অ্যাসাইনমেন্টটি মুছে ফেলতে চান? এতে শিক্ষার্থীদের সাবমিশনও মুছে যাবে।')) {
+      return;
+    }
+    try {
+      const res = await api.delete(`/assignments/${assignmentId}`);
+      if (res.data?.success) {
+        setAssignments((prev) => prev.filter((a) => a._id !== assignmentId));
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'অ্যাসাইনমেন্ট মুছে ফেলতে সমস্যা হয়েছে');
+    }
+  };
+
   // Open Submissions Review
   const handleOpenReview = async (assignment: AssignmentItem) => {
     setActiveAssignmentForReview(assignment);
@@ -358,28 +373,13 @@ export default function AssignmentRoomPage({
               </Link>
 
               {isTeacherOrAdmin && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingAssignmentId(null);
-                    setFormData({
-                      title: '',
-                      description: '',
-                      totalMarks: 100,
-                      passMarks: 40,
-                      dueDate: '',
-                      allowLateSubmission: false,
-                      latePenaltyPercent: 0,
-                      attachmentUrl: '',
-                      isPublished: true,
-                    });
-                    setShowCreateModal(true);
-                  }}
+                <Link
+                  href={`/classroom/${batchId}/assignments/create`}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>নতুন অ্যাসাইনমেন্ট তৈরি করুন</span>
-                </button>
+                </Link>
               )}
             </div>
           </div>
@@ -526,13 +526,30 @@ export default function AssignmentRoomPage({
                   {/* Actions */}
                   <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                     {isTeacherOrAdmin ? (
-                      <Link
-                        href={`/classroom/${batchId}/assignments/${assignment._id}/submissions`}
-                        className="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <FileCheck className="w-3.5 h-3.5" />
-                        <span>সাবমিশন ও মূল্যায়ন ({assignment.submissionStats?.total || 0})</span>
-                      </Link>
+                      <>
+                        <Link
+                          href={`/classroom/${batchId}/assignments/${assignment._id}/submissions`}
+                          className="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <FileCheck className="w-3.5 h-3.5" />
+                          <span>সাবমিশন ও মূল্যায়ন ({assignment.submissionStats?.total || 0})</span>
+                        </Link>
+                        <Link
+                          href={`/classroom/${batchId}/assignments/${assignment._id}/edit`}
+                          className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+                          title="অ্যাসাইনমেন্ট সম্পাদনা"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAssignment(assignment._id)}
+                          className="p-2 rounded-xl border border-rose-200 dark:border-rose-900/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 transition-colors cursor-pointer"
+                          title="অ্যাসাইনমেন্ট মুছুন"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
                     ) : isOverdue && !assignment.allowLateSubmission && !mySub ? (
                       <button
                         type="button"
