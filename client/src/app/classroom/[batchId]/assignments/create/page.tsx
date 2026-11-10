@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
+import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   PlusCircle,
   ArrowLeft,
@@ -19,6 +20,7 @@ import {
   ExternalLink,
   Award,
   Sparkles,
+  Eye,
 } from 'lucide-react';
 
 export default function CreateAssignmentPage({
@@ -47,6 +49,14 @@ export default function CreateAssignmentPage({
     attachmentName: '',
     isPublished: true,
   });
+
+  // Document Preview Modal State
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    url: string;
+    title: string;
+    fileName?: string;
+  }>({ isOpen: false, url: '', title: '' });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -290,15 +300,21 @@ export default function CreateAssignmentPage({
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span className="truncate">সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল'}</span>
                   </span>
-                  <a
-                    href={formData.attachmentUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 hover:underline flex items-center gap-1 font-semibold shrink-0 ml-2"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPreviewDoc({
+                        isOpen: true,
+                        url: formData.attachmentUrl,
+                        title: 'সংযুক্ত অ্যাসাইনমেন্ট ফাইল',
+                        fileName: formData.attachmentName || 'ফাইল',
+                      })
+                    }
+                    className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold shrink-0 ml-2 cursor-pointer"
                   >
+                    <Eye className="w-3.5 h-3.5" />
                     <span>প্রিভিউ</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                  </button>
                 </div>
               ) : null}
             </div>
@@ -346,6 +362,14 @@ export default function CreateAssignmentPage({
           </div>
         </form>
       </div>
+      {/* In-App Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={previewDoc.isOpen}
+        onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}
+        url={previewDoc.url}
+        title={previewDoc.title}
+        fileName={previewDoc.fileName}
+      />
     </div>
   );
 }

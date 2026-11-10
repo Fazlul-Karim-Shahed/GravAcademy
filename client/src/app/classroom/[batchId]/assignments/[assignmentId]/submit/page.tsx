@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
+import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   UploadCloud,
   ArrowLeft,
@@ -21,6 +22,7 @@ import {
   Loader2,
   Info,
   PenTool,
+  Eye,
 } from 'lucide-react';
 
 interface AssignmentDetails {
@@ -69,6 +71,14 @@ export default function StudentAssignmentSubmitPage({
   const [existingFileName, setExistingFileName] = useState('');
   const [submittingWork, setSubmittingWork] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Document Preview Modal State
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    url: string;
+    title: string;
+    fileName?: string;
+  }>({ isOpen: false, url: '', title: '' });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -266,16 +276,22 @@ export default function StudentAssignmentSubmitPage({
                             প্রাপ্ত মার্কস: {mySub.score} / {assignment.totalMarks}
                           </span>
                           {mySub.annotatedFileUrl && (
-                            <a
-                              href={mySub.annotatedFileUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-xs"
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  isOpen: true,
+                                  url: mySub.annotatedFileUrl!,
+                                  title: 'শিক্ষকের মূল্যায়ন ও দাগানো খাতা',
+                                  fileName: 'evaluated_script.png',
+                                })
+                              }
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
                             >
                               <PenTool className="w-3.5 h-3.5" />
                               <span>শিক্ষকের চেক করা খাতা দেখুন</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
+                              <Eye className="w-3.5 h-3.5 ml-0.5" />
+                            </button>
                           )}
                         </div>
                         {mySub.feedback && (
@@ -348,15 +364,21 @@ export default function StudentAssignmentSubmitPage({
                             <span className="truncate">আগে জমা দেওয়া ফাইল: {existingFileName || 'ডকুমেন্ট ফাইল'}</span>
                           </span>
                           <div className="flex items-center gap-2">
-                            <a
-                              href={existingFileUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-blue-600 hover:underline flex items-center gap-1 font-semibold shrink-0"
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  isOpen: true,
+                                  url: existingFileUrl,
+                                  title: 'আমার জমা দেওয়া ফাইল',
+                                  fileName: existingFileName || 'ডকুমেন্ট ফাইল',
+                                })
+                              }
+                              className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold shrink-0 cursor-pointer"
                             >
+                              <Eye className="w-3.5 h-3.5" />
                               <span>প্রিভিউ দেখুন</span>
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
+                            </button>
                             <button
                               type="button"
                               onClick={handleRemoveFile}
@@ -474,18 +496,24 @@ export default function StudentAssignmentSubmitPage({
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       শিক্ষকের প্রশ্নপত্র / ফাইল:
                     </label>
-                    <a
-                      href={assignment.attachmentUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between p-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/50 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold transition-colors"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPreviewDoc({
+                          isOpen: true,
+                          url: assignment.attachmentUrl!,
+                          title: `${assignment.title} - প্রশ্নপত্র`,
+                          fileName: 'প্রশ্নপত্র / এটাচমেন্ট',
+                        })
+                      }
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/50 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold transition-colors cursor-pointer"
                     >
                       <span className="flex items-center gap-2 truncate">
                         <File className="w-4 h-4 shrink-0" />
-                        <span className="truncate">প্রশ্নপত্র ডাউনলোড করুন</span>
+                        <span className="truncate">প্রশ্নপত্র প্রিভিউ দেখুন</span>
                       </span>
-                      <ExternalLink className="w-4 h-4 shrink-0" />
-                    </a>
+                      <Eye className="w-4 h-4 shrink-0" />
+                    </button>
                   </div>
                 )}
               </div>
@@ -506,6 +534,15 @@ export default function StudentAssignmentSubmitPage({
           </div>
         )}
       </div>
+
+      {/* In-App Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={previewDoc.isOpen}
+        onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}
+        url={previewDoc.url}
+        title={previewDoc.title}
+        fileName={previewDoc.fileName}
+      />
     </div>
   );
 }

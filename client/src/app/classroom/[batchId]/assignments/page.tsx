@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
+import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   FileText,
   PlusCircle,
@@ -26,6 +27,7 @@ import {
   File,
   Trash2,
   Edit,
+  Eye,
 } from 'lucide-react';
 
 interface AssignmentItem {
@@ -99,6 +101,14 @@ export default function AssignmentRoomPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Document Preview Modal State
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    url: string;
+    title: string;
+    fileName?: string;
+  }>({ isOpen: false, url: '', title: '' });
 
   // Teacher Create/Edit Assignment Modal
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -467,15 +477,21 @@ export default function AssignmentRoomPage({
                           <span className="flex items-center gap-1 text-slate-500">
                             <File className="w-3.5 h-3.5" /> প্রশ্নপত্র / এটাচমেন্ট:
                           </span>
-                          <a
-                            href={assignment.attachmentUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-bold text-blue-600 hover:underline flex items-center gap-1"
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewDoc({
+                                isOpen: true,
+                                url: assignment.attachmentUrl!,
+                                title: `${assignment.title} - প্রশ্নপত্র`,
+                                fileName: 'প্রশ্নপত্র / এটাচমেন্ট',
+                              })
+                            }
+                            className="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 cursor-pointer text-xs"
                           >
-                            <span>ডাউনলোড</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>প্রিভিউ দেখুন</span>
+                          </button>
                         </div>
                       )}
 
@@ -884,16 +900,21 @@ export default function AssignmentRoomPage({
 
                       {sub.fileUrl && (
                         <div className="flex items-center gap-2">
-                          <a
-                            href={sub.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold hover:underline"
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewDoc({
+                                isOpen: true,
+                                url: sub.fileUrl!,
+                                title: `${sub.studentId?.name || 'শিক্ষার্থী'} - সাবমিশন ফাইল`,
+                                fileName: sub.fileName || 'ডকুমেন্ট',
+                              })
+                            }
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold transition-colors cursor-pointer"
                           >
-                            <File className="w-3.5 h-3.5" />
-                            <span>সংযুক্ত ফাইল ডাউনলোড / ওপেন ({sub.fileName || 'ডকুমেন্ট'})</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>ফাইল প্রিভিউ দেখুন ({sub.fileName || 'ডকুমেন্ট'})</span>
+                          </button>
                         </div>
                       )}
 
@@ -973,6 +994,14 @@ export default function AssignmentRoomPage({
           </div>
         </div>
       )}
+      {/* Dedicated Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={previewDoc.isOpen}
+        onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}
+        url={previewDoc.url}
+        title={previewDoc.title}
+        fileName={previewDoc.fileName}
+      />
     </div>
   );
 }

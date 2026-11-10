@@ -21,7 +21,9 @@ import {
   ShieldCheck,
   TrendingUp,
   PenTool,
+  Eye,
 } from 'lucide-react';
+import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 
 interface ExamMeta {
   _id: string;
@@ -112,6 +114,14 @@ export default function MarksheetPage({
 
   // Selected student for detailed modal inspection (Teacher/Admin view)
   const [selectedStudentRow, setSelectedStudentRow] = useState<StudentRow | null>(null);
+
+  // In-App Document Preview Modal State
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    url: string;
+    title: string;
+    fileName?: string;
+  }>({ isOpen: false, url: '', title: '' });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -360,15 +370,22 @@ export default function MarksheetPage({
                               </p>
                             )}
                             {asgn.annotatedFileUrl && (
-                              <a
-                                href={asgn.annotatedFileUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors"
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setPreviewDoc({
+                                    isOpen: true,
+                                    url: asgn.annotatedFileUrl!,
+                                    title: `${asgn.title} - শিক্ষকের চেক করা খাতা`,
+                                    fileName: asgn.annotatedFileName || 'evaluated_script.png',
+                                  })
+                                }
+                                className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors cursor-pointer"
                               >
                                 <PenTool className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                 <span>শিক্ষকের চেক করা খাতা দেখুন</span>
-                              </a>
+                                <Eye className="w-3 h-3 text-emerald-600 dark:text-emerald-400 ml-0.5" />
+                              </button>
                             )}
                           </div>
                           <div className="text-right">
@@ -567,15 +584,22 @@ export default function MarksheetPage({
                           {a.feedback && ` · মন্তব্য: "${a.feedback}"`}
                         </div>
                         {a.annotatedFileUrl && (
-                          <a
-                            href={a.annotatedFileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors"
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewDoc({
+                                isOpen: true,
+                                url: a.annotatedFileUrl!,
+                                title: `${a.title} - শিক্ষকের চেক করা খাতা`,
+                                fileName: a.annotatedFileName || 'evaluated_script.png',
+                              })
+                            }
+                            className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors cursor-pointer"
                           >
                             <PenTool className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                             <span>শিক্ষকের চেক করা খাতা দেখুন</span>
-                          </a>
+                            <Eye className="w-3 h-3 text-emerald-600 dark:text-emerald-400 ml-0.5" />
+                          </button>
                         )}
                       </div>
                       <div className="font-black text-sm">
@@ -597,6 +621,14 @@ export default function MarksheetPage({
           </div>
         </div>
       )}
+      {/* In-App Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={previewDoc.isOpen}
+        onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}
+        url={previewDoc.url}
+        title={previewDoc.title}
+        fileName={previewDoc.fileName}
+      />
     </div>
   );
 }

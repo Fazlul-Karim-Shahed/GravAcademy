@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
+import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   Edit,
   ArrowLeft,
@@ -19,6 +20,7 @@ import {
   ExternalLink,
   Award,
   Save,
+  Eye,
 } from 'lucide-react';
 
 export default function EditAssignmentPage({
@@ -48,6 +50,14 @@ export default function EditAssignmentPage({
     attachmentName: '',
     isPublished: true,
   });
+
+  // Document Preview Modal State
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    url: string;
+    title: string;
+    fileName?: string;
+  }>({ isOpen: false, url: '', title: '' });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -317,15 +327,21 @@ export default function EditAssignmentPage({
                         <span className="truncate">বর্তমান সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল সংযুক্ত আছে'}</span>
                       </span>
                       <div className="flex items-center gap-2">
-                        <a
-                          href={formData.attachmentUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-600 hover:underline flex items-center gap-1 font-semibold shrink-0"
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPreviewDoc({
+                              isOpen: true,
+                              url: formData.attachmentUrl,
+                              title: `${formData.title || 'অ্যাসাইনমেন্ট'} - সংযুক্ত ফাইল`,
+                              fileName: formData.attachmentName || 'ফাইল সংযুক্ত আছে',
+                            })
+                          }
+                          className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold shrink-0 cursor-pointer"
                         >
+                          <Eye className="w-3.5 h-3.5" />
                           <span>প্রিভিউ দেখুন</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
+                        </button>
                         <button
                           type="button"
                           onClick={handleRemoveFile}
@@ -381,6 +397,14 @@ export default function EditAssignmentPage({
           </>
         )}
       </div>
+      {/* In-App Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={previewDoc.isOpen}
+        onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}
+        url={previewDoc.url}
+        title={previewDoc.title}
+        fileName={previewDoc.fileName}
+      />
     </div>
   );
 }

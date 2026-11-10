@@ -22,8 +22,10 @@ import {
   Filter,
   PenTool,
   RotateCcw,
+  Eye,
 } from 'lucide-react';
 import { DocumentAnnotator } from '@/components/ui/DocumentAnnotator';
+import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 
 interface SubmissionItem {
   _id: string;
@@ -88,6 +90,14 @@ export default function AssignmentSubmissionsPage({
   const [annotatedBlob, setAnnotatedBlob] = useState<Blob | null>(null);
   const [annotatedPreviewUrl, setAnnotatedPreviewUrl] = useState<string>('');
   const [savedAnnotatedUrl, setSavedAnnotatedUrl] = useState<string>('');
+
+  // In-App Document Preview Modal
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    url: string;
+    title: string;
+    fileName?: string;
+  }>({ isOpen: false, url: '', title: '' });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -530,15 +540,21 @@ export default function AssignmentSubmissionsPage({
                             <span className="truncate">শিক্ষকের চেক করা খাতা প্রস্তুত আছে (Annotated Script)</span>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <a
-                              href={annotatedPreviewUrl || savedAnnotatedUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs text-rose-600 dark:text-rose-400 font-extrabold hover:underline flex items-center gap-1"
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  isOpen: true,
+                                  url: annotatedPreviewUrl || savedAnnotatedUrl,
+                                  title: 'শিক্ষকের মূল্যায়ন ও দাগানো খাতা (Annotated Script)',
+                                  fileName: 'evaluated_script.png',
+                                })
+                              }
+                              className="text-xs text-rose-600 dark:text-rose-400 font-extrabold hover:underline flex items-center gap-1 cursor-pointer"
                             >
+                              <Eye className="w-3.5 h-3.5" />
                               <span>দেখুন</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
+                            </button>
                             <button
                               type="button"
                               onClick={() => {
@@ -557,23 +573,29 @@ export default function AssignmentSubmissionsPage({
 
                       {selectedSub.fileUrl ? (
                         <div className="space-y-3">
-                          <a
-                            href={selectedSub.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-between p-3.5 rounded-2xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all shadow-xs"
-                          >
+                          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs">
                             <span className="flex items-center gap-2.5 truncate">
                               <File className="w-4 h-4 shrink-0 text-blue-600" />
                               <span className="truncate">
                                 {selectedSub.fileName || 'শিক্ষার্থীর মূল ডকুমেন্ট / ফাইল (PDF/Image)'}
                               </span>
                             </span>
-                            <span className="inline-flex items-center gap-1 text-[11px] bg-blue-600 text-white px-2.5 py-1 rounded-lg shrink-0 ml-2">
-                              <span>ড্রাইভে খুলুন</span>
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </span>
-                          </a>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  isOpen: true,
+                                  url: selectedSub.fileUrl!,
+                                  title: `${selectedSub.studentId?.name || 'শিক্ষার্থী'} - জমা দেওয়া ডকুমেন্ট`,
+                                  fileName: selectedSub.fileName || 'ডকুমেন্ট',
+                                })
+                              }
+                              className="inline-flex items-center gap-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shrink-0 ml-2 cursor-pointer transition-colors shadow-2xs"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>ফুলস্ক্রিন প্রিভিউ</span>
+                            </button>
+                          </div>
 
                           {/* Live In-App Iframe Preview for Drive Documents / PDFs / Images */}
                           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950">
@@ -692,6 +714,14 @@ export default function AssignmentSubmissionsPage({
           </div>
         </div>
       )}
+      {/* In-App Document Preview Modal */}
+      <DocumentPreviewModal
+        isOpen={previewDoc.isOpen}
+        onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}
+        url={previewDoc.url}
+        title={previewDoc.title}
+        fileName={previewDoc.fileName}
+      />
     </div>
   );
 }
