@@ -20,6 +20,7 @@ import {
   Send,
   Loader2,
   Info,
+  PenTool,
 } from 'lucide-react';
 
 interface AssignmentDetails {
@@ -37,6 +38,8 @@ interface AssignmentDetails {
     submissionText?: string;
     fileUrl?: string;
     fileName?: string;
+    annotatedFileUrl?: string;
+    annotatedFileName?: string;
     isLate: boolean;
     isEvaluated: boolean;
     score?: number;
@@ -257,12 +260,26 @@ export default function StudentAssignmentSubmitPage({
                         : 'নিচে থেকে আপনার উত্তর পরিবর্তন বা আপডেট করে পুনরায় সাবমিট করতে পারেন।'}
                     </p>
                     {mySub.isEvaluated && (
-                      <div className="mt-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800/60">
-                        <span className="font-extrabold text-purple-700 dark:text-purple-300 text-xs">
-                          প্রাপ্ত মার্কস: {mySub.score} / {assignment.totalMarks}
-                        </span>
+                      <div className="mt-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800/60 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-extrabold text-purple-700 dark:text-purple-300 text-xs">
+                            প্রাপ্ত মার্কস: {mySub.score} / {assignment.totalMarks}
+                          </span>
+                          {mySub.annotatedFileUrl && (
+                            <a
+                              href={mySub.annotatedFileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all shadow-xs"
+                            >
+                              <PenTool className="w-3.5 h-3.5" />
+                              <span>শিক্ষকের চেক করা খাতা দেখুন</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
                         {mySub.feedback && (
-                          <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-300 italic">
+                          <p className="text-[11px] text-slate-600 dark:text-slate-300 italic">
                             শিক্ষকের মন্তব্য: "{mySub.feedback}"
                           </p>
                         )}

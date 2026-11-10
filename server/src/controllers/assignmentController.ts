@@ -45,6 +45,8 @@ export const submitAssignmentSchema = z.object({
 export const gradeAssignmentSchema = z.object({
   score: z.number().min(0, 'Score cannot be negative'),
   feedback: z.string().optional().default(''),
+  annotatedFileUrl: z.string().optional().default(''),
+  annotatedFileName: z.string().optional().default(''),
   status: z.enum(['evaluated', 'resubmit_requested']).default('evaluated'),
 });
 
@@ -501,6 +503,10 @@ export const gradeAssignmentSubmission = async (req: AuthenticatedRequest, res: 
 
     submission.score = data.score;
     submission.feedback = data.feedback;
+    if (data.annotatedFileUrl) {
+      submission.annotatedFileUrl = data.annotatedFileUrl;
+      submission.annotatedFileName = data.annotatedFileName || 'evaluated_script.png';
+    }
     submission.isEvaluated = true;
     submission.evaluatedBy = new mongoose.Types.ObjectId(user._id);
     submission.evaluatedAt = new Date();

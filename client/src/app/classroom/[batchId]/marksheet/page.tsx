@@ -20,6 +20,7 @@ import {
   Users,
   ShieldCheck,
   TrendingUp,
+  PenTool,
 } from 'lucide-react';
 
 interface ExamMeta {
@@ -69,6 +70,8 @@ interface StudentRow {
     obtainedMarks: number | null;
     feedback: string;
     isEvaluated: boolean;
+    annotatedFileUrl?: string;
+    annotatedFileName?: string;
   }[];
   summary: {
     totalExams: number;
@@ -356,6 +359,17 @@ export default function MarksheetPage({
                                 "{asgn.feedback}"
                               </p>
                             )}
+                            {asgn.annotatedFileUrl && (
+                              <a
+                                href={asgn.annotatedFileUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors"
+                              >
+                                <PenTool className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                <span>শিক্ষকের চেক করা খাতা দেখুন</span>
+                              </a>
+                            )}
                           </div>
                           <div className="text-right">
                             {asgn.submitted ? (
@@ -552,6 +566,17 @@ export default function MarksheetPage({
                           {a.isLate ? 'লেইট সাবমিশন' : 'সময়মতো জমা'}
                           {a.feedback && ` · মন্তব্য: "${a.feedback}"`}
                         </div>
+                        {a.annotatedFileUrl && (
+                          <a
+                            href={a.annotatedFileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition-colors"
+                          >
+                            <PenTool className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                            <span>শিক্ষকের চেক করা খাতা দেখুন</span>
+                          </a>
+                        )}
                       </div>
                       <div className="font-black text-sm">
                         {a.submitted ? (

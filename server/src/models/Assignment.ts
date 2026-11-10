@@ -61,6 +61,8 @@ export interface IAssignmentSubmission extends Document {
   submissionText?: string;
   fileUrl?: string; // Uploaded student file / homework document
   fileName?: string;
+  annotatedFileUrl?: string; // Teacher annotated / graded document copy
+  annotatedFileName?: string;
   submittedAt: Date;
   isLate: boolean;
   score?: number; // Teacher graded marks
@@ -96,6 +98,8 @@ const AssignmentSubmissionSchema = new Schema<IAssignmentSubmission>(
     submissionText: { type: String, default: '' },
     fileUrl: { type: String, default: '' },
     fileName: { type: String, default: '' },
+    annotatedFileUrl: { type: String, default: '' },
+    annotatedFileName: { type: String, default: '' },
     submittedAt: { type: Date, default: Date.now },
     isLate: { type: Boolean, default: false },
     score: { type: Number, min: 0 },

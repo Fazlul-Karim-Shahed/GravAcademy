@@ -20,7 +20,10 @@ import {
   Search,
   ChevronRight,
   Filter,
+  PenTool,
+  RotateCcw,
 } from 'lucide-react';
+import { DocumentAnnotator } from '@/components/ui/DocumentAnnotator';
 
 interface SubmissionItem {
   _id: string;
@@ -36,6 +39,8 @@ interface SubmissionItem {
   submissionText?: string;
   fileUrl?: string;
   fileName?: string;
+  annotatedFileUrl?: string;
+  annotatedFileName?: string;
   isLate: boolean;
   isEvaluated: boolean;
   score?: number;
@@ -78,6 +83,12 @@ export default function AssignmentSubmissionsPage({
   const [savingGrade, setSavingGrade] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // Digital Marking & Annotation State
+  const [showAnnotator, setShowAnnotator] = useState(false);
+  const [annotatedBlob, setAnnotatedBlob] = useState<Blob | null>(null);
+  const [annotatedPreviewUrl, setAnnotatedPreviewUrl] = useState<string>('');
+  const [savedAnnotatedUrl, setSavedAnnotatedUrl] = useState<string>('');
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push(`/login?redirect=/classroom/${batchId}/assignments/${assignmentId}/submissions`);
@@ -115,6 +126,10 @@ export default function AssignmentSubmissionsPage({
     setSelectedSub(sub);
     setGradeScore(sub.score || 0);
     setGradeFeedback(sub.feedback || '');
+    setSavedAnnotatedUrl(sub.annotatedFileUrl || '');
+    setAnnotatedBlob(null);
+    setAnnotatedPreviewUrl('');
+    setShowAnnotator(false);
     setSaveSuccess(false);
   };
 
@@ -129,9 +144,31 @@ export default function AssignmentSubmissionsPage({
 
     setSavingGrade(true);
     try {
+      let finalAnnotatedUrl = savedAnnotatedUrl;
+
+      // If teacher annotated the document, upload the checked script to Google Drive
+      if (annotatedBlob) {
+        const formData = new FormData();
+        const scriptFileName = `evaluated_${selectedSub.studentId?.name || 'student'}_${Date.now()}.png`;
+        formData.append('file', annotatedBlob, scriptFileName);
+
+        const uploadRes = await api.post('/documents/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (uploadRes.data?.success && uploadRes.data?.data) {
+          const fileAsset = uploadRes.data.data;
+          finalAnnotatedUrl =
+            fileAsset.url || fileAsset.fileUrl || fileAsset.streamUrl || fileAsset.driveDownloadUrl || fileAsset.googleDriveFileId;
+          setSavedAnnotatedUrl(finalAnnotatedUrl);
+        }
+      }
+
       const res = await api.put(`/assignments/${assignmentId}/grade/${selectedSub._id}`, {
         score: gradeScore,
         feedback: gradeFeedback,
+        annotatedFileUrl: finalAnnotatedUrl,
+        annotatedFileName: 'evaluated_script.png',
       });
 
       if (res.data?.success) {
@@ -145,13 +182,23 @@ export default function AssignmentSubmissionsPage({
                   isEvaluated: true,
                   score: gradeScore,
                   feedback: gradeFeedback,
+                  annotatedFileUrl: finalAnnotatedUrl,
+                  annotatedFileName: 'evaluated_script.png',
                   evaluatedAt: new Date().toISOString(),
                 }
               : s
           )
         );
         setSelectedSub((prev) =>
-          prev ? { ...prev, isEvaluated: true, score: gradeScore, feedback: gradeFeedback } : null
+          prev
+            ? {
+                ...prev,
+                isEvaluated: true,
+                score: gradeScore,
+                feedback: gradeFeedback,
+                annotatedFileUrl: finalAnnotatedUrl,
+              }
+            : null
         );
         setTimeout(() => setSaveSuccess(false), 3000);
       }
@@ -459,9 +506,55 @@ export default function AssignmentSubmissionsPage({
 
                     {/* Attached File (Google Drive / Cloud Document) */}
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 uppercase tracking-wider">
-                        শিক্ষার্থীর আপলোডকৃত ডকুমেন্ট / খাতা (Google Drive):
-                      </label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                          শিক্ষার্থীর আপলোডকৃত খাতা / ডকুমেন্ট:
+                        </label>
+                        {selectedSub.fileUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setShowAnnotator(true)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-black shadow-md shadow-rose-600/25 active:scale-95 transition-all cursor-pointer"
+                          >
+                            <PenTool className="w-3.5 h-3.5" />
+                            <span>খাতা মূল্যায়ন ও দাগ দিন (Annotate)</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Display Checked Annotated Script if generated */}
+                      {(annotatedPreviewUrl || savedAnnotatedUrl) && (
+                        <div className="mb-3 p-3.5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 text-xs font-bold text-rose-700 dark:text-rose-300 truncate">
+                            <PenTool className="w-4 h-4 shrink-0 text-rose-600" />
+                            <span className="truncate">শিক্ষকের চেক করা খাতা প্রস্তুত আছে (Annotated Script)</span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <a
+                              href={annotatedPreviewUrl || savedAnnotatedUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs text-rose-600 dark:text-rose-400 font-extrabold hover:underline flex items-center gap-1"
+                            >
+                              <span>দেখুন</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAnnotatedBlob(null);
+                                setAnnotatedPreviewUrl('');
+                                setSavedAnnotatedUrl('');
+                              }}
+                              className="text-[11px] text-slate-400 hover:text-rose-600 ml-1 cursor-pointer"
+                              title="চেক করা খাতা রিসেট করুন"
+                            >
+                              রিসেট
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       {selectedSub.fileUrl ? (
                         <div className="space-y-3">
                           <a
@@ -485,15 +578,15 @@ export default function AssignmentSubmissionsPage({
                           {/* Live In-App Iframe Preview for Drive Documents / PDFs / Images */}
                           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950">
                             <div className="p-2 bg-slate-200 dark:bg-slate-800/80 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-between">
-                              <span>সরাসরি প্রিভিউ (Live Preview)</span>
-                              <a
-                                href={selectedSub.fileUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-[10px]"
+                              <span>মূল ডকুমেন্ট প্রিভিউ (Original Script)</span>
+                              <button
+                                type="button"
+                                onClick={() => setShowAnnotator(true)}
+                                className="text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 text-[11px] font-bold cursor-pointer"
                               >
-                                নতুন ট্যাবে খুলুন <ExternalLink className="w-3 h-3" />
-                              </a>
+                                <PenTool className="w-3 h-3" />
+                                <span>এই ডকুমেন্টে দাগিয়ে মূল্যায়ন করুন</span>
+                              </button>
                             </div>
                             <iframe
                               src={
@@ -581,6 +674,24 @@ export default function AssignmentSubmissionsPage({
           </>
         )}
       </div>
+
+      {/* Full-Screen Digital Script Annotation Modal */}
+      {showAnnotator && selectedSub?.fileUrl && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center">
+          <div className="w-full h-full max-w-6xl max-h-[92vh] flex flex-col">
+            <DocumentAnnotator
+              fileUrl={selectedSub.fileUrl}
+              fileName={selectedSub.fileName}
+              onSaveAnnotated={(blob, previewUrl) => {
+                setAnnotatedBlob(blob);
+                setAnnotatedPreviewUrl(previewUrl);
+                setShowAnnotator(false);
+              }}
+              onCancel={() => setShowAnnotator(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

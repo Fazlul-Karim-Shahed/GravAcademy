@@ -121,7 +121,7 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
       batchId: new mongoose.Types.ObjectId(batchId),
       studentId: { $in: targetStudentIds },
     })
-      .select('assignmentId studentId score feedback isEvaluated isLate status submittedAt')
+      .select('assignmentId studentId score feedback annotatedFileUrl annotatedFileName isEvaluated isLate status submittedAt')
       .lean();
 
     // Build Student Marksheet Matrix
@@ -165,6 +165,8 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
           status: sub ? sub.status : 'unsubmitted',
           obtainedMarks: sub && sub.isEvaluated ? sub.score : null,
           feedback: sub ? sub.feedback : '',
+          annotatedFileUrl: sub ? sub.annotatedFileUrl : '',
+          annotatedFileName: sub ? sub.annotatedFileName : '',
           isEvaluated: sub ? sub.isEvaluated : false,
           submittedAt: sub ? sub.submittedAt : null,
         };
