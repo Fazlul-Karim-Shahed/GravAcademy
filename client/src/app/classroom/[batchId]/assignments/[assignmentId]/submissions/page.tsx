@@ -164,7 +164,7 @@ export default function AssignmentSubmissionsPage({
         }
       }
 
-      const res = await api.put(`/assignments/${assignmentId}/grade/${selectedSub._id}`, {
+      const res = await api.put(`/assignments/submissions/${selectedSub._id}/grade`, {
         score: gradeScore,
         feedback: gradeFeedback,
         annotatedFileUrl: finalAnnotatedUrl,

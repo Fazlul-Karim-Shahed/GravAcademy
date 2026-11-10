@@ -390,6 +390,12 @@ router.put(
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.gradeAssignmentSubmission
 );
+router.put(
+  '/assignments/:assignmentId/grade/:submissionId',
+  authenticate,
+  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  assignmentCtrl.gradeAssignmentSubmission
+);
 
 // --- MARKSHEET & ACADEMIC TRANSCRIPT ROUTES ---
 router.get('/batches/:batchId/marksheet', authenticate, marksheetCtrl.getBatchMarksheet);
