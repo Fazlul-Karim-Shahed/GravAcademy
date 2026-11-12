@@ -518,6 +518,7 @@ export const gradeAssignmentSubmission = async (req: AuthenticatedRequest, res: 
       });
     }
 
+    submission.rawScore = data.score;
     const penaltyPercent = submission.isLate ? Number(assignment.latePenaltyPercent || 0) : 0;
     const penalizedScore = penaltyPercent > 0
       ? Math.round(data.score * (1 - penaltyPercent / 100) * 100) / 100

@@ -47,6 +47,7 @@ interface SubmissionItem {
   isLate: boolean;
   isEvaluated: boolean;
   score?: number;
+  rawScore?: number;
   feedback?: string;
   evaluatedAt?: string;
 }
@@ -135,7 +136,7 @@ export default function AssignmentSubmissionsPage({
 
   const handleSelectSubmission = (sub: SubmissionItem) => {
     setSelectedSub(sub);
-    setGradeScore(sub.score || 0);
+    setGradeScore(sub.rawScore ?? sub.score ?? 0);
     setGradeFeedback(sub.feedback || '');
     setSavedAnnotatedUrl(sub.annotatedFileUrl || '');
     setAnnotatedBlob(null);

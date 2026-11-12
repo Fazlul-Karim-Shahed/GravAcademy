@@ -73,6 +73,7 @@ export interface IAssignmentSubmission extends Document {
   submittedAt: Date;
   isLate: boolean;
   score?: number; // Teacher graded marks
+  rawScore?: number; // Teacher-entered score before any late penalty
   feedback?: string; // Teacher feedback
   isEvaluated: boolean;
   evaluatedBy?: mongoose.Types.ObjectId;
@@ -110,6 +111,7 @@ const AssignmentSubmissionSchema = new Schema<IAssignmentSubmission>(
     submittedAt: { type: Date, default: Date.now },
     isLate: { type: Boolean, default: false },
     score: { type: Number, min: 0 },
+    rawScore: { type: Number, min: 0 },
     feedback: { type: String, default: '' },
     isEvaluated: { type: Boolean, default: false },
     evaluatedBy: {
