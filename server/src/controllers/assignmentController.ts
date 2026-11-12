@@ -23,6 +23,10 @@ export const createAssignmentSchema = z.object({
   latePenaltyPercent: z.number().min(0).max(100).default(0),
   attachmentUrl: z.string().optional().default(''),
   isPublished: z.boolean().default(true),
+}).superRefine((data, ctx) => {
+  if (data.passMarks > data.totalMarks) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['passMarks'], message: 'Pass marks cannot exceed total marks' });
+  }
 });
 
 export const updateAssignmentSchema = z.object({
@@ -276,6 +280,11 @@ export const updateAssignment = async (req: AuthenticatedRequest, res: Response)
     }
 
     const data = updateAssignmentSchema.parse(req.body);
+    const nextTotalMarks = data.totalMarks ?? assignment.totalMarks;
+    const nextPassMarks = data.passMarks ?? assignment.passMarks;
+    if (nextPassMarks > nextTotalMarks) {
+      return res.status(400).json({ success: false, message: 'Pass marks cannot exceed total marks' });
+    }
     if (data.title) assignment.title = data.title;
     if (data.description !== undefined) assignment.description = data.description;
     if (data.totalMarks !== undefined) assignment.totalMarks = data.totalMarks;

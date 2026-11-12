@@ -48,6 +48,13 @@ const AssignmentSchema = new Schema<IAssignment>(
 
 AssignmentSchema.index({ batchId: 1, dueDate: 1 });
 
+AssignmentSchema.pre('validate', function (next) {
+  if (this.passMarks > this.totalMarks) {
+    this.invalidate('passMarks', 'Pass marks cannot exceed total marks');
+  }
+  next();
+});
+
 export const Assignment = mongoose.model<IAssignment>('Assignment', AssignmentSchema);
 
 // ==========================================

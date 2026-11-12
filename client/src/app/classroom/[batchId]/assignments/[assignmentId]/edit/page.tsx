@@ -133,6 +133,10 @@ export default function EditAssignmentPage({
       setError('শিরোনাম ও শেষ সময় অবশ্যই পূরণ করতে হবে');
       return;
     }
+    if (formData.passMarks > formData.totalMarks) {
+      setError('পাস নম্বর কখনও পূর্ণমানের চেয়ে বেশি হতে পারবে না');
+      return;
+    }
 
     setSubmitting(true);
     setError('');
@@ -272,6 +276,7 @@ export default function EditAssignmentPage({
                     type="number"
                     required
                     min={0}
+                    max={formData.totalMarks}
                     value={formData.passMarks}
                     onChange={(e) => setFormData({ ...formData, passMarks: Number(e.target.value) })}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none"
