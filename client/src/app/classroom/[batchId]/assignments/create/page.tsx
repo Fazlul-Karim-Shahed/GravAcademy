@@ -34,6 +34,7 @@ export default function CreateAssignmentPage({
   const { user, loading: authLoading } = useAuth();
 
   const [submitting, setSubmitting] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState('');
 
@@ -66,8 +67,15 @@ export default function CreateAssignmentPage({
     // Only teacher or admin allowed
     if (user && !['superadmin', 'admin', 'teacher'].includes(user.role)) {
       router.push(`/classroom/${batchId}/assignments`);
+      return;
     }
-  }, [batchId, user, authLoading]);
+
+    if (user && ['superadmin', 'admin', 'teacher'].includes(user.role)) {
+      api.get(`/classroom/${batchId}`)
+        .then(() => setCheckingAccess(false))
+        .catch(() => router.push(`/classroom/${batchId}/assignments`));
+    }
+  }, [batchId, user, authLoading, router]);
 
   // When user selects a file from disk, only store it locally in state. Do NOT upload to Drive yet!
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,7 +197,11 @@ export default function CreateAssignmentPage({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
+        {checkingAccess ? (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center text-sm font-semibold text-slate-500">
+            ব্যাচের অনুমতি যাচাই করা হচ্ছে...
+          </div>
+        ) : <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
           {/* Assignment Title */}
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
@@ -360,7 +372,7 @@ export default function CreateAssignmentPage({
               )}
             </button>
           </div>
-        </form>
+        </form>}
       </div>
       {/* In-App Document Preview Modal */}
       <DocumentPreviewModal
