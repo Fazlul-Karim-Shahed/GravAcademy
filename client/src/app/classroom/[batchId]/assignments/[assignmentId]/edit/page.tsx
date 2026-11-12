@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { toDateTimeLocalValue } from '@/lib/dateTimeLocal';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
@@ -80,7 +81,7 @@ export default function EditAssignmentPage({
       const res = await api.get(`/assignments/${assignmentId}`);
       if (res.data?.success) {
         const item = res.data.data;
-        const localDue = item.dueDate ? new Date(item.dueDate).toISOString().slice(0, 16) : '';
+        const localDue = item.dueDate ? toDateTimeLocalValue(item.dueDate) : '';
         setFormData({
           title: item.title || '',
           description: item.description || '',
