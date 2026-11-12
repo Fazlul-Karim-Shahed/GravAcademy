@@ -373,6 +373,13 @@ export default function EditAssignmentPage({
                 </label>
               </div>
 
+              {formData.allowLateSubmission && (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">লেইট সাবমিশন পেনাল্টি (%)</label>
+                  <input type="number" min={0} max={100} step="0.01" value={formData.latePenaltyPercent} onChange={(e) => setFormData({ ...formData, latePenaltyPercent: Number(e.target.value) })} className="w-full sm:max-w-xs px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none" />
+                </div>
+              )}
+
               <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
                 <Link
                   href={`/classroom/${batchId}/assignments`}

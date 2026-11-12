@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
 import {
   FileCheck,
@@ -506,7 +507,7 @@ export default function AssignmentSubmissionsPage({
                         {selectedSub.submissionText ? (
                           <div
                             className="prose prose-xs sm:prose-sm dark:prose-invert max-w-none"
-                            dangerouslySetInnerHTML={{ __html: selectedSub.submissionText }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(selectedSub.submissionText) }}
                           />
                         ) : (
                           <p className="text-slate-400 italic">কোনো লিখিত টেক্সট উত্তর উল্লেখ করা হয়নি।</p>

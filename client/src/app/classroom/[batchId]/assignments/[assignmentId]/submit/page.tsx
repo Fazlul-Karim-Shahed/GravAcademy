@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
@@ -526,7 +527,7 @@ export default function StudentAssignmentSubmitPage({
                   </h3>
                   <div
                     className="text-xs text-slate-600 dark:text-slate-400 prose prose-xs dark:prose-invert max-w-none leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: assignment.description }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(assignment.description) }}
                   />
                 </div>
               )}
