@@ -36,15 +36,14 @@ async function verifyClassroomAccess(userId: string, userRole: string, batchId: 
   const batch = await Batch.findById(batchId);
   if (!batch) return false;
 
-  // Teachers: by default all teachers or assigned teachers have access to manage and teach
+  // Teachers may only access batches assigned directly to them, or the parent
+  // course when no batch-level assignment has been configured.
   if (userRole === 'teacher') {
-    // If teachers are explicitly assigned, prioritize assigned check; otherwise allow teacher access by default
-    if (!batch.assignedTeachers || batch.assignedTeachers.length === 0) {
-      return true;
+    if (batch.assignedTeachers && batch.assignedTeachers.length > 0) {
+      return batch.assignedTeachers.some((tId) => tId.toString() === userId.toString());
     }
-    const isAssigned = batch.assignedTeachers.some((tId) => tId.toString() === userId.toString());
-    // In Grav Academy, teachers have default full access to view, teach and communicate in academy classrooms
-    return isAssigned || true;
+    const course = await Course.findById(batch.courseId).select('instructors').lean();
+    return (course?.instructors || []).some((tId: mongoose.Types.ObjectId) => tId.toString() === userId.toString());
   }
 
   if (userRole === 'student') {

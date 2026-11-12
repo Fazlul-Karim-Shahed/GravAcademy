@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { z } from 'zod';
 import { Assignment, AssignmentSubmission, IAssignment } from '../models/Assignment';
 import { Batch } from '../models/Batch';
+import { Course } from '../models/Course';
 import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
@@ -68,8 +69,15 @@ async function verifyAssignmentBatchAccess(
 
   if (userRole === ROLES.TEACHER) {
     if (!requireEnrolledStudent) {
-      if (!batch.assignedTeachers || batch.assignedTeachers.length === 0) return true;
-      return batch.assignedTeachers.some((id) => id.toString() === userId.toString());
+      if (batch.assignedTeachers && batch.assignedTeachers.length > 0) {
+        return batch.assignedTeachers.some((id) => id.toString() === userId.toString());
+      }
+
+      // When no teacher is assigned directly to the batch, only the parent
+      // course instructors may manage its assignments. Never grant access to
+      // every teacher as a fallback.
+      const course = await Course.findById(batch.courseId).select('instructors').lean();
+      return (course?.instructors || []).some((id: mongoose.Types.ObjectId) => id.toString() === userId.toString());
     }
     return false;
   }
