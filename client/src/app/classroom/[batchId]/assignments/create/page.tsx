@@ -71,7 +71,7 @@ export default function CreateAssignmentPage({
     }
 
     if (user && ['superadmin', 'admin', 'teacher'].includes(user.role)) {
-      api.get(`/classroom/${batchId}`)
+      api.get(`/classrooms/${batchId}`)
         .then(() => setCheckingAccess(false))
         .catch(() => router.push(`/classroom/${batchId}/assignments`));
     }
