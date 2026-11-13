@@ -10,8 +10,6 @@ import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   UploadCloud,
-  ArrowLeft,
-  ChevronRight,
   Calendar,
   Clock,
   Award,
@@ -190,34 +188,26 @@ export default function StudentAssignmentSubmitPage({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
-      {/* Top Header */}
-      <div className="w-[98%] mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 sticky top-3 z-30 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/classroom/${batchId}/assignments`}
-              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-              title="অ্যাসাইনমেন্ট লিস্টে ফিরে যান"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-0.5">
-                <Link href={`/classroom/${batchId}`} className="hover:underline">
-                  ক্লাসরুম
-                </Link>
-                <ChevronRight className="w-3.5 h-3.5" />
-                <Link href={`/classroom/${batchId}/assignments`} className="hover:underline">
-                  অ্যাসাইনমেন্ট
-                </Link>
-                <ChevronRight className="w-3.5 h-3.5" />
-                <span className="text-emerald-600 dark:text-emerald-400">জমা দেওয়ার পেজ</span>
-              </div>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <UploadCloud className="w-5 h-5 text-emerald-600" />
-                <span>{assignment?.title || 'অ্যাসাইনমেন্ট জমা দিন'}</span>
-              </h1>
-            </div>
+      {/* Shared classroom header */}
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
+        <div className="max-w-5xl mx-auto relative z-10 flex items-center gap-3.5">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
+            <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight">অ্যাসাইনমেন্ট জমা দিন</h1>
+            <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+              {assignment?.title || 'আপনার কাজ জমা দিন'}
+            </p>
           </div>
         </div>
       </div>
@@ -307,19 +297,17 @@ export default function StudentAssignmentSubmitPage({
               )}
 
               {/* Submission Form Card */}
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
+              <div className="lg:bg-white lg:dark:bg-slate-900 lg:rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:p-7 lg:shadow-sm">
                 <h2 className="text-base font-bold text-slate-900 dark:text-white mb-1">
                   আপনার অ্যাসাইনমেন্ট সমাধান
                 </h2>
-                <p className="text-xs text-slate-500 mb-5">
-                  নিচের টেক্সট এডিটরে ব্যাখ্যা বা সমীকরণ লিখুন এবং প্রয়োজনে ড্রাইভের মাধ্যমে ফাইল সংযুক্ত করুন।
-                </p>
+                <p className="text-xs text-slate-500 mb-5">উত্তর লিখুন অথবা খাতা সংযুক্ত করুন।</p>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Rich Text Editor for Student Notes */}
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                      উত্তরের টেক্সট নোট বা বিস্তারিত বিবরণ (রিচ টেক্সট এডিটর)
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      আপনার উত্তর
                     </label>
                     <TextEditor
                       value={studentNotes}
@@ -331,22 +319,22 @@ export default function StudentAssignmentSubmitPage({
 
                   {/* Google Drive Document / Homework File Selection (Uploaded ONLY on Submit) */}
                   <div className="pt-2">
-                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                      অ্যাসাইনমেন্ট ডকুমেন্টস / খাতা আপলোড (Google Drive)
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      খাতা বা ফাইল সংযুক্ত করুন
                     </label>
-                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div className="min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                      <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input
                           type="file"
                           onChange={handleFileChange}
                           disabled={submittingWork}
-                          className="text-xs file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
+                          className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
                         />
                       </div>
 
                       {selectedFile ? (
-                        <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-                          <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
+                        <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
+                          <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             <span className="truncate">সিলেক্টেড ফাইল: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
                           </span>
@@ -359,8 +347,8 @@ export default function StudentAssignmentSubmitPage({
                           </button>
                         </div>
                       ) : existingFileUrl ? (
-                        <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
-                          <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
+                        <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+                          <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             <span className="truncate">আগে জমা দেওয়া ফাইল: {existingFileName || 'ডকুমেন্ট ফাইল'}</span>
                           </span>
