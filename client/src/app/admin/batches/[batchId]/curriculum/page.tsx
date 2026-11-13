@@ -137,6 +137,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
   const [submitting, setSubmitting] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [pendingLessonFiles, setPendingLessonFiles] = useState<File[]>([]);
+  const [pendingEditLessonFiles, setPendingEditLessonFiles] = useState<File[]>([]);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // File Upload to Google Drive via backend
@@ -207,6 +209,23 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
       clean = clean.split('youtu.be/')[1]?.split('?')[0] || clean;
     }
     return clean;
+  };
+
+  const uploadResourceFile = async (file: File): Promise<Resource> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await api.post('/documents/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    if (!res.data?.success || !res.data?.data) {
+      throw new Error(res.data?.message || 'ফাইল আপলোড ব্যর্থ হয়েছে।');
+    }
+    const inferredType = file.type.includes('image') || file.type.includes('word') || file.type.includes('officedocument') ? 'worksheet' : 'pdf';
+    return {
+      title: file.name.replace(/\.[^/.]+$/, ''),
+      type: inferredType,
+      fileAssetId: res.data.data,
+    };
   };
 
   // 1. Create Module
@@ -319,10 +338,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
     e.preventDefault();
     if (!lessonForm.title.trim()) return;
     setSubmitting(true);
+    setUploadingFile(Boolean(pendingLessonFiles.length));
     try {
       const cleanYtId = cleanYouTubeInput(lessonForm.youtubeVideoId);
+      const uploadedResources = pendingLessonFiles.length
+        ? await Promise.all(pendingLessonFiles.map(uploadResourceFile))
+        : [];
       // Format resources payload (extract fileAssetId if object)
-      const formattedResources = lessonForm.resources.map((r) => ({
+      const formattedResources = [...lessonForm.resources, ...uploadedResources].map((r) => ({
         title: r.title,
         type: r.type,
         fileAssetId: typeof r.fileAssetId === 'object' ? r.fileAssetId?._id : r.fileAssetId,
@@ -340,12 +363,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
       });
       setLessonModal({ open: false, moduleId: '' });
       setLessonForm({ title: '', description: '', youtubeVideoId: '', resources: [] });
+      setPendingLessonFiles([]);
       setMessage({ type: 'success', text: 'Lesson added successfully!' });
       loadHierarchy();
     } catch (err: any) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to add lesson' });
     } finally {
       setSubmitting(false);
+      setUploadingFile(false);
     }
   };
 
@@ -354,9 +379,13 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
     e.preventDefault();
     if (!editLessonModal.title.trim()) return;
     setSubmitting(true);
+    setUploadingFile(Boolean(pendingEditLessonFiles.length));
     try {
       const cleanYtId = cleanYouTubeInput(editLessonModal.youtubeVideoId);
-      const formattedResources = editLessonModal.resources.map((r) => ({
+      const uploadedResources = pendingEditLessonFiles.length
+        ? await Promise.all(pendingEditLessonFiles.map(uploadResourceFile))
+        : [];
+      const formattedResources = [...editLessonModal.resources, ...uploadedResources].map((r) => ({
         title: r.title,
         type: r.type,
         fileAssetId: typeof r.fileAssetId === 'object' ? r.fileAssetId?._id : r.fileAssetId,
@@ -370,12 +399,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
         resources: formattedResources,
       });
       setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] });
+      setPendingEditLessonFiles([]);
       setMessage({ type: 'success', text: 'Lesson updated!' });
       loadHierarchy();
     } catch (err: any) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update lesson' });
     } finally {
       setSubmitting(false);
+      setUploadingFile(false);
     }
   };
 
@@ -1150,12 +1181,12 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          handleUploadFile(file, (newRes) => {
-                            setLessonForm((prev) => ({
-                              ...prev,
-                              resources: [...prev.resources, newRes],
-                            }));
-                          });
+                          if (file.size <= 25 * 1024 * 1024) {
+                            setPendingLessonFiles((prev) => [...prev, file]);
+                            setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। লেসন সেভ করলে আপলোড হবে।` });
+                          } else {
+                            setMessage({ type: 'error', text: 'ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।' });
+                          }
                           e.target.value = '';
                         }
                       }}
@@ -1307,12 +1338,12 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          handleUploadFile(file, (newRes) => {
-                            setEditLessonModal((prev) => ({
-                              ...prev,
-                              resources: [...prev.resources, newRes],
-                            }));
-                          });
+                          if (file.size <= 25 * 1024 * 1024) {
+                            setPendingEditLessonFiles((prev) => [...prev, file]);
+                            setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। লেসন সেভ করলে আপলোড হবে।` });
+                          } else {
+                            setMessage({ type: 'error', text: 'ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।' });
+                          }
                           e.target.value = '';
                         }
                       }}

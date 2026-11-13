@@ -36,6 +36,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
   const [youtubeVideoId, setYoutubeVideoId] = useState('');
   const [description, setDescription] = useState('');
   const [resources, setResources] = useState<Resource[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -51,39 +52,24 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
     return clean;
   };
 
-  const handleUploadFile = async (file: File) => {
+  const handleUploadFile = (file: File) => {
     if (file.size > 25 * 1024 * 1024) {
       setMessage({ type: 'error', text: 'ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।' });
       return;
     }
-    setUploadingFile(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await api.post('/documents/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+    setPendingFiles((prev) => [...prev, file]);
+    setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। লেসন সেভ করলে আপলোড হবে।` });
+  };
 
-      if (res.data?.success && res.data?.data) {
-        let inferredType = 'pdf';
-        if (file.type.includes('image')) inferredType = 'worksheet';
-        else if (file.type.includes('word') || file.type.includes('officedocument')) inferredType = 'worksheet';
-
-        const newResource: Resource = {
-          title: file.name.replace(/\.[^/.]+$/, ''),
-          type: inferredType,
-          fileAssetId: res.data.data,
-        };
-        setResources((prev) => [...prev, newResource]);
-        setMessage({ type: 'success', text: `"${file.name}" ফাইল সফলভাবে যুক্ত হয়েছে!` });
-      } else {
-        setMessage({ type: 'error', text: res.data?.message || 'Upload failed.' });
-      }
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে।' });
-    } finally {
-      setUploadingFile(false);
-    }
+  const uploadPendingFile = async (file: File): Promise<Resource> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await api.post('/documents/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    if (!res.data?.success || !res.data?.data) throw new Error(res.data?.message || 'ফাইল আপলোড ব্যর্থ হয়েছে।');
+    const inferredType = file.type.includes('image') || file.type.includes('word') || file.type.includes('officedocument') ? 'worksheet' : 'pdf';
+    return { title: file.name.replace(/\.[^/.]+$/, ''), type: inferredType, fileAssetId: res.data.data };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,8 +90,12 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
     }
 
     setSubmitting(true);
+    setUploadingFile(Boolean(pendingFiles.length));
     try {
-      const formattedResources = resources.map((r) => ({
+      const uploadedResources = pendingFiles.length
+        ? await Promise.all(pendingFiles.map(uploadPendingFile))
+        : [];
+      const formattedResources = [...resources, ...uploadedResources].map((r) => ({
         title: r.title,
         type: r.type,
         fileAssetId: typeof r.fileAssetId === 'object' ? r.fileAssetId?._id : r.fileAssetId,
@@ -123,6 +113,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
       });
 
       if (res.data?.success) {
+        setPendingFiles([]);
         router.push(`/admin/batches/${resolvedParams.batchId}/curriculum`);
       } else {
         setMessage({ type: 'error', text: res.data?.message || 'Failed to add lesson' });

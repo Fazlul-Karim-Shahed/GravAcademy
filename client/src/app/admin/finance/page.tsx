@@ -240,6 +240,7 @@ export default function AdminFinancePage() {
   const [collectTrxId, setCollectTrxId] = useState('');
   const [collectSender, setCollectSender] = useState('');
   const [collectDocUrl, setCollectDocUrl] = useState('');
+  const [selectedCollectDoc, setSelectedCollectDoc] = useState<File | null>(null);
   const [uploadingCollectDoc, setUploadingCollectDoc] = useState(false);
   const [collectDocSuccess, setCollectDocSuccess] = useState('');
   const [collectNotes, setCollectNotes] = useState('');
@@ -256,7 +257,7 @@ export default function AdminFinancePage() {
   const [refundSubmitting, setRefundSubmitting] = useState(false);
   const [refundError, setRefundError] = useState('');
 
-  const handleCollectFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCollectFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -265,27 +266,33 @@ export default function AdminFinancePage() {
       return;
     }
 
-    setUploadingCollectDoc(true);
     setCollectDocSuccess('');
     setCollectError('');
+    setSelectedCollectDoc(file);
+    setCollectDocUrl('');
+    setCollectDocSuccess(`"${file.name}" নির্বাচিত হয়েছে। পেমেন্ট সেভ করলে আপলোড হবে।`);
+  };
+
+  const uploadSelectedCollectDoc = async () => {
+    if (!selectedCollectDoc) return '';
+    setUploadingCollectDoc(true);
 
     try {
       const formData = new FormData();
-      formData.append('document', file);
+      formData.append('document', selectedCollectDoc);
 
       const res = await api.post('/finance/upload-document', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (res.data?.success && res.data.data?.fileUrl) {
-        setCollectDocUrl(res.data.data.fileUrl);
-        setCollectDocSuccess(`✅ "${file.name}" সফলভাবে ড্রাইভে আপলোড হয়েছে!`);
+        return res.data.data.fileUrl as string;
       } else {
-        setCollectError(res.data?.message || 'ডকুমেন্ট আপলোড করা যায়নি।');
+        throw new Error(res.data?.message || 'ডকুমেন্ট আপলোড করা যায়নি।');
       }
     } catch (err: any) {
       console.error('Document upload error:', err);
-      setCollectError(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে।');
+      throw new Error(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে।');
     } finally {
       setUploadingCollectDoc(false);
     }
@@ -562,6 +569,9 @@ export default function AdminFinancePage() {
 
     setCollectSubmitting(true);
     try {
+      const submittedCollectDocUrl = selectedCollectDoc
+        ? await uploadSelectedCollectDoc()
+        : collectDocUrl.trim();
       const payload = {
         studentId: selectedStudent._id,
         batchId: collectBatchId || undefined,
@@ -570,7 +580,7 @@ export default function AdminFinancePage() {
         paymentType: 'due_payment',
         transactionId: collectTrxId.trim() || undefined,
         senderNumber: collectSender.trim() || undefined,
-        documentUrl: collectDocUrl.trim() || undefined,
+        documentUrl: submittedCollectDocUrl || undefined,
         notes: collectNotes.trim() || undefined,
       };
 
@@ -584,6 +594,7 @@ export default function AdminFinancePage() {
         setCollectTrxId('');
         setCollectSender('');
         setCollectDocUrl('');
+        setSelectedCollectDoc(null);
         setCollectNotes('');
 
         // Reload payments and open receipt

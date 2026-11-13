@@ -81,6 +81,7 @@ export default function TakeExamPage({
   const [cqAnswers, setCqAnswers] = useState<Record<number, string>>({}); // { [questionIndex]: answerText }
   const [studentDocumentUrl, setStudentDocumentUrl] = useState('');
   const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [selectedAnswerFile, setSelectedAnswerFile] = useState<File | null>(null);
 
   // Timer State (in seconds)
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -247,29 +248,14 @@ export default function TakeExamPage({
     }));
   };
 
-  // Upload student handwritten answer sheets / document
-  const handleAnswerDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Selecting an answer sheet only keeps it in local state. The Drive upload
+  // happens together with the final exam submission.
+  const handleAnswerDocUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadingDoc(true);
-    try {
-      const formData = new FormData();
-      formData.append('document', file);
-
-      const res = await api.post('/finance/upload-document', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      if (res.data?.success) {
-        setStudentDocumentUrl(res.data.data.fileUrl);
-      }
-    } catch (err: any) {
-      console.error(err);
-      setActionError('উত্তরপত্রের ফাইল আপলোড করতে সমস্যা হয়েছে');
-    } finally {
-      setUploadingDoc(false);
-    }
+    setActionError('');
+    setSelectedAnswerFile(file);
   };
 
   const handleAutoSubmit = () => {
@@ -286,6 +272,23 @@ export default function TakeExamPage({
     if (submitting) return;
     setSubmitting(true);
     try {
+      let finalStudentDocumentUrl = studentDocumentUrl.trim();
+
+      if (selectedAnswerFile) {
+        setUploadingDoc(true);
+        const formData = new FormData();
+        formData.append('document', selectedAnswerFile);
+        const uploadRes = await api.post('/finance/upload-document', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (!uploadRes.data?.success || !uploadRes.data.data?.fileUrl) {
+          throw new Error(uploadRes.data?.message || 'উত্তরপত্র আপলোড করা সম্ভব হয়নি');
+        }
+
+        finalStudentDocumentUrl = uploadRes.data.data.fileUrl;
+      }
+
       const answersArray = Object.entries(selectedAnswers).map(([qId, optId]) => ({
         questionId: qId,
         selectedOptionId: optId,
@@ -299,7 +302,7 @@ export default function TakeExamPage({
       const payload = {
         answers: answersArray,
         cqAnswers: cqAnswersArray,
-        studentDocumentUrl: studentDocumentUrl.trim(),
+        studentDocumentUrl: finalStudentDocumentUrl,
       };
 
       const res = await api.post(`/exams/${examId}/submit`, payload);
@@ -319,6 +322,8 @@ export default function TakeExamPage({
       console.error(err);
       setActionError(err.response?.data?.message || 'উত্তরপত্র জমা দিতে ব্যর্থ হয়েছে');
       setSubmitting(false);
+    } finally {
+      setUploadingDoc(false);
     }
   };
 
@@ -363,7 +368,7 @@ export default function TakeExamPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
-      <div className="sticky top-3 z-40 w-[98%] mx-auto rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 py-3 shadow-sm">
+      <div className="sticky top-[4.5rem] sm:top-20 z-40 w-[98%] mx-auto rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 py-3 shadow-sm scroll-mt-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -665,7 +670,7 @@ export default function TakeExamPage({
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                   <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all">
                     <UploadCloud className="w-4 h-4" />
-                    <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'উত্তরপত্র আপলোড করুন'}</span>
+                    <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'ফাইল নির্বাচন করুন'}</span>
                     <input
                       type="file"
                       accept="image/*,application/pdf"
@@ -674,6 +679,11 @@ export default function TakeExamPage({
                       className="hidden"
                     />
                   </label>
+                  {selectedAnswerFile && (
+                    <span className="max-w-full truncate text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                      নির্বাচিত: {selectedAnswerFile.name}
+                    </span>
+                  )}
                   <span className="text-xs text-slate-500">অথবা সরাসরি ফাইল লিংক দিন:</span>
                   <input
                     type="url"

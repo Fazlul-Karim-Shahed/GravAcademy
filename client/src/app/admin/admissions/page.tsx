@@ -159,6 +159,7 @@ export default function AdminAdmissionsPage() {
   const [transactionId, setTransactionId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
   const [documentUrl, setDocumentUrl] = useState('');
+  const [selectedDocumentFile, setSelectedDocumentFile] = useState<File | null>(null);
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [docUploadSuccess, setDocUploadSuccess] = useState('');
   const [notes, setNotes] = useState('');
@@ -176,8 +177,8 @@ export default function AdminAdmissionsPage() {
   const [cancellingAdmission, setCancellingAdmission] = useState(false);
   const [cancelNotice, setCancelNotice] = useState('');
 
-  // Handle direct file upload for payment document
-  const handleDocumentFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Selecting a payment document is local-only. It is uploaded when admission is submitted.
+  const handleDocumentFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -186,27 +187,33 @@ export default function AdminAdmissionsPage() {
       return;
     }
 
-    setUploadingDoc(true);
     setDocUploadSuccess('');
     setErrorMsg('');
+    setSelectedDocumentFile(file);
+    setDocumentUrl('');
+    setDocUploadSuccess(`"${file.name}" নির্বাচিত হয়েছে। ভর্তি নিশ্চিত করলে আপলোড হবে।`);
+  };
+
+  const uploadSelectedDocument = async () => {
+    if (!selectedDocumentFile) return '';
+    setUploadingDoc(true);
 
     try {
       const formData = new FormData();
-      formData.append('document', file);
+      formData.append('document', selectedDocumentFile);
 
       const res = await api.post('/finance/upload-document', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (res.data?.success && res.data.data?.fileUrl) {
-        setDocumentUrl(res.data.data.fileUrl);
-        setDocUploadSuccess(`✅ "${file.name}" সফলভাবে ড্রাইভে আপলোড হয়েছে!`);
+        return res.data.data.fileUrl as string;
       } else {
-        setErrorMsg(res.data?.message || 'ডকুমেন্ট আপলোড করা যায়নি।');
+        throw new Error(res.data?.message || 'ডকুমেন্ট আপলোড করা যায়নি।');
       }
     } catch (err: any) {
       console.error('Document upload error:', err);
-      setErrorMsg(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে। লিংক ম্যানুয়ালি দিন।');
+      throw new Error(err.response?.data?.message || 'ফাইল আপলোড করতে সমস্যা হয়েছে। লিংক ম্যানুয়ালি দিন।');
     } finally {
       setUploadingDoc(false);
     }
@@ -462,6 +469,9 @@ export default function AdminAdmissionsPage() {
 
     setSubmitting(true);
     try {
+      const submittedDocumentUrl = selectedDocumentFile
+        ? await uploadSelectedDocument()
+        : documentUrl.trim();
       const payload: any = {
         name: studentName.trim(),
         phone: studentPhone.trim() || undefined,
@@ -476,7 +486,7 @@ export default function AdminAdmissionsPage() {
         paymentMethod,
         transactionId: transactionId.trim() || undefined,
         senderNumber: senderNumber.trim() || undefined,
-        documentUrl: documentUrl.trim() || undefined,
+        documentUrl: submittedDocumentUrl || undefined,
         notes: notes.trim() || undefined,
       };
 
@@ -500,6 +510,7 @@ export default function AdminAdmissionsPage() {
         setTransactionId('');
         setSenderNumber('');
         setDocumentUrl('');
+        setSelectedDocumentFile(null);
         setNotes('');
         fetchRecentAdmissions();
       } else {

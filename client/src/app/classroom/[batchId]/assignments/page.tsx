@@ -127,12 +127,14 @@ export default function AssignmentRoomPage({
   });
   const [submittingAssignment, setSubmittingAssignment] = useState(false);
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [selectedAttachmentFile, setSelectedAttachmentFile] = useState<File | null>(null);
 
   // Student Submission Modal
   const [activeAssignmentForSubmit, setActiveAssignmentForSubmit] = useState<AssignmentItem | null>(null);
   const [studentNotes, setStudentNotes] = useState('');
   const [studentFileUrl, setStudentFileUrl] = useState('');
   const [studentFileName, setStudentFileName] = useState('');
+  const [selectedStudentFile, setSelectedStudentFile] = useState<File | null>(null);
   const [uploadingStudentDoc, setUploadingStudentDoc] = useState(false);
   const [submittingStudentWork, setSubmittingStudentWork] = useState(false);
 
@@ -186,53 +188,46 @@ export default function AssignmentRoomPage({
   if (settingsLoading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-sm font-semibold text-slate-500">লোড হচ্ছে...</div>;
   if (!isFeatureEnabled('assignments', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950"><ComingSoonCard feature="Assignment Management" /></div>;
 
-  // Upload file handler
-  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, isTeacherDoc: boolean) => {
+  // File selection is local-only. Upload happens with the matching Save/Submit action.
+  const handleUploadFile = (e: React.ChangeEvent<HTMLInputElement>, isTeacherDoc: boolean) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (isTeacherDoc) setSelectedAttachmentFile(file);
+    else {
+      setSelectedStudentFile(file);
+      setStudentFileName(file.name);
+    }
+  };
 
+  const uploadAssignmentFile = async (file: File) => {
     const data = new FormData();
     data.append('file', file);
-
-    if (isTeacherDoc) setUploadingAttachment(true);
-    else setUploadingStudentDoc(true);
-
-    try {
-      const res = await api.post('/documents/upload', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (res.data?.success) {
-        const fileAsset = res.data.data;
-        const fileUrl = fileAsset.streamUrl || fileAsset.driveDownloadUrl || fileAsset.googleDriveFileId;
-        if (isTeacherDoc) {
-          setFormData((prev) => ({ ...prev, attachmentUrl: fileUrl }));
-        } else {
-          setStudentFileUrl(fileUrl);
-          setStudentFileName(file.name);
-        }
-      }
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'ফাইল আপলোড ব্যর্থ হয়েছে');
-    } finally {
-      if (isTeacherDoc) setUploadingAttachment(false);
-      else setUploadingStudentDoc(false);
-    }
+    const res = await api.post('/documents/upload', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    if (!res.data?.success) throw new Error(res.data?.message || 'ফাইল আপলোড ব্যর্থ হয়েছে');
+    const fileAsset = res.data.data;
+    return fileAsset.streamUrl || fileAsset.driveDownloadUrl || fileAsset.googleDriveFileId;
   };
 
   // Submit Assignment (Student)
   const handleSubmitWork = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeAssignmentForSubmit) return;
-    if (!studentNotes.trim() && !studentFileUrl.trim()) {
+    if (!studentNotes.trim() && !studentFileUrl.trim() && !selectedStudentFile) {
       alert('অনুগ্রহ করে লেখার উত্তর লিখুন অথবা কোনো অ্যাসাইনমেন্ট ফাইল আপলোড করুন');
       return;
     }
 
     setSubmittingStudentWork(true);
+    setUploadingStudentDoc(Boolean(selectedStudentFile));
     try {
+      const submittedFileUrl = selectedStudentFile
+        ? await uploadAssignmentFile(selectedStudentFile)
+        : studentFileUrl;
       const res = await api.post(`/assignments/${activeAssignmentForSubmit._id}/submit`, {
         submissionText: studentNotes,
-        fileUrl: studentFileUrl,
+        fileUrl: submittedFileUrl,
         fileName: studentFileName,
       });
       if (res.data?.success) {
@@ -241,12 +236,14 @@ export default function AssignmentRoomPage({
         setStudentNotes('');
         setStudentFileUrl('');
         setStudentFileName('');
+        setSelectedStudentFile(null);
         loadAssignments();
       }
     } catch (err: any) {
       alert(err.response?.data?.message || 'অ্যাসাইনমেন্ট জমা দেওয়া সম্ভব হয়নি');
     } finally {
       setSubmittingStudentWork(false);
+      setUploadingStudentDoc(false);
     }
   };
 
@@ -259,15 +256,20 @@ export default function AssignmentRoomPage({
     }
 
     setSubmittingAssignment(true);
+    setUploadingAttachment(Boolean(selectedAttachmentFile));
     try {
+      const savedAttachmentUrl = selectedAttachmentFile
+        ? await uploadAssignmentFile(selectedAttachmentFile)
+        : formData.attachmentUrl;
+      const assignmentPayload = { ...formData, attachmentUrl: savedAttachmentUrl };
       if (editingAssignmentId) {
         await api.put(`/assignments/${editingAssignmentId}`, {
-          ...formData,
+          ...assignmentPayload,
           dueDate: new Date(formData.dueDate).toISOString(),
         });
       } else {
         await api.post('/assignments', {
-          ...formData,
+          ...assignmentPayload,
           batchId,
           dueDate: new Date(formData.dueDate).toISOString(),
         });
@@ -285,11 +287,13 @@ export default function AssignmentRoomPage({
         attachmentUrl: '',
         isPublished: true,
       });
+      setSelectedAttachmentFile(null);
       loadAssignments();
     } catch (err: any) {
       alert(err.response?.data?.message || 'অ্যাসাইনমেন্ট সংরক্ষণ করা সম্ভব হয়নি');
     } finally {
       setSubmittingAssignment(false);
+      setUploadingAttachment(false);
     }
   };
 

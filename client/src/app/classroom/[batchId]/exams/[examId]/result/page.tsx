@@ -142,15 +142,6 @@ export default function StudentExamResultPage({
       {/* Top Banner */}
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-1">
-            <Link
-              href={`/classroom/${batchId}/exams`}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-          </div>
-
           <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             {exam.title}
           </h1>

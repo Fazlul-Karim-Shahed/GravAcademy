@@ -75,6 +75,7 @@ export default function EditExamPage({
   // Question Creation Options
   const [examType, setExamType] = useState<'upload_paper' | 'system_questions'>('system_questions');
   const [questionPaperUrl, setQuestionPaperUrl] = useState('');
+  const [selectedQuestionPaper, setSelectedQuestionPaper] = useState<File | null>(null);
   const [uploadingDoc, setUploadingDoc] = useState(false);
 
   // System Questions Mode: 'mcq' | 'cq' | 'both'
@@ -191,27 +192,32 @@ export default function EditExamPage({
     }
   };
 
-  // Handle Question Paper Upload via API
-  const handlePaperUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Selecting a question paper is local-only. Upload it when the exam is saved.
+  const handlePaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setUploadingDoc(true);
     setErrorMessage('');
+    setSelectedQuestionPaper(file);
+  };
+
+  const uploadSelectedQuestionPaper = async () => {
+    if (!selectedQuestionPaper) return '';
+    setUploadingDoc(true);
     try {
       const formData = new FormData();
-      formData.append('document', file);
+      formData.append('document', selectedQuestionPaper);
 
       const res = await api.post('/finance/upload-document', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (res.data?.success) {
-        setQuestionPaperUrl(res.data.data.fileUrl);
+        return res.data.data.fileUrl as string;
       }
+      throw new Error(res.data?.message || 'প্রশ্নপত্র ফাইল আপলোড করা যায়নি');
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.response?.data?.message || 'প্রশ্নপত্র ফাইল আপলোড করতে সমস্যা হয়েছে');
+      throw new Error(err.response?.data?.message || 'প্রশ্নপত্র ফাইল আপলোড করতে সমস্যা হয়েছে');
     } finally {
       setUploadingDoc(false);
     }
@@ -455,7 +461,7 @@ export default function EditExamPage({
       return;
     }
 
-    if (examType === 'upload_paper' && !questionPaperUrl.trim()) {
+    if (examType === 'upload_paper' && !questionPaperUrl.trim() && !selectedQuestionPaper) {
       setErrorMessage('অনুগ্রহ করে প্রশ্নপত্র ফাইল বা ডকুমেন্টের লিংক আপলোড করুন');
       return;
     }
@@ -482,6 +488,9 @@ export default function EditExamPage({
 
     setSubmitting(true);
     try {
+      const submittedQuestionPaperUrl = examType === 'upload_paper'
+        ? (selectedQuestionPaper ? await uploadSelectedQuestionPaper() : questionPaperUrl.trim())
+        : '';
       const payload: any = {
         title: title.trim(),
         instructions: instructions.trim(),
@@ -493,7 +502,7 @@ export default function EditExamPage({
         endWindow: new Date(endDate).toISOString(),
         examType,
         questionMode: examType === 'system_questions' ? questionMode : undefined,
-        questionPaperUrl: examType === 'upload_paper' ? questionPaperUrl : undefined,
+        questionPaperUrl: examType === 'upload_paper' ? submittedQuestionPaperUrl : undefined,
       };
 
       if (examType === 'system_questions') {

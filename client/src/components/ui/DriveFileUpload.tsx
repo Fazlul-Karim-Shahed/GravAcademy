@@ -19,15 +19,16 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
   value,
   onChange,
   placeholder = 'https://drive.google.com/... অথবা নিচে থেকে ফাইল আপলোড করুন',
-  helperText = 'ছবি সরাসরি নির্বাচন করুন, এটি স্বয়ংক্রিয়ভাবে ড্রাইভে আপলোড হয়ে লিংক বসে যাবে।',
+  helperText = 'ফাইল নির্বাচন করার পর আপলোড করুন বোতামে চাপলে ড্রাইভে সংরক্ষণ হবে।',
   accept = 'image/jpeg,image/png,image/webp,image/gif,application/pdf',
 }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -36,13 +37,22 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       return;
     }
 
+    setError('');
+    setSelectedFile(file);
+  };
+
+  const uploadSelectedFile = async () => {
+    if (!selectedFile) {
+      fileInputRef.current?.click();
+      return;
+    }
+
     setUploading(true);
     setProgress(0);
-    setError('');
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', selectedFile);
 
       const res = await api.post('/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -58,10 +68,11 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
 
       if (res.data?.success && res.data?.data) {
         let uploadedUrl = res.data.data.url || res.data.data.fileUrl || `/api/documents/${res.data.data._id}/stream`;
-        if (file.type.startsWith('image/')) {
+        if (selectedFile.type.startsWith('image/')) {
           uploadedUrl = formatDriveImageUrl(uploadedUrl);
         }
         onChange(uploadedUrl);
+        setSelectedFile(null);
       } else {
         setError(res.data?.message || 'আপলোড ব্যর্থ হয়েছে।');
       }
@@ -121,7 +132,7 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
         {/* Upload Trigger Button */}
         <button
           type="button"
-          onClick={() => fileInputRef.current?.click()}
+          onClick={uploadSelectedFile}
           disabled={uploading}
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-all disabled:opacity-75 shrink-0 min-w-[150px]"
         >
@@ -133,11 +144,17 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
           ) : (
             <>
               <Upload className="w-4 h-4" />
-              <span>ফাইল আপলোড করুন</span>
+              <span>{selectedFile ? 'আপলোড করুন' : 'ফাইল নির্বাচন করুন'}</span>
             </>
           )}
         </button>
       </div>
+
+      {selectedFile && !uploading && (
+        <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300 truncate">
+          নির্বাচিত: {selectedFile.name} — আপলোড করতে বোতামে চাপুন
+        </p>
+      )}
 
       {/* Upload Progress Bar */}
       {uploading && (
