@@ -7,7 +7,6 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
   Award,
-  ArrowLeft,
   Search,
   Download,
   AlertCircle,
@@ -171,13 +170,6 @@ export default function MarksheetPage({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
               <div className="flex items-center gap-2.5 mb-2.5">
-                <Link
-                  href={`/classroom/${batchId}`}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
-                  title="ক্লাসরুমে ফিরে যান"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
                 {isStaff ? (
                   <span className="text-xs font-bold text-purple-300 bg-purple-950/60 border border-purple-500/40 px-3 py-1 rounded-full flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" />
