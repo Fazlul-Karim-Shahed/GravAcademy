@@ -471,13 +471,12 @@ export default function MarksheetPage({
                               </span>
                             </td>
                             <td className="py-3 px-4 text-right">
-                              <button
-                                type="button"
-                                onClick={() => setSelectedStudentRow(row)}
+                              <Link
+                                href={`/classroom/${batchId}/marksheet/${row.student._id}`}
                                 className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all"
                               >
                                 বিস্তারিত দেখুন
-                              </button>
+                              </Link>
                             </td>
                           </tr>
                         ))
