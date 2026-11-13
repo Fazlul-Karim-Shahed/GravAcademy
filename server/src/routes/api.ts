@@ -40,8 +40,8 @@ router.post('/auth/avatar', authenticate, upload.single('avatar'), authCtrl.uplo
 router.get('/teachers', authCtrl.getPublicTeachers);
 
 // --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
-router.get('/classes', academicClassCtrl.getAcademicClasses);
-router.get('/classes/:idOrSlug', academicClassCtrl.getClassByIdOrSlug);
+router.get('/classes', requireFeature(FEATURE_FLAGS.courses), academicClassCtrl.getAcademicClasses);
+router.get('/classes/:idOrSlug', requireFeature(FEATURE_FLAGS.courses), academicClassCtrl.getClassByIdOrSlug);
 router.post(
   '/classes',
   authenticate,
@@ -67,8 +67,8 @@ router.delete(
 );
 
 // --- COURSE ROUTES ---
-router.get('/courses', courseCtrl.getCourses);
-router.get('/courses/:id', courseCtrl.getCourseById);
+router.get('/courses', requireFeature(FEATURE_FLAGS.courses), courseCtrl.getCourses);
+router.get('/courses/:id', requireFeature(FEATURE_FLAGS.courses), courseCtrl.getCourseById);
 router.post(
   '/courses',
   authenticate,
@@ -93,10 +93,10 @@ router.delete(
 );
 
 // --- BATCH ROUTES (Including Copy-from-batch workflow & Weekly Schedule System) ---
-router.get('/batches', batchCtrl.getBatches);
-router.get('/batches/schedule/overview', optionalAuthenticate, batchCtrl.getScheduleOverview);
-router.get('/batches/:id', batchCtrl.getBatchById);
-router.get('/batches/:batchId/hierarchy', batchCtrl.getBatchHierarchy);
+router.get('/batches', requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatches);
+router.get('/batches/schedule/overview', optionalAuthenticate, requireFeature(FEATURE_FLAGS.batches), batchCtrl.getScheduleOverview);
+router.get('/batches/:id', requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatchById);
+router.get('/batches/:batchId/hierarchy', requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatchHierarchy);
 router.post(
   '/batches',
   authenticate,
@@ -437,7 +437,7 @@ router.put(
 router.get('/batches/:batchId/marksheet', authenticate, marksheetCtrl.getBatchMarksheet);
 
 // --- LIVE CLASS & FREE PUBLIC CLASSES ROUTES ---
-router.get('/free-classes', liveCtrl.getFreePublicClasses);
+router.get('/free-classes', requireFeature(FEATURE_FLAGS.freeClasses), liveCtrl.getFreePublicClasses);
 router.get('/live-classes', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.getLiveClasses);
 router.get('/live-classes/my', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.getStudentLiveClasses);
 router.post(
@@ -517,20 +517,22 @@ router.get(
 
 // --- JOB CIRCULAR ROUTES ---
 // Public routes
-router.get('/jobs', jobCtrl.getPublicJobPosts);
-router.get('/jobs/categories', jobCtrl.getJobCategories);
-router.get('/jobs/:slug', jobCtrl.getJobPostBySlug);
+router.get('/jobs', requireFeature(FEATURE_FLAGS.jobs), jobCtrl.getPublicJobPosts);
+router.get('/jobs/categories', requireFeature(FEATURE_FLAGS.jobs), jobCtrl.getJobCategories);
+router.get('/jobs/:slug', requireFeature(FEATURE_FLAGS.jobs), jobCtrl.getJobPostBySlug);
 
 // Admin routes
 router.get(
   '/admin/jobs',
   authenticate,
+  requireFeature(FEATURE_FLAGS.jobs),
   requirePermission(PERMISSIONS.JOBS_VIEW),
   jobCtrl.getAdminJobPosts
 );
 router.post(
   '/admin/jobs',
   authenticate,
+  requireFeature(FEATURE_FLAGS.jobs),
   requirePermission(PERMISSIONS.JOBS_MANAGE),
   validateRequest(jobCtrl.jobPostSchema),
   jobCtrl.createJobPost
@@ -538,6 +540,7 @@ router.post(
 router.put(
   '/admin/jobs/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.jobs),
   requirePermission(PERMISSIONS.JOBS_MANAGE),
   jobCtrl.updateJobPost
 );
