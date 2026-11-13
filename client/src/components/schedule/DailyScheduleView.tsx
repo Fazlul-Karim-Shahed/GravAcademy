@@ -125,11 +125,11 @@ export default function DailyScheduleView({
       {/* Top Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div className="min-w-0">
-          <div className="flex items-start gap-2.5">
-            <span className="p-2.5 rounded-2xl bg-gradient-to-br from-indigo-500/15 to-blue-500/20 dark:from-indigo-500/30 dark:to-blue-500/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="shrink-0 p-2 rounded-xl bg-gradient-to-br from-indigo-500/15 to-blue-500/20 dark:from-indigo-500/30 dark:to-blue-500/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 shadow-xs">
               <Calendar className="w-5 h-5" />
             </span>
-            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight break-words">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight break-words">
               {title}
             </h2>
           </div>
