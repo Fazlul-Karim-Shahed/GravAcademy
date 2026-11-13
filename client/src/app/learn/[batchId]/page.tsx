@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
   BookOpen,
+  Layers,
   Video,
   FileText,
   ChevronRight,
@@ -14,7 +15,6 @@ import {
   Download,
   ArrowLeft,
   Calendar,
-  PlayCircle,
   ExternalLink,
   Eye,
   X,
@@ -425,7 +425,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                 </div>
               ) : (
                 <div className="space-y-2.5 max-h-[calc(100vh-210px)] overflow-y-auto pr-1 scrollbar-thin">
-                  {data.modules.map((mod, mIdx) => (
+                  {data.modules.map((mod) => (
                     <div
                       key={mod._id}
                       className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden bg-slate-50/60 dark:bg-slate-950/40"
@@ -436,8 +436,8 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                         className="w-full p-3 flex items-center justify-between text-left hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors"
                       >
                         <div className="flex items-center gap-2 min-w-0 pr-2">
-                          <span className="w-5 h-5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-black text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
-                            {mIdx + 1}
+                          <span className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0" title="Module">
+                            <Layers className="w-3.5 h-3.5" />
                           </span>
                           <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
                             {mod.title}
@@ -467,7 +467,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                 }`}
                               >
                                 <div className="flex items-center gap-2 truncate">
-                                  <PlayCircle className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                                  <Video className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-indigo-500'}`} />
                                   <span className="truncate">{lesson.title}</span>
                                 </div>
                                 {isSelected && (
@@ -480,7 +480,8 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                           {/* Nested Sections */}
                           {mod.sections?.map((sec) => (
                             <div key={sec._id} className="mt-2 pl-2 border-l-2 border-blue-500/30 dark:border-blue-400/20 space-y-1">
-                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block py-0.5">
+                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5 py-0.5">
+                                <BookOpen className="w-3 h-3 text-indigo-500" />
                                 {sec.title}
                               </span>
                               {sec.lessons?.map((lesson) => {
@@ -496,7 +497,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 truncate">
-                                      <PlayCircle className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                                      <Video className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-indigo-500'}`} />
                                       <span className="truncate">{lesson.title}</span>
                                     </div>
                                     {isSelected && (
