@@ -111,7 +111,24 @@ export default function TeacherPanelPage() {
           </div>
         </div>
 
-        {/* Metrics Row */}
+        {/* Teacher-first quick actions: daily work only. */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          {[
+            { href: '#schedule', label: 'আজকের ক্লাস', icon: Video },
+            { href: batches[0] ? `/classroom/${batches[0]._id}/assignments` : '#batches', label: 'অ্যাসাইনমেন্ট', icon: FileCheck2 },
+            { href: batches[0] ? `/classroom/${batches[0]._id}/exams` : '#batches', label: 'এক্সাম', icon: GraduationCap },
+            { href: batches[0] ? `/admin/batches/${batches[0]._id}/curriculum` : '#batches', label: 'লেকচার ও শিট', icon: Upload },
+          ].map((action) => {
+            const Icon = action.icon;
+            return <Link key={action.label} href={action.href} className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:-translate-y-0.5 hover:shadow-lg transition-all">
+              <Icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mb-3" />
+              <span className="block text-xs font-extrabold text-slate-800 dark:text-slate-200">{action.label}</span>
+              <span className="text-[11px] text-slate-400 mt-1 block">দ্রুত প্রবেশ করুন</span>
+            </Link>;
+          })}
+        </div>
+        {/* Legacy metric cards removed: the teacher dashboard should focus on work. */}
+        {/*
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <div className="rounded-2xl p-6 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -148,16 +165,16 @@ export default function TeacherPanelPage() {
             <div className="text-2xl font-black text-slate-900 dark:text-white">Ready</div>
             <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">Auto-Sync Enabled</span>
           </div>
-        </div>
+        </div> */}
 
         {/* Teacher Daily & Weekly Schedule Overview */}
-        <DailyScheduleView
+        <div id="schedule"><DailyScheduleView
           role="teacher"
           title="শিক্ষক ক্লাস শিডিউল ও ব্যাচ রুটিন"
-        />
+        /></div>
 
         {/* Batches Management */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div id="batches" className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Your Assigned Course Batches
