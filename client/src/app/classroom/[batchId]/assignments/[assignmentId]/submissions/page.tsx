@@ -402,9 +402,17 @@ export default function AssignmentSubmissionsPage({
                         >
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs">
-                                {sub.studentId?.name?.charAt(0) || 'S'}
-                              </div>
+                              {sub.studentId?.avatarUrl ? (
+                                <img
+                                  src={sub.studentId.avatarUrl}
+                                  alt={sub.studentId.name || 'শিক্ষার্থী'}
+                                  className="w-9 h-9 rounded-full object-cover border border-purple-200 dark:border-purple-800 shrink-0"
+                                />
+                              ) : (
+                                <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs shrink-0">
+                                  {sub.studentId?.name?.charAt(0) || 'S'}
+                                </div>
+                              )}
                               <div>
                                 <h4 className="text-xs font-bold text-slate-900 dark:text-white">
                                   {sub.studentId?.name || 'শিক্ষার্থী'}
@@ -463,9 +471,17 @@ export default function AssignmentSubmissionsPage({
                 {selectedSub ? (
                   <div className="lg:bg-white lg:dark:bg-slate-900 rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-slate-800 p-1 sm:p-6 lg:shadow-sm flex flex-col gap-4">
                     <div className="flex items-center gap-3 pb-4 border-b border-slate-200/80 dark:border-slate-800">
-                      <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 flex items-center justify-center text-sm font-black shrink-0">
-                        {selectedSub.studentId?.name?.charAt(0) || 'শি'}
-                      </div>
+                      {selectedSub.studentId?.avatarUrl ? (
+                        <img
+                          src={selectedSub.studentId.avatarUrl}
+                          alt={selectedSub.studentId.name || 'শিক্ষার্থী'}
+                          className="w-10 h-10 rounded-2xl object-cover border border-purple-200 dark:border-purple-800 shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 flex items-center justify-center text-sm font-black shrink-0">
+                          {selectedSub.studentId?.name?.charAt(0) || 'শি'}
+                        </div>
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">রিভিউ</p>
                         <h3 className="text-sm font-black text-slate-900 dark:text-white truncate">
