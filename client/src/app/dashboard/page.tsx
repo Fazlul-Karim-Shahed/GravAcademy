@@ -201,10 +201,6 @@ export default function StudentDashboard() {
                   key={batch._id}
                   className="group rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500/70 transition-colors"
                 >
-                  {/* Ambient Color Glow Orbs */}
-                  <div className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-blue-500/15 to-indigo-500/15 dark:from-blue-500/20 dark:to-indigo-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-                  <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-purple-500/10 to-teal-500/10 dark:from-purple-500/15 dark:to-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-
                   <div className="relative z-10 space-y-3">
                     {/* Class Tag (Aligned Right) */}
                     <div className="flex items-center justify-end">
