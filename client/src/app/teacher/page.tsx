@@ -42,6 +42,7 @@ export default function TeacherPanelPage() {
   const { user, loading: authLoading } = useAuth();
   const pathname = usePathname();
   const [batches, setBatches] = useState<Batch[]>([]);
+  const [selectedBatchId, setSelectedBatchId] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,7 +71,9 @@ export default function TeacherPanelPage() {
       // Add timestamp query parameter to bypass browser/axios cache on page switch
       const res = await api.get(`/batches?teacherId=${teacherId}&_t=${Date.now()}`);
       if (res.data.success) {
-        setBatches(res.data.data || []);
+        const nextBatches = res.data.data || [];
+        setBatches(nextBatches);
+        setSelectedBatchId((current) => current && nextBatches.some((b: Batch) => b._id === current) ? current : nextBatches[0]?._id || '');
       }
     } catch (err) {
       console.error('Error fetching teacher batches:', err);
@@ -112,12 +115,18 @@ export default function TeacherPanelPage() {
         </div>
 
         {/* Teacher-first quick actions: daily work only. */}
+        <div className="rounded-2xl border border-indigo-100 dark:border-indigo-900/60 bg-indigo-50/60 dark:bg-indigo-950/20 p-4 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div><p className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">কাজের ব্যাচ নির্বাচন করুন</p><p className="text-xs text-slate-500 dark:text-slate-400 mt-1">একাধিক batch থাকলে যেটিতে কাজ করবেন সেটি বেছে নিন।</p></div>
+          <select value={selectedBatchId} onChange={(e) => setSelectedBatchId(e.target.value)} className="w-full sm:w-80 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-900 px-3 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+            {batches.length === 0 ? <option value="">কোনো assigned batch নেই</option> : batches.map((batch) => <option key={batch._id} value={batch._id}>{batch.name} — {batch.courseId?.title}</option>)}
+          </select>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
             { href: '#schedule', label: 'আজকের ক্লাস', icon: Video },
-            { href: batches[0] ? `/classroom/${batches[0]._id}/assignments` : '#batches', label: 'অ্যাসাইনমেন্ট', icon: FileCheck2 },
-            { href: batches[0] ? `/classroom/${batches[0]._id}/exams` : '#batches', label: 'এক্সাম', icon: GraduationCap },
-            { href: batches[0] ? `/admin/batches/${batches[0]._id}/curriculum` : '#batches', label: 'লেকচার ও শিট', icon: Upload },
+            { href: selectedBatchId ? `/classroom/${selectedBatchId}/assignments` : '#batches', label: 'অ্যাসাইনমেন্ট', icon: FileCheck2 },
+            { href: selectedBatchId ? `/classroom/${selectedBatchId}/exams` : '#batches', label: 'এক্সাম', icon: GraduationCap },
+            { href: selectedBatchId ? `/admin/batches/${selectedBatchId}/curriculum` : '#batches', label: 'লেকচার ও শিট', icon: Upload },
           ].map((action) => {
             const Icon = action.icon;
             return <Link key={action.label} href={action.href} className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:-translate-y-0.5 hover:shadow-lg transition-all">
