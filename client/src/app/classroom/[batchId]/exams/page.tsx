@@ -278,7 +278,17 @@ export default function ExamRoomPage({
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-5 pl-1">
                       {attempt ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black border ${
+                            attempt.isEvaluated
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                              : attempt.status === 'in_progress'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 animate-pulse'
+                              : attempt.status === 'timeout'
+                              ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                          }`}
+                        >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>
                             {attempt.status === 'timeout'
