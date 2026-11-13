@@ -103,10 +103,21 @@ export default function ExamRoomPage({
   const getExamTimingStatus = (exam: ExamItem) => {
     const start = new Date(exam.startWindow);
     const end = new Date(exam.endWindow);
-    const now = currentTime;
+    const nowMs = Date.now();
+    const startMs = start.getTime();
+    const endMs = end.getTime();
 
-    if (now < start) {
-      const diffMs = start.getTime() - now.getTime();
+    // Never label an exam as running when its end date is invalid or already passed.
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || nowMs >= endMs) {
+      return {
+        state: 'ENDED',
+        badge: 'সময় সমাপ্ত',
+        canStart: false,
+      };
+    }
+
+    if (nowMs < startMs) {
+      const diffMs = startMs - nowMs;
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMins / 60);
       const diffDays = Math.floor(diffHours / 24);
@@ -122,20 +133,14 @@ export default function ExamRoomPage({
         startsInText,
         canStart: false,
       };
-    } else if (now >= start && now <= end) {
-      const diffMs = end.getTime() - now.getTime();
+    } else {
+      const diffMs = endMs - nowMs;
       const diffMins = Math.floor(diffMs / 60000);
       return {
         state: 'RUNNING',
         badge: 'চলমান পরীক্ষা',
         endsInText: `${diffMins} মিনিট বাকি`,
         canStart: true,
-      };
-    } else {
-      return {
-        state: 'ENDED',
-        badge: 'সময় সমাপ্ত',
-        canStart: false,
       };
     }
   };
