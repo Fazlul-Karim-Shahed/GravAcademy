@@ -101,8 +101,8 @@ export default function BatchClassroomPage({
   const { user, loading: authLoading } = useAuth();
   const { isFeatureEnabled } = useSiteSettings();
 
-  // Active Tab: 'discussion' | 'announcements' | 'members'
-  const [activeTab, setActiveTab] = useState<'discussion' | 'announcements' | 'members'>('discussion');
+  // Start with a simple classroom home; detailed areas remain available as tabs.
+  const [activeTab, setActiveTab] = useState<'home' | 'discussion' | 'announcements' | 'members'>('home');
 
   const [batch, setBatch] = useState<BatchInfo | null>(null);
   const [memberCounts, setMemberCounts] = useState<{
@@ -500,6 +500,17 @@ export default function BatchClassroomPage({
           {/* 2. SUB-NAVIGATION TABS */}
           <div className="flex items-center gap-2 sm:gap-3 mt-6 border-t border-white/10 pt-4 overflow-x-auto">
             <button
+              onClick={() => setActiveTab('home')}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                activeTab === 'home'
+                  ? 'bg-white text-indigo-700 shadow-sm'
+                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>হোম</span>
+            </button>
+            <button
               onClick={() => setActiveTab('discussion')}
               className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
                 activeTab === 'discussion'
@@ -555,6 +566,56 @@ export default function BatchClassroomPage({
 
       {/* 3. MAIN TAB CONTENT CONTAINER */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        {/* ================= CLASSROOM HOME ================= */}
+        {activeTab === 'home' && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">আপনার ক্লাসরুম</p>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">কী করতে চান?</h2>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <Link href={`/learn/${batchId}`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-blue-400 hover:shadow-md transition-all">
+                <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400 mb-3" />
+                <span className="block text-sm font-bold text-slate-900 dark:text-white">লেকচার</span>
+                <span className="block text-[11px] text-slate-500 mt-1">পড়াশোনা শুরু করুন</span>
+              </Link>
+
+              {isFeatureEnabled('assignments', user?.role === 'superadmin') && (
+                <Link href={`/classroom/${batchId}/assignments`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-emerald-400 hover:shadow-md transition-all">
+                  <Award className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mb-3" />
+                  <span className="block text-sm font-bold text-slate-900 dark:text-white">অ্যাসাইনমেন্ট</span>
+                  <span className="block text-[11px] text-slate-500 mt-1">কাজ জমা দিন</span>
+                </Link>
+              )}
+
+              <Link href={`/classroom/${batchId}/exams`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-amber-400 hover:shadow-md transition-all">
+                <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400 mb-3" />
+                <span className="block text-sm font-bold text-slate-900 dark:text-white">এক্সাম</span>
+                <span className="block text-[11px] text-slate-500 mt-1">পরীক্ষা দিন</span>
+              </Link>
+
+              <Link href={`/classroom/${batchId}/marksheet`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-purple-400 hover:shadow-md transition-all">
+                <GraduationCap className="w-5 h-5 text-purple-600 dark:text-purple-400 mb-3" />
+                <span className="block text-sm font-bold text-slate-900 dark:text-white">মার্কশিট</span>
+                <span className="block text-[11px] text-slate-500 mt-1">ফলাফল দেখুন</span>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onClick={() => setIsJitsiOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 text-xs font-bold transition-colors">
+                <Video className="w-4 h-4" /> লাইভ ক্লাস
+              </button>
+              <button onClick={() => setActiveTab('announcements')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-4 text-xs font-bold transition-colors">
+                <Megaphone className="w-4 h-4" /> নোটিশ
+              </button>
+              <button onClick={() => setActiveTab('members')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-4 text-xs font-bold transition-colors">
+                <Users className="w-4 h-4" /> সদস্য
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ================= TAB 1: DISCUSSION GROUP ================= */}
         {activeTab === 'discussion' && (
