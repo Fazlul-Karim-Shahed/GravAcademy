@@ -159,6 +159,7 @@ export default function StudentDashboard() {
         {/* 2. Primary Feature: Interactive Daily & Weekly Class Schedule */}
         <DailyScheduleView
           role="student"
+          cardless
           title="আজকের ও সাপ্তাহিক ক্লাস রুটিন"
         />
 
