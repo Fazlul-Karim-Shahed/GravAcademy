@@ -111,35 +111,35 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
         {multiple && selectedFiles.length > 0 ? (
           <div className="mt-3 space-y-2">
             {selectedFiles.map((file, index) => (
-              <div key={`${file.name}-${file.lastModified}-${index}`} className="flex min-w-0 items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-                <span className="min-w-0 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
+              <div key={`${file.name}-${file.lastModified}-${index}`} className="flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs overflow-hidden">
+                <span className="min-w-0 max-w-full flex items-start gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                  <span className="min-w-0 break-all">{file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
                 </span>
-                <button type="button" onClick={() => onFilesChange?.(selectedFiles.filter((_, itemIndex) => itemIndex !== index))} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold inline-flex items-center gap-1">
+                <button type="button" onClick={() => onFilesChange?.(selectedFiles.filter((_, itemIndex) => itemIndex !== index))} className="self-end sm:self-auto shrink-0 whitespace-nowrap text-rose-600 hover:text-rose-700 font-bold inline-flex items-center gap-1">
                   <X className="w-3.5 h-3.5" /> Remove
                 </button>
               </div>
             ))}
           </div>
         ) : selectedFile ? (
-          <div className="mt-3 flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-            <span className="min-w-0 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
+          <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs overflow-hidden">
+            <span className="min-w-0 max-w-full flex items-start gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span className="truncate">Selected: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
+              <span className="min-w-0 break-all">Selected: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
             </span>
-            <button type="button" onClick={removeSelected} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold inline-flex items-center gap-1">
+            <button type="button" onClick={removeSelected} className="self-end sm:self-auto shrink-0 whitespace-nowrap text-rose-600 hover:text-rose-700 font-bold inline-flex items-center gap-1">
               <X className="w-3.5 h-3.5" /> Remove
             </button>
           </div>
         ) : (existingUrl || urlValue) ? (
-          <div className="mt-3 flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
-            <span className="min-w-0 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
+          <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
+            <span className="min-w-0 max-w-full flex items-start gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
               <CheckCircle2 className="w-4 h-4" />
-              <span className="truncate">Attached: {existingFileName || 'File'}</span>
+              <span className="min-w-0 break-all">Attached: {existingFileName || 'File'}</span>
             </span>
             {(onPreviewExisting || onClearExisting) && (
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center justify-end gap-2 shrink-0 max-w-full">
                 {onPreviewExisting && <button type="button" onClick={onPreviewExisting} className="text-blue-600 hover:underline inline-flex items-center gap-1 font-semibold"><Eye className="w-3.5 h-3.5" /> View</button>}
                 {onClearExisting && <button type="button" onClick={onClearExisting} className="text-rose-600 hover:underline font-semibold">Remove</button>}
               </div>
