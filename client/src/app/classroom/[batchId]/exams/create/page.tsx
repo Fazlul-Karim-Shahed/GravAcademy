@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import { toDatetimeLocalValue } from '@/lib/dateUtils';
 import {
   FileText,
@@ -142,22 +143,9 @@ export default function CreateExamPage({
   };
 
   // Selecting a question paper is local-only. Upload it when the exam is created.
-  const handlePaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 25 * 1024 * 1024) {
-      setErrorMessage('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
-      e.target.value = '';
-      return;
-    }
-
+  const handleSelectedQuestionPaperChange = (file: File | null) => {
     setErrorMessage('');
     setSelectedQuestionPaper(file);
-  };
-
-  const handleRemoveQuestionPaper = () => {
-    setSelectedQuestionPaper(null);
   };
 
   const uploadSelectedQuestionPaper = async () => {
@@ -744,59 +732,16 @@ export default function CreateExamPage({
             {/* If Option A: Upload Question Paper */}
             {examType === 'upload_paper' && (
               <div className="p-4 sm:p-6 rounded-2xl bg-purple-50/30 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/60 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                    প্রশ্নপত্র ডকুমেন্ট আপলোড করুন (PDF বা ছবি)
-                  </label>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <div className="min-w-0 flex-1">
-                      <UploadCloud className="w-4 h-4" />
-                      <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'ফাইল নির্বাচন করুন'}</span>
-                      <input
-                        type="file"
-                        accept="image/*,application/pdf"
-                        onChange={handlePaperUpload}
-                        disabled={uploadingDoc || submitting}
-                        className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer disabled:opacity-60"
-                      />
-                    </div>
-                    <span className="text-xs text-slate-500 text-center sm:text-left shrink-0">অথবা সরাসরি লিংক দিন:</span>
-                    <input
-                      type="url"
-                      placeholder="https://drive.google.com/..."
-                      value={questionPaperUrl}
-                      onChange={(e) => setQuestionPaperUrl(e.target.value)}
-                      className="flex-1 min-w-0 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-
-                {selectedQuestionPaper && (
-                  <div className="flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800 text-xs">
-                    <div className="min-w-0 flex items-center gap-2 text-purple-700 dark:text-purple-300 font-bold">
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
-                      <span className="truncate">সিলেক্টেড: {selectedQuestionPaper.name}</span>
-                    </div>
-                    <button type="button" onClick={handleRemoveQuestionPaper} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold">বাদ দিন</button>
-                  </div>
-                )}
-
-                {questionPaperUrl && (
-                  <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-bold flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                      প্রশ্নপত্র সফলভাবে যুক্ত হয়েছে
-                    </span>
-                    <a
-                      href={questionPaperUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-blue-600 underline font-semibold"
-                    >
-                      প্রিভিউ দেখুন
-                    </a>
-                  </div>
-                )}
+                <FileUploadField
+                  label="প্রশ্নপত্র বা সহায়ক ফাইল"
+                  selectedFile={selectedQuestionPaper}
+                  onFileChange={handleSelectedQuestionPaperChange}
+                  urlValue={questionPaperUrl}
+                  onUrlChange={setQuestionPaperUrl}
+                  disabled={uploadingDoc || submitting}
+                  accept="image/*,application/pdf"
+                  maxSizeMb={25}
+                />
               </div>
             )}
 

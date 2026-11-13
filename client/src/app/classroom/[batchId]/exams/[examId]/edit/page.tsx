@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import { toDatetimeLocalValue } from '@/lib/dateUtils';
 import {
   FileText,
@@ -797,7 +798,17 @@ export default function EditExamPage({
             {/* If Option A: Upload Question Paper */}
             {examType === 'upload_paper' && (
               <div className="p-4 sm:p-6 rounded-2xl bg-purple-50/30 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/60 space-y-4">
-                <div>
+                <FileUploadField
+                  label="প্রশ্নপত্র বা সহায়ক ফাইল"
+                  selectedFile={selectedQuestionPaper}
+                  onFileChange={(file) => { setSelectedQuestionPaper(file); setErrorMessage(''); }}
+                  urlValue={questionPaperUrl}
+                  onUrlChange={setQuestionPaperUrl}
+                  disabled={uploadingDoc || submitting}
+                  accept="image/*,application/pdf"
+                  maxSizeMb={25}
+                />
+                <div className="hidden">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
                     প্রশ্নপত্র ডকুমেন্ট আপলোড করুন (PDF বা ছবি)
                   </label>

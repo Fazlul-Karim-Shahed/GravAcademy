@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import {
   FileText,
   Clock,
@@ -676,7 +677,17 @@ export default function TakeExamPage({
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 space-y-4">
+              <FileUploadField
+                label="উত্তরপত্র"
+                selectedFile={selectedAnswerFile}
+                onFileChange={(file) => { setSelectedAnswerFile(file); if (file) setStudentDocumentUrl(''); }}
+                urlValue={studentDocumentUrl}
+                onUrlChange={setStudentDocumentUrl}
+                disabled={submitting || uploadingDoc}
+                accept="image/*,application/pdf"
+                maxSizeMb={25}
+              />
+              <div className="hidden">
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                   <div className="min-w-0 flex-1">
                     <UploadCloud className="w-4 h-4" />

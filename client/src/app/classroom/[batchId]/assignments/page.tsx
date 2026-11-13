@@ -9,6 +9,7 @@ import { useSiteSettings } from '@/context/SiteSettingsContext';
 import ComingSoonCard from '@/components/common/ComingSoonCard';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import {
   FileText,
   PlusCircle,
@@ -690,10 +691,18 @@ export default function AssignmentRoomPage({
                   প্রশ্নপত্র অথবা সহায়ক ফাইল (PDF/DOCX/Images)
                 </label>
                 <div className="flex items-center gap-3">
-                  <input
+                <FileUploadField
+                  label="সহায়ক ফাইল"
+                  selectedFile={selectedAttachmentFile}
+                  onFileChange={setSelectedAttachmentFile}
+                  disabled={submittingAssignment || uploadingAttachment}
+                  accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  maxSizeMb={25}
+                />
+                <input
                     type="file"
                     onChange={(e) => handleUploadFile(e, true)}
-                    className="text-xs file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-950 dark:file:text-emerald-300"
+                  className="hidden"
                   />
                   {uploadingAttachment && (
                     <span className="text-xs font-bold text-emerald-600 animate-pulse">আপলোড হচ্ছে...</span>
@@ -773,16 +782,26 @@ export default function AssignmentRoomPage({
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   অ্যাসাইনমেন্ট ডকুমেন্টস / খাতা আপলোড (PDF/Images)
                 </label>
+                <FileUploadField
+                  label="জমার ফাইল"
+                  selectedFile={selectedStudentFile}
+                  onFileChange={(file) => { setSelectedStudentFile(file); setStudentFileName(file?.name || ''); if (file) setStudentFileUrl(''); }}
+                  existingUrl={studentFileUrl}
+                  existingFileName={studentFileName}
+                  disabled={submittingStudentWork || uploadingStudentDoc}
+                  accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  maxSizeMb={25}
+                />
                 <input
                   type="file"
                   onChange={(e) => handleUploadFile(e, false)}
-                  className="text-xs file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-950 dark:file:text-emerald-300"
+                  className="hidden"
                 />
                 {uploadingStudentDoc && (
                   <p className="text-xs font-bold text-emerald-600 animate-pulse mt-1">ফাইল ক্লাউডে আপলোড হচ্ছে...</p>
                 )}
                 {studentFileName && (
-                  <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
+                  <p className="hidden text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>সংযুক্ত ফাইল: {studentFileName}</span>
                   </p>

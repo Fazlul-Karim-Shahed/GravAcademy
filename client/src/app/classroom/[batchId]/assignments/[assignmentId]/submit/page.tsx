@@ -8,6 +8,7 @@ import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import {
   UploadCloud,
   Calendar,
@@ -111,17 +112,12 @@ export default function StudentAssignmentSubmitPage({
     }
   };
 
-  // Only store chosen file in state. DO NOT upload on change!
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 25 * 1024 * 1024) {
-      alert('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
-      return;
-    }
-
+  const handleSelectedFileChange = (file: File | null) => {
     setSelectedFile(file);
+    if (file) {
+      setExistingFileUrl('');
+      setExistingFileName('');
+    }
   };
 
   const handleRemoveFile = () => {
@@ -324,7 +320,19 @@ export default function StudentAssignmentSubmitPage({
                   </div>
 
                   {/* Google Drive Document / Homework File Selection (Uploaded ONLY on Submit) */}
-                  <div className="pt-2">
+                  <FileUploadField
+                    label="Submission file"
+                    selectedFile={selectedFile}
+                    onFileChange={handleSelectedFileChange}
+                    existingUrl={existingFileUrl}
+                    existingFileName={existingFileName}
+                    onPreviewExisting={() => setPreviewDoc({ isOpen: true, url: existingFileUrl, title: 'Submitted file', fileName: existingFileName || 'Document file' })}
+                    onClearExisting={handleRemoveFile}
+                    disabled={submittingWork}
+                    accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    maxSizeMb={25}
+                  />
+                  <div className="hidden">
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       খাতা বা ফাইল সংযুক্ত করুন
                     </label>
@@ -332,7 +340,7 @@ export default function StudentAssignmentSubmitPage({
                       <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input
                           type="file"
-                          onChange={handleFileChange}
+                          onChange={(event) => handleSelectedFileChange(event.target.files?.[0] || null)}
                           disabled={submittingWork}
                           className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
                         />

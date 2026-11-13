@@ -8,6 +8,7 @@ import { toDateTimeLocalValue } from '@/lib/dateTimeLocal';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import {
   Edit,
   Calendar,
@@ -122,6 +123,15 @@ export default function EditAssignmentPage({
       ...prev,
       attachmentUrl: '',
       attachmentName: '',
+    }));
+  };
+
+  const handleSelectedFileChange = (file: File | null) => {
+    setSelectedFile(file);
+    setFormData((prev) => ({
+      ...prev,
+      attachmentName: file?.name || '',
+      attachmentUrl: file ? prev.attachmentUrl : '',
     }));
   };
 
@@ -294,7 +304,19 @@ export default function EditAssignmentPage({
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   প্রশ্নপত্র অথবা সহায়ক ফাইল (Google Drive)
                 </label>
-                <div className="min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <FileUploadField
+                  label="প্রশ্নপত্র বা সহায়ক ফাইল"
+                  selectedFile={selectedFile}
+                  onFileChange={handleSelectedFileChange}
+                  existingUrl={formData.attachmentUrl}
+                  existingFileName={formData.attachmentName}
+                  onPreviewExisting={() => setPreviewDoc({ isOpen: true, url: formData.attachmentUrl, title: 'সংযুক্ত ফাইল', fileName: formData.attachmentName || 'ফাইল' })}
+                  onClearExisting={handleRemoveFile}
+                  disabled={submitting}
+                  accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  maxSizeMb={25}
+                />
+                <div className="hidden min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
                   <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <input
                       type="file"

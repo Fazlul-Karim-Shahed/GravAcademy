@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import {
   PlusCircle,
   ArrowLeft,
@@ -77,20 +78,13 @@ export default function CreateAssignmentPage({
     }
   }, [batchId, user, authLoading, router]);
 
-  // When user selects a file from disk, only store it locally in state. Do NOT upload to Drive yet!
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    if (file.size > 25 * 1024 * 1024) {
-      alert('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
-      return;
-    }
-
+  const handleSelectedFileChange = (file: File | null) => {
     setSelectedFile(file);
     setFormData((prev) => ({
       ...prev,
-      attachmentName: file.name,
+      attachmentName: file?.name || '',
+      attachmentUrl: file ? prev.attachmentUrl : '',
     }));
   };
 
@@ -217,7 +211,7 @@ export default function CreateAssignmentPage({
         ) : <form onSubmit={handleSubmit} className="rounded-3xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 p-1 sm:p-3 md:p-8 md:shadow-xs space-y-6">
           {/* Assignment Title */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="hidden">
               অ্যাসাইনমেন্টের শিরোনাম *
             </label>
             <input
@@ -293,57 +287,21 @@ export default function CreateAssignmentPage({
 
           {/* Question / Reference File Selection (Uploaded ONLY on Submit) */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="hidden">
               প্রশ্নপত্র অথবা সহায়ক ফাইল সংযুক্তকরণ (Google Drive)
             </label>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  disabled={submitting}
-                  className="text-xs file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
-                />
-              </div>
+            <FileUploadField
+              label="প্রশ্নপত্র অথবা সহায়ক ফাইল সংযুক্ত করুন"
+              selectedFile={selectedFile}
+              onFileChange={handleSelectedFileChange}
+              existingUrl={formData.attachmentUrl}
+              existingFileName={formData.attachmentName}
+              disabled={submitting}
+              accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onPreviewExisting={() => setPreviewDoc({ isOpen: true, url: formData.attachmentUrl, title: 'সংযুক্ত অ্যাসাইনমেন্ট ফাইল', fileName: formData.attachmentName || 'ফাইল' })}
+              onClearExisting={handleRemoveSelectedFile}
+            />
 
-              {selectedFile ? (
-                <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-                  <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    <span className="truncate">সিলেক্টেড ফাইল: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleRemoveSelectedFile}
-                    className="text-rose-500 hover:text-rose-700 text-xs font-bold ml-2 shrink-0 cursor-pointer"
-                  >
-                    ফাইল বাদ দিন
-                  </button>
-                </div>
-              ) : formData.attachmentUrl ? (
-                <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
-                  <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    <span className="truncate">সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল'}</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPreviewDoc({
-                        isOpen: true,
-                        url: formData.attachmentUrl,
-                        title: 'সংযুক্ত অ্যাসাইনমেন্ট ফাইল',
-                        fileName: formData.attachmentName || 'ফাইল',
-                      })
-                    }
-                    className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold shrink-0 ml-2 cursor-pointer"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>প্রিভিউ</span>
-                  </button>
-                </div>
-              ) : null}
-            </div>
           </div>
 
           {/* Late Submission Allowed Toggle */}
