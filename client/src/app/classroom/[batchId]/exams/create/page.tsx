@@ -18,7 +18,6 @@ import {
   Clock,
   Award,
   Layers,
-  Sparkles,
   HelpCircle,
   FileCheck,
   Image as ImageIcon,
@@ -501,7 +500,6 @@ export default function CreateExamPage({
             </Link>
             <div>
               <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 shrink-0" />
                 <span>নতুন পরীক্ষা তৈরি</span>
               </h1>
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
