@@ -343,7 +343,7 @@ export default function ProfileEditPage() {
                     maxSizeMb={10}
                     disabled={uploadingAvatar}
                   />
-                  <div className="flex items-center gap-3">
+                  <div className="hidden flex items-center gap-3">
                     <label className="hidden px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 text-xs font-bold cursor-pointer transition-colors inline-flex items-center gap-2">
                       {uploadingAvatar ? (
                         <>
