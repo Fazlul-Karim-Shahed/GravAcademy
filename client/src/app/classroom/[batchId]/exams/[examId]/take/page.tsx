@@ -254,8 +254,18 @@ export default function TakeExamPage({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 25 * 1024 * 1024) {
+      setActionError('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
+      e.target.value = '';
+      return;
+    }
+
     setActionError('');
     setSelectedAnswerFile(file);
+  };
+
+  const handleRemoveAnswerFile = () => {
+    setSelectedAnswerFile(null);
   };
 
   const handleAutoSubmit = () => {
@@ -668,17 +678,17 @@ export default function TakeExamPage({
 
               <div className="p-6 rounded-2xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60 space-y-4">
                 <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all">
+                  <div className="min-w-0 flex-1">
                     <UploadCloud className="w-4 h-4" />
                     <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'ফাইল নির্বাচন করুন'}</span>
                     <input
                       type="file"
                       accept="image/*,application/pdf"
                       onChange={handleAnswerDocUpload}
-                      disabled={uploadingDoc}
-                      className="hidden"
+                      disabled={submitting || uploadingDoc}
+                      className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer disabled:opacity-60"
                     />
-                  </label>
+                  </div>
                   {selectedAnswerFile && (
                     <span className="max-w-full truncate text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                       নির্বাচিত: {selectedAnswerFile.name}
