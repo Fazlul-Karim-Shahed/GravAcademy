@@ -124,12 +124,12 @@ export default function DailyScheduleView({
 
       {/* Top Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-        <div>
-          <div className="flex items-center gap-2.5">
+        <div className="min-w-0">
+          <div className="flex items-start gap-2.5">
             <span className="p-2.5 rounded-2xl bg-gradient-to-br from-indigo-500/15 to-blue-500/20 dark:from-indigo-500/30 dark:to-blue-500/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 shadow-xs">
               <Calendar className="w-5 h-5" />
             </span>
-            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight break-words">
               {title}
             </h2>
           </div>
@@ -141,7 +141,7 @@ export default function DailyScheduleView({
         </div>
 
         {/* Today Summary Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/90 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold shrink-0 shadow-xs">
+        <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-emerald-50/90 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold shrink-0 shadow-xs self-start sm:self-auto">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />

@@ -91,8 +91,8 @@ export default function StudentDashboard() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
+            <div className="min-w-0">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.25] text-white break-words">
                 স্বাগতম,{' '}
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
                   {user?.name || 'শিক্ষার্থী'}!
@@ -115,7 +115,7 @@ export default function StudentDashboard() {
             </div>
 
             {/* Right section: User ID (large screen) + Quick Actions */}
-            <div className="flex flex-col md:items-end gap-3 self-start md:self-auto shrink-0">
+            <div className="flex flex-col md:items-end gap-3 self-start md:self-auto w-full md:w-auto min-w-0">
               {/* Unique User ID Display (Visible on md/lg screens on the right) */}
               {user?.userId && (
                 <div className="hidden md:inline-flex items-center gap-1.5 text-white">
@@ -126,24 +126,24 @@ export default function StudentDashboard() {
                 </div>
               )}
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 <Link
                   href="/dashboard/payments"
-                  className="px-4 py-2.5 rounded-2xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-400/30 backdrop-blur-md flex items-center gap-2 transition-all shadow-md hover:scale-102"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[11px] font-bold border border-emerald-400/30 backdrop-blur-md flex items-center gap-2 transition-all"
                 >
                   <CreditCard className="w-4 h-4 text-emerald-300" />
                   <span>আমার পেমেন্ট ও রিসিট</span>
                 </Link>
                 <Link
                   href="/profile"
-                  className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all shadow-md hover:scale-102"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all"
                 >
                   <User className="w-4 h-4 text-amber-300" />
                   <span>আমার প্রোফাইল</span>
                 </Link>
                 <Link
                   href="/courses"
-                  className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/25 flex items-center gap-2 transition-all hover:scale-102"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-[11px] font-black flex items-center gap-2 transition-all"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>সকল কোর্স</span>
@@ -280,8 +280,8 @@ export default function StudentDashboard() {
               <span className="text-slate-500 dark:text-slate-400 mt-0.5 block font-medium">আমাদের শিক্ষক ও একাডেমিক কেয়ার টিম সকাল ১০টা থেকে রাত ১০টা পর্যন্ত সক্রিয়।</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
-            <span className="font-black text-xs text-white bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 rounded-xl shadow-md shadow-blue-500/20">
+            <div className="flex items-center gap-2 self-start sm:self-auto max-w-full">
+            <span className="font-black text-xs text-white text-center bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-2 rounded-xl max-w-full">
               📞 হেল্পলাইন: 16910
             </span>
           </div>
