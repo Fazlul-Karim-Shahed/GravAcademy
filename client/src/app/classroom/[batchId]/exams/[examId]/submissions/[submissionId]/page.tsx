@@ -1,13 +1,12 @@
 'use client';
 
 import React, { use, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { formatBDTime } from '@/lib/dateUtils';
 import { UserAvatar } from '@/components/common/UserAvatar';
-import { ArrowLeft, Check, CheckCircle2, ExternalLink, FileText, Save, AlertCircle } from 'lucide-react';
+import { Check, ExternalLink, FileText, Save, AlertCircle } from 'lucide-react';
 
 interface SubmissionItem {
   _id: string;
@@ -101,7 +100,6 @@ export default function SubmissionEvaluationPage({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24">
       <div className="w-[98%] mx-auto mt-4 rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="max-w-5xl mx-auto">
-          <Link href={`/classroom/${batchId}/exams/${examId}/submissions`} className="inline-flex items-center gap-1.5 text-xs font-bold text-white/75 hover:text-white mb-5"><ArrowLeft className="w-4 h-4" />সাবমিশনে ফিরুন</Link>
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <UserAvatar name={submission.studentId.name} avatarUrl={submission.studentId.avatarUrl} size="lg" className="border-2 border-white/30" />
             <div className="min-w-0">
