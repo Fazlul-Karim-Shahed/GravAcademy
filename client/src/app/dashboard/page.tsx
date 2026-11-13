@@ -117,21 +117,21 @@ export default function StudentDashboard() {
                   className="flex-1 md:flex-none justify-center min-w-0 px-3.5 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 text-[11px] font-bold border border-emerald-400/30 flex items-center gap-2 transition-colors"
                 >
                   <CreditCard className="w-4 h-4 text-emerald-300" />
-                  <span>আমার পেমেন্ট ও রিসিট</span>
+                  <span>পেমেন্ট</span>
                 </Link>
                 <Link
                   href="/profile"
                   className="flex-1 md:flex-none justify-center min-w-0 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold border border-white/20 flex items-center gap-2 transition-colors"
                 >
                   <User className="w-4 h-4 text-amber-300" />
-                  <span>আমার প্রোফাইল</span>
+                  <span>প্রোফাইল</span>
                 </Link>
                 <Link
                   href="/courses"
                   className="flex-1 md:flex-none justify-center min-w-0 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-[11px] font-black shadow-md shadow-blue-950/30 flex items-center gap-2 transition-colors"
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>সকল কোর্স</span>
+                  <span>কোর্স</span>
                 </Link>
               </div>
             </div>
