@@ -20,6 +20,7 @@ import {
   TrendingUp,
   PenTool,
   Eye,
+  ArrowDownUp,
 } from 'lucide-react';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 
@@ -107,6 +108,7 @@ export default function MarksheetPage({
   const [assignmentsMeta, setAssignmentsMeta] = useState<AssignmentMeta[]>([]);
   const [studentsData, setStudentsData] = useState<StudentRow[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [percentageSort, setPercentageSort] = useState<'desc' | 'asc'>('desc');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -161,7 +163,10 @@ export default function MarksheetPage({
   });
 
   const rankedStudents = [...filteredStudents].sort((a, b) => {
-    const percentageDifference = b.summary.percentage - a.summary.percentage;
+    const percentageDifference =
+      percentageSort === 'desc'
+        ? b.summary.percentage - a.summary.percentage
+        : a.summary.percentage - b.summary.percentage;
     return percentageDifference !== 0
       ? percentageDifference
       : a.student.name.localeCompare(b.student.name);
@@ -424,7 +429,17 @@ export default function MarksheetPage({
                         <th className="py-3 px-4 text-center">অ্যাসাইনমেন্ট সাবমিশন</th>
                         <th className="py-3 px-4 text-center">অ্যাসাইনমেন্ট নম্বর</th>
                         <th className="py-3 px-4 text-center">সর্বমোট নম্বর</th>
-                        <th className="py-3 px-4 text-center">পার্সেন্টেজ (%)</th>
+                        <th className="py-3 px-4 text-center">
+                          <button
+                            type="button"
+                            onClick={() => setPercentageSort((current) => (current === 'desc' ? 'asc' : 'desc'))}
+                            className="inline-flex items-center justify-center gap-1.5 hover:text-purple-600 dark:hover:text-purple-300 transition-colors cursor-pointer"
+                            title={percentageSort === 'desc' ? 'কম থেকে বেশি' : 'বেশি থেকে কম'}
+                          >
+                            <span>পার্সেন্টেজ (%)</span>
+                            <ArrowDownUp className="w-3.5 h-3.5" />
+                          </button>
+                        </th>
                         <th className="py-3 px-4 text-right">অ্যাকশন</th>
                       </tr>
                     </thead>
