@@ -3,6 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import {
   BookOpen,
   Video,
@@ -21,6 +22,7 @@ import {
   Minimize2,
   Loader2,
   MessageSquare,
+  Pencil,
 } from 'lucide-react';
 import { ScheduleSlot, getDayInfo, formatTo12Hour } from '@/lib/schedule';
 
@@ -71,6 +73,7 @@ interface BatchHierarchyData {
     scheduleText?: string;
     weeklySchedule?: ScheduleSlot[];
     meetingUrl?: string;
+    assignedTeachers?: string[];
     courseId: {
       _id: string;
       title: string;
@@ -86,6 +89,7 @@ export const dynamic = 'force-dynamic';
 
 export default function LearningRoomPage({ params }: { params: Promise<{ batchId: string }> }) {
   const resolvedParams = use(params);
+  const { user } = useAuth();
   const [data, setData] = useState<BatchHierarchyData | null>(null);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
@@ -178,6 +182,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
   }
 
   const courseLink = `/courses/${data.batch.courseId?.slug || data.batch.courseId?._id}`;
+  const canEditCurriculum =
+    user?.role === 'teacher' &&
+    (data.batch.assignedTeachers || []).some((teacherId) => teacherId.toString() === user.id);
 
   return (
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
@@ -213,6 +220,15 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
             {/* Quick Live Classroom & Batch Classroom Action Buttons */}
             <div className="flex flex-wrap items-center gap-2.5 self-end sm:self-auto shrink-0">
+              {canEditCurriculum && (
+                <Link
+                  href={`/admin/batches/${data.batch._id}/curriculum`}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 active:scale-95 transition-all"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>এডিট</span>
+                </Link>
+              )}
               <Link
                 href={`/classroom/${data.batch._id}`}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md active:scale-95 transition-all"

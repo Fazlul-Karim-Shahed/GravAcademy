@@ -33,6 +33,7 @@ import {
   ArrowRightLeft,
   BookOpen,
   Award,
+  ArrowRight,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { LiveKitClassroomModal } from '@/components/classroom/LiveKitClassroomModal';
@@ -497,6 +498,7 @@ export default function BatchClassroomPage({
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
+                title={tab.label}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold shrink-0 transition-colors ${
                   activeTab === tab.key
                     ? 'bg-indigo-600 text-white shadow-sm'
@@ -504,8 +506,8 @@ export default function BatchClassroomPage({
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
-                {tab.count !== null && <span className="opacity-70">{tab.count}</span>}
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.count !== null && <span className="hidden sm:inline opacity-70">{tab.count}</span>}
               </button>
             );
           })}
@@ -524,28 +526,32 @@ export default function BatchClassroomPage({
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <Link href={`/learn/${batchId}`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-blue-400 hover:shadow-md transition-all">
-                <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400 mb-3" />
+              <Link href={`/learn/${batchId}`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between">
+                <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors"><BookOpen className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" /></div>
                 <span className="block text-sm font-bold text-slate-900 dark:text-white">লেকচার</span>
                 <span className="block text-[11px] text-slate-500 mt-1">পড়াশোনা শুরু করুন</span>
               </Link>
 
               {isFeatureEnabled('assignments', user?.role === 'superadmin') && (
-                <Link href={`/classroom/${batchId}/assignments`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-emerald-400 hover:shadow-md transition-all">
-                  <Award className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mb-3" />
+                <Link href={`/classroom/${batchId}/assignments`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between">
+                  <Award className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Award className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" /></div>
                   <span className="block text-sm font-bold text-slate-900 dark:text-white">অ্যাসাইনমেন্ট</span>
                   <span className="block text-[11px] text-slate-500 mt-1">কাজ জমা দিন</span>
                 </Link>
               )}
 
-              <Link href={`/classroom/${batchId}/exams`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-amber-400 hover:shadow-md transition-all">
-                <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400 mb-3" />
+              <Link href={`/classroom/${batchId}/exams`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between">
+                <FileText className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors"><FileText className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" /></div>
                 <span className="block text-sm font-bold text-slate-900 dark:text-white">এক্সাম</span>
                 <span className="block text-[11px] text-slate-500 mt-1">পরীক্ষা দিন</span>
               </Link>
 
-              <Link href={`/classroom/${batchId}/marksheet`} className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 hover:border-purple-400 hover:shadow-md transition-all">
-                <GraduationCap className="w-5 h-5 text-purple-600 dark:text-purple-400 mb-3" />
+              <Link href={`/classroom/${batchId}/marksheet`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between">
+                <GraduationCap className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors"><GraduationCap className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" /></div>
                 <span className="block text-sm font-bold text-slate-900 dark:text-white">মার্কশিট</span>
                 <span className="block text-[11px] text-slate-500 mt-1">ফলাফল দেখুন</span>
               </Link>
