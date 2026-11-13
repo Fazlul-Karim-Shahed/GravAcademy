@@ -183,10 +183,17 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
     <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. TOP HEADER (Cosmic Glow Theme) */}
-      <div className="relative overflow-hidden cosmic-hero-bg text-white border-b border-white/10 shadow-lg">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
         {/* Subtle deep space glow in top bar */}
-        <div className="absolute top-0 left-1/3 w-[600px] h-[180px] bg-red-600/10 rounded-full blur-[80px] pointer-events-none -z-10" />
-        <div className="absolute top-0 right-1/4 w-[400px] h-[180px] bg-blue-600/10 rounded-full blur-[70px] pointer-events-none -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
