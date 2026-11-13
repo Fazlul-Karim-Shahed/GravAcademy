@@ -71,7 +71,7 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-14">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
-      <div className="relative w-[99.99%] mx-auto overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(129,140,248,0.25),transparent_32%),radial-gradient(circle_at_10%_90%,rgba(236,72,153,0.16),transparent_30%)] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto relative z-10">
