@@ -224,25 +224,25 @@ export default function TeacherPanelPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {batches.map((batch) => (
-              <div key={batch._id} className="rounded-3xl p-6 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+              <div key={batch._id} className="rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col justify-between transition-colors hover:border-emerald-400 dark:hover:border-emerald-500/70">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-500/20">
+                  <div className="flex items-center justify-between mb-2 gap-3">
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                       {batch.courseId?.gradeLevel || 'Class 6 - 12'}
                     </span>
-                    <span className="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
                       {batch.status}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{batch.name}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{batch.courseId?.title}</p>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">{batch.name}</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3 line-clamp-1">{batch.courseId?.title}</p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-2">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
                   <Link
                     href={`/classroom/${batch._id}`}
-                    className="flex-1 min-w-[120px] py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                    className="flex-1 min-w-0 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors"
                     title="ক্লাসরুম, মেম্বার তালিকা ও ডিসকাশন গ্রুপে প্রবেশ করুন"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
@@ -251,7 +251,7 @@ export default function TeacherPanelPage() {
 
                   <Link
                     href={`/admin/batches/${batch._id}/curriculum`}
-                    className="py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                    className="py-2 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors"
                     title="কারিকুলাম, লেকচার ও শিট ম্যানেজ করুন"
                   >
                     <BookOpen className="w-3.5 h-3.5" />
