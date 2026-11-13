@@ -187,29 +187,13 @@ export default function MarksheetPage({
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
-                ফলাফল ও অগ্রগতি
+                মার্কশিট
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
                 {batchInfo?.name}
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/classroom/${batchId}/exams`}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all"
-              >
-                <FileText className="w-4 h-4" />
-                <span>এক্সাম</span>
-              </Link>
-              <Link
-                href={`/classroom/${batchId}/assignments`}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all"
-              >
-                <Award className="w-4 h-4" />
-                <span>অ্যাসাইন</span>
-              </Link>
-            </div>
           </div>
         </div>
       </div>
