@@ -199,28 +199,20 @@ export default function StudentAssignmentSubmitPage({
           <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
           <span className="shooting-star meteor-1" />
         </div>
-        <div className="max-w-5xl mx-auto relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-          <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-            <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight">অ্যাসাইনমেন্ট জমা দিন</h1>
-            <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
-              {assignment?.title || 'আপনার কাজ জমা দিন'}
-            </p>
-          </div>
-          </div>
-          <div className="flex items-center gap-2 sm:shrink-0">
-            <div className="rounded-xl bg-white/10 border border-white/15 px-3 py-2 text-center min-w-[76px]">
-              <span className="block text-[10px] text-slate-300">পূর্ণমান</span>
-              <strong className="block text-sm text-white mt-0.5">{assignment?.totalMarks ?? '--'}</strong>
-            </div>
-            <div className="rounded-xl bg-white/10 border border-white/15 px-3 py-2 text-center min-w-[92px]">
-              <span className="block text-[10px] text-slate-300">জমার শেষ সময়</span>
-              <strong className="block text-[11px] text-white mt-0.5 truncate max-w-[88px]">
-                {due ? due.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' }) : '--'}
-              </strong>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="flex items-center gap-3 pt-1 min-w-0">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
+                <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                  অ্যাসাইনমেন্ট জমা দিন
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                  {assignment?.title || 'আপনার কাজ জমা দিন'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
