@@ -294,19 +294,19 @@ export default function EditAssignmentPage({
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   প্রশ্নপত্র অথবা সহায়ক ফাইল (Google Drive)
                 </label>
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <input
                       type="file"
                       onChange={handleFileChange}
                       disabled={submitting}
-                      className="text-xs file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
+                      className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
                     />
                   </div>
 
                   {selectedFile ? (
-                    <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-                      <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
+                    <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
+                      <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                         <CheckCircle2 className="w-4 h-4 shrink-0" />
                         <span className="truncate">নতুন সিলেক্টেড ফাইল: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
                       </span>
@@ -319,8 +319,8 @@ export default function EditAssignmentPage({
                       </button>
                     </div>
                   ) : formData.attachmentUrl ? (
-                    <div className="mt-3 flex items-center justify-between p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
-                      <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold truncate">
+                    <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+                      <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                         <CheckCircle2 className="w-4 h-4 shrink-0" />
                         <span className="truncate">বর্তমান সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল সংযুক্ত আছে'}</span>
                       </span>
