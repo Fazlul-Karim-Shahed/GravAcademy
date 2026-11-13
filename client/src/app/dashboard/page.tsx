@@ -145,6 +145,90 @@ export default function StudentDashboard() {
           title="আজকের ও সাপ্তাহিক ক্লাস রুটিন"
         />
 
+        {/* 3. Student-first quick access to the places used every day */}
+        {!loading && batches.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/60 dark:border-indigo-800/60">
+                  <Compass className="w-4 h-4" />
+                </div>
+                <span>দ্রুত প্রবেশ</span>
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              {batches.map((batch) => (
+                <div key={batch._id} className="space-y-2.5">
+                  <div className="flex items-center gap-2 px-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                    <span className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-200 truncate">
+                      {batch.name}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                    <Link
+                      href={`/classroom/${batch._id}`}
+                      className="group rounded-2xl border border-indigo-100 dark:border-indigo-900/50 bg-white dark:bg-slate-900 p-3 sm:p-3.5 shadow-sm hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md transition-all"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center mb-2">
+                        <Video className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-black text-slate-800 dark:text-white">ক্লাসরুম</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-indigo-500 mt-1.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+
+                    <Link
+                      href={`/classroom/${batch._id}/assignments`}
+                      className="group rounded-2xl border border-emerald-100 dark:border-emerald-900/50 bg-white dark:bg-slate-900 p-3 sm:p-3.5 shadow-sm hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md transition-all"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center mb-2">
+                        <FileCheck2 className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-black text-slate-800 dark:text-white">অ্যাসাইনমেন্ট</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-emerald-500 mt-1.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+
+                    <Link
+                      href={`/classroom/${batch._id}/exams`}
+                      className="group rounded-2xl border border-amber-100 dark:border-amber-900/50 bg-white dark:bg-slate-900 p-3 sm:p-3.5 shadow-sm hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md transition-all"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-300 flex items-center justify-center mb-2">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-black text-slate-800 dark:text-white">এক্সাম</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-amber-500 mt-1.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+
+                    <Link
+                      href={`/learn/${batch._id}`}
+                      className="group rounded-2xl border border-blue-100 dark:border-blue-900/50 bg-white dark:bg-slate-900 p-3 sm:p-3.5 shadow-sm hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md transition-all"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 flex items-center justify-center mb-2">
+                        <BookOpen className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-black text-slate-800 dark:text-white">লেকচার</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-blue-500 mt-1.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+
+                    <Link
+                      href={`/classroom/${batch._id}/marksheet`}
+                      className="group rounded-2xl border border-purple-100 dark:border-purple-900/50 bg-white dark:bg-slate-900 p-3 sm:p-3.5 shadow-sm hover:-translate-y-0.5 hover:border-purple-300 hover:shadow-md transition-all"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 flex items-center justify-center mb-2">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-black text-slate-800 dark:text-white">ফলাফল</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-purple-500 mt-1.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 3. Enrolled Batches: Curriculum & Study Materials */}
         <div className="space-y-6">
           <div className="flex items-center justify-between pb-2">
