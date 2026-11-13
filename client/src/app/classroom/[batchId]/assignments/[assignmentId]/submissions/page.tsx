@@ -1,28 +1,22 @@
 'use client';
 
 import React, { useEffect, useState, use } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
 import {
   FileCheck,
-  ArrowLeft,
   Users,
   Award,
   CheckCircle2,
   AlertCircle,
   Clock,
-  ExternalLink,
-  MessageSquare,
   File,
   Check,
   Search,
-  ChevronRight,
   Filter,
   PenTool,
-  RotateCcw,
   Eye,
 } from 'lucide-react';
 import { DocumentAnnotator } from '@/components/ui/DocumentAnnotator';
@@ -248,43 +242,30 @@ export default function AssignmentSubmissionsPage({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
-      {/* Top Header Bar */}
-      <div className="w-[98%] mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 sticky top-3 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Link
-                href={`/classroom/${batchId}/assignments`}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-                title="অ্যাসাইনমেন্ট লিস্টে ফিরে যান"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Link>
-              <div>
-                <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-0.5">
-                  <Link href={`/classroom/${batchId}`} className="hover:underline">
-                    ক্লাসরুম
-                  </Link>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                  <Link href={`/classroom/${batchId}/assignments`} className="hover:underline">
-                    অ্যাসাইনমেন্ট
-                  </Link>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                  <span className="text-purple-600 dark:text-purple-400">সাবমিশন ও মূল্যায়ন</span>
-                </div>
-                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileCheck className="w-5 h-5 text-purple-600" />
-                  <span>{assignment?.title || 'অ্যাসাইনমেন্ট মূল্যায়ন'}</span>
-                </h1>
-              </div>
+      {/* Shared classroom header */}
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex items-center gap-3 pt-1 min-w-0">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
+              <FileCheck className="w-6 h-6 sm:w-7 sm:h-7 text-purple-200" />
             </div>
-
-            {assignment && (
-              <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300">
-                <Award className="w-4 h-4" />
-                <span>পূর্ণমান: {assignment.totalMarks} | পাস: {assignment.passMarks}</span>
-              </div>
-            )}
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                সাবমিশন ও মূল্যায়ন
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                {assignment?.title || 'শিক্ষার্থীদের জমা দেওয়া কাজ দেখুন'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -304,7 +285,7 @@ export default function AssignmentSubmissionsPage({
           <>
             {/* KPI Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Users className="w-4 h-4 text-blue-500" /> মোট জমা পড়েছে
                 </span>
@@ -313,7 +294,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" /> মূল্যায়িত
                 </span>
@@ -322,7 +303,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Clock className="w-4 h-4 text-amber-500" /> মূল্যায়ন বাকি
                 </span>
@@ -331,7 +312,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Award className="w-4 h-4 text-purple-500" /> গড় নম্বর
                 </span>
@@ -342,7 +323,7 @@ export default function AssignmentSubmissionsPage({
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="bg-white dark:bg-slate-900 p-3.5 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div className="relative flex-1 max-w-md">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -394,7 +375,7 @@ export default function AssignmentSubmissionsPage({
             {/* Split Screen Layout: List on Left, Active Evaluation Panel on Right */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: Submissions Table / List */}
-              <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs">
+              <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">
                   সাবমিশন তালিকা ({filteredSubmissions.length})
                 </h3>
@@ -480,7 +461,7 @@ export default function AssignmentSubmissionsPage({
               {/* Right Column: Active Evaluation Form & Answer Review */}
               <div className="lg:col-span-5 sticky top-24">
                 {selectedSub ? (
-                  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md flex flex-col gap-4">
+                  <div className="bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm flex flex-col gap-4">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                       <div>
                         <h3 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -683,7 +664,7 @@ export default function AssignmentSubmissionsPage({
                     </form>
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs text-center flex flex-col items-center justify-center">
+                  <div className="bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-8 shadow-sm text-center flex flex-col items-center justify-center">
                     <FileCheck className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
                     <h4 className="text-sm font-bold text-slate-800 dark:text-white">
                       কোনো সাবমিশন নির্বাচন করা হয়নি
