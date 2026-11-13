@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { formatBDTime } from '@/lib/dateUtils';
+import { getDrivePreviewUrl } from '@/lib/drive';
 import {
   Users,
   Award,
@@ -393,7 +394,7 @@ export default function ExamSubmissionsPage({
 
                   <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 h-64 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
                     <iframe
-                      src={selectedSub.studentDocumentUrl}
+                      src={getDrivePreviewUrl(selectedSub.studentDocumentUrl)}
                       className="w-full h-full border-0"
                       title="Answer Script"
                     />

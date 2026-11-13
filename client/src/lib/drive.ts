@@ -44,3 +44,20 @@ export function formatDriveImageUrl(url?: string | null): string {
 
   return trimmed;
 }
+
+/** Convert a Google Drive file link into the URL intended for an embedded preview. */
+export function getDrivePreviewUrl(url?: string | null): string {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
+  const fileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch?.[1]) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
+
+  const idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idMatch?.[1] && trimmed.includes('drive.google.com')) {
+    return `https://drive.google.com/file/d/${idMatch[1]}/preview`;
+  }
+
+  return trimmed;
+}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { formatBDTime } from '@/lib/dateUtils';
+import { getDrivePreviewUrl } from '@/lib/drive';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { Check, ExternalLink, FileText, Save, AlertCircle } from 'lucide-react';
 
@@ -116,7 +117,7 @@ export default function SubmissionEvaluationPage({
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 grid grid-cols-1 lg:grid-cols-[1.25fr_.75fr] gap-5">
         <section className="space-y-5">
-          {submission.studentDocumentUrl && <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm"><div className="flex items-center justify-between mb-3"><h2 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-blue-600" />উত্তরপত্র</h2><a href={submission.studentDocumentUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 inline-flex items-center gap-1">খুলুন <ExternalLink className="w-3.5 h-3.5" /></a></div><iframe src={submission.studentDocumentUrl} title="Answer Script" className="w-full h-[460px] rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800" /></div>}
+          {submission.studentDocumentUrl && <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm"><div className="flex items-center justify-between mb-3"><h2 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-blue-600" />উত্তরপত্র</h2><a href={submission.studentDocumentUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 inline-flex items-center gap-1">খুলুন <ExternalLink className="w-3.5 h-3.5" /></a></div><iframe src={getDrivePreviewUrl(submission.studentDocumentUrl)} title="Answer Script" className="w-full h-[460px] rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800" /></div>}
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm"><h2 className="text-sm font-black mb-4">লিখিত উত্তর</h2>{submission.cqAnswers?.length ? <div className="space-y-3">{submission.cqAnswers.map((answer) => <div key={answer.questionIndex} className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4"><p className="text-[11px] font-black text-purple-600 mb-1">প্রশ্ন {answer.questionIndex + 1}</p><p className="text-sm leading-6 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{answer.answerText || 'কোনো উত্তর নেই'}</p></div>)}</div> : <p className="text-xs text-slate-500">কোনো লিখিত উত্তর জমা দেওয়া হয়নি।</p>}</div>
         </section>
 
