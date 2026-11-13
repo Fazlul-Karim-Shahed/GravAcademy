@@ -277,7 +277,7 @@ export default function ExamSubmissionsPage({
 
                       <td className="py-3.5 px-4 text-right">
                         <button
-                          onClick={() => openEvaluation(sub)}
+                          onClick={() => router.push(`/classroom/${batchId}/exams/${examId}/submissions/${sub._id}`)}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-all shadow-sm"
                         >
                           <FileText className="w-3.5 h-3.5" />
@@ -337,7 +337,7 @@ export default function ExamSubmissionsPage({
                   </div>
 
                   <button
-                    onClick={() => openEvaluation(sub)}
+                    onClick={() => router.push(`/classroom/${batchId}/exams/${examId}/submissions/${sub._id}`)}
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs transition-all shadow-sm"
                   >
                     <FileText className="w-3.5 h-3.5" />
