@@ -20,6 +20,7 @@ import {
 
 interface DocumentAnnotatorProps {
   fileUrl: string;
+  backgroundFileUrl?: string;
   fileName?: string;
   onSaveAnnotated: (blob: Blob, previewUrl: string) => void;
   onCancel: () => void;
@@ -27,12 +28,15 @@ interface DocumentAnnotatorProps {
 
 export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
   fileUrl,
+  backgroundFileUrl,
   fileName = 'student_document',
   onSaveAnnotated,
   onCancel,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const backgroundImageRef = useRef<HTMLImageElement | null>(null);
+  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
 
   // Tools: 'pen' | 'highlighter' | 'text' | 'tick' | 'cross' | 'eraser'
   const [activeTool, setActiveTool] = useState<'pen' | 'highlighter' | 'text' | 'tick' | 'cross' | 'eraser'>('pen');
@@ -73,6 +77,25 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
     img.crossOrigin = 'anonymous';
     img.src = imageUrl;
 
+    // Keep the clean document separately so the eraser can restore the
+    // original pixels instead of painting a white stroke over the script.
+    let backgroundImageUrl = backgroundFileUrl || fileUrl;
+    if (backgroundImageUrl.includes('drive.google.com/file/d/')) {
+      const match = backgroundImageUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        backgroundImageUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600`;
+      }
+    }
+    const cleanImg = new Image();
+    cleanImg.crossOrigin = 'anonymous';
+    cleanImg.onload = () => {
+      backgroundImageRef.current = cleanImg;
+    };
+    cleanImg.onerror = () => {
+      backgroundImageRef.current = null;
+    };
+    cleanImg.src = backgroundImageUrl;
+
     img.onload = () => {
       // Set high-res canvas size based on loaded image
       const maxWidth = 1200;
@@ -111,7 +134,7 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
       setHistory([initialData]);
       setHistoryStep(0);
     };
-  }, [fileUrl, fileName]);
+  }, [fileUrl, backgroundFileUrl, fileName]);
 
   const saveState = () => {
     const canvas = canvasRef.current;
@@ -150,6 +173,22 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
     };
   };
 
+  const restoreBackgroundAt = (x: number, y: number) => {
+    const canvas = canvasRef.current;
+    const cleanImage = backgroundImageRef.current;
+    if (!canvas || !cleanImage) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const radius = 10;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(cleanImage, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+  };
+
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -157,6 +196,7 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
     if (!ctx) return;
 
     const { x, y } = getCanvasCoords(e);
+    lastPointRef.current = { x, y };
 
     if (activeTool === 'tick') {
       // Draw Teacher Green/Red Checkmark stamp
@@ -207,10 +247,10 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
       ctx.lineWidth = 18;
       ctx.lineCap = 'square';
     } else if (activeTool === 'eraser') {
-      // Eraser: redraw background image patch or white
-      ctx.strokeStyle = '#ffffff';
+      // Eraser: restore the clean document underneath the annotation.
       ctx.lineWidth = 20;
       ctx.lineCap = 'round';
+      restoreBackgroundAt(x, y);
     } else {
       // Pen Tool
       ctx.strokeStyle = penColor;
@@ -228,6 +268,22 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
     if (!ctx) return;
 
     const { x, y } = getCanvasCoords(e);
+
+    if (activeTool === 'eraser') {
+      const previous = lastPointRef.current || { x, y };
+      const distance = Math.hypot(x - previous.x, y - previous.y);
+      const steps = Math.max(1, Math.ceil(distance / 8));
+      for (let index = 1; index <= steps; index += 1) {
+        const progress = index / steps;
+        restoreBackgroundAt(
+          previous.x + (x - previous.x) * progress,
+          previous.y + (y - previous.y) * progress
+        );
+      }
+      lastPointRef.current = { x, y };
+      return;
+    }
+
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -235,6 +291,7 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
   const handleMouseUp = () => {
     if (!isDrawing) return;
     setIsDrawing(false);
+    lastPointRef.current = null;
     saveState();
   };
 

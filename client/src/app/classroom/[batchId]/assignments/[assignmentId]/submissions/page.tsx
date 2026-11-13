@@ -732,6 +732,7 @@ export default function AssignmentSubmissionsPage({
           <div className="w-full h-full max-w-6xl max-h-[92vh] flex flex-col">
             <DocumentAnnotator
               fileUrl={annotationSourceUrl}
+              backgroundFileUrl={selectedSub.fileUrl}
               fileName={
                 annotationSourceUrl === selectedSub.fileUrl
                   ? selectedSub.fileName
