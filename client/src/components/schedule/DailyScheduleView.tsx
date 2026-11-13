@@ -53,6 +53,7 @@ interface DailyScheduleViewProps {
   title?: string;
   subtitle?: string;
   layout?: 'auto' | 'table' | 'cards';
+  cardless?: boolean;
 }
 
 export default function DailyScheduleView({
@@ -60,6 +61,7 @@ export default function DailyScheduleView({
   title = "আজকের ও সাপ্তাহিক ক্লাস শিডিউল",
   subtitle,
   layout = 'auto',
+  cardless = false,
 }: DailyScheduleViewProps) {
   const { user } = useAuth();
   const [data, setData] = useState<DailyScheduleData | null>(null);
@@ -96,7 +98,7 @@ export default function DailyScheduleView({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs mb-8">
+      <div className={cardless ? 'mb-8' : 'bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-xs mb-8'}>
         <div className="h-6 w-56 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse mb-4" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
@@ -113,7 +115,7 @@ export default function DailyScheduleView({
   const currentDayLabel = `${data.dayLabels[activeTab]?.bn} এর ক্লাস`;
 
   return (
-    <div className="relative overflow-hidden bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-7 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl mb-8">
+    <div className={`relative overflow-hidden mb-8 ${cardless ? 'p-0' : 'bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-7 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl'}`}>
       {/* Subtle Ambient Radial Lighting */}
       <div className="absolute top-0 right-1/4 w-80 h-36 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-0 left-10 w-64 h-32 bg-emerald-500/10 dark:bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />

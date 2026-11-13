@@ -179,6 +179,7 @@ export default function TeacherPanelPage() {
         {/* Teacher Daily & Weekly Schedule Overview */}
         <div id="schedule"><DailyScheduleView
           role="teacher"
+          cardless
           title="শিক্ষক ক্লাস শিডিউল ও ব্যাচ রুটিন"
         /></div>
 
