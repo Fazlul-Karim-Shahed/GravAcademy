@@ -171,13 +171,17 @@ export default function MarksheetPage({
               <div className="flex items-center gap-2.5 mb-2.5">
               </div>
 
-              <h1 className="flex items-center gap-2.5 text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
-                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-300 shrink-0" />
-                <span>ফলাফল ও অগ্রগতি</span>
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
-                {batchInfo?.name}
-              </p>
+              <div className="flex items-center gap-3 pt-1 min-w-0">
+                <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+                <div className="min-w-0">
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                    ফলাফল ও অগ্রগতি
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                    {batchInfo?.name}
+                  </p>
+                </div>
+              </div>
             </div>
 
           </div>
