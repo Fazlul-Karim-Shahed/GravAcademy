@@ -452,7 +452,7 @@ export default function BatchClassroomPage({
                 title="সরাসরি লাইভ ক্লাসে যুক্ত হোন"
               >
                 <Video className="w-4 h-4" />
-                <span>লাইভ ক্লাস</span>
+                <span>লাইভ</span>
               </button>
 
               <Link
@@ -460,7 +460,7 @@ export default function BatchClassroomPage({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-500/30 active:scale-95 transition-all"
               >
                 <FileText className="w-4 h-4" />
-                <span>এক্সাম রুম (Exam Room)</span>
+                <span>এক্সাম</span>
               </Link>
 
               {isFeatureEnabled('assignments', user?.role === 'superadmin') && <Link
@@ -468,7 +468,7 @@ export default function BatchClassroomPage({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white text-xs font-black shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
               >
                 <Award className="w-4 h-4" />
-                <span>অ্যাসাইনমেন্ট (Assignments)</span>
+                <span>অ্যাসাইন</span>
               </Link>}
 
               <Link
@@ -476,7 +476,7 @@ export default function BatchClassroomPage({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black shadow-lg shadow-purple-500/30 active:scale-95 transition-all"
               >
                 <Award className="w-4 h-4" />
-                <span>মার্কশিট (Marksheet)</span>
+                <span>মার্কশিট</span>
               </Link>
 
               <Link
@@ -484,7 +484,7 @@ export default function BatchClassroomPage({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/30 active:scale-95 transition-all"
               >
                 <GraduationCap className="w-4 h-4" />
-                <span>স্টাডি ম্যাটেরিয়াল ও লেকচার</span>
+                <span>লেকচার</span>
               </Link>
             </div>
           </div>
