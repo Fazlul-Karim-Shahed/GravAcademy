@@ -355,7 +355,7 @@ export default function AssignmentRoomPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
       {/* Hero Section */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
         <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
@@ -368,7 +368,9 @@ export default function AssignmentRoomPage({
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-center gap-3 pt-1 min-w-0">
-              <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+              </div>
               <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                   অ্যাসাইনমেন্ট

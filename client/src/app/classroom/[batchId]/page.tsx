@@ -400,7 +400,7 @@ export default function BatchClassroomPage({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors pb-16">
       
       {/* 1. TOP HEADER BANNER (Cosmic Theme) */}
-      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-8 pb-10 sm:pt-10 sm:pb-12 mb-8">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white pt-7 pb-8 sm:pt-8 sm:pb-9 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         {/* Deep space radial ambient lighting */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none -z-10 animate-atmosphere" />
@@ -417,24 +417,7 @@ export default function BatchClassroomPage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <button
-                  onClick={() => router.back()}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
-                  title="ফিরে যান"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-                <span className="text-xs font-bold text-slate-200 bg-white/15 px-3 py-1 rounded-full border border-white/20 backdrop-blur-md">
-                  {batch.courseId?.gradeLevel || 'Class 6 - 12'}
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-emerald-300 font-bold bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>সক্রিয় ব্যাচ</span>
-                </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-normal leading-[1.35] pt-1">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight pt-1">
                 {batch.name}
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">

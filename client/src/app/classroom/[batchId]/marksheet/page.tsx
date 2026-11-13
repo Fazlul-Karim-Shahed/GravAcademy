@@ -179,8 +179,10 @@ export default function MarksheetPage({
               <div className="flex items-center gap-2.5 mb-2.5">
               </div>
 
-              <div className="flex items-center gap-3 pt-1 min-w-0">
-                <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+              <div className="flex items-center gap-3.5 pt-1 min-w-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+                  <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                </div>
                 <div className="min-w-0">
                   <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                     ফলাফল ও অগ্রগতি

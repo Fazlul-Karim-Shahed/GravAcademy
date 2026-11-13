@@ -176,9 +176,6 @@ export default function ExamRoomPage({
                 <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-indigo-200/90 font-black mb-1">
-                  এক্সাম সেন্টার
-                </p>
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                   পরীক্ষা ও মূল্যায়ন
                 </h1>
@@ -252,7 +249,6 @@ export default function ExamRoomPage({
                       : 'border-slate-200 dark:border-slate-800'
                   }`}
                 >
-                  <div className={`absolute inset-y-0 left-0 w-1 ${timing.state === 'RUNNING' ? 'bg-emerald-500' : timing.state === 'UPCOMING' ? 'bg-amber-400' : 'bg-slate-300 dark:bg-slate-700'}`} />
                   {/* Top Status Badges */}
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-5 pl-1">

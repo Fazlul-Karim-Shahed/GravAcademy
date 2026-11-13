@@ -197,8 +197,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 pt-1 min-w-0">
-              <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+            <div className="flex items-center gap-3.5 pt-1 min-w-0">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+              </div>
               <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight line-clamp-1">
                   লেকচার ও শিট
