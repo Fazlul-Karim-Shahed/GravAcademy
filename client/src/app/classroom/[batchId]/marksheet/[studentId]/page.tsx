@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, use } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
-  ArrowLeft,
   Award,
   BarChart3,
   CheckCircle2,
@@ -131,12 +129,6 @@ export default function StudentMarksheetPage({
           <span className="shooting-star meteor-1" />
         </div>
         <div className="max-w-5xl mx-auto relative z-10">
-          <Link
-            href={`/classroom/${batchId}/marksheet`}
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white mb-5 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> মার্কশিটে ফিরে যান
-          </Link>
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
               <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
