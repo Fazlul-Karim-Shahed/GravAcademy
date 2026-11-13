@@ -220,13 +220,6 @@ export default function EditAssignmentPage({
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-              <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-sm font-black">১</div>
-                <div>
-                  <h2 className="text-sm font-black text-slate-900 dark:text-white">মূল তথ্য</h2>
-                  <p className="text-[11px] text-slate-500 mt-0.5">শিরোনাম ও নির্দেশনা</p>
-                </div>
-              </div>
               <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   শিরোনাম *
