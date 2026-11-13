@@ -285,7 +285,7 @@ export default function AssignmentSubmissionsPage({
           <>
             {/* KPI Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Users className="w-4 h-4 text-blue-500" /> মোট জমা পড়েছে
                 </span>
@@ -294,7 +294,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" /> মূল্যায়িত
                 </span>
@@ -303,7 +303,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Clock className="w-4 h-4 text-amber-500" /> মূল্যায়ন বাকি
                 </span>
@@ -312,7 +312,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Award className="w-4 h-4 text-purple-500" /> গড় নম্বর
                 </span>
@@ -323,7 +323,7 @@ export default function AssignmentSubmissionsPage({
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="bg-white dark:bg-slate-900 p-3.5 rounded-[1.25rem] border border-slate-200 dark:border-slate-800 shadow-sm mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="p-3.5 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div className="relative flex-1 max-w-md">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -375,7 +375,7 @@ export default function AssignmentSubmissionsPage({
             {/* Split Screen Layout: List on Left, Active Evaluation Panel on Right */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: Submissions Table / List */}
-              <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+              <div className="lg:col-span-7 p-1 sm:p-5 rounded-[1.5rem] lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:shadow-sm">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">
                   সাবমিশন তালিকা ({filteredSubmissions.length})
                 </h3>
@@ -397,7 +397,7 @@ export default function AssignmentSubmissionsPage({
                           className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col gap-2 ${
                             isSelected
                               ? 'border-purple-500 bg-purple-50/40 dark:bg-purple-950/20 shadow-xs'
-                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900'
+                              : 'border-transparent sm:border-slate-200 sm:dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 sm:bg-white sm:dark:bg-slate-900'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
@@ -461,13 +461,16 @@ export default function AssignmentSubmissionsPage({
               {/* Right Column: Active Evaluation Form & Answer Review */}
               <div className="lg:col-span-5 sticky top-24">
                 {selectedSub ? (
-                  <div className="bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm flex flex-col gap-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                      <div>
-                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                          সাবমিশন পর্যালোচনা
+                  <div className="lg:bg-white lg:dark:bg-slate-900 rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-slate-800 p-1 sm:p-6 lg:shadow-sm flex flex-col gap-4">
+                    <div className="flex items-center gap-3 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+                      <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 flex items-center justify-center text-sm font-black shrink-0">
+                        {selectedSub.studentId?.name?.charAt(0) || 'শি'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">সাবমিশন পর্যালোচনা</p>
+                        <h3 className="text-sm font-black text-slate-900 dark:text-white truncate">
+                          {selectedSub.studentId?.name}
                         </h3>
-                        <p className="text-xs text-slate-500">{selectedSub.studentId?.name}</p>
                       </div>
                       <span
                         className={`text-xs font-bold px-2.5 py-1 rounded-full ${
@@ -664,7 +667,7 @@ export default function AssignmentSubmissionsPage({
                     </form>
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-8 shadow-sm text-center flex flex-col items-center justify-center">
+                  <div className="rounded-[1.5rem] p-8 text-center flex flex-col items-center justify-center lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:shadow-sm">
                     <FileCheck className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
                     <h4 className="text-sm font-bold text-slate-800 dark:text-white">
                       কোনো সাবমিশন নির্বাচন করা হয়নি
