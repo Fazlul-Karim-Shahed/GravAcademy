@@ -165,8 +165,9 @@ export default function MarksheetPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
       {/* Header Banner */}
-      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-8 pb-10 sm:pt-10 sm:pb-12 mb-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(129,140,248,0.22),transparent_32%),radial-gradient(circle_at_10%_90%,rgba(236,72,153,0.14),transparent_30%)] pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
               <div className="flex items-center gap-2.5 mb-2.5">
@@ -177,26 +178,26 @@ export default function MarksheetPage({
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Link>
-                <span className="text-xs font-bold text-slate-200 bg-white/15 px-3 py-1 rounded-full border border-white/20 backdrop-blur-md">
-                  অ্যাকাডেমিক মূল্যায়ন রেকর্ড
+                <span className="text-xs font-bold text-slate-200 bg-white/10 px-3 py-1 rounded-full border border-white/20">
+                  মার্কশিট
                 </span>
                 {isStaff ? (
                   <span className="text-xs font-bold text-purple-300 bg-purple-950/60 border border-purple-500/40 px-3 py-1 rounded-full flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>শিক্ষক ও এডমিন ভিউ (All Students)</span>
+                    <span>সব শিক্ষার্থী</span>
                   </span>
                 ) : (
                   <span className="text-xs font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full">
-                    ব্যক্তিগত রেজাল্ট ভিউ (Self Transcript)
+                    ব্যক্তিগত ফলাফল
                   </span>
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-normal leading-[1.35] pt-1">
-                ব্যাচ মার্কশিট ও রেজাল্ট ট্রান্সক্রিপ্ট
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
+                ফলাফল ও অগ্রগতি
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
-                {batchInfo?.name} · সকল এক্সাম এবং অ্যাসাইনমেন্টের বিস্তারিত গ্রেড ও পার্সেন্টেজ
+                {batchInfo?.name}
               </p>
             </div>
 
@@ -206,14 +207,14 @@ export default function MarksheetPage({
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all"
               >
                 <FileText className="w-4 h-4" />
-                <span>এক্সাম রুম</span>
+                <span>এক্সাম</span>
               </Link>
               <Link
                 href={`/classroom/${batchId}/assignments`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all"
               >
                 <Award className="w-4 h-4" />
-                <span>অ্যাসাইনমেন্ট</span>
+                <span>অ্যাসাইন</span>
               </Link>
             </div>
           </div>
