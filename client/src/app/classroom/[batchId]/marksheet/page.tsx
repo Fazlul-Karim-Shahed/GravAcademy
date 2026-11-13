@@ -163,8 +163,16 @@ export default function MarksheetPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
       {/* Header Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(129,140,248,0.22),transparent_32%),radial-gradient(circle_at_10%_90%,rgba(236,72,153,0.14),transparent_30%)] pointer-events-none" />
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
