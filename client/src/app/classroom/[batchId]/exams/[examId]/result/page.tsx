@@ -140,21 +140,18 @@ export default function StudentExamResultPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
       {/* Top Banner */}
-      <div className="cosmic-hero-bg text-white pt-8 pb-10 mb-8 border-b border-white/10">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-3 mb-1">
             <Link
               href={`/classroom/${batchId}/exams`}
               className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <span className="text-xs font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full">
-              পরীক্ষার ফলাফল ও মূল্যায়ন রিপোর্ট
-            </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             {exam.title}
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">

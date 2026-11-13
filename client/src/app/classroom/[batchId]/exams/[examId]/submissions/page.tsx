@@ -172,24 +172,21 @@ export default function ExamSubmissionsPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
       {/* Header */}
-      <div className="cosmic-hero-bg text-white pt-8 pb-10 mb-8 border-b border-white/10">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-3 mb-1">
             <Link
               href={`/classroom/${batchId}/exams`}
               className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <span className="text-xs font-bold text-purple-300 bg-purple-950/60 border border-purple-500/40 px-3 py-1 rounded-full">
-              টিচার মূল্যায়ন কেন্দ্র
-            </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             {exam?.title || 'খাতা মূল্যায়ন ও মার্কিং'}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
+          <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
             মোট সাবমিশন: {submissions.length} টি • পূর্ণমান: {exam?.totalMarks || 100} • পাস মার্ক: {exam?.passMarks || 40}
           </p>
         </div>

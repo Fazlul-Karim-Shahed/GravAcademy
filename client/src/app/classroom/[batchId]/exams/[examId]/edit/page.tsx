@@ -551,7 +551,7 @@ export default function EditExamPage({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="w-[98%] mx-auto flex items-center justify-between px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <Link
               href={`/classroom/${batchId}/exams`}
@@ -562,10 +562,10 @@ export default function EditExamPage({
             <div>
               <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
                 <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 shrink-0" />
-                <span>প্রশ্নপত্র ও এক্সাম এডিট (Edit Exam)</span>
+                <span>পরীক্ষা সম্পাদনা</span>
               </h1>
               <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-                পরীক্ষা চলাকালীন সময়ও প্রশ্ন সংশোধন করা যাবে এবং রিয়েল টাইমে শিক্ষার্থীদের কাছে সিঙ্ক হবে।
+                প্রশ্ন, সময় ও নম্বর আপডেট করুন
               </p>
             </div>
           </div>
