@@ -55,6 +55,53 @@ export const updateExamSchema = z.object({
 );
 
 /**
+ * Recalculate stored MCQ marks when a teacher changes the answer key.
+ * Question documents are replaced during an exam edit, so answers are
+ * matched by the question order before their questionId is migrated.
+ */
+const regradeExamAttempts = async (
+  exam: any,
+  currentQuestions: any[],
+  previousQuestions: any[] = []
+) => {
+  const oldById = new Map(previousQuestions.map((question) => [question._id.toString(), question]));
+  const currentById = new Map(currentQuestions.map((question) => [question._id.toString(), question]));
+  const currentByOrder = new Map(currentQuestions.map((question) => [question.order, question]));
+  const attempts = await ExamAttempt.find({ examId: exam._id });
+
+  for (const attempt of attempts) {
+    let mcqScore = 0;
+    const answers = (attempt.answers || []).map((answer: any, answerIndex: number) => {
+      const oldQuestion = oldById.get(answer.questionId?.toString());
+      const question = oldQuestion
+        ? currentByOrder.get(oldQuestion.order)
+        : currentById.get(answer.questionId?.toString()) || currentQuestions[answerIndex];
+
+      if (!question || !answer.selectedOptionId) return answer;
+
+      const isCorrect = String(answer.selectedOptionId) === String(question.correctOptionId);
+      const marksAwarded = isCorrect ? question.marks : -(exam.negativeMarkPerWrong || 0);
+      mcqScore += marksAwarded;
+
+      return {
+        ...(typeof answer.toObject === 'function' ? answer.toObject() : answer),
+        questionId: question._id,
+        isCorrect,
+        marksAwarded,
+      };
+    });
+
+    mcqScore = Math.max(0, mcqScore);
+    const totalScore = mcqScore + (attempt.cqScore || 0);
+    attempt.answers = answers as any;
+    attempt.mcqScore = mcqScore;
+    attempt.totalScore = totalScore;
+    attempt.passed = attempt.isEvaluated ? totalScore >= exam.passMarks : false;
+    await attempt.save();
+  }
+};
+
+/**
  * Update an existing examination and its questions (Teacher / Admin)
  * Can be edited even after publishing or during live exam!
  * Automatically increments questionsVersion to notify online students.
@@ -89,6 +136,12 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
     exam.questionsVersion = (exam.questionsVersion || 1) + 1;
     await exam.save();
 
+    // Keep the old order before replacing questions so existing attempts can
+    // be migrated to the new question IDs during answer-key regrading.
+    const previousQuestions = body.mcqQuestions !== undefined
+      ? await Question.find({ examId: exam._id }).select('+correctOptionId').sort({ order: 1 })
+      : [];
+
     // If mcqQuestions is provided, replace/update Question documents
     if (body.mcqQuestions !== undefined) {
       await Question.deleteMany({ examId: exam._id });
@@ -116,6 +169,10 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
     const updatedQuestions = await Question.find({ examId: exam._id })
       .select('+correctOptionId')
       .sort({ order: 1 });
+
+    if (body.mcqQuestions !== undefined || body.negativeMarkPerWrong !== undefined) {
+      await regradeExamAttempts(exam, updatedQuestions, previousQuestions);
+    }
 
     return res.status(200).json({
       success: true,
