@@ -690,7 +690,7 @@ export default function TakeExamPage({
                     />
                   </div>
                   {selectedAnswerFile && (
-                    <span className="max-w-full truncate text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                    <span className="hidden">
                       নির্বাচিত: {selectedAnswerFile.name}
                     </span>
                   )}
@@ -703,6 +703,16 @@ export default function TakeExamPage({
                     className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
                   />
                 </div>
+
+                {selectedAnswerFile && (
+                  <div className="flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-xs">
+                    <div className="min-w-0 flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                      <span className="truncate">সিলেক্টেড: {selectedAnswerFile.name}</span>
+                    </div>
+                    <button type="button" onClick={handleRemoveAnswerFile} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold">বাদ দিন</button>
+                  </div>
+                )}
 
                 {studentDocumentUrl && (
                   <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-xs flex items-center justify-between">
