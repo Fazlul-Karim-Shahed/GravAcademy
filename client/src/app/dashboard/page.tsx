@@ -46,6 +46,7 @@ interface BatchInfo {
 export default function StudentDashboard() {
   const { user } = useAuth();
   const [batches, setBatches] = useState<BatchInfo[]>([]);
+  const [selectedBatchId, setSelectedBatchId] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,7 +59,13 @@ export default function StudentDashboard() {
       // Fetch only batches the student has actually enrolled in
       const res = await api.get('/enrollments/my-batches');
       if (res.data?.success) {
-        setBatches(res.data.data || []);
+        const nextBatches = res.data.data || [];
+        setBatches(nextBatches);
+        setSelectedBatchId((current) =>
+          current && nextBatches.some((batch: BatchInfo) => batch._id === current)
+            ? current
+            : nextBatches[0]?._id || ''
+        );
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
@@ -147,8 +154,68 @@ export default function StudentDashboard() {
           />
         </div>
 
-        {/* 3. Student-first quick access to the places used every day */}
+        {/* 3. Generic quick access for the selected student batch */}
         {!loading && batches.length > 0 && (
+          <div className="space-y-4 order-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/60 dark:border-indigo-800/60">
+                  <Compass className="w-4 h-4" />
+                </div>
+                <span>দরকারি লিংক</span>
+              </h2>
+              <select
+                value={selectedBatchId}
+                onChange={(event) => setSelectedBatchId(event.target.value)}
+                className="w-full sm:w-80 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                aria-label="ব্যাচ নির্বাচন করুন"
+              >
+                {batches.map((batch) => (
+                  <option key={batch._id} value={batch._id}>
+                    {batch.name} — {batch.courseId?.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {(() => {
+              const selectedBatch = batches.find((batch) => batch._id === selectedBatchId);
+              if (!selectedBatch) return null;
+
+              const quickLinks = [
+                { href: `/classroom/${selectedBatch._id}`, label: 'ক্লাসরুম', icon: Video },
+                { href: `/classroom/${selectedBatch._id}/assignments`, label: 'অ্যাসাইনমেন্ট', icon: FileCheck2 },
+                { href: `/classroom/${selectedBatch._id}/exams`, label: 'এক্সাম', icon: FileText },
+                { href: `/learn/${selectedBatch._id}`, label: 'লেকচার', icon: BookOpen },
+                { href: `/classroom/${selectedBatch._id}/marksheet`, label: 'ফলাফল', icon: CheckCircle2 },
+              ];
+
+              return (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                  {quickLinks.map((link) => {
+                    const Icon = link.icon;
+                    return (
+                      <Link
+                        key={link.label}
+                        href={link.href}
+                        className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 flex items-center justify-center mb-2">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-xs font-black text-slate-800 dark:text-white">{link.label}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 mt-1.5 group-hover:translate-x-0.5 transition-transform" />
+                      </Link>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Legacy per-batch quick links kept out of the UI after adding the selector. */}
+        {false && !loading && batches.length > 0 && (
           <div className="space-y-4 order-1">
             <div className="flex items-center justify-between">
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
