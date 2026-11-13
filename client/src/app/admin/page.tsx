@@ -25,9 +25,11 @@ import {
   DollarSign,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
+  const { isFeatureEnabled } = useSiteSettings();
   const [stats, setStats] = useState({
     coursesCount: 0,
     batchesCount: 0,
@@ -262,6 +264,7 @@ export default function AdminDashboardPage() {
             {/* Card 6: ইউজার ম্যানেজমেন্ট */}
             <Link
               href="/admin/users"
+              style={{ display: isFeatureEnabled('userManagement', user?.role === 'superadmin') ? undefined : 'none' }}
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-cyan-400/80 dark:hover:border-cyan-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <Users className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-cyan-500/10 dark:group-hover:text-cyan-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
@@ -286,6 +289,7 @@ export default function AdminDashboardPage() {
             {/* Card 7: ফাইন্যান্স ম্যানেজমেন্ট (Finance Management) */}
             <Link
               href="/admin/finance"
+              style={{ display: isFeatureEnabled('finance', user?.role === 'superadmin') ? undefined : 'none' }}
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <DollarSign className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />

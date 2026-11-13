@@ -20,6 +20,7 @@ import {
   X,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 interface UserRecord {
   _id: string;
@@ -35,6 +36,7 @@ interface UserRecord {
 
 export default function AdminUsersPage() {
   const { user } = useAuth();
+  const { loading: loadingSettings, isFeatureEnabled } = useSiteSettings();
 
   // Users state
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -204,6 +206,8 @@ export default function AdminUsersPage() {
     { id: 'employee', label: 'কর্মচারী (Employee)' },
   ];
 
+  if (loadingSettings) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
+  if (!isFeatureEnabled('userManagement', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center"><div className="text-center"><h1 className="text-xl font-bold">এই ফিচারটি এখনো প্রকাশ করা হয়নি</h1><p className="text-sm text-slate-500 mt-2">Superadmin এই ফিচারটি প্রকাশ করলে এখানে দেখা যাবে।</p></div></div>;
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

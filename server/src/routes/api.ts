@@ -18,6 +18,8 @@ import * as classroomCtrl from '../controllers/classroomController';
 import * as enrollmentCtrl from '../controllers/enrollmentController';
 import * as jobCtrl from '../controllers/jobPostController';
 import * as financeCtrl from '../controllers/financeController';
+import { requireFeature } from '../middleware/featureFlag';
+import { FEATURE_FLAGS } from '../config/featureFlags';
 import * as settingCtrl from '../controllers/settingController';
 import * as guardianCtrl from '../controllers/guardianController';
 import * as assignmentCtrl from '../controllers/assignmentController';
@@ -163,6 +165,7 @@ router.post(
 router.post(
   '/finance/collect-payment',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   requirePermission(PERMISSIONS.FINANCE_COLLECT),
   validateRequest(financeCtrl.collectPaymentSchema),
   financeCtrl.collectPayment
@@ -170,6 +173,7 @@ router.post(
 router.get(
   '/finance/admin-payments',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   requirePermission(PERMISSIONS.FINANCE_VIEW),
   financeCtrl.getAdminPayments
 );
@@ -181,35 +185,41 @@ router.get(
 router.get(
   '/finance/student-batch-payments',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   requirePermission(PERMISSIONS.FINANCE_VIEW),
   financeCtrl.getStudentBatchPayments
 );
 router.get(
   '/finance/receipts/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   financeCtrl.getPaymentReceipt
 );
 router.post(
   '/finance/upload-document',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   upload.single('document'),
   financeCtrl.uploadPaymentDocument
 );
 router.delete(
   '/finance/payments/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   requirePermission(PERMISSIONS.FINANCE_DELETE),
   financeCtrl.deletePayment
 );
 router.post(
   '/finance/refund-payment',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   requirePermission(PERMISSIONS.FINANCE_REFUND),
   financeCtrl.refundExcessPayment
 );
 router.post(
   '/finance/toggle-paid',
   authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
   requirePermission(PERMISSIONS.FINANCE_MANUAL_PAID),
   financeCtrl.toggleManualPaidStatus
 );
@@ -428,36 +438,42 @@ router.delete(
 router.get(
   '/users/permissions-catalog',
   authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.getPermissionsCatalog
 );
 router.get(
   '/users',
   authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.getUsers
 );
 router.get(
   '/users/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.getUserById
 );
 router.put(
   '/users/:id/role',
   authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.updateUserRole
 );
 router.put(
   '/users/:id/link-students',
   authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.linkGuardianStudents
 );
 router.post(
   '/users/create-staff',
   authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.createStaffAccount
 );
@@ -518,11 +534,13 @@ router.delete(
 
 // --- SYSTEM & SITE SETTINGS ROUTES ---
 router.get('/settings', settingCtrl.getSiteSettings);
+router.get('/admin/feature-flags', authenticate, requireRole('superadmin'), settingCtrl.getFeatureFlags);
 router.put(
   '/admin/settings',
   authenticate,
-  requirePermission(PERMISSIONS.USERS_MANAGE),
+  requireRole('superadmin'),
   settingCtrl.updateSiteSettings
 );
+router.put('/admin/feature-flags', authenticate, requireRole('superadmin'), settingCtrl.updateFeatureFlags);
 
 export default router;

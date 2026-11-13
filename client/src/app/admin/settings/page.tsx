@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
-import { useSiteSettings } from '@/context/SiteSettingsContext';
+import { useSiteSettings, FEATURE_FLAG_LABELS, DEFAULT_FEATURE_FLAGS } from '@/context/SiteSettingsContext';
 import { DriveFileUpload } from '@/components/ui/DriveFileUpload';
 import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 
@@ -35,7 +35,7 @@ interface UserRecord {
   avatarUrl?: string;
 }
 
-type TabType = 'users' | 'homepage' | 'general' | 'notifications';
+type TabType = 'users' | 'homepage' | 'general' | 'notifications' | 'features';
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
@@ -48,6 +48,9 @@ export default function AdminSettingsPage() {
   const [siteTagline, setSiteTagline] = useState(settings.siteTagline || '');
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>(DEFAULT_FEATURE_FLAGS);
+  const [savingFeatures, setSavingFeatures] = useState(false);
+  const [featureSaveSuccess, setFeatureSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -55,6 +58,7 @@ export default function AdminSettingsPage() {
       setSiteName(settings.siteName || 'Grav Academy');
       setSiteTagline(settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার');
     }
+      setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...(settings.featureFlags || {}) });
   }, [settings]);
 
   const handleSaveSiteSettings = async (e: React.FormEvent) => {
@@ -76,6 +80,14 @@ export default function AdminSettingsPage() {
     } finally {
       setSavingSettings(false);
     }
+  };
+
+  const handleSaveFeatures = async () => {
+    setSavingFeatures(true);
+    const ok = await updateSettings({ featureFlags });
+    setFeatureSaveSuccess(ok);
+    setSavingFeatures(false);
+    if (ok) setTimeout(() => setFeatureSaveSuccess(false), 3500);
   };
 
   // Users state
@@ -128,6 +140,7 @@ export default function AdminSettingsPage() {
   };
 
   const tabs = [
+    ...(user?.role === 'superadmin' ? [{ id: 'features' as TabType, label: 'Feature Release Control', icon: Sliders }] : []),
     { id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length },
     { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home },
     { id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders },
@@ -195,6 +208,27 @@ export default function AdminSettingsPage() {
           {/* Right Content Panel */}
           <div className="lg:col-span-9 min-w-0">
             
+            {activeTab === 'features' && user?.role === 'superadmin' && (
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+                <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+                  <h2 className="text-base font-extrabold">Feature Release Control</h2>
+                  <p className="text-xs text-slate-500 mt-1">Admin ও অন্যান্য role-এর জন্য কোন module প্রকাশিত থাকবে তা নিয়ন্ত্রণ করুন। Superadmin সবসময় সব feature দেখতে পারবেন।</p>
+                </div>
+                <div className="p-5 space-y-3">
+                  {Object.entries(FEATURE_FLAG_LABELS).map(([key, label]) => (
+                    <label key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-slate-800 p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                      <span><span className="font-bold text-sm block">{label}</span><span className="text-xs text-slate-400">{featureFlags[key] ? 'Published and visible to permitted users' : 'Hidden from non-superadmin users'}</span></span>
+                      <input type="checkbox" className="h-5 w-5 accent-blue-600" checked={featureFlags[key] !== false} onChange={(e) => setFeatureFlags((prev) => ({ ...prev, [key]: e.target.checked }))} />
+                    </label>
+                  ))}
+                  <div className="flex items-center gap-3 pt-3">
+                    <button onClick={handleSaveFeatures} disabled={savingFeatures} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold disabled:opacity-60">{savingFeatures ? 'Saving...' : 'Save Feature Visibility'}</button>
+                    {featureSaveSuccess && <span className="text-xs text-emerald-600 font-bold">Saved successfully</span>}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* TAB: USERS */}
             {activeTab === 'users' && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">

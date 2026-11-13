@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 
 interface FinancialStats {
   totalRevenue: number;
@@ -80,6 +81,7 @@ export interface GroupedStudentBatchPayment {
 
 export default function AdminFinancePage() {
   const { user } = useAuth();
+  const { loading: loadingSettings, isFeatureEnabled } = useSiteSettings();
   const can = (permission: string) => user?.effectivePermissions?.includes(permission) ?? false;
   const [payments, setPayments] = useState<PaymentReceiptData[]>([]);
   const [stats, setStats] = useState<FinancialStats | null>(null);
@@ -607,6 +609,8 @@ export default function AdminFinancePage() {
       )
     : students.slice(0, 8);
 
+  if (loadingSettings) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
+  if (!isFeatureEnabled('finance', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center"><div className="text-center"><h1 className="text-xl font-bold">এই ফিচারটি এখনো প্রকাশ করা হয়নি</h1><p className="text-sm text-slate-500 mt-2">Superadmin এই ফিচারটি প্রকাশ করলে এখানে দেখা যাবে।</p></div></div>;
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
