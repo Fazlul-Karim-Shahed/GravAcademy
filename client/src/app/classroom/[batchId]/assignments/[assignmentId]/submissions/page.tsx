@@ -285,7 +285,7 @@ export default function AssignmentSubmissionsPage({
           <>
             {/* KPI Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
+              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Users className="w-4 h-4 text-blue-500" /> মোট জমা পড়েছে
                 </span>
@@ -294,7 +294,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
+              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" /> মূল্যায়িত
                 </span>
@@ -303,7 +303,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
+              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Clock className="w-4 h-4 text-amber-500" /> মূল্যায়ন বাকি
                 </span>
@@ -312,7 +312,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="p-4 rounded-[1.25rem] sm:bg-white sm:dark:bg-slate-900 sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-sm">
+              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Award className="w-4 h-4 text-purple-500" /> গড় নম্বর
                 </span>
