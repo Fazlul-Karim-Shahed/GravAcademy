@@ -140,6 +140,31 @@ export default function ExamRoomPage({
     }
   };
 
+  // Keep the most useful exams at the top: live first, then the nearest
+  // upcoming exam, and finally recently ended exams.
+  const sortedExams = [...exams].sort((a, b) => {
+    const aStart = new Date(a.startWindow).getTime();
+    const bStart = new Date(b.startWindow).getTime();
+    const aEnd = new Date(a.endWindow).getTime();
+    const bEnd = new Date(b.endWindow).getTime();
+    const aIsRunning = currentTime.getTime() >= aStart && currentTime.getTime() <= aEnd;
+    const bIsRunning = currentTime.getTime() >= bStart && currentTime.getTime() <= bEnd;
+    const aIsUpcoming = currentTime.getTime() < aStart;
+    const bIsUpcoming = currentTime.getTime() < bStart;
+
+    const getPriority = (isRunning: boolean, isUpcoming: boolean) =>
+      isRunning ? 0 : isUpcoming ? 1 : 2;
+
+    const priorityDifference =
+      getPriority(aIsRunning, aIsUpcoming) - getPriority(bIsRunning, bIsUpcoming);
+    if (priorityDifference !== 0) return priorityDifference;
+
+    // For live/upcoming exams, show the nearest start first. For ended exams,
+    // show the one that ended most recently first.
+    if (aIsRunning || aIsUpcoming) return aStart - bStart;
+    return bEnd - aEnd;
+  });
+
   const formatBanglaDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
@@ -234,7 +259,7 @@ export default function ExamRoomPage({
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
-            {exams.map((exam) => {
+            {sortedExams.map((exam) => {
               const timing = getExamTimingStatus(exam);
               const attempt = exam.myAttempt;
 
