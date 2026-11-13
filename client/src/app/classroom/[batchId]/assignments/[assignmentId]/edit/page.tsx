@@ -11,14 +11,12 @@ import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   Edit,
   ArrowLeft,
-  ChevronRight,
   Calendar,
   File,
   CheckCircle2,
   AlertCircle,
   UploadCloud,
   Loader2,
-  ExternalLink,
   Award,
   Save,
   Eye,
@@ -183,34 +181,33 @@ export default function EditAssignmentPage({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
-      {/* Top Header */}
-      <div className="w-[98%] mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 sticky top-3 z-30 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/classroom/${batchId}/assignments`}
-              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
-              title="অ্যাসাইনমেন্ট লিস্টে ফিরে যান"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-0.5">
-                <Link href={`/classroom/${batchId}`} className="hover:underline">
-                  ক্লাসরুম
-                </Link>
-                <ChevronRight className="w-3.5 h-3.5" />
-                <Link href={`/classroom/${batchId}/assignments`} className="hover:underline">
-                  অ্যাসাইনমেন্ট
-                </Link>
-                <ChevronRight className="w-3.5 h-3.5" />
-                <span className="text-emerald-600 dark:text-emerald-400">অ্যাসাইনমেন্ট সম্পাদনা</span>
-              </div>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Edit className="w-5 h-5 text-emerald-600" />
-                <span>অ্যাসাইনমেন্ট পরিবর্তন ও আপডেট</span>
-              </h1>
-            </div>
+      {/* Shared classroom header */}
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
+        <div className="max-w-4xl mx-auto relative z-10 flex items-center gap-3.5">
+          <Link
+            href={`/classroom/${batchId}/assignments`}
+            className="w-11 h-11 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center shrink-0 transition-colors"
+            title="অ্যাসাইনমেন্টে ফিরে যান"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
+            <Edit className="w-6 h-6 text-emerald-200" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">অ্যাসাইনমেন্ট সম্পাদনা</h1>
+            <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+              {formData.title || 'কাজের তথ্য আপডেট করুন'}
+            </p>
           </div>
         </div>
       </div>
@@ -230,10 +227,17 @@ export default function EditAssignmentPage({
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
+            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-5 sm:p-7 shadow-sm space-y-6">
+              <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-sm font-black">১</div>
+                <div>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-white">মূল তথ্য</h2>
+                  <p className="text-[11px] text-slate-500 mt-0.5">শিরোনাম ও নির্দেশনা</p>
+                </div>
+              </div>
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  অ্যাসাইনমেন্টের শিরোনাম *
+                  শিরোনাম *
                 </label>
                 <input
                   type="text"
@@ -246,7 +250,7 @@ export default function EditAssignmentPage({
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  নির্দেশনা ও বিস্তারিত প্রশ্ন (রিচ টেক্সট এডিটর)
+                  নির্দেশনা ও বিস্তারিত প্রশ্ন
                 </label>
                 <TextEditor
                   value={formData.description}
@@ -258,7 +262,7 @@ export default function EditAssignmentPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                    মোট পূর্ণমান (Total Marks) *
+                    মোট পূর্ণমান *
                   </label>
                   <input
                     type="number"
@@ -271,7 +275,7 @@ export default function EditAssignmentPage({
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                    পাস নম্বর (Pass Marks) *
+                    পাস নম্বর *
                   </label>
                   <input
                     type="number"
@@ -287,7 +291,7 @@ export default function EditAssignmentPage({
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  জমা দেওয়ার শেষ সময় (Due Date & Time) *
+                  জমা দেওয়ার শেষ সময় *
                 </label>
                 <input
                   type="datetime-local"
