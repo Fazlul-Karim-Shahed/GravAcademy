@@ -158,7 +158,7 @@ export default function ExamRoomPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
       {/* Header Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
         <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
@@ -171,14 +171,19 @@ export default function ExamRoomPage({
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-            <div className="flex items-center gap-3 pt-1 min-w-0">
-              <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+            <div className="flex items-center gap-3.5 pt-1 min-w-0">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+              </div>
               <div className="min-w-0">
+                <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-indigo-200/90 font-black mb-1">
+                  এক্সাম সেন্টার
+                </p>
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
                   পরীক্ষা ও মূল্যায়ন
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
-                  {exams.length > 0 ? 'আপনার পরীক্ষাগুলো এখানে দেখুন' : 'এই ব্যাচের পরীক্ষাগুলো'}
+                  পরীক্ষা দিন, ফলাফল দেখুন
                 </p>
               </div>
             </div>
@@ -188,10 +193,10 @@ export default function ExamRoomPage({
               <div className="flex items-center gap-3">
                 <Link
                   href={`/classroom/${batchId}/exams/create`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/12 hover:bg-white/20 text-white text-xs font-black border border-white/20 shadow-lg shadow-black/10 backdrop-blur-md active:scale-95 transition-all"
                 >
                   <PlusCircle className="w-4 h-4" />
-                  <span>নতুন এক্সাম তৈরি করুন</span>
+                  <span>নতুন পরীক্ষা</span>
                 </Link>
               </div>
             )}
@@ -231,7 +236,7 @@ export default function ExamRoomPage({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
             {exams.map((exam) => {
               const timing = getExamTimingStatus(exam);
               const attempt = exam.myAttempt;
@@ -239,11 +244,18 @@ export default function ExamRoomPage({
               return (
                 <div
                   key={exam._id}
-                  className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 flex flex-col justify-between hover:shadow-xl transition-all relative overflow-hidden group"
+                  className={`bg-white dark:bg-slate-900 rounded-[1.35rem] border p-5 sm:p-6 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group ${
+                    timing.state === 'RUNNING'
+                      ? 'border-emerald-200 dark:border-emerald-900/80'
+                      : timing.state === 'UPCOMING'
+                      ? 'border-amber-200 dark:border-amber-900/70'
+                      : 'border-slate-200 dark:border-slate-800'
+                  }`}
                 >
+                  <div className={`absolute inset-y-0 left-0 w-1 ${timing.state === 'RUNNING' ? 'bg-emerald-500' : timing.state === 'UPCOMING' ? 'bg-amber-400' : 'bg-slate-300 dark:bg-slate-700'}`} />
                   {/* Top Status Badges */}
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center justify-between gap-2 mb-5 pl-1">
                       {timing.state === 'RUNNING' ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 animate-pulse">
                           <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -271,35 +283,35 @@ export default function ExamRoomPage({
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors pl-1">
                       {exam.title}
                     </h3>
 
                     {exam.instructions && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 leading-relaxed pl-1">
                         {exam.instructions}
                       </p>
                     )}
 
                     {/* Metadata Badges */}
-                    <div className="grid grid-cols-2 gap-2.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 mb-5 border border-slate-100 dark:border-slate-800 text-xs">
+                    <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 mb-5 border border-slate-100 dark:border-slate-800 text-xs">
                       <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                         <Timer className="w-3.5 h-3.5 text-blue-500" />
-                        <span>সময়: <strong>{exam.durationMinutes} মি.</strong></span>
+                        <span><strong>{exam.durationMinutes} মিনিট</strong></span>
                       </div>
                       <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                         <Award className="w-3.5 h-3.5 text-amber-500" />
-                        <span>মোট নম্বর: <strong>{exam.totalMarks}</strong></span>
+                        <span><strong>{exam.totalMarks} নম্বর</strong></span>
                       </div>
                       <div className="col-span-2 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200/60 dark:border-slate-700/60 pt-2 mt-1">
                         <Calendar className="w-3.5 h-3.5 text-purple-500" />
-                        <span>শুরু: {formatBanglaDate(exam.startWindow)}</span>
+                        <span className="truncate">শুরু: {formatBanglaDate(exam.startWindow)}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom Actions based on Role & Student Attempt State */}
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
                     {isTeacherOrAdmin ? (
                       <div className="flex items-center gap-2">
                         <Link
@@ -345,7 +357,7 @@ export default function ExamRoomPage({
                         className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all"
                       >
                         <FileCheck className="w-4 h-4" />
-                        <span>পরীক্ষায় অংশ নিন (Start Now)</span>
+                        <span>পরীক্ষা শুরু করুন</span>
                       </Link>
                     ) : timing.state === 'UPCOMING' ? (
                       // Upcoming Exam: Locked with message
