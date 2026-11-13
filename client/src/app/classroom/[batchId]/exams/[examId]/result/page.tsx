@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { formatBDDateTime } from '@/lib/dateUtils';
+import { getDrivePreviewUrl } from '@/lib/drive';
 import {
   Award,
   CheckCircle2,
@@ -50,6 +51,8 @@ interface ResultData {
       marksAwarded: number;
     }[];
     studentDocumentUrl?: string;
+    annotatedFileUrl?: string;
+    annotatedFileName?: string;
   };
   questions?: {
     _id: string;
@@ -230,6 +233,22 @@ export default function StudentExamResultPage({
             </div>
           </div>
         </div>
+
+        {/* Answer key withheld notice (more attempts remain) */}
+        {attempt.annotatedFileUrl && (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-emerald-200 dark:border-emerald-900/60 p-5 sm:p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-emerald-600" />চেকড খাতা</h3>
+                <p className="text-xs text-slate-500 mt-1">শিক্ষকের annotation সহ আপনার উত্তরপত্র</p>
+              </div>
+              <a href={attempt.annotatedFileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-xs font-black transition-colors">
+                খুলুন
+              </a>
+            </div>
+            <iframe src={getDrivePreviewUrl(attempt.annotatedFileUrl)} title="Checked exam script" className="w-full h-[420px] rounded-2xl border border-emerald-100 dark:border-emerald-900/60 bg-slate-100 dark:bg-slate-800" />
+          </div>
+        )}
 
         {/* Answer key withheld notice (more attempts remain) */}
         {answerKeyWithheld && (

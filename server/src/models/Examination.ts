@@ -146,6 +146,8 @@ export interface IExamAttempt extends Document {
   answers: IStudentAnswer[];
   cqAnswers?: ICQAnswer[];
   studentDocumentUrl?: string; // Uploaded answer script (PDF or images)
+  annotatedFileUrl?: string; // Teacher checked/annotated answer script
+  annotatedFileName?: string;
   mcqScore: number;
   cqScore: number;
   totalScore: number;
@@ -195,6 +197,8 @@ const ExamAttemptSchema = new Schema<IExamAttempt>(
       },
     ],
     studentDocumentUrl: { type: String, default: '' },
+    annotatedFileUrl: { type: String, default: '' },
+    annotatedFileName: { type: String, default: '' },
     mcqScore: { type: Number, default: 0 },
     cqScore: { type: Number, default: 0 },
     totalScore: { type: Number, default: 0 },

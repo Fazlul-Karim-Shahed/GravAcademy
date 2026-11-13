@@ -619,7 +619,12 @@ export const getExamSubmissions = async (req: AuthenticatedRequest, res: Respons
 export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { attemptId } = req.params;
-    const { cqScore = 0, teacherFeedback = '' } = req.body;
+    const {
+      cqScore = 0,
+      teacherFeedback = '',
+      annotatedFileUrl,
+      annotatedFileName = '',
+    } = req.body;
     const user = req.user;
 
     const attempt = await ExamAttempt.findById(attemptId).populate('examId');
@@ -643,6 +648,12 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
     attempt.cqScore = parsedCQScore;
     attempt.totalScore = finalTotalScore;
     attempt.teacherFeedback = teacherFeedback;
+    if (typeof annotatedFileUrl === 'string') {
+      attempt.annotatedFileUrl = annotatedFileUrl.trim();
+    }
+    if (typeof annotatedFileName === 'string' && annotatedFileName.trim()) {
+      attempt.annotatedFileName = annotatedFileName.trim();
+    }
     attempt.isEvaluated = true;
     attempt.evaluatedBy = user?._id;
     attempt.evaluatedAt = new Date();
