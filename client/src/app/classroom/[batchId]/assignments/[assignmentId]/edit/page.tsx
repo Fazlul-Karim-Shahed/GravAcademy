@@ -10,7 +10,6 @@ import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
   Edit,
-  ArrowLeft,
   Calendar,
   File,
   CheckCircle2,
@@ -193,13 +192,6 @@ export default function EditAssignmentPage({
           <span className="shooting-star meteor-1" />
         </div>
         <div className="max-w-4xl mx-auto relative z-10 flex items-center gap-3.5">
-          <Link
-            href={`/classroom/${batchId}/assignments`}
-            className="w-11 h-11 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center shrink-0 transition-colors"
-            title="অ্যাসাইনমেন্টে ফিরে যান"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
           <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
             <Edit className="w-6 h-6 text-emerald-200" />
           </div>
