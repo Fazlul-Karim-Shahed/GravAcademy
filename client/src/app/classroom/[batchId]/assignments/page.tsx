@@ -20,7 +20,6 @@ import {
   UploadCloud,
   FileCheck,
   Users,
-  Award,
   Sparkles,
   ExternalLink,
   Send,
@@ -380,14 +379,6 @@ export default function AssignmentRoomPage({
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href={`/classroom/${batchId}/marksheet`}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-black border border-white/15 active:scale-95 transition-all"
-              >
-                <Award className="w-4 h-4" />
-                <span>ফলাফল</span>
-              </Link>
-
               {isTeacherOrAdmin && (
                 <Link
                   href={`/classroom/${batchId}/assignments/create`}

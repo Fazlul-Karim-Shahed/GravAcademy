@@ -162,18 +162,27 @@ export default function CreateAssignmentPage({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
       {/* Top Header */}
-      <div className="w-[98%] mx-auto bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 sticky top-3 z-30 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
+          <span className="shooting-star meteor-1" />
+        </div>
+        <div className="max-w-4xl mx-auto px-0 sm:px-1 relative z-10">
           <div className="flex items-center gap-3">
             <Link
               href={`/classroom/${batchId}/assignments`}
-              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-2.5 rounded-xl border border-white/15 bg-white/10 hover:bg-white/20 text-white transition-colors"
               title="অ্যাসাইনমেন্ট লিস্টে ফিরে যান"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold mb-0.5">
+              <div className="flex items-center gap-2 text-xs text-slate-300 font-semibold mb-0.5 truncate">
                 <Link href={`/classroom/${batchId}`} className="hover:underline">
                   ক্লাসরুম
                 </Link>
@@ -182,10 +191,10 @@ export default function CreateAssignmentPage({
                   অ্যাসাইনমেন্ট
                 </Link>
                 <ChevronRight className="w-3.5 h-3.5" />
-                <span className="text-emerald-600 dark:text-emerald-400">নতুন অ্যাসাইনমেন্ট</span>
+                <span className="text-emerald-200">নতুন অ্যাসাইনমেন্ট</span>
               </div>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <PlusCircle className="w-5 h-5 text-emerald-600" />
+              <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 truncate">
+                <PlusCircle className="w-5 h-5 text-emerald-200 shrink-0" />
                 <span>নতুন ব্যাচ অ্যাসাইনমেন্ট তৈরি ও প্রকাশ</span>
               </h1>
             </div>
@@ -205,7 +214,7 @@ export default function CreateAssignmentPage({
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center text-sm font-semibold text-slate-500">
             ব্যাচের অনুমতি যাচাই করা হচ্ছে...
           </div>
-        ) : <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
+        ) : <form onSubmit={handleSubmit} className="rounded-3xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 p-1 sm:p-3 md:p-8 md:shadow-xs space-y-6">
           {/* Assignment Title */}
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
