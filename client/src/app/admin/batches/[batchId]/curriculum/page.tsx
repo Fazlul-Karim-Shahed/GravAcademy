@@ -531,7 +531,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                <Tv className="w-5 h-5" />
+                <FileVideo className="w-5 h-5" />
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900 dark:text-white leading-tight">{totalLessons}</p>
