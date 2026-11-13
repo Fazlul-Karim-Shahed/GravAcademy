@@ -145,8 +145,19 @@ export default function CreateExamPage({
   const handlePaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 25 * 1024 * 1024) {
+      setErrorMessage('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
+      e.target.value = '';
+      return;
+    }
+
     setErrorMessage('');
     setSelectedQuestionPaper(file);
+  };
+
+  const handleRemoveQuestionPaper = () => {
+    setSelectedQuestionPaper(null);
   };
 
   const uploadSelectedQuestionPaper = async () => {
@@ -738,17 +749,17 @@ export default function CreateExamPage({
                     প্রশ্নপত্র ডকুমেন্ট আপলোড করুন (PDF বা ছবি)
                   </label>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all shrink-0">
+                    <div className="min-w-0 flex-1">
                       <UploadCloud className="w-4 h-4" />
                       <span>{uploadingDoc ? 'আপলোড হচ্ছে...' : 'ফাইল নির্বাচন করুন'}</span>
                       <input
                         type="file"
                         accept="image/*,application/pdf"
                         onChange={handlePaperUpload}
-                        disabled={uploadingDoc}
-                        className="hidden"
+                        disabled={uploadingDoc || submitting}
+                        className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer disabled:opacity-60"
                       />
-                    </label>
+                    </div>
                     <span className="text-xs text-slate-500 text-center sm:text-left shrink-0">অথবা সরাসরি লিংক দিন:</span>
                     <input
                       type="url"
@@ -759,6 +770,16 @@ export default function CreateExamPage({
                     />
                   </div>
                 </div>
+
+                {selectedQuestionPaper && (
+                  <div className="flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800 text-xs">
+                    <div className="min-w-0 flex items-center gap-2 text-purple-700 dark:text-purple-300 font-bold">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                      <span className="truncate">সিলেক্টেড: {selectedQuestionPaper.name}</span>
+                    </div>
+                    <button type="button" onClick={handleRemoveQuestionPaper} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold">বাদ দিন</button>
+                  </div>
+                )}
 
                 {questionPaperUrl && (
                   <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex flex-wrap items-center justify-between gap-2">
