@@ -68,7 +68,7 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-14">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-14">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
       <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white p-6 sm:p-8 mb-8 border border-slate-800">
@@ -154,7 +154,7 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      <div className="w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* 2. Primary Feature: Interactive Daily & Weekly Class Schedule */}
         <DailyScheduleView
