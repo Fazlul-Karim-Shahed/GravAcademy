@@ -199,7 +199,8 @@ export default function StudentAssignmentSubmitPage({
           <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
           <span className="shooting-star meteor-1" />
         </div>
-        <div className="max-w-5xl mx-auto relative z-10 flex items-center gap-3.5">
+        <div className="max-w-5xl mx-auto relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="flex items-center gap-3.5 min-w-0">
           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
             <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
           </div>
@@ -208,6 +209,19 @@ export default function StudentAssignmentSubmitPage({
             <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
               {assignment?.title || 'আপনার কাজ জমা দিন'}
             </p>
+          </div>
+          </div>
+          <div className="flex items-center gap-2 sm:shrink-0">
+            <div className="rounded-xl bg-white/10 border border-white/15 px-3 py-2 text-center min-w-[76px]">
+              <span className="block text-[10px] text-slate-300">পূর্ণমান</span>
+              <strong className="block text-sm text-white mt-0.5">{assignment?.totalMarks ?? '--'}</strong>
+            </div>
+            <div className="rounded-xl bg-white/10 border border-white/15 px-3 py-2 text-center min-w-[92px]">
+              <span className="block text-[10px] text-slate-300">জমার শেষ সময়</span>
+              <strong className="block text-[11px] text-white mt-0.5 truncate max-w-[88px]">
+                {due ? due.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' }) : '--'}
+              </strong>
+            </div>
           </div>
         </div>
       </div>
@@ -299,7 +313,7 @@ export default function StudentAssignmentSubmitPage({
               {/* Submission Form Card */}
               <div className="lg:bg-white lg:dark:bg-slate-900 lg:rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:p-7 lg:shadow-sm">
                 <h2 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-                  আপনার অ্যাসাইনমেন্ট সমাধান
+                  আপনার উত্তর
                 </h2>
                 <p className="text-xs text-slate-500 mb-5">উত্তর লিখুন অথবা খাতা সংযুক্ত করুন।</p>
 
@@ -389,10 +403,10 @@ export default function StudentAssignmentSubmitPage({
                   )}
 
                   {/* Submit Action Button */}
-                  <div className="pt-3 flex items-center justify-end gap-3">
+                  <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
                     <Link
                       href={`/classroom/${batchId}/assignments`}
-                      className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold text-center"
                     >
                       ফিরে যান
                     </Link>
@@ -405,7 +419,7 @@ export default function StudentAssignmentSubmitPage({
                       <button
                         type="submit"
                         disabled={submittingWork || (isOverdue && !assignment.allowLateSubmission && !mySub)}
-                        className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                        className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         {submittingWork ? (
                           <>
@@ -474,7 +488,7 @@ export default function StudentAssignmentSubmitPage({
                           : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
                       }`}
                     >
-                      {isOverdue ? 'ডেডলাইন শেষ' : 'চলমান (Open)'}
+                      {isOverdue ? 'ডেডলাইন শেষ' : 'জমা দেওয়া যাবে'}
                     </span>
                   </div>
                 </div>
