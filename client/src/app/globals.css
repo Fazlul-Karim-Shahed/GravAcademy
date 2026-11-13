@@ -60,6 +60,20 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Keep the application shell at the full mobile viewport width. */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+main {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 /* Light mode specific baseline safeguards */
 html:not(.dark) body {
   background-color: #f8fafc;
