@@ -219,7 +219,7 @@ export default function EditAssignmentPage({
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-[1.5rem] border border-slate-200 dark:border-slate-800 p-5 sm:p-7 shadow-sm space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-sm font-black">১</div>
                 <div>
@@ -227,7 +227,7 @@ export default function EditAssignmentPage({
                   <p className="text-[11px] text-slate-500 mt-0.5">শিরোনাম ও নির্দেশনা</p>
                 </div>
               </div>
-              <div>
+              <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   শিরোনাম *
                 </label>
@@ -240,7 +240,7 @@ export default function EditAssignmentPage({
                 />
               </div>
 
-              <div>
+              <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   নির্দেশনা ও বিস্তারিত প্রশ্ন
                 </label>
@@ -251,7 +251,7 @@ export default function EditAssignmentPage({
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                     মোট পূর্ণমান *
@@ -281,7 +281,7 @@ export default function EditAssignmentPage({
                 </div>
               </div>
 
-              <div>
+              <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   জমা দেওয়ার শেষ সময় *
                 </label>
@@ -294,7 +294,7 @@ export default function EditAssignmentPage({
                 />
               </div>
 
-              <div>
+              <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   প্রশ্নপত্র অথবা সহায়ক ফাইল (Google Drive)
                 </label>
@@ -357,7 +357,7 @@ export default function EditAssignmentPage({
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/60 flex items-center gap-3 shadow-sm">
                 <input
                   type="checkbox"
                   id="allowLateToggleEdit"
@@ -371,13 +371,13 @@ export default function EditAssignmentPage({
               </div>
 
               {formData.allowLateSubmission && (
-                <div>
+                <div className="rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/60 p-4 sm:p-5 shadow-sm">
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">লেইট সাবমিশন পেনাল্টি (%)</label>
                   <input type="number" min={0} max={100} step="0.01" value={formData.latePenaltyPercent} onChange={(e) => setFormData({ ...formData, latePenaltyPercent: Number(e.target.value) })} className="w-full sm:max-w-xs px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none" />
                 </div>
               )}
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 flex items-center justify-end gap-3 shadow-sm">
                 <Link
                   href={`/classroom/${batchId}/assignments`}
                   className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
