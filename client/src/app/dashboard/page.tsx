@@ -71,30 +71,14 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-14">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
-      <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white p-6 sm:p-8 mb-8 border border-slate-800">
+      <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 sm:p-6 mb-8 border border-slate-200 dark:border-slate-800">
         
-        {/* Deep space radial ambient lighting & celestial nebula glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-blue-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
-        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-purple-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
-
-        {/* Twinkling Cosmic Stars & Shooting Star */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[14%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[24%] left-[20%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[12%] right-[16%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
-          <span className="shooting-star meteor-1" />
-          <span className="shooting-star meteor-3" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="min-w-0">
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.25] text-white break-words">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-slate-900 dark:text-white break-words">
                 স্বাগতম,{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
+                <span className="relative inline-block text-indigo-600 dark:text-indigo-400">
                   {user?.name || 'শিক্ষার্থী'}!
                 </span>
               </h1>
@@ -102,14 +86,14 @@ export default function StudentDashboard() {
               {/* Unique User ID Display (Visible on mobile/small screens below greeting) */}
               {user?.userId && (
                 <div className="inline-flex md:hidden items-center gap-1.5 mt-2 text-white">
-                  <span className="text-xs text-slate-300 font-medium">ইউজার আইডি:</span>
-                  <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">ইউজার আইডি:</span>
+                  <span className="text-xs font-black tracking-wider text-indigo-600 dark:text-indigo-300 select-all font-mono">
                     {user.userId}
                   </span>
                 </div>
               )}
 
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-xl font-medium leading-relaxed">
                 আপনার ক্লাস রুটিন অনুযায়ী সময়মতো সরাসরি লাইভ ক্লাসরুমে প্রবেশ করুন এবং পাঠ্যক্রমের স্টাডি ম্যাটেরিয়াল রিভিশন করুন।
               </p>
             </div>
@@ -119,8 +103,8 @@ export default function StudentDashboard() {
               {/* Unique User ID Display (Visible on md/lg screens on the right) */}
               {user?.userId && (
                 <div className="hidden md:inline-flex items-center gap-1.5 text-white">
-                  <span className="text-xs text-slate-300 font-medium">ইউজার আইডি:</span>
-                  <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">ইউজার আইডি:</span>
+                  <span className="text-xs font-black tracking-wider text-indigo-600 dark:text-indigo-300 select-all font-mono">
                     {user.userId}
                   </span>
                 </div>
@@ -129,21 +113,21 @@ export default function StudentDashboard() {
               <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 <Link
                   href="/dashboard/payments"
-                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-[11px] font-bold border border-emerald-400/30 backdrop-blur-md flex items-center gap-2 transition-all"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-2 transition-colors"
                 >
                   <CreditCard className="w-4 h-4 text-emerald-300" />
                   <span>আমার পেমেন্ট ও রিসিট</span>
                 </Link>
                 <Link
                   href="/profile"
-                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-2 transition-colors"
                 >
                   <User className="w-4 h-4 text-amber-300" />
                   <span>আমার প্রোফাইল</span>
                 </Link>
                 <Link
                   href="/courses"
-                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-[11px] font-black flex items-center gap-2 transition-all"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-black flex items-center gap-2 transition-colors"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>সকল কোর্স</span>
