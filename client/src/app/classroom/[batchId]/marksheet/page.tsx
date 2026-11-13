@@ -186,8 +186,9 @@ export default function MarksheetPage({
                 ) : null}
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
-                মার্কশিট
+              <h1 className="flex items-center gap-2.5 text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
+                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-300 shrink-0" />
+                <span>ফলাফল ও অগ্রগতি</span>
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
                 {batchInfo?.name}
