@@ -26,6 +26,23 @@ interface DocumentAnnotatorProps {
   onCancel: () => void;
 }
 
+const getDriveFileId = (url: string) => {
+  const fileMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch?.[1]) return fileMatch[1];
+  const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return idMatch?.[1] || '';
+};
+
+const getImageSources = (url: string) => {
+  const fileId = getDriveFileId(url);
+  if (!fileId) return [url];
+  // Try the CORS-enabled Drive image endpoint first, then the thumbnail endpoint.
+  return [
+    `https://lh3.googleusercontent.com/d/${fileId}=w2000`,
+    `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`,
+  ];
+};
+
 export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
   fileUrl,
   backgroundFileUrl,
@@ -48,6 +65,7 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
   const [history, setHistory] = useState<ImageData[]>([]);
   const [historyStep, setHistoryStep] = useState(-1);
   const [isPdf, setIsPdf] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Text comment tool state
   const [textInput, setTextInput] = useState('');
@@ -62,41 +80,36 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    setImageLoaded(false);
+    setImageError(false);
 
-    let imageUrl = fileUrl;
-    // Format drive thumbnail or direct view if Google Drive
-    if (fileUrl.includes('drive.google.com/file/d/')) {
-      const match = fileUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        // Thumbnail view API loads as image
-        imageUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600`;
-      }
-    }
+    const imageSources = getImageSources(fileUrl);
+    const backgroundSources = getImageSources(backgroundFileUrl || fileUrl);
+    let imageSourceIndex = 0;
+    let backgroundSourceIndex = 0;
+    let cancelled = false;
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.src = imageUrl;
 
     // Keep the clean document separately so the eraser can restore the
     // original pixels instead of painting a white stroke over the script.
-    let backgroundImageUrl = backgroundFileUrl || fileUrl;
-    if (backgroundImageUrl.includes('drive.google.com/file/d/')) {
-      const match = backgroundImageUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        backgroundImageUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600`;
-      }
-    }
     const cleanImg = new Image();
     cleanImg.crossOrigin = 'anonymous';
     cleanImg.onload = () => {
       backgroundImageRef.current = cleanImg;
     };
     cleanImg.onerror = () => {
-      backgroundImageRef.current = null;
+      if (backgroundSourceIndex < backgroundSources.length) {
+        cleanImg.src = backgroundSources[backgroundSourceIndex++];
+      } else {
+        backgroundImageRef.current = null;
+      }
     };
-    cleanImg.src = backgroundImageUrl;
+    cleanImg.src = backgroundSources[backgroundSourceIndex++];
 
     img.onload = () => {
+      if (cancelled) return;
       // Set high-res canvas size based on loaded image
       const maxWidth = 1200;
       const scale = img.width > maxWidth ? maxWidth / img.width : 1;
@@ -108,12 +121,24 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
       setImageLoaded(true);
 
       // Save initial state to history
-      const initialData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      setHistory([initialData]);
-      setHistoryStep(0);
+      try {
+        const initialData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        setHistory([initialData]);
+        setHistoryStep(0);
+      } catch {
+        // A blocked cross-origin image can be displayed but cannot be exported.
+        setImageError(true);
+        setHistory([]);
+        setHistoryStep(-1);
+      }
     };
 
     img.onerror = () => {
+      if (imageSourceIndex < imageSources.length) {
+        img.src = imageSources[imageSourceIndex++];
+        return;
+      }
+      setImageError(true);
       // Fallback: create blank white review paper
       canvas.width = 900;
       canvas.height = 1200;
@@ -133,6 +158,15 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
       const initialData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       setHistory([initialData]);
       setHistoryStep(0);
+    };
+
+    img.src = imageSources[imageSourceIndex++];
+    return () => {
+      cancelled = true;
+      img.onload = null;
+      img.onerror = null;
+      cleanImg.onload = null;
+      cleanImg.onerror = null;
     };
   }, [fileUrl, backgroundFileUrl, fileName]);
 
@@ -502,6 +536,21 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
               : 'cursor-pointer'
           }`}
         />
+
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="rounded-2xl bg-slate-900/90 border border-slate-700 px-4 py-3 text-xs font-bold text-slate-200">
+              Document loading...
+            </div>
+          </div>
+        )}
+        {imageError && (
+          <div className="absolute inset-x-4 top-4 flex justify-center pointer-events-none">
+            <div className="rounded-2xl bg-amber-950/90 border border-amber-700 px-4 py-3 text-xs font-bold text-amber-200 text-center">
+              Document preview could not be loaded. Open the original file to view it.
+            </div>
+          </div>
+        )}
 
         {/* Text Input Popup when user clicks on Canvas */}
         {textPos && (
