@@ -219,7 +219,10 @@ export default function EditAssignmentPage({
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 sm:space-y-5 md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:rounded-[1.5rem] md:p-7 md:shadow-sm"
+            >
               <div className="px-1 py-1">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                   শিরোনাম *
