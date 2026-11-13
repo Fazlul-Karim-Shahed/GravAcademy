@@ -124,6 +124,51 @@ export default function SubmissionEvaluationPage({
     }
   };
 
+  const handleAnnotatedScriptSave = async (blob: Blob, previewUrl: string) => {
+    if (!submission) return;
+    setShowAnnotator(false);
+    setAnnotatedBlob(blob);
+    setAnnotatedPreviewUrl(previewUrl);
+    setSaving(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', blob, `exam_checked_${submission.studentId?.name || 'student'}_${Date.now()}.png`);
+      const uploadRes = await api.post('/documents/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (!uploadRes.data?.success || !uploadRes.data?.data) {
+        throw new Error(uploadRes.data?.message || 'Checked script upload failed');
+      }
+
+      const fileAsset = uploadRes.data.data;
+      const finalUrl = fileAsset.url || fileAsset.fileUrl || fileAsset.streamUrl || fileAsset.driveDownloadUrl || '';
+      if (!finalUrl) throw new Error('Checked script link was not returned');
+
+      const evaluateRes = await api.put(`/exams/attempts/${submission._id}/evaluate`, {
+        cqScore: Math.min(Math.max(Number(cqScore) || 0, 0), cqMax),
+        teacherFeedback: feedback.trim(),
+        annotatedFileUrl: finalUrl,
+        annotatedFileName: 'checked_exam_script.png',
+      });
+      if (!evaluateRes.data?.success) {
+        throw new Error(evaluateRes.data?.message || 'Checked script could not be saved');
+      }
+
+      setSavedAnnotatedUrl(finalUrl);
+      setAnnotatedBlob(null);
+      setAnnotatedPreviewUrl('');
+      setSubmission((prev) => prev ? { ...prev, annotatedFileUrl: finalUrl, annotatedFileName: 'checked_exam_script.png', isEvaluated: true, status: 'evaluated' } : prev);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1800);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Checked script save করা যায়নি');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-sm font-semibold text-slate-500">লোড হচ্ছে...</div>;
   if (error || !submission || !exam) return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6"><div className="max-w-md text-center"><AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" /><p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error || 'সাবমিশন পাওয়া যায়নি'}</p></div></div>;
 
@@ -184,11 +229,7 @@ export default function SubmissionEvaluationPage({
               fileUrl={annotationSourceUrl}
               backgroundFileUrl={submission.studentDocumentUrl}
               fileName={submission.annotatedFileUrl ? (submission.annotatedFileName || 'checked_exam_script.png') : 'exam_answer_script'}
-              onSaveAnnotated={(blob, previewUrl) => {
-                setAnnotatedBlob(blob);
-                setAnnotatedPreviewUrl(previewUrl);
-                setShowAnnotator(false);
-              }}
+              onSaveAnnotated={handleAnnotatedScriptSave}
               onCancel={() => setShowAnnotator(false)}
             />
           </div>
