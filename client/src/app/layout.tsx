@@ -42,7 +42,7 @@ export default function RootLayout({
           <SiteSettingsProvider>
             <AuthProvider>
               <Navbar />
-              <main className="min-h-[calc(100vh-4rem)]"><FeatureRouteGuard>{children}</FeatureRouteGuard></main>
+              <main className="w-screen max-w-none min-w-0 min-h-[calc(100vh-4rem)] overflow-x-hidden"><FeatureRouteGuard>{children}</FeatureRouteGuard></main>
             </AuthProvider>
           </SiteSettingsProvider>
         </ThemeProvider>
