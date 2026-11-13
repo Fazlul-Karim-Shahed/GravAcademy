@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
+import ComingSoonCard from './ComingSoonCard';
 
 function featureForPath(pathname: string): string | null {
   if (pathname.startsWith('/admin/finance') || pathname.startsWith('/dashboard/payments')) return 'finance';
@@ -26,8 +27,8 @@ export default function FeatureRouteGuard({ children }: { children: React.ReactN
 
   if (loading || !feature || isFeatureEnabled(feature, user?.role === 'superadmin')) return <>{children}</>;
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-6 text-center">
-      <div><h1 className="text-xl font-bold">এই ফিচারটি এখনো প্রকাশ করা হয়নি</h1><p className="text-sm text-slate-500 mt-2">Superadmin এই ফিচারটি প্রকাশ করলে এখানে দেখা যাবে।</p></div>
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950">
+      <ComingSoonCard />
     </div>
   );
 }

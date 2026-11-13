@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
+import ComingSoonCard from '@/components/common/ComingSoonCard';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
@@ -155,7 +156,7 @@ export default function AssignmentRoomPage({
     user?.role === 'superadmin';
 
   if (settingsLoading) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
-  if (!isFeatureEnabled('assignments', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center"><div className="text-center"><h1 className="text-xl font-bold">এই ফিচারটি এখনো প্রকাশ করা হয়নি</h1><p className="text-sm text-slate-500 mt-2">Superadmin এই ফিচারটি প্রকাশ করলে এখানে দেখা যাবে।</p></div></div>;
+  if (!isFeatureEnabled('assignments', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950"><ComingSoonCard feature="Assignment Management" /></div>;
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
