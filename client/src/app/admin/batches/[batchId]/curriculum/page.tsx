@@ -598,8 +598,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   {/* Module Header Bar */}
                   <div className="p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-900/90 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5">
-                      <span className="w-8 h-8 rounded-xl bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center text-xs font-extrabold shadow-2xs">
-                        {modIdx + 1}
+                      <span className="w-9 h-9 rounded-xl bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center shadow-2xs" title="Module">
+                        <Layers className="w-4 h-4" />
                       </span>
                       <div>
                         <div className="flex items-center gap-2">
@@ -656,8 +656,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     {/* Direct Lessons in Module */}
                     {mod.directLessons && mod.directLessons.length > 0 && (
                       <div className="space-y-2.5">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                          Direct Lessons
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                          <Video className="w-3.5 h-3.5 text-blue-500" /> Direct Lessons
                         </p>
                         <div className="space-y-2">
                           {mod.directLessons.map((lesson) => (
@@ -724,7 +724,9 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                             {/* Section Header */}
                             <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-slate-200/60 dark:border-slate-800/60">
                               <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                                <span className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0" title="Section">
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                </span>
                                 <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
                                   {sec.title}
                                 </h4>
