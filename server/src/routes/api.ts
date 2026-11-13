@@ -329,80 +329,92 @@ router.get('/documents/:fileAssetId/stream', authenticate, docCtrl.streamProtect
 router.post(
   '/exams',
   authenticate,
+  requireFeature(FEATURE_FLAGS.exams),
   requirePermission(PERMISSIONS.EXAMS_MANAGE),
   examCtrl.createExam
 );
 router.put(
   '/exams/:examId',
   authenticate,
+  requireFeature(FEATURE_FLAGS.exams),
   requirePermission(PERMISSIONS.EXAMS_MANAGE),
   examCtrl.updateExam
 );
-router.get('/batches/:batchId/exams', authenticate, examCtrl.getBatchExams);
+router.get('/batches/:batchId/exams', authenticate, requireFeature(FEATURE_FLAGS.exams), examCtrl.getBatchExams);
 router.get(
   '/exams/:examId',
   authenticate,
+  requireFeature(FEATURE_FLAGS.exams),
   requirePermission(PERMISSIONS.EXAMS_MANAGE),
   examCtrl.getExamDetails
 );
-router.get('/exams/:examId/take', authenticate, examCtrl.getStudentExamQuestions);
-router.post('/exams/:examId/submit', authenticate, examCtrl.submitExam);
+router.get('/exams/:examId/take', authenticate, requireFeature(FEATURE_FLAGS.exams), examCtrl.getStudentExamQuestions);
+router.post('/exams/:examId/submit', authenticate, requireFeature(FEATURE_FLAGS.exams), examCtrl.submitExam);
 router.get(
   '/exams/:examId/submissions',
   authenticate,
+  requireFeature(FEATURE_FLAGS.exams),
   requirePermission(PERMISSIONS.EXAMS_EVALUATE),
   examCtrl.getExamSubmissions
 );
 router.put(
   '/exams/attempts/:attemptId/evaluate',
   authenticate,
+  requireFeature(FEATURE_FLAGS.exams),
   requirePermission(PERMISSIONS.EXAMS_EVALUATE),
   examCtrl.evaluateStudentAttempt
 );
-router.get('/exams/:examId/my-result', authenticate, examCtrl.getStudentExamResult);
+router.get('/exams/:examId/my-result', authenticate, requireFeature(FEATURE_FLAGS.exams), examCtrl.getStudentExamResult);
 
 // --- ASSIGNMENT ROUTES ---
 router.post(
   '/assignments',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.createAssignment
 );
-router.get('/batches/:batchId/assignments', authenticate, assignmentCtrl.getBatchAssignments);
-router.get('/assignments/:assignmentId', authenticate, assignmentCtrl.getAssignmentDetails);
+router.get('/batches/:batchId/assignments', authenticate, requireFeature(FEATURE_FLAGS.assignments), assignmentCtrl.getBatchAssignments);
+router.get('/assignments/:assignmentId', authenticate, requireFeature(FEATURE_FLAGS.assignments), assignmentCtrl.getAssignmentDetails);
 router.put(
   '/assignments/:assignmentId',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.updateAssignment
 );
 router.delete(
   '/assignments/:assignmentId',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.deleteAssignment
 );
 router.post(
   '/assignments/:assignmentId/submit',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_SUBMIT),
   assignmentCtrl.submitAssignment
 );
 router.get(
   '/assignments/:assignmentId/submissions',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.getAssignmentSubmissions
 );
 router.put(
   '/assignments/submissions/:submissionId/grade',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.gradeAssignmentSubmission
 );
 router.put(
   '/assignments/:assignmentId/grade/:submissionId',
   authenticate,
+  requireFeature(FEATURE_FLAGS.assignments),
   requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
   assignmentCtrl.gradeAssignmentSubmission
 );

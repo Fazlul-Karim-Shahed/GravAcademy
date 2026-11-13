@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import {
@@ -97,6 +98,7 @@ export default function AssignmentRoomPage({
   const batchId = resolvedParams.batchId;
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { loading: settingsLoading, isFeatureEnabled } = useSiteSettings();
 
   const [assignments, setAssignments] = useState<AssignmentItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,6 +153,9 @@ export default function AssignmentRoomPage({
     user?.role === 'teacher' ||
     user?.role === 'admin' ||
     user?.role === 'superadmin';
+
+  if (settingsLoading) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
+  if (!isFeatureEnabled('assignments', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center"><div className="text-center"><h1 className="text-xl font-bold">এই ফিচারটি এখনো প্রকাশ করা হয়নি</h1><p className="text-sm text-slate-500 mt-2">Superadmin এই ফিচারটি প্রকাশ করলে এখানে দেখা যাবে।</p></div></div>;
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);

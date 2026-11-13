@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 import {
   Users,
   MessageSquare,
@@ -98,6 +99,7 @@ export default function BatchClassroomPage({
   const batchId = resolvedParams.batchId;
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { isFeatureEnabled } = useSiteSettings();
 
   // Active Tab: 'discussion' | 'announcements' | 'members'
   const [activeTab, setActiveTab] = useState<'discussion' | 'announcements' | 'members'>('discussion');
@@ -461,13 +463,13 @@ export default function BatchClassroomPage({
                 <span>এক্সাম রুম (Exam Room)</span>
               </Link>
 
-              <Link
+              {isFeatureEnabled('assignments', user?.role === 'superadmin') && <Link
                 href={`/classroom/${batchId}/assignments`}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white text-xs font-black shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
               >
                 <Award className="w-4 h-4" />
                 <span>অ্যাসাইনমেন্ট (Assignments)</span>
-              </Link>
+              </Link>}
 
               <Link
                 href={`/classroom/${batchId}/marksheet`}
