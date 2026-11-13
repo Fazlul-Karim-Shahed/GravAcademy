@@ -160,6 +160,13 @@ export default function MarksheetPage({
     );
   });
 
+  const rankedStudents = [...filteredStudents].sort((a, b) => {
+    const percentageDifference = b.summary.percentage - a.summary.percentage;
+    return percentageDifference !== 0
+      ? percentageDifference
+      : a.student.name.localeCompare(b.student.name);
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
       {/* Header Banner */}
@@ -422,14 +429,14 @@ export default function MarksheetPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200">
-                      {filteredStudents.length === 0 ? (
+                      {rankedStudents.length === 0 ? (
                         <tr>
                           <td colSpan={8} className="py-8 text-center text-slate-400">
                             কোনো শিক্ষার্থী রেকর্ড পাওয়া যায়নি
                           </td>
                         </tr>
                       ) : (
-                        filteredStudents.map((row) => (
+                        rankedStudents.map((row) => (
                           <tr key={row.student._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2.5">
