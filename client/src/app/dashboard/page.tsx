@@ -71,14 +71,15 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-14">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
-      <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-5 sm:p-6 mb-8 border border-slate-200 dark:border-slate-800">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(129,140,248,0.25),transparent_32%),radial-gradient(circle_at_10%_90%,rgba(236,72,153,0.16),transparent_30%)] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-slate-900 dark:text-white break-words">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-white break-words">
                 স্বাগতম,{' '}
-                <span className="relative inline-block text-indigo-600 dark:text-indigo-400">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-300 to-purple-300">
                   {user?.name || 'শিক্ষার্থী'}!
                 </span>
               </h1>
@@ -93,7 +94,7 @@ export default function StudentDashboard() {
                 </div>
               )}
 
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-xl font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
                 আপনার ক্লাস রুটিন অনুযায়ী সময়মতো সরাসরি লাইভ ক্লাসরুমে প্রবেশ করুন এবং পাঠ্যক্রমের স্টাডি ম্যাটেরিয়াল রিভিশন করুন।
               </p>
             </div>
@@ -113,21 +114,21 @@ export default function StudentDashboard() {
               <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 <Link
                   href="/dashboard/payments"
-                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-2 transition-colors"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3.5 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 text-[11px] font-bold border border-emerald-400/30 flex items-center gap-2 transition-colors"
                 >
                   <CreditCard className="w-4 h-4 text-emerald-300" />
                   <span>আমার পেমেন্ট ও রিসিট</span>
                 </Link>
                 <Link
                   href="/profile"
-                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-2 transition-colors"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold border border-white/20 flex items-center gap-2 transition-colors"
                 >
                   <User className="w-4 h-4 text-amber-300" />
                   <span>আমার প্রোফাইল</span>
                 </Link>
                 <Link
                   href="/courses"
-                  className="flex-1 md:flex-none justify-center min-w-0 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-black flex items-center gap-2 transition-colors"
+                  className="flex-1 md:flex-none justify-center min-w-0 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-[11px] font-black shadow-md shadow-blue-950/30 flex items-center gap-2 transition-colors"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>সকল কোর্স</span>
