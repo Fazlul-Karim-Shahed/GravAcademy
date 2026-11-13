@@ -123,10 +123,10 @@ export default function TeacherPanelPage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
-            { href: '#schedule', label: 'আজকের ক্লাস', icon: Video },
+            { href: selectedBatchId ? `/classroom/${selectedBatchId}` : '#batches', label: 'আজকের ক্লাস', icon: Video },
             { href: selectedBatchId ? `/classroom/${selectedBatchId}/assignments` : '#batches', label: 'অ্যাসাইনমেন্ট', icon: FileCheck2 },
             { href: selectedBatchId ? `/classroom/${selectedBatchId}/exams` : '#batches', label: 'এক্সাম', icon: GraduationCap },
-            { href: selectedBatchId ? `/admin/batches/${selectedBatchId}/curriculum` : '#batches', label: 'লেকচার ও শিট', icon: Upload },
+            { href: selectedBatchId ? `/classroom/${selectedBatchId}` : '#batches', label: 'লেকচার ও শিট', icon: Upload },
           ].map((action) => {
             const Icon = action.icon;
             return <Link key={action.label} href={action.href} className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:-translate-y-0.5 hover:shadow-lg transition-all">
