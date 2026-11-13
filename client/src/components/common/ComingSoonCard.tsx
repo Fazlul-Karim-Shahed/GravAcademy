@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock3, ArrowRight, Rocket } from 'lucide-react';
+import { Clock3, Rocket } from 'lucide-react';
 
 export default function ComingSoonCard({ feature = 'এই ফিচার' }: { feature?: string }) {
   return (
@@ -20,9 +20,6 @@ export default function ComingSoonCard({ feature = 'এই ফিচার' }: {
       <p className="relative mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400 max-w-md mx-auto">
         আমরা আপনার জন্য এই অভিজ্ঞতাটি আরও সুন্দরভাবে প্রস্তুত করছি। Stay tuned—নতুন ফিচার প্রকাশ হলে সবার আগে জানতে পারবেন।
       </p>
-      <div className="relative mt-6 inline-flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-300">
-        আপনার সাথে থাকুন <ArrowRight className="w-4 h-4" />
-      </div>
     </div>
   );
 }
