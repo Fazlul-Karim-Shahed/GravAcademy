@@ -89,18 +89,21 @@ export default function AdminDashboardPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/admin/classes"
+              style={{ display: isFeatureEnabled('courses', user?.role === 'superadmin') ? undefined : 'none' }}
               className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors"
             >
               <FolderOpen className="w-3.5 h-3.5" /> Classes
             </Link>
             <Link
               href="/admin/courses"
+              style={{ display: isFeatureEnabled('courses', user?.role === 'superadmin') ? undefined : 'none' }}
               className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors"
             >
               <BookOpen className="w-3.5 h-3.5" /> Courses
             </Link>
             <Link
               href="/admin/batches"
+              style={{ display: isFeatureEnabled('batches', user?.role === 'superadmin') ? undefined : 'none' }}
               className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition-colors shadow-2xs"
             >
               <Copy className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Batches
@@ -116,6 +119,7 @@ export default function AdminDashboardPage() {
             {/* Card 0: এডমিশন */}
             <Link
               href="/admin/admissions"
+              style={{ display: isFeatureEnabled('admissions', user?.role === 'superadmin') ? undefined : 'none' }}
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <UserPlus className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
@@ -188,6 +192,7 @@ export default function AdminDashboardPage() {
             {/* Card 3: ফ্রি ক্লাস ও সেমিনার */}
             <Link
               href="/free-classes"
+              style={{ display: isFeatureEnabled('freeClasses', user?.role === 'superadmin') ? undefined : 'none' }}
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <Video className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
@@ -212,6 +217,7 @@ export default function AdminDashboardPage() {
             {/* Card 4: জব সার্কুলার */}
             <Link
               href="/admin/jobs"
+              style={{ display: isFeatureEnabled('jobs', user?.role === 'superadmin') ? undefined : 'none' }}
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <Briefcase className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
