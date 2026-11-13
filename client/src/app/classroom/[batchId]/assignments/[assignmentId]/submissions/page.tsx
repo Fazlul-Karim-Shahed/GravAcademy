@@ -83,6 +83,7 @@ export default function AssignmentSubmissionsPage({
 
   // Digital Marking & Annotation State
   const [showAnnotator, setShowAnnotator] = useState(false);
+  const [annotationSourceUrl, setAnnotationSourceUrl] = useState('');
   const [annotatedBlob, setAnnotatedBlob] = useState<Blob | null>(null);
   const [annotatedPreviewUrl, setAnnotatedPreviewUrl] = useState<string>('');
   const [savedAnnotatedUrl, setSavedAnnotatedUrl] = useState<string>('');
@@ -140,6 +141,7 @@ export default function AssignmentSubmissionsPage({
     setGradeScore(sub.rawScore ?? sub.score ?? 0);
     setGradeFeedback(sub.feedback || '');
     setSavedAnnotatedUrl(sub.annotatedFileUrl || '');
+    setAnnotationSourceUrl(sub.fileUrl || '');
     setAnnotatedBlob(null);
     setAnnotatedPreviewUrl('');
     setShowAnnotator(false);
@@ -532,7 +534,10 @@ export default function AssignmentSubmissionsPage({
                         {selectedSub.fileUrl && (
                           <button
                             type="button"
-                            onClick={() => setShowAnnotator(true)}
+                            onClick={() => {
+                              setAnnotationSourceUrl(selectedSub.fileUrl || '');
+                              setShowAnnotator(true);
+                            }}
                             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-black shadow-md shadow-rose-600/25 active:scale-95 transition-all cursor-pointer"
                           >
                             <PenTool className="w-3.5 h-3.5" />
@@ -549,6 +554,17 @@ export default function AssignmentSubmissionsPage({
                             <span className="truncate">চেকড খাতা</span>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAnnotationSourceUrl(annotatedPreviewUrl || savedAnnotatedUrl);
+                                setShowAnnotator(true);
+                              }}
+                              className="text-xs text-rose-600 dark:text-rose-400 font-extrabold hover:underline flex items-center gap-1 cursor-pointer"
+                            >
+                              <PenTool className="w-3.5 h-3.5" />
+                              <span>এডিট</span>
+                            </button>
                             <button
                               type="button"
                               onClick={() =>
@@ -570,6 +586,7 @@ export default function AssignmentSubmissionsPage({
                                 setAnnotatedBlob(null);
                                 setAnnotatedPreviewUrl('');
                                 setSavedAnnotatedUrl('');
+                                setAnnotationSourceUrl(selectedSub.fileUrl || '');
                               }}
                               className="text-[11px] text-slate-400 hover:text-rose-600 ml-1 cursor-pointer"
                               title="Reset checked script"
@@ -612,7 +629,10 @@ export default function AssignmentSubmissionsPage({
                               <span>মূল খাতা</span>
                               <button
                                 type="button"
-                                onClick={() => setShowAnnotator(true)}
+                              onClick={() => {
+                                setAnnotationSourceUrl(selectedSub.fileUrl || '');
+                                setShowAnnotator(true);
+                              }}
                                 className="text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 text-[11px] font-bold cursor-pointer"
                               >
                                 <PenTool className="w-3 h-3" />
@@ -707,12 +727,16 @@ export default function AssignmentSubmissionsPage({
       </div>
 
       {/* Full-Screen Digital Script Annotation Modal */}
-      {showAnnotator && selectedSub?.fileUrl && (
+      {showAnnotator && selectedSub && annotationSourceUrl && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center">
           <div className="w-full h-full max-w-6xl max-h-[92vh] flex flex-col">
             <DocumentAnnotator
-              fileUrl={selectedSub.fileUrl}
-              fileName={selectedSub.fileName}
+              fileUrl={annotationSourceUrl}
+              fileName={
+                annotationSourceUrl === selectedSub.fileUrl
+                  ? selectedSub.fileName
+                  : selectedSub.annotatedFileName || 'checked_script.png'
+              }
               onSaveAnnotated={(blob, previewUrl) => {
                 setAnnotatedBlob(blob);
                 setAnnotatedPreviewUrl(previewUrl);
