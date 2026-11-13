@@ -89,6 +89,7 @@ export default function CreateExamPage({
 
   // Uploading image tracking: key = 'q_idx' or 'opt_idx_optidx'
   const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
+  const [pendingImageFiles, setPendingImageFiles] = useState<Record<string, File>>({});
 
   // MCQ Questions State
   const [mcqQuestions, setMcqQuestions] = useState<MCQQuestionInput[]>([
@@ -114,28 +115,30 @@ export default function CreateExamPage({
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Upload image to server
-  const handleImageUpload = async (
+  // Keep selected image local; upload it when the exam is created.
+  const handleImageUpload = (
     file: File,
     onSuccess: (url: string) => void,
     key: string
   ) => {
-    setUploadingImageKey(key);
-    try {
+    if (file.size > 10 * 1024 * 1024) {
+      setErrorMessage('ছবির আকার ১০ মেগাবাইটের বেশি হতে পারবে না');
+      return;
+    }
+    setPendingImageFiles((prev) => ({ ...prev, [key]: file }));
+    onSuccess(URL.createObjectURL(file));
+  };
+
+  const uploadPendingImages = async () => {
+    const uploaded = new Map<string, string>();
+    for (const [key, file] of Object.entries(pendingImageFiles)) {
       const formData = new FormData();
       formData.append('document', file);
-      const res = await api.post('/finance/upload-document', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (res.data?.success && res.data.data?.fileUrl) {
-        onSuccess(res.data.data.fileUrl);
-      }
-    } catch (err: any) {
-      console.error('Image upload failed:', err);
-      alert(err.response?.data?.message || 'ছবি আপলোড করতে ব্যর্থ হয়েছে');
-    } finally {
-      setUploadingImageKey(null);
+      const res = await api.post('/finance/upload-document', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      if (!res.data?.success || !res.data.data?.fileUrl) throw new Error(res.data?.message || 'ছবি আপলোড করা যায়নি');
+      uploaded.set(key, res.data.data.fileUrl);
     }
+    return uploaded;
   };
 
   // Selecting a question paper is local-only. Upload it when the exam is created.
@@ -441,6 +444,7 @@ export default function CreateExamPage({
       const submittedQuestionPaperUrl = examType === 'upload_paper'
         ? (selectedQuestionPaper ? await uploadSelectedQuestionPaper() : questionPaperUrl.trim())
         : '';
+      const uploadedImages = await uploadPendingImages();
       const payload: any = {
         batchId,
         title: title.trim(),
@@ -463,11 +467,11 @@ export default function CreateExamPage({
         if (questionMode === 'mcq' || questionMode === 'both') {
           payload.mcqQuestions = mcqQuestions.map((q, idx) => ({
             questionText: q.questionText,
-            imageUrl: q.imageUrl || '',
-            options: q.options.map((opt) => ({
+            imageUrl: uploadedImages.get(`q_${idx}`) || q.imageUrl || '',
+            options: q.options.map((opt, optIdx) => ({
               optionId: opt.optionId,
               text: opt.text,
-              imageUrl: opt.imageUrl || '',
+              imageUrl: uploadedImages.get(`opt_${idx}_${optIdx}`) || opt.imageUrl || '',
             })),
             correctOptionId: q.correctOptionId,
             marks: q.marks,
