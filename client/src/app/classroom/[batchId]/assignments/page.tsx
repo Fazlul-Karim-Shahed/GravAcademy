@@ -154,9 +154,6 @@ export default function AssignmentRoomPage({
     user?.role === 'admin' ||
     user?.role === 'superadmin';
 
-  if (settingsLoading) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
-  if (!isFeatureEnabled('assignments', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950"><ComingSoonCard feature="Assignment Management" /></div>;
-
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -187,6 +184,9 @@ export default function AssignmentRoomPage({
       setLoading(false);
     }
   };
+
+  if (settingsLoading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-sm font-semibold text-slate-500">লোড হচ্ছে...</div>;
+  if (!isFeatureEnabled('assignments', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950"><ComingSoonCard feature="Assignment Management" /></div>;
 
   // Upload file handler
   const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, isTeacherDoc: boolean) => {
