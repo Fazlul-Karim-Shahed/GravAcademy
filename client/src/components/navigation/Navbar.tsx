@@ -55,7 +55,7 @@ export const Navbar: React.FC = () => {
       // Wait for a meaningful scroll before switching to the floating navbar.
       // A small threshold prevents the header from changing state on the
       // first touch/scroll gesture, especially on mobile.
-      setIsScrolled(window.scrollY > 160);
+      setIsScrolled(window.scrollY > 300);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
