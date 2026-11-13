@@ -115,9 +115,9 @@ export default function TeacherPanelPage() {
         </div>
 
         {/* Teacher-first quick actions: daily work only. */}
-        <div className="rounded-2xl border border-indigo-100 dark:border-indigo-900/60 bg-indigo-50/60 dark:bg-indigo-950/20 p-4 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div><p className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">কাজের ব্যাচ নির্বাচন করুন</p><p className="text-xs text-slate-500 dark:text-slate-400 mt-1">একাধিক batch থাকলে যেটিতে কাজ করবেন সেটি বেছে নিন।</p></div>
-          <select value={selectedBatchId} onChange={(e) => setSelectedBatchId(e.target.value)} className="w-full sm:w-80 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-900 px-3 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <p className="text-xs font-bold text-slate-700 dark:text-slate-300">কাজের ব্যাচ নির্বাচন করুন</p>
+          <select value={selectedBatchId} onChange={(e) => setSelectedBatchId(e.target.value)} className="w-full sm:w-80 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             {batches.length === 0 ? <option value="">কোনো assigned batch নেই</option> : batches.map((batch) => <option key={batch._id} value={batch._id}>{batch.name} — {batch.courseId?.title}</option>)}
           </select>
         </div>
