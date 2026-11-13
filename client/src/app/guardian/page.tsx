@@ -100,18 +100,18 @@ export default function GuardianPortalPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Welcome Banner */}
-        <div className="rounded-3xl p-8 mb-8 border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-gradient-to-r dark:from-emerald-950/40 dark:via-teal-950/20 dark:to-slate-900/60 shadow-xs">
+        <div className="rounded-2xl p-6 mb-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                অভিভাবক পোর্টাল (Guardian Portal)
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                অভিভাবক পোর্টাল
               </span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               সন্তানের একাডেমিক অগ্রগতি
             </h1>
-            <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
+            <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
               আপনার সন্তানের পরীক্ষার ফলাফল, ভর্তিকৃত ব্যাচ এবং পেমেন্ট তথ্য এখান থেকে দেখুন।
             </p>
           </div>
@@ -141,7 +141,7 @@ export default function GuardianPortalPage() {
         {!loading && students.length > 0 && (
           <div className="space-y-8">
             {students.map((student) => (
-              <div key={student._id} className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden">
+              <div key={student._id} className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden">
                 {/* Student Header */}
                 <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-4">

@@ -71,7 +71,7 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-14">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
-      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16 mb-8 sm:mb-10">
+      <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white p-6 sm:p-8 mb-8 border border-slate-800">
         
         {/* Deep space radial ambient lighting & celestial nebula glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
@@ -214,7 +214,7 @@ export default function StudentDashboard() {
               {batches.map((batch) => (
                 <div
                   key={batch._id}
-                  className="group relative overflow-hidden rounded-[28px] bg-gradient-to-br from-blue-50/60 via-white/95 to-indigo-50/50 dark:from-slate-900/95 dark:via-[#0c1228]/95 dark:to-indigo-950/30 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 p-5 sm:p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500/70 shadow-md hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-indigo-500/10 transition-all duration-300"
+                  className="group rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500/70 transition-colors"
                 >
                   {/* Ambient Color Glow Orbs */}
                   <div className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-blue-500/15 to-indigo-500/15 dark:from-blue-500/20 dark:to-indigo-500/15 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
@@ -223,17 +223,17 @@ export default function StudentDashboard() {
                   <div className="relative z-10 space-y-3">
                     {/* Class Tag (Aligned Right) */}
                     <div className="flex items-center justify-end">
-                      <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50/90 dark:bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs">
+                      <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                         {batch.courseId?.gradeLevel || 'একাডেমিক'}
                       </span>
                     </div>
 
                     {/* Course Title as Primary Heading */}
                     <div>
-                      <h3 className="text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                         {batch.courseId?.title || batch.name}
                       </h3>
-                      <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-lg bg-blue-100/70 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 shadow-2xs">
+                      <div className="inline-flex items-center gap-1.5 mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                         <span className="text-xs font-black text-blue-700 dark:text-blue-300">
                           {batch.name}
@@ -243,10 +243,10 @@ export default function StudentDashboard() {
                   </div>
 
                   {/* Student Action Bar: Direct Classroom & Study Material Entry */}
-                  <div className="pt-4 mt-5 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2.5">
+                  <div className="pt-3 mt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
                     <Link
                       href={`/classroom/${batch._id}`}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-colors"
                       title="নোটিশ ও সহপাঠীদের ডিসকাশন"
                     >
                       <MessageSquare className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
@@ -255,7 +255,7 @@ export default function StudentDashboard() {
 
                     <Link
                       href={`/learn/${batch._id}`}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition-colors"
                       title="রেকর্ড ক্লাস ও পড়ালেখার ম্যাটেরিয়াল"
                     >
                       <BookOpen className="w-3.5 h-3.5 text-blue-100" />

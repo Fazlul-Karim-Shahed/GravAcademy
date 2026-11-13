@@ -59,16 +59,16 @@ export default function EmployeePanelPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Banner */}
-      <div className="glass-panel rounded-3xl p-8 mb-8 border border-slate-800 bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-slate-900/60">
+      <div className="rounded-2xl p-6 mb-6 border border-slate-800 bg-slate-900">
         <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-3">
-            <Briefcase className="w-3.5 h-3.5" /> Staff Operations
+            <span className="inline-flex items-center gap-1.5 text-cyan-400 text-xs font-semibold mb-2">
+            <Briefcase className="w-3.5 h-3.5" /> স্টাফ অপারেশন
           </span>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Operational Support Portal
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            অপারেশন সাপোর্ট প্যানেল
           </h1>
-          <p className="mt-2 text-slate-300 text-sm sm:text-base leading-relaxed">
-            Manage student enrollment verifications, verify document submissions, and coordinate batch logistics according to your assigned permissions.
+          <p className="mt-2 text-slate-300 text-sm leading-relaxed">
+            শিক্ষার্থী ভর্তি ও পেমেন্ট যাচাই করুন।
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function EmployeePanelPage() {
       )}
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <Card className="border border-slate-800">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
