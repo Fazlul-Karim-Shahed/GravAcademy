@@ -70,9 +70,10 @@ export default function ProfileEditPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarProgress, setAvatarProgress] = useState(0);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleAvatarFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -82,12 +83,19 @@ export default function ProfileEditPage() {
       return;
     }
 
+    setMessage(null);
+    setSelectedAvatarFile(file);
+    setAvatarUrl(URL.createObjectURL(file));
+    setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। প্রোফাইল সেভ করলে ছবিটি আপলোড হবে।` });
+  };
+
+  const uploadSelectedAvatar = async () => {
+    if (!selectedAvatarFile) return avatarUrl;
     setUploadingAvatar(true);
     setAvatarProgress(0);
-    setMessage(null);
     try {
       const formData = new FormData();
-      formData.append('avatar', file);
+      formData.append('avatar', selectedAvatarFile);
 
       const res = await api.post('/auth/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -101,23 +109,16 @@ export default function ProfileEditPage() {
 
       if (res.data?.success && res.data.data?.avatarUrl) {
         const newUrl = res.data.data.avatarUrl;
-        setAvatarUrl(newUrl);
-        updateUser({ avatarUrl: newUrl });
-        setMessage({ type: 'success', text: '✅ ছবি গুগল ড্রাইভে সফলভাবে আপলোড এবং সেভ হয়েছে!' });
+        return newUrl as string;
       } else {
-        setMessage({ type: 'error', text: res.data?.message || 'ছবি আপলোড সম্পন্ন করা যায়নি।' });
+        throw new Error(res.data?.message || 'ছবি আপলোড সম্পন্ন করা যায়নি।');
       }
     } catch (err: any) {
       console.error('Avatar upload error:', err);
-      setMessage({
-        type: 'error',
-        text: err.response?.data?.message || 'ছবি আপলোড করার সময় সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।',
-      });
+      throw new Error(err.response?.data?.message || 'ছবি আপলোড করার সময় সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
     } finally {
       setUploadingAvatar(false);
       setAvatarProgress(0);
-      // Reset input
-      e.target.value = '';
     }
   };
 
@@ -182,10 +183,11 @@ export default function ProfileEditPage() {
     setMessage(null);
 
     try {
+      const savedAvatarUrl = selectedAvatarFile ? await uploadSelectedAvatar() : avatarUrl;
       const payload: any = {
         name,
         phone,
-        avatarUrl,
+        avatarUrl: savedAvatarUrl,
         bio,
       };
 
@@ -218,6 +220,7 @@ export default function ProfileEditPage() {
         setMessage({ type: 'success', text: 'প্রোফাইল সফলভাবে আপডেট করা হয়েছে!' });
         // Update local auth context and cookie
         updateUser(res.data.data.user);
+        setSelectedAvatarFile(null);
         setTimeout(() => {
           router.push('/profile');
         }, 1200);
