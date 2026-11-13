@@ -277,7 +277,20 @@ export default function ExamRoomPage({
                   {/* Top Status Badges */}
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-5 pl-1">
-                      {timing.state === 'RUNNING' ? (
+                      {attempt ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>
+                            {attempt.status === 'timeout'
+                              ? 'সময় শেষ'
+                              : attempt.isEvaluated
+                              ? 'ফলাফল প্রকাশিত'
+                              : attempt.status === 'in_progress'
+                              ? 'চলমান পরীক্ষা'
+                              : 'খাতা জমা হয়েছে'}
+                          </span>
+                        </span>
+                      ) : timing.state === 'RUNNING' ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 animate-pulse">
                           <span className="w-2 h-2 rounded-full bg-emerald-500" />
                           <span>চলমান পরীক্ষা</span>
