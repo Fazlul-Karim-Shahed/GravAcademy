@@ -9,6 +9,7 @@ import {
   Plus,
   Trash2,
   Video,
+  FileVideo,
   FileText,
   ChevronRight,
   CheckCircle2,
@@ -657,7 +658,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     {mod.directLessons && mod.directLessons.length > 0 && (
                       <div className="space-y-2.5">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                          <Video className="w-3.5 h-3.5 text-blue-500" /> Direct Lessons
+                          <FileVideo className="w-3.5 h-3.5 text-emerald-500" /> Direct Lessons
                         </p>
                         <div className="space-y-2">
                           {mod.directLessons.map((lesson) => (
@@ -666,8 +667,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                               className="group flex items-center justify-between p-3.5 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/50 transition-all shadow-2xs"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                  <Video className="w-4 h-4" />
+                                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                  <FileVideo className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2">
@@ -770,8 +771,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                     className="group flex items-center justify-between p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-2xs"
                                   >
                                     <div className="flex items-center gap-2.5">
-                                      <div className="w-7 h-7 rounded-md bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                                        <Video className="w-3.5 h-3.5" />
+                                      <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                        <FileVideo className="w-3.5 h-3.5" />
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2">
@@ -1094,8 +1095,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
               <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                    <Video className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <FileVideo className="w-4 h-4" />
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">Add Lecture / Lesson</h3>

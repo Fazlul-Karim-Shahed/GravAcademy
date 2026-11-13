@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import {
   ArrowLeft,
   Edit2,
+  FileVideo,
   Upload,
   Loader2,
   Paperclip,
@@ -205,8 +206,8 @@ export default function EditLessonPage({
         {/* Main Editor Card */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden p-6 sm:p-8">
           <div className="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-slate-800">
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-              <Edit2 className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <FileVideo className="w-5 h-5" />
             </div>
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">

@@ -8,6 +8,7 @@ import {
   BookOpen,
   Layers,
   Video,
+  FileVideo,
   FileText,
   ChevronRight,
   ChevronDown,
@@ -206,7 +207,11 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5 pt-1 min-w-0">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
-                <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                {activeLesson ? (
+                  <FileVideo className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
+                ) : (
+                  <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                )}
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight line-clamp-1">
@@ -467,7 +472,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                 }`}
                               >
                                 <div className="flex items-center gap-2 truncate">
-                                  <Video className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-indigo-500'}`} />
+                                  <FileVideo className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-emerald-500'}`} />
                                   <span className="truncate">{lesson.title}</span>
                                 </div>
                                 {isSelected && (
@@ -497,7 +502,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 truncate">
-                                      <Video className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-indigo-500'}`} />
+                                      <FileVideo className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-emerald-500'}`} />
                                       <span className="truncate">{lesson.title}</span>
                                     </div>
                                     {isSelected && (
