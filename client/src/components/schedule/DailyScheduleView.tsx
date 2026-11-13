@@ -116,9 +116,11 @@ export default function DailyScheduleView({
 
   return (
     <div className={`relative overflow-hidden mb-8 ${cardless ? 'p-0 bg-transparent border-0 shadow-none' : 'bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-7 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl'}`}>
-      {/* Subtle Ambient Radial Lighting */}
-      <div className="absolute top-0 right-1/4 w-80 h-36 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-0 left-10 w-64 h-32 bg-emerald-500/10 dark:bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative lighting is intentionally omitted in cardless mode. */}
+      {!cardless && <>
+        <div className="absolute top-0 right-1/4 w-80 h-36 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-10 w-64 h-32 bg-emerald-500/10 dark:bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+      </>}
 
       {/* Top Header */}
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
