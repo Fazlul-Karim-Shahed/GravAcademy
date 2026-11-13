@@ -51,6 +51,7 @@ export default function SubmissionEvaluationPage({
   const [showAnnotator, setShowAnnotator] = useState(false);
   const [annotationSourceUrl, setAnnotationSourceUrl] = useState('');
   const [annotatedBlob, setAnnotatedBlob] = useState<Blob | null>(null);
+  const [annotatedPreviewUrl, setAnnotatedPreviewUrl] = useState('');
   const [savedAnnotatedUrl, setSavedAnnotatedUrl] = useState('');
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function SubmissionEvaluationPage({
       setCqScore(item.cqScore || 0);
       setFeedback(item.teacherFeedback || '');
       setSavedAnnotatedUrl(item.annotatedFileUrl || '');
+      setAnnotatedPreviewUrl('');
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'সাবমিশন লোড করা যায়নি');
     } finally {
@@ -86,7 +88,7 @@ export default function SubmissionEvaluationPage({
     setSaving(true);
     try {
       const safeScore = Math.min(Math.max(Number(cqScore) || 0, 0), cqMax);
-      let finalAnnotatedUrl = savedAnnotatedUrl;
+      let finalAnnotatedUrl = annotatedPreviewUrl || savedAnnotatedUrl || submission.annotatedFileUrl || '';
 
       if (annotatedBlob) {
         const formData = new FormData();
@@ -111,6 +113,7 @@ export default function SubmissionEvaluationPage({
       setCqScore(safeScore);
       setSavedAnnotatedUrl(finalAnnotatedUrl);
       setAnnotatedBlob(null);
+      setAnnotatedPreviewUrl('');
       setSubmission((prev) => prev ? { ...prev, cqScore: safeScore, totalScore: (prev.mcqScore || 0) + safeScore, teacherFeedback: feedback.trim(), annotatedFileUrl: finalAnnotatedUrl, annotatedFileName: finalAnnotatedUrl ? 'checked_exam_script.png' : prev.annotatedFileName, isEvaluated: true, status: 'evaluated' } : prev);
       setSaved(true);
       setTimeout(() => setSaved(false), 1800);
@@ -153,7 +156,7 @@ export default function SubmissionEvaluationPage({
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <button type="button" onClick={() => { setAnnotationSourceUrl(submission.annotatedFileUrl || submission.studentDocumentUrl || ''); setShowAnnotator(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 px-3 py-2 text-xs font-black text-rose-700 dark:text-rose-300 hover:bg-rose-100 transition-colors">
+              <button type="button" onClick={() => { setAnnotationSourceUrl(annotatedPreviewUrl || savedAnnotatedUrl || submission.annotatedFileUrl || submission.studentDocumentUrl || ''); setShowAnnotator(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 px-3 py-2 text-xs font-black text-rose-700 dark:text-rose-300 hover:bg-rose-100 transition-colors">
                 <PenTool className="w-3.5 h-3.5" />{submission.annotatedFileUrl ? 'এডিট' : 'অ্যানোটেট'}
               </button>
               {annotatedBlob && <span className="text-[11px] font-bold text-amber-600">নতুন annotation save-এর জন্য প্রস্তুত</span>}
@@ -181,8 +184,9 @@ export default function SubmissionEvaluationPage({
               fileUrl={annotationSourceUrl}
               backgroundFileUrl={submission.studentDocumentUrl}
               fileName={submission.annotatedFileUrl ? (submission.annotatedFileName || 'checked_exam_script.png') : 'exam_answer_script'}
-              onSaveAnnotated={(blob) => {
+              onSaveAnnotated={(blob, previewUrl) => {
                 setAnnotatedBlob(blob);
+                setAnnotatedPreviewUrl(previewUrl);
                 setShowAnnotator(false);
               }}
               onCancel={() => setShowAnnotator(false)}
