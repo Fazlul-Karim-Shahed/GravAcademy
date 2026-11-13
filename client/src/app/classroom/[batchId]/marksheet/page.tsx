@@ -17,7 +17,6 @@ import {
   Sparkles,
   BarChart3,
   Users,
-  ShieldCheck,
   TrendingUp,
   PenTool,
   Eye,
@@ -170,12 +169,6 @@ export default function MarksheetPage({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
               <div className="flex items-center gap-2.5 mb-2.5">
-                {isStaff ? (
-                  <span className="text-xs font-bold text-purple-300 bg-purple-950/60 border border-purple-500/40 px-3 py-1 rounded-full flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>সব শিক্ষার্থী</span>
-                  </span>
-                ) : null}
               </div>
 
               <h1 className="flex items-center gap-2.5 text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
