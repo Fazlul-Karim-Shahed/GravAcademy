@@ -187,11 +187,8 @@ export default function TeacherPanelPage() {
         <div id="batches" className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Your Assigned Course Batches
+              <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> আপনার নির্ধারিত কোর্স ব্যাচ
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Select a batch to inspect curriculum or add new educational modules.
-            </p>
           </div>
 
           <button
