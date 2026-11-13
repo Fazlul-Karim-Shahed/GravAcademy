@@ -136,35 +136,42 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-10">
         
         {/* 2. Primary Feature: Interactive Daily & Weekly Class Schedule */}
-        <DailyScheduleView
-          role="student"
-          cardless
-          title="আজকের ও সাপ্তাহিক ক্লাস রুটিন"
-        />
+        <div className="order-2">
+          <DailyScheduleView
+            role="student"
+            cardless
+            title="আজকের ও সাপ্তাহিক ক্লাস রুটিন"
+          />
+        </div>
 
         {/* 3. Student-first quick access to the places used every day */}
         {!loading && batches.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4 order-1">
             <div className="flex items-center justify-between">
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/60 dark:border-indigo-800/60">
                   <Compass className="w-4 h-4" />
                 </div>
-                <span>দ্রুত প্রবেশ</span>
+                <span>দরকারি লিংক</span>
               </h2>
             </div>
 
             <div className="space-y-4">
               {batches.map((batch) => (
                 <div key={batch._id} className="space-y-2.5">
-                  <div className="flex items-center gap-2 px-1">
+                  <div className="flex items-center gap-2 px-1 min-w-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                    <span className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-200 truncate">
-                      {batch.name}
-                    </span>
+                    <div className="min-w-0 truncate">
+                      <span className="block text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">
+                        {batch.courseId?.title || 'কোর্স'}
+                      </span>
+                      <span className="block text-xs sm:text-sm font-black text-slate-700 dark:text-slate-200 truncate">
+                        {batch.name}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
@@ -230,7 +237,7 @@ export default function StudentDashboard() {
         )}
 
         {/* 3. Enrolled Batches: Curriculum & Study Materials */}
-        <div className="space-y-6">
+        <div className="space-y-6 order-3">
           <div className="flex items-center justify-between pb-2">
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
@@ -333,7 +340,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* 4. Helpline & Support Strip */}
-        <div className="rounded-[30px] p-5 sm:p-6 bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+        <div className="order-4 rounded-[30px] p-5 sm:p-6 bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25">
               <PhoneCall className="w-5 h-5" />
