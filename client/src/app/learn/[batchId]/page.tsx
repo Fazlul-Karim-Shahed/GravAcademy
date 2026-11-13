@@ -197,34 +197,15 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <Link
-                href="/dashboard"
-                className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 backdrop-blur-md transition-colors shrink-0"
-                title="ড্যাশবোর্ডে ফিরে যান"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
-
-              <div>
-                {/* Breadcrumbs */}
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-300 font-semibold">
-                  <Link href="/dashboard" className="hover:text-white transition-colors">
-                    ড্যাশবোর্ড
-                  </Link>
-                  <span className="text-slate-500">/</span>
-                  <Link href={courseLink} className="hover:text-white transition-colors truncate max-w-[150px] sm:max-w-xs">
-                    {data.batch.courseId?.title}
-                  </Link>
-                  <span className="text-slate-500">/</span>
-                  <span className="text-blue-300 font-bold truncate max-w-[150px]">
-                    {data.batch.name}
-                  </span>
-                </div>
-
-                <h1 className="text-base sm:text-lg font-black text-white tracking-tight mt-0.5 line-clamp-1">
-                  {activeLesson ? activeLesson.title : data.batch.name}
+            <div className="flex items-center gap-3 pt-1 min-w-0">
+              <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight line-clamp-1">
+                  লেকচার ও শিট
                 </h1>
+                <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                  {activeLesson?.title || data.batch.name}
+                </p>
               </div>
             </div>
 

@@ -12,14 +12,13 @@ import {
   Calendar,
   CheckCircle2,
   AlertCircle,
-  ArrowLeft,
+  BarChart3,
   Award,
   ChevronRight,
   BookOpen,
   HelpCircle,
   UploadCloud,
   FileCheck,
-  Flame,
   Users,
   Timer,
 } from 'lucide-react';
@@ -172,27 +171,16 @@ export default function ExamRoomPage({
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <Link
-                  href={`/classroom/${batchId}`}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
-                  title="ক্লাসরুমে ফিরুন"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-                <span className="inline-flex items-center gap-1.5 text-xs text-rose-300 font-bold bg-rose-950/60 border border-rose-500/40 px-3 py-1 rounded-full">
-                  <Flame className="w-3.5 h-3.5 text-rose-400" />
-                  <span>এক্সাম রুম ও মূল্যায়ন কেন্দ্র</span>
-                </span>
+            <div className="flex items-center gap-3 pt-1 min-w-0">
+              <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                  পরীক্ষা ও মূল্যায়ন
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                  {exams.length > 0 ? 'আপনার পরীক্ষাগুলো এখানে দেখুন' : 'এই ব্যাচের পরীক্ষাগুলো'}
+                </p>
               </div>
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-normal leading-[1.35] pt-1">
-                পরীক্ষা ও মূল্যায়ন হল
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
-                নির্ধারিত সময়ের মধ্যে পরীক্ষায় অংশগ্রহণ করুন অথবা ফলাফল পর্যবেক্ষণ করুন
-              </p>
             </div>
 
             {/* Teacher Actions */}

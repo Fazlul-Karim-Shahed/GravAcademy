@@ -17,7 +17,7 @@ import {
   Calendar,
   CheckCircle2,
   AlertCircle,
-  ArrowLeft,
+  BarChart3,
   ChevronRight,
   UploadCloud,
   FileCheck,
@@ -367,26 +367,16 @@ export default function AssignmentRoomPage({
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-            <div>
-              <div className="flex items-center gap-2.5 mb-2.5">
-                <Link
-                  href={`/classroom/${batchId}`}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md transition-colors"
-                  title="ক্লাসরুমে ফিরে যান"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-                <span className="text-xs font-bold text-slate-200 bg-white/15 px-3 py-1 rounded-full border border-white/20 backdrop-blur-md">
-                  ক্লাসরুম অ্যাসাইনমেন্ট পোর্টাল
-                </span>
+            <div className="flex items-center gap-3 pt-1 min-w-0">
+              <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-300 shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                  অ্যাসাইনমেন্ট
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                  আপনার কাজগুলো এখানে দেখুন ও জমা দিন
+                </p>
               </div>
-
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-normal leading-[1.35] pt-1">
-                অ্যাসাইনমেন্ট ও হোমওয়ার্ক (Assignments)
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
-                নির্ধারিত তারিখের মধ্যে অ্যাসাইনমেন্ট জমা দিয়ে শিক্ষক থেকে বিস্তারিত মূল্যায়ন ও মার্কস গ্রহণ করুন
-              </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
