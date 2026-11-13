@@ -497,70 +497,35 @@ export default function BatchClassroomPage({
             </div>
           )}
 
-          {/* 2. SUB-NAVIGATION TABS */}
-          <div className="flex items-center gap-2 sm:gap-3 mt-6 border-t border-white/10 pt-4 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab('home')}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                activeTab === 'home'
-                  ? 'bg-white text-indigo-700 shadow-sm'
-                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>হোম</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('discussion')}
-              className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
-                activeTab === 'discussion'
-                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-102'
-                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
-              }`}
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>গ্রুপ ডিসকাশন</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                activeTab === 'discussion' ? 'bg-white/25 text-white' : 'bg-white/15 text-slate-300'
-              }`}>
-                {messages.length}
-              </span>
-            </button>
+        </div>
+      </div>
 
-            <button
-              onClick={() => setActiveTab('announcements')}
-              className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
-                activeTab === 'announcements'
-                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-102'
-                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
-              }`}
-            >
-              <Megaphone className="w-4 h-4" />
-              <span>এনাউন্সমেন্ট</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                activeTab === 'announcements' ? 'bg-white/25 text-white' : 'bg-white/15 text-slate-300'
-              }`}>
-                {announcements.length}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('members')}
-              className={`inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all shrink-0 cursor-pointer ${
-                activeTab === 'members'
-                  ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-102'
-                  : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>মেম্বার তালিকা</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                activeTab === 'members' ? 'bg-white/25 text-white' : 'bg-white/15 text-slate-300'
-              }`}>
-                {memberCounts.totalMembers}
-              </span>
-            </button>
-          </div>
+      {/* Classroom section navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {[
+            { key: 'home' as const, label: 'হোম', icon: BookOpen, count: null },
+            { key: 'discussion' as const, label: 'ডিসকাশন', icon: MessageSquare, count: messages.length },
+            { key: 'announcements' as const, label: 'নোটিশ', icon: Megaphone, count: announcements.length },
+            { key: 'members' as const, label: 'সদস্য', icon: Users, count: memberCounts.totalMembers },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold shrink-0 transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-indigo-400'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+                {tab.count !== null && <span className="opacity-70">{tab.count}</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
 
