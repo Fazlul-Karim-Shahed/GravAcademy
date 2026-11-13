@@ -87,18 +87,18 @@ export default function TeacherPanelPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header Banner */}
-        <div className="rounded-3xl p-8 mb-8 border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-gradient-to-r dark:from-indigo-950/40 dark:via-blue-950/20 dark:to-slate-900/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7 pb-5 border-b border-slate-200 dark:border-slate-800">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400" />
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                Instructor Workspace
+                Teacher Dashboard
               </span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Teacher Operations Panel
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Teacher Dashboard
             </h1>
-            <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
+            <p className="hidden mt-2 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
               Manage your assigned batches, upload lesson notes and worksheets, schedule live sessions, and review student progress.
             </p>
           </div>
