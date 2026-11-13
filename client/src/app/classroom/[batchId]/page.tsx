@@ -451,7 +451,7 @@ export default function BatchClassroomPage({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white text-xs font-black shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
               >
                 <Award className="w-4 h-4" />
-                <span>অ্যাসাইন</span>
+                <span>অ্যাসাইনমেন্ট</span>
               </Link>}
 
               <Link
