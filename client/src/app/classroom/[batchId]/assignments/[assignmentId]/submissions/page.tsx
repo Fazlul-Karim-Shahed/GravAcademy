@@ -122,13 +122,20 @@ export default function AssignmentSubmissionsPage({
       }
     } catch (err: any) {
       console.error('Failed to load assignment submissions:', err);
-      setError(err.response?.data?.message || 'সাবমিশন ও অ্যাসাইনমেন্ট তথ্য লোড করা যায়নি');
+      setError(err.response?.data?.message || 'Submission data load করা যায়নি');
     } finally {
       setLoading(false);
     }
   };
 
   const handleSelectSubmission = (sub: SubmissionItem) => {
+    if (selectedSub?._id === sub._id) {
+      setSelectedSub(null);
+      setShowAnnotator(false);
+      setPreviewDoc({ isOpen: false, url: '', title: '' });
+      return;
+    }
+
     setSelectedSub(sub);
     setGradeScore(sub.rawScore ?? sub.score ?? 0);
     setGradeFeedback(sub.feedback || '');
@@ -144,7 +151,7 @@ export default function AssignmentSubmissionsPage({
     if (!selectedSub || !assignment) return;
 
     if (gradeScore < 0 || gradeScore > assignment.totalMarks) {
-      alert(`নম্বর অবশ্যই ০ থেকে ${assignment.totalMarks} এর মধ্যে হতে হবে।`);
+      alert(`Marks must be between 0 and ${assignment.totalMarks}.`);
       return;
     }
 
@@ -209,7 +216,7 @@ export default function AssignmentSubmissionsPage({
         setTimeout(() => setSaveSuccess(false), 3000);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'মূল্যায়ন সংরক্ষণ করতে সমস্যা হয়েছে');
+      alert(err.response?.data?.message || 'Marks save করতে সমস্যা হয়েছে');
     } finally {
       setSavingGrade(false);
     }
@@ -260,10 +267,10 @@ export default function AssignmentSubmissionsPage({
             </div>
             <div className="min-w-0">
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-                সাবমিশন ও মূল্যায়ন
+                Submission Review
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
-                {assignment?.title || 'শিক্ষার্থীদের জমা দেওয়া কাজ দেখুন'}
+                {assignment?.title || 'Student work review করুন'}
               </p>
             </div>
           </div>
@@ -274,7 +281,7 @@ export default function AssignmentSubmissionsPage({
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-semibold text-slate-500">সাবমিশন তালিকা লোড হচ্ছে...</p>
+            <p className="text-sm font-semibold text-slate-500">Submissions load হচ্ছে...</p>
           </div>
         ) : error ? (
           <div className="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-sm font-semibold flex items-center gap-3">
@@ -287,34 +294,34 @@ export default function AssignmentSubmissionsPage({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
               <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
-                  <Users className="w-4 h-4 text-blue-500" /> মোট জমা পড়েছে
+                  <Users className="w-4 h-4 text-blue-500" /> Submitted
                 </span>
                 <span className="text-2xl font-black text-slate-900 dark:text-white">
-                  {totalSubmissions} <span className="text-xs font-medium text-slate-500">টি</span>
+                  {totalSubmissions}
                 </span>
               </div>
 
               <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> মূল্যায়িত
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Checked
                 </span>
                 <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-                  {evaluatedCount} <span className="text-xs font-medium text-slate-500">টি</span>
+                  {evaluatedCount}
                 </span>
               </div>
 
               <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
-                  <Clock className="w-4 h-4 text-amber-500" /> মূল্যায়ন বাকি
+                  <Clock className="w-4 h-4 text-amber-500" /> Pending
                 </span>
                 <span className="text-2xl font-black text-amber-600 dark:text-amber-400">
-                  {pendingCount} <span className="text-xs font-medium text-slate-500">টি</span>
+                  {pendingCount}
                 </span>
               </div>
 
               <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
-                  <Award className="w-4 h-4 text-purple-500" /> গড় নম্বর
+                  <Award className="w-4 h-4 text-purple-500" /> Average
                 </span>
                 <span className="text-2xl font-black text-purple-600 dark:text-purple-400">
                   {averageScore} <span className="text-xs font-medium text-slate-500">/ {assignment?.totalMarks || 100}</span>
@@ -328,7 +335,7 @@ export default function AssignmentSubmissionsPage({
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="শিক্ষার্থীর নাম, ইউজার আইডি অথবা ইমেইল দিয়ে খুঁজুন..."
+                  placeholder="Search student name or ID..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-purple-500 transition-colors"
@@ -346,7 +353,7 @@ export default function AssignmentSubmissionsPage({
                         : 'text-slate-500 hover:text-slate-700'
                     }`}
                   >
-                    সকল ({totalSubmissions})
+                    All ({totalSubmissions})
                   </button>
                   <button
                     onClick={() => setFilterMode('pending')}
@@ -356,7 +363,7 @@ export default function AssignmentSubmissionsPage({
                         : 'text-slate-500 hover:text-slate-700'
                     }`}
                   >
-                    বাকি ({pendingCount})
+                    Pending ({pendingCount})
                   </button>
                   <button
                     onClick={() => setFilterMode('evaluated')}
@@ -366,7 +373,7 @@ export default function AssignmentSubmissionsPage({
                         : 'text-slate-500 hover:text-slate-700'
                     }`}
                   >
-                    মূল্যায়িত ({evaluatedCount})
+                    Checked ({evaluatedCount})
                   </button>
                 </div>
               </div>
@@ -377,12 +384,12 @@ export default function AssignmentSubmissionsPage({
               {/* Left Column: Submissions Table / List */}
               <div className="lg:col-span-7 p-1 sm:p-5 rounded-[1.5rem] lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:shadow-sm">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">
-                  সাবমিশন তালিকা ({filteredSubmissions.length})
+                  Submissions ({filteredSubmissions.length})
                 </h3>
 
                 {filteredSubmissions.length === 0 ? (
                   <div className="text-center py-12 text-slate-400 text-xs font-semibold">
-                    কোনো শিক্ষার্থীর সাবমিশন পাওয়া যায়নি।
+                    No submissions found.
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -426,7 +433,7 @@ export default function AssignmentSubmissionsPage({
                             <div className="flex items-center gap-2">
                               {sub.isLate && (
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400">
-                                  লেইট
+                                  Late
                                 </span>
                               )}
                               <span
@@ -437,8 +444,8 @@ export default function AssignmentSubmissionsPage({
                                 }`}
                               >
                                 {sub.isEvaluated
-                                  ? `মূল্যায়িত (${sub.score}/${assignment?.totalMarks})`
-                                  : 'অপেক্ষমান'}
+                                  ? `Checked (${sub.score}/${assignment?.totalMarks})`
+                                  : 'Pending'}
                               </span>
                             </div>
                           </div>
@@ -455,7 +462,7 @@ export default function AssignmentSubmissionsPage({
                             </span>
                             {sub.fileUrl && (
                               <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold">
-                                <File className="w-3 h-3" /> ফাইল সংযুক্ত
+                                <File className="w-3 h-3" /> File attached
                               </span>
                             )}
                           </div>
@@ -483,7 +490,7 @@ export default function AssignmentSubmissionsPage({
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">রিভিউ</p>
+                        <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">Review</p>
                         <h3 className="text-sm font-black text-slate-900 dark:text-white truncate">
                           {selectedSub.studentId?.name}
                         </h3>
@@ -495,14 +502,14 @@ export default function AssignmentSubmissionsPage({
                             : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
                         }`}
                       >
-                        {selectedSub.isEvaluated ? 'মূল্যায়িত' : 'অমূল্যায়িত'}
+                        {selectedSub.isEvaluated ? 'Checked' : 'Pending'}
                       </span>
                     </div>
 
                     {/* Student Written Text Note (Rendered with HTML / Rich formatting) */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 uppercase tracking-wider">
-                        উত্তর
+                        Answer
                       </label>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed max-h-60 overflow-y-auto">
                         {selectedSub.submissionText ? (
@@ -511,7 +518,7 @@ export default function AssignmentSubmissionsPage({
                             dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(selectedSub.submissionText) }}
                           />
                         ) : (
-                          <p className="text-slate-400 italic">কোনো লিখিত টেক্সট উত্তর উল্লেখ করা হয়নি।</p>
+                          <p className="text-slate-400 italic">No written answer added.</p>
                         )}
                       </div>
                     </div>
@@ -520,7 +527,7 @@ export default function AssignmentSubmissionsPage({
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                          খাতা / ডকুমেন্ট
+                          Script / File
                         </label>
                         {selectedSub.fileUrl && (
                           <button
@@ -529,7 +536,7 @@ export default function AssignmentSubmissionsPage({
                             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-black shadow-md shadow-rose-600/25 active:scale-95 transition-all cursor-pointer"
                           >
                             <PenTool className="w-3.5 h-3.5" />
-                            <span>দাগ দিন</span>
+                            <span>Annotate</span>
                           </button>
                         )}
                       </div>
@@ -539,7 +546,7 @@ export default function AssignmentSubmissionsPage({
                         <div className="mb-3 p-3.5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 text-xs font-bold text-rose-700 dark:text-rose-300 truncate">
                             <PenTool className="w-4 h-4 shrink-0 text-rose-600" />
-                            <span className="truncate">চেক করা খাতা</span>
+                            <span className="truncate">Checked script</span>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <button
@@ -548,14 +555,14 @@ export default function AssignmentSubmissionsPage({
                                 setPreviewDoc({
                                   isOpen: true,
                                   url: annotatedPreviewUrl || savedAnnotatedUrl,
-                                  title: 'শিক্ষকের মূল্যায়ন ও দাগানো খাতা (Annotated Script)',
+                                  title: 'Checked script (Annotated)',
                                   fileName: 'evaluated_script.png',
                                 })
                               }
                               className="text-xs text-rose-600 dark:text-rose-400 font-extrabold hover:underline flex items-center gap-1 cursor-pointer"
                             >
                               <Eye className="w-3.5 h-3.5" />
-                              <span>দেখুন</span>
+                              <span>View</span>
                             </button>
                             <button
                               type="button"
@@ -565,7 +572,7 @@ export default function AssignmentSubmissionsPage({
                                 setSavedAnnotatedUrl('');
                               }}
                               className="text-[11px] text-slate-400 hover:text-rose-600 ml-1 cursor-pointer"
-                              title="চেক করা খাতা রিসেট করুন"
+                              title="Reset checked script"
                             >
                               রিসেট
                             </button>
@@ -579,7 +586,7 @@ export default function AssignmentSubmissionsPage({
                             <span className="flex items-center gap-2.5 truncate">
                               <File className="w-4 h-4 shrink-0 text-blue-600" />
                               <span className="truncate">
-                                {selectedSub.fileName || 'শিক্ষার্থীর মূল ডকুমেন্ট / ফাইল (PDF/Image)'}
+                                {selectedSub.fileName || 'Student file (PDF/Image)'}
                               </span>
                             </span>
                             <button
@@ -588,28 +595,28 @@ export default function AssignmentSubmissionsPage({
                                 setPreviewDoc({
                                   isOpen: true,
                                   url: selectedSub.fileUrl!,
-                                  title: `${selectedSub.studentId?.name || 'শিক্ষার্থী'} - জমা দেওয়া ডকুমেন্ট`,
-                                  fileName: selectedSub.fileName || 'ডকুমেন্ট',
+                                  title: `${selectedSub.studentId?.name || 'Student'} - submission`,
+                                  fileName: selectedSub.fileName || 'Student file',
                                 })
                               }
                               className="inline-flex items-center gap-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shrink-0 ml-2 cursor-pointer transition-colors shadow-2xs"
                             >
                               <Eye className="w-3.5 h-3.5" />
-                              <span>দেখুন</span>
+                              <span>View</span>
                             </button>
                           </div>
 
                           {/* Live In-App Iframe Preview for Drive Documents / PDFs / Images */}
                           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950">
                             <div className="p-2 bg-slate-200 dark:bg-slate-800/80 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-between">
-                              <span>মূল খাতা</span>
+                              <span>Original script</span>
                               <button
                                 type="button"
                                 onClick={() => setShowAnnotator(true)}
                                 className="text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 text-[11px] font-bold cursor-pointer"
                               >
                                 <PenTool className="w-3 h-3" />
-                                <span>দাগ দিন</span>
+                                <span>Annotate</span>
                               </button>
                             </div>
                             <iframe
@@ -625,7 +632,7 @@ export default function AssignmentSubmissionsPage({
                         </div>
                       ) : (
                         <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 italic">
-                          কোনো ফাইল সংযুক্ত নেই
+                          No file attached
                         </div>
                       )}
                     </div>
@@ -635,7 +642,7 @@ export default function AssignmentSubmissionsPage({
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                            নম্বর *
+                            Marks *
                           </label>
                           <span className="text-[11px] font-semibold text-slate-500">
                             সর্বোচ্চ: {assignment?.totalMarks}
@@ -654,11 +661,11 @@ export default function AssignmentSubmissionsPage({
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                            মন্তব্য
+                            Feedback
                         </label>
                         <textarea
                           rows={3}
-                          placeholder="শিক্ষার্থীকে উন্নতির জন্য পরামর্শ বা উৎসাহমূলক মন্তব্য লিখুন..."
+                          placeholder="Write feedback for the student..."
                           value={gradeFeedback}
                           onChange={(e) => setGradeFeedback(e.target.value)}
                           className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-xs focus:ring-2 focus:ring-purple-500 outline-none"
@@ -668,7 +675,7 @@ export default function AssignmentSubmissionsPage({
                       {saveSuccess && (
                         <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
                           <Check className="w-4 h-4" />
-                          <span>নম্বর ও মূল্যায়ন সফলভাবে সংরক্ষিত হয়েছে!</span>
+                          <span>Marks and feedback saved!</span>
                         </div>
                       )}
 
@@ -678,7 +685,7 @@ export default function AssignmentSubmissionsPage({
                         className="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <FileCheck className="w-4 h-4" />
-                        <span>{savingGrade ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}</span>
+                        <span>{savingGrade ? 'Saving...' : 'Save'}</span>
                       </button>
                     </form>
                   </div>
@@ -686,10 +693,10 @@ export default function AssignmentSubmissionsPage({
                   <div className="rounded-[1.5rem] p-8 text-center flex flex-col items-center justify-center lg:bg-white lg:dark:bg-slate-900 lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:shadow-sm">
                     <FileCheck className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
                     <h4 className="text-sm font-bold text-slate-800 dark:text-white">
-                      কোনো সাবমিশন নির্বাচন করা হয়নি
+                      Select a submission
                     </h4>
                     <p className="text-xs text-slate-500 mt-1 max-w-xs">
-                      বামপাশের তালিকা থেকে যেকোনো শিক্ষার্থীর সাবমিশনে ক্লিক করুন বিস্তারিত পর্যালোচনা ও নম্বর দেওয়ার জন্য।
+                      Click a student submission to review and grade.
                     </p>
                   </div>
                 )}
