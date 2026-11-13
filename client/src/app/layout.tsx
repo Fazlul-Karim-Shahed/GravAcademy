@@ -5,6 +5,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { SiteSettingsProvider } from '@/context/SiteSettingsContext';
 import { Navbar } from '@/components/navigation/Navbar';
+import FeatureRouteGuard from '@/components/common/FeatureRouteGuard';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -41,7 +42,7 @@ export default function RootLayout({
           <SiteSettingsProvider>
             <AuthProvider>
               <Navbar />
-              <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+              <main className="min-h-[calc(100vh-4rem)]"><FeatureRouteGuard>{children}</FeatureRouteGuard></main>
             </AuthProvider>
           </SiteSettingsProvider>
         </ThemeProvider>

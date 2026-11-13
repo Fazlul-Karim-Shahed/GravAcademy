@@ -45,6 +45,7 @@ router.get('/classes/:idOrSlug', academicClassCtrl.getClassByIdOrSlug);
 router.post(
   '/classes',
   authenticate,
+  requireFeature(FEATURE_FLAGS.courses),
   requirePermission(PERMISSIONS.COURSES_CREATE),
   validateRequest(academicClassCtrl.createClassSchema),
   academicClassCtrl.createAcademicClass
@@ -52,6 +53,7 @@ router.post(
 router.put(
   '/classes/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.courses),
   requirePermission(PERMISSIONS.COURSES_UPDATE),
   validateRequest(academicClassCtrl.updateClassSchema),
   academicClassCtrl.updateAcademicClass
@@ -59,6 +61,7 @@ router.put(
 router.delete(
   '/classes/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.courses),
   requirePermission(PERMISSIONS.COURSES_DELETE),
   academicClassCtrl.deleteAcademicClass
 );
@@ -69,6 +72,7 @@ router.get('/courses/:id', courseCtrl.getCourseById);
 router.post(
   '/courses',
   authenticate,
+  requireFeature(FEATURE_FLAGS.courses),
   requirePermission(PERMISSIONS.COURSES_CREATE),
   validateRequest(courseCtrl.createCourseSchema),
   courseCtrl.createCourse
@@ -76,12 +80,14 @@ router.post(
 router.put(
   '/courses/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.courses),
   requirePermission(PERMISSIONS.COURSES_UPDATE),
   courseCtrl.updateCourse
 );
 router.delete(
   '/courses/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.courses),
   requirePermission(PERMISSIONS.COURSES_DELETE),
   courseCtrl.deleteCourse
 );
@@ -94,6 +100,7 @@ router.get('/batches/:batchId/hierarchy', batchCtrl.getBatchHierarchy);
 router.post(
   '/batches',
   authenticate,
+  requireFeature(FEATURE_FLAGS.batches),
   requirePermission(PERMISSIONS.BATCHES_MANAGE),
   validateRequest(batchCtrl.createBatchSchema),
   batchCtrl.createBatch
@@ -101,12 +108,14 @@ router.post(
 router.put(
   '/batches/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.batches),
   requirePermission(PERMISSIONS.BATCHES_MANAGE),
   batchCtrl.updateBatch
 );
 router.delete(
   '/batches/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.batches),
   requirePermission(PERMISSIONS.BATCHES_MANAGE),
   batchCtrl.deleteBatch
 );
@@ -132,6 +141,7 @@ router.get(
 router.post(
   '/enrollments/admin-admit',
   authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
   requirePermission(PERMISSIONS.ADMISSIONS_CREATE),
   validateRequest(enrollmentCtrl.adminAdmitStudentSchema),
   enrollmentCtrl.adminAdmitStudent
@@ -139,24 +149,28 @@ router.post(
 router.get(
   '/enrollments/admin-list',
   authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
   requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
   enrollmentCtrl.getAdminEnrollments
 );
 router.delete(
   '/enrollments/:enrollmentId',
   authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
   requirePermission(PERMISSIONS.ADMISSIONS_REMOVE),
   enrollmentCtrl.removeStudentFromBatch
 );
 router.post(
   '/enrollments/cancel',
   authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
   requirePermission(PERMISSIONS.ADMISSIONS_REMOVE),
   enrollmentCtrl.removeStudentFromBatch
 );
 router.post(
   '/enrollments/shift',
   authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
   requirePermission(PERMISSIONS.ADMISSIONS_SHIFT),
   enrollmentCtrl.shiftStudentBatch
 );
@@ -424,11 +438,12 @@ router.get('/batches/:batchId/marksheet', authenticate, marksheetCtrl.getBatchMa
 
 // --- LIVE CLASS & FREE PUBLIC CLASSES ROUTES ---
 router.get('/free-classes', liveCtrl.getFreePublicClasses);
-router.get('/live-classes', authenticate, liveCtrl.getLiveClasses);
-router.get('/live-classes/my', authenticate, liveCtrl.getStudentLiveClasses);
+router.get('/live-classes', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.getLiveClasses);
+router.get('/live-classes/my', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.getStudentLiveClasses);
 router.post(
   '/live-classes',
   authenticate,
+  requireFeature(FEATURE_FLAGS.liveClasses),
   requirePermission(PERMISSIONS.LIVE_CLASSES_MANAGE),
   validateRequest(liveCtrl.createLiveClassSchema),
   liveCtrl.createLiveClass
@@ -436,12 +451,14 @@ router.post(
 router.put(
   '/live-classes/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.liveClasses),
   requirePermission(PERMISSIONS.LIVE_CLASSES_MANAGE),
   liveCtrl.updateLiveClass
 );
 router.delete(
   '/live-classes/:id',
   authenticate,
+  requireFeature(FEATURE_FLAGS.liveClasses),
   requirePermission(PERMISSIONS.LIVE_CLASSES_MANAGE),
   liveCtrl.deleteLiveClass
 );
@@ -493,6 +510,7 @@ router.get('/guardian/overview', authenticate, guardianCtrl.getGuardianOverview)
 router.get(
   '/audit-logs',
   authenticate,
+  requireFeature(FEATURE_FLAGS.auditLogs),
   requirePermission(PERMISSIONS.AUDIT_LOGS_VIEW),
   userAdminCtrl.getAuditLogs
 );
