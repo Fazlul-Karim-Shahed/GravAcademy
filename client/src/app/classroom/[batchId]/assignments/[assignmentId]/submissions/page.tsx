@@ -467,7 +467,7 @@ export default function AssignmentSubmissionsPage({
                         {selectedSub.studentId?.name?.charAt(0) || 'শি'}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">সাবমিশন পর্যালোচনা</p>
+                        <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">রিভিউ</p>
                         <h3 className="text-sm font-black text-slate-900 dark:text-white truncate">
                           {selectedSub.studentId?.name}
                         </h3>
@@ -486,7 +486,7 @@ export default function AssignmentSubmissionsPage({
                     {/* Student Written Text Note (Rendered with HTML / Rich formatting) */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 uppercase tracking-wider">
-                        শিক্ষার্থীর টেক্সট উত্তর / সমাধান:
+                        উত্তর
                       </label>
                       <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed max-h-60 overflow-y-auto">
                         {selectedSub.submissionText ? (
@@ -503,8 +503,8 @@ export default function AssignmentSubmissionsPage({
                     {/* Attached File (Google Drive / Cloud Document) */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                          শিক্ষার্থীর আপলোডকৃত খাতা / ডকুমেন্ট:
+                          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                          খাতা / ডকুমেন্ট
                         </label>
                         {selectedSub.fileUrl && (
                           <button
@@ -513,7 +513,7 @@ export default function AssignmentSubmissionsPage({
                             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-black shadow-md shadow-rose-600/25 active:scale-95 transition-all cursor-pointer"
                           >
                             <PenTool className="w-3.5 h-3.5" />
-                            <span>খাতা মূল্যায়ন ও দাগ দিন (Annotate)</span>
+                            <span>দাগ দিন</span>
                           </button>
                         )}
                       </div>
@@ -523,7 +523,7 @@ export default function AssignmentSubmissionsPage({
                         <div className="mb-3 p-3.5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 text-xs font-bold text-rose-700 dark:text-rose-300 truncate">
                             <PenTool className="w-4 h-4 shrink-0 text-rose-600" />
-                            <span className="truncate">শিক্ষকের চেক করা খাতা প্রস্তুত আছে (Annotated Script)</span>
+                            <span className="truncate">চেক করা খাতা</span>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <button
@@ -579,21 +579,21 @@ export default function AssignmentSubmissionsPage({
                               className="inline-flex items-center gap-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shrink-0 ml-2 cursor-pointer transition-colors shadow-2xs"
                             >
                               <Eye className="w-3.5 h-3.5" />
-                              <span>ফুলস্ক্রিন প্রিভিউ</span>
+                              <span>দেখুন</span>
                             </button>
                           </div>
 
                           {/* Live In-App Iframe Preview for Drive Documents / PDFs / Images */}
                           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-slate-100 dark:bg-slate-950">
                             <div className="p-2 bg-slate-200 dark:bg-slate-800/80 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-between">
-                              <span>মূল ডকুমেন্ট প্রিভিউ (Original Script)</span>
+                              <span>মূল খাতা</span>
                               <button
                                 type="button"
                                 onClick={() => setShowAnnotator(true)}
                                 className="text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 text-[11px] font-bold cursor-pointer"
                               >
                                 <PenTool className="w-3 h-3" />
-                                <span>এই ডকুমেন্টে দাগিয়ে মূল্যায়ন করুন</span>
+                                <span>দাগ দিন</span>
                               </button>
                             </div>
                             <iframe
@@ -609,7 +609,7 @@ export default function AssignmentSubmissionsPage({
                         </div>
                       ) : (
                         <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 italic">
-                          শিক্ষার্থী আলাদা কোনো ড্রাইভ ফাইল সংযুক্ত করেনি (শুধুমাত্র টেক্সট উত্তর জমা দিয়েছে)।
+                          কোনো ফাইল সংযুক্ত নেই
                         </div>
                       )}
                     </div>
@@ -619,7 +619,7 @@ export default function AssignmentSubmissionsPage({
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                            প্রদত্ত নম্বর (Marks) *
+                            নম্বর *
                           </label>
                           <span className="text-[11px] font-semibold text-slate-500">
                             সর্বোচ্চ: {assignment?.totalMarks}
@@ -638,7 +638,7 @@ export default function AssignmentSubmissionsPage({
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                          শিক্ষকের মন্তব্য ও দিকনির্দেশনা (Feedback)
+                            মন্তব্য
                         </label>
                         <textarea
                           rows={3}
@@ -662,7 +662,7 @@ export default function AssignmentSubmissionsPage({
                         className="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <FileCheck className="w-4 h-4" />
-                        <span>{savingGrade ? 'সংরক্ষণ হচ্ছে...' : 'মূল্যায়ন ও গ্রেড নিশ্চিত করুন'}</span>
+                        <span>{savingGrade ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}</span>
                       </button>
                     </form>
                   </div>
