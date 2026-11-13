@@ -94,9 +94,6 @@ export default function StudentDashboard() {
                 </div>
               )}
 
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
-                আপনার ক্লাস রুটিন অনুযায়ী সময়মতো সরাসরি লাইভ ক্লাসরুমে প্রবেশ করুন এবং পাঠ্যক্রমের স্টাডি ম্যাটেরিয়াল রিভিশন করুন।
-              </p>
             </div>
 
             {/* Right section: User ID (large screen) + Quick Actions */}
