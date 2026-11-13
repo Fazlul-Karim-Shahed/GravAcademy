@@ -32,6 +32,7 @@ import {
   Download
 } from 'lucide-react';
 import TextEditor from '@/components/ui/TextEditor';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 
 interface Resource {
   _id?: string;
@@ -1163,7 +1164,18 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   </div>
 
                   {/* Upload input button */}
-                  <label className="flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+                  <FileUploadField
+                    label="Lesson materials"
+                    selectedFile={pendingLessonFiles[0] || null}
+                    selectedFiles={pendingLessonFiles}
+                    multiple
+                    onFileChange={(file) => setPendingLessonFiles(file ? [file] : [])}
+                    onFilesChange={setPendingLessonFiles}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    maxSizeMb={25}
+                    disabled={uploadingFile || submitting}
+                  />
+                  <label className="hidden flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
                     {uploadingFile ? (
                       <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                     ) : (
@@ -1320,7 +1332,18 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   </label>
 
                   {/* Upload input button */}
-                  <label className="flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+                  <FileUploadField
+                    label="Lesson materials"
+                    selectedFile={pendingEditLessonFiles[0] || null}
+                    selectedFiles={pendingEditLessonFiles}
+                    multiple
+                    onFileChange={(file) => setPendingEditLessonFiles(file ? [file] : [])}
+                    onFilesChange={setPendingEditLessonFiles}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    maxSizeMb={25}
+                    disabled={uploadingFile || submitting}
+                  />
+                  <label className="hidden flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
                     {uploadingFile ? (
                       <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                     ) : (

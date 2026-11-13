@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useId } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import { formatBDDate } from '@/lib/dateUtils';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -1667,8 +1668,16 @@ export default function AdminFinancePage() {
                     className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                   />
 
+                  <FileUploadField
+                    label="Payment document"
+                    selectedFile={selectedCollectDoc}
+                    onFileChange={(file) => { setSelectedCollectDoc(file); if (file) setCollectDocUrl(''); }}
+                    accept="image/*,.pdf,.doc,.docx"
+                    maxSizeMb={20}
+                    disabled={uploadingCollectDoc}
+                  />
                   <label
-                    className={`shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                    className={`hidden shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                       uploadingCollectDoc
                         ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                         : 'bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import {
   User,
@@ -87,6 +88,16 @@ export default function ProfileEditPage() {
     setSelectedAvatarFile(file);
     setAvatarUrl(URL.createObjectURL(file));
     setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। প্রোফাইল সেভ করলে ছবিটি আপলোড হবে।` });
+  };
+
+  const handleSelectedAvatarFileChange = (file: File | null) => {
+    if (!file) {
+      setSelectedAvatarFile(null);
+      return;
+    }
+    setSelectedAvatarFile(file);
+    setAvatarUrl(URL.createObjectURL(file));
+    setMessage({ type: 'success', text: `"${file.name}" selected. Save profile to upload it.` });
   };
 
   const uploadSelectedAvatar = async () => {
@@ -324,8 +335,16 @@ export default function ProfileEditPage() {
               <div className="flex-1 space-y-3.5">
                 {/* Upload from device to Drive */}
                 <div>
+                  <FileUploadField
+                    label="Profile photo"
+                    selectedFile={selectedAvatarFile}
+                    onFileChange={handleSelectedAvatarFileChange}
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    maxSizeMb={10}
+                    disabled={uploadingAvatar}
+                  />
                   <div className="flex items-center gap-3">
-                    <label className="px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 text-xs font-bold cursor-pointer transition-colors inline-flex items-center gap-2">
+                    <label className="hidden px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 text-xs font-bold cursor-pointer transition-colors inline-flex items-center gap-2">
                       {uploadingAvatar ? (
                         <>
                           <RefreshCw className="w-3.5 h-3.5 animate-spin" />

@@ -15,6 +15,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import TextEditor from '@/components/ui/TextEditor';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 
 interface Resource {
   title: string;
@@ -262,7 +263,18 @@ export default function EditLessonPage({
                 সংযুক্ত লেকচার শিট ও ফাইল (PDF / Document / Image)
               </label>
 
-              <label className="flex items-center justify-center gap-2.5 p-5 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
+              <FileUploadField
+                label="Lesson materials"
+                selectedFile={pendingFiles[0] || null}
+                selectedFiles={pendingFiles}
+                multiple
+                onFileChange={(file) => setPendingFiles(file ? [file] : [])}
+                onFilesChange={setPendingFiles}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                maxSizeMb={25}
+                disabled={uploadingFile || submitting}
+              />
+              <label className="hidden flex items-center justify-center gap-2.5 p-5 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
                 {uploadingFile ? (
                   <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
                 ) : (

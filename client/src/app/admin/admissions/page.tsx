@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useId } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { FileUploadField } from '@/components/ui/FileUploadField';
 import { useAuth } from '@/context/AuthContext';
 import {
   UserPlus,
@@ -1016,8 +1017,16 @@ export default function AdminAdmissionsPage() {
                         />
 
                         {/* File Upload Button */}
+                        <FileUploadField
+                          label="Payment document"
+                          selectedFile={selectedDocumentFile}
+                          onFileChange={(file) => { setSelectedDocumentFile(file); if (file) setDocumentUrl(''); }}
+                          accept="image/*,.pdf,.doc,.docx"
+                          maxSizeMb={20}
+                          disabled={uploadingDoc}
+                        />
                         <label
-                          className={`relative shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                          className={`hidden relative shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                             uploadingDoc
                               ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                               : 'bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'

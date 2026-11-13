@@ -6,6 +6,9 @@ import { CheckCircle2, Eye, UploadCloud, X } from 'lucide-react';
 interface FileUploadFieldProps {
   selectedFile: File | null;
   onFileChange: (file: File | null) => void;
+  multiple?: boolean;
+  selectedFiles?: File[];
+  onFilesChange?: (files: File[]) => void;
   onError?: (message: string) => void;
   existingUrl?: string;
   existingFileName?: string;
@@ -23,6 +26,9 @@ interface FileUploadFieldProps {
 export const FileUploadField: React.FC<FileUploadFieldProps> = ({
   selectedFile,
   onFileChange,
+  multiple = false,
+  selectedFiles = [],
+  onFilesChange,
   onError,
   existingUrl = '',
   existingFileName = '',
@@ -40,23 +46,30 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    if (!file) return;
-    if (file.size > maxSizeMb * 1024 * 1024) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    const oversized = files.find((file) => file.size > maxSizeMb * 1024 * 1024);
+    if (oversized) {
       const message = `File size must be ${maxSizeMb} MB or less.`;
       setErrorMessage(message);
       onError?.(message);
       onFileChange(null);
+      onFilesChange?.(selectedFiles);
       event.target.value = '';
       return;
     }
     setErrorMessage('');
-    onFileChange(file);
+    if (multiple && onFilesChange) {
+      onFilesChange([...selectedFiles, ...files]);
+    } else {
+      onFileChange(files[0]);
+    }
   };
 
   const removeSelected = () => {
     setErrorMessage('');
     onFileChange(null);
+    onFilesChange?.([]);
     if (inputRef.current) inputRef.current.value = '';
   };
 
@@ -73,6 +86,7 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
             <input
               ref={inputRef}
               type="file"
+              multiple={multiple}
               accept={accept}
               onChange={handleChange}
               disabled={disabled}
@@ -94,7 +108,21 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
           )}
         </div>
 
-        {selectedFile ? (
+        {multiple && selectedFiles.length > 0 ? (
+          <div className="mt-3 space-y-2">
+            {selectedFiles.map((file, index) => (
+              <div key={`${file.name}-${file.lastModified}-${index}`} className="flex min-w-0 items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
+                <span className="min-w-0 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{file.name} ({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                </span>
+                <button type="button" onClick={() => onFilesChange?.(selectedFiles.filter((_, itemIndex) => itemIndex !== index))} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold inline-flex items-center gap-1">
+                  <X className="w-3.5 h-3.5" /> Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : selectedFile ? (
           <div className="mt-3 flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
             <span className="min-w-0 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
