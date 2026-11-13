@@ -115,7 +115,7 @@ export default function DailyScheduleView({
   const currentDayLabel = `${data.dayLabels[activeTab]?.bn} এর ক্লাস`;
 
   return (
-    <div className={`relative overflow-hidden mb-8 ${cardless ? 'p-0 bg-transparent border-0 shadow-none' : 'bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-7 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl'}`}>
+    <div className={`relative min-w-0 max-w-full overflow-hidden mb-8 ${cardless ? 'p-0 bg-transparent border-0 shadow-none' : 'bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-7 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl'}`}>
       {/* Decorative lighting is intentionally omitted in cardless mode. */}
       {!cardless && <>
         <div className="absolute top-0 right-1/4 w-80 h-36 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
