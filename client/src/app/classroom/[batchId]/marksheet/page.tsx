@@ -178,19 +178,12 @@ export default function MarksheetPage({
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Link>
-                <span className="text-xs font-bold text-slate-200 bg-white/10 px-3 py-1 rounded-full border border-white/20">
-                  মার্কশিট
-                </span>
                 {isStaff ? (
                   <span className="text-xs font-bold text-purple-300 bg-purple-950/60 border border-purple-500/40 px-3 py-1 rounded-full flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>সব শিক্ষার্থী</span>
                   </span>
-                ) : (
-                  <span className="text-xs font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full">
-                    ব্যক্তিগত ফলাফল
-                  </span>
-                )}
+                ) : null}
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight pt-1">
