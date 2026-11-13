@@ -4,7 +4,6 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import { sanitizeRichHtml } from '@/lib/sanitizeHtml';
 import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import ComingSoonCard from '@/components/common/ComingSoonCard';
@@ -456,13 +455,6 @@ export default function AssignmentRoomPage({
                     <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-2 mb-2">
                       {assignment.title}
                     </h3>
-                    {assignment.description && (
-                      <div
-                        className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed prose prose-xs dark:prose-invert max-w-none"
-                        dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(assignment.description) }}
-                      />
-                    )}
-
                     <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400">
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-1 text-slate-500">
