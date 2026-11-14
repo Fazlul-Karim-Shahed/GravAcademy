@@ -213,6 +213,9 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           .receipt-print-root .mt-8 {
             margin-top: 12px !important;
           }
+          .receipt-print-root .mt-20 {
+            margin-top: 24px !important;
+          }
           .receipt-print-root table th,
           .receipt-print-root table td {
             padding-top: 6px !important;
@@ -488,7 +491,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           </div>
 
           {/* Signature / Footer */}
-          <div className="pt-8 border-t border-slate-200 dark:border-slate-800 print:border-slate-400 flex items-end justify-between text-xs text-slate-500 print:text-black">
+          <div className="mt-20 pt-8 border-t border-slate-200 dark:border-slate-800 print:border-slate-400 flex items-end justify-between text-xs text-slate-500 print:text-black">
             <div>
               <p>আদায়কারী: {data.collectedBy?.name || 'অফিস অ্যাডমিন'}</p>
               <p className="text-[10px] text-slate-400 print:text-slate-600 mt-0.5">
