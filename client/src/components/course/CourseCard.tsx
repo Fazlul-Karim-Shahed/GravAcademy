@@ -60,7 +60,11 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
           />
         ) : (
           <div className="relative h-full w-full overflow-hidden bg-[#0b1732]">
-            <img src="/course-default-cloud.svg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute -left-10 -top-14 h-44 w-72 rounded-full bg-indigo-500/70 blur-3xl" />
+            <div className="absolute left-[28%] -top-10 h-36 w-56 rounded-full bg-violet-400/50 blur-3xl" />
+            <div className="absolute -right-12 top-0 h-36 w-64 rounded-full bg-sky-400/45 blur-3xl" />
+            <div className="absolute bottom-[-45%] left-[-10%] h-40 w-[120%] rounded-[50%] bg-[#071126] blur-xl" />
+            <div className="absolute inset-0 bg-gradient-to-b from-indigo-400/15 via-violet-400/10 to-[#071226]/90" />
             <div className="relative flex h-full flex-col items-center justify-center px-3 text-center">
               <span className="rounded-sm bg-[#12366d] px-2 py-1 text-[clamp(10px,2vw,15px)] font-black leading-[1.05] tracking-wide text-amber-300 shadow-md">
                 {getProgramLabel(course.gradeLevel).split(' ').map((word) => <span key={word} className="block">{word}</span>)}
