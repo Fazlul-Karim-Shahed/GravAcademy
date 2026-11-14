@@ -149,7 +149,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
         @media print {
           @page {
             size: A4 portrait;
-            margin: 12mm 15mm;
+            margin: 8mm 10mm;
           }
           html, body {
             background: #ffffff !important;
@@ -168,9 +168,30 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           .receipt-print-root {
             position: static !important;
             display: block !important;
-            width: 100% !important;
+            width: 138% !important;
             min-height: 0 !important;
             background: #ffffff !important;
+            zoom: 0.72;
+          }
+          .receipt-print-root > div {
+            max-height: none !important;
+            overflow: visible !important;
+          }
+          .receipt-print-root > div > div:last-child {
+            padding: 14px !important;
+            gap: 10px !important;
+          }
+          .receipt-print-root table th,
+          .receipt-print-root table td {
+            padding-top: 6px !important;
+            padding-bottom: 6px !important;
+          }
+          .receipt-print-root h1 {
+            font-size: 20px !important;
+          }
+          .receipt-print-root h3,
+          .receipt-print-root h4 {
+            margin-top: 2px !important;
           }
           .print\\:hidden {
             display: none !important;
