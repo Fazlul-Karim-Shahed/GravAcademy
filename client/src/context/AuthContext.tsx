@@ -58,16 +58,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const restoreSession = async () => {
     const savedToken = Cookies.get('grav_token') || (typeof window !== 'undefined' ? localStorage.getItem('grav_token') : null);
     const savedUser = Cookies.get('grav_user') || (typeof window !== 'undefined' ? localStorage.getItem('grav_user') : null);
 
     if (savedToken && savedUser) {
       try {
         setToken(savedToken);
-        setUser(JSON.parse(savedUser));
+        const parsedUser = JSON.parse(savedUser) as User;
+        setUser(parsedUser);
         // Ensure both cookies and localStorage are synced
         Cookies.set('grav_token', savedToken, { expires: 7, sameSite: 'lax' });
         Cookies.set('grav_user', savedUser, { expires: 7, sameSite: 'lax' });
+
+        // Login responses intentionally stay small, so refresh the profile here.
+        // This keeps role-specific fields (for example studentDetails) current
+        // after a refresh and lets forms safely prefill registered users.
+        try {
+          const meResponse = await api.get('/auth/me');
+          const freshUser = meResponse.data?.data?.user as User | undefined;
+          if (freshUser) {
+            setUser(freshUser);
+            const serializedUser = JSON.stringify(freshUser);
+            Cookies.set('grav_user', serializedUser, { expires: 7, sameSite: 'lax' });
+            localStorage.setItem('grav_user', serializedUser);
+          }
+        } catch {
+          // Keep the cached user if a temporary profile refresh fails.
+        }
       } catch (e) {
         Cookies.remove('grav_token');
         Cookies.remove('grav_user');
@@ -78,6 +96,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     setLoading(false);
+    };
+
+    void restoreSession();
   }, []);
 
   const login = (newToken: string, newUser: User) => {
@@ -89,6 +110,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     setToken(newToken);
     setUser(newUser);
+
+    // Fetch the complete profile after login as well. The login payload is
+    // intentionally compact and may not include student-specific fields.
+    void api.get('/auth/me').then((response) => {
+      const freshUser = response.data?.data?.user as User | undefined;
+      if (!freshUser) return;
+      setUser(freshUser);
+      const serializedUser = JSON.stringify(freshUser);
+      Cookies.set('grav_user', serializedUser, { expires: 7, sameSite: 'lax' });
+      if (typeof window !== 'undefined') localStorage.setItem('grav_user', serializedUser);
+    }).catch(() => {
+      // The compact login user remains usable if profile refresh is unavailable.
+    });
   };
 
   const logout = () => {

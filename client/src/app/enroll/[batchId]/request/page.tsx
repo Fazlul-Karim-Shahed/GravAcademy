@@ -30,7 +30,16 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
         const res = await api.get(`/batches/${resolvedParams.batchId}`);
         const loaded = res.data?.data || res.data?.batch || res.data;
         setBatch(loaded);
-        setForm((prev) => ({ ...prev, gradeLevel: loaded?.courseId?.gradeLevel || '' }));
+        setForm((prev) => ({
+          ...prev,
+          name: user?.role === 'student' ? user.name || prev.name : prev.name,
+          phone: user?.role === 'student' ? user.phone || prev.phone : prev.phone,
+          email: user?.role === 'student' ? user.email || prev.email : prev.email,
+          schoolOrCollege: user?.role === 'student' ? user.studentDetails?.schoolOrCollege || prev.schoolOrCollege : prev.schoolOrCollege,
+          gradeLevel: loaded?.courseId?.gradeLevel || '',
+          guardianName: user?.role === 'student' ? user.studentDetails?.guardianName || prev.guardianName : prev.guardianName,
+          guardianPhone: user?.role === 'student' ? user.studentDetails?.guardianPhone || prev.guardianPhone : prev.guardianPhone,
+        }));
       } catch (err: any) {
         setError(err.response?.data?.message || 'ব্যাচের তথ্য লোড করা যায়নি।');
       } finally {
@@ -38,7 +47,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
       }
     };
     loadBatch();
-  }, [resolvedParams.batchId]);
+  }, [resolvedParams.batchId, user]);
 
   const update = (key: keyof typeof form, value: string) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -99,7 +108,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
                 <Field label="নাম *" icon={<UserRound className="w-4 h-4" />} value={form.name} onChange={(v) => update('name', v)} required />
                 <Field label="মোবাইল *" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} required type="tel" />
                 <Field label="ইমেইল" icon={<Mail className="w-4 h-4" />} value={form.email} onChange={(v) => update('email', v)} type="email" />
-                <Field label="শ্রেণি" value={form.gradeLevel} onChange={(v) => update('gradeLevel', v)} />
+                <Field label="শ্রেণি (fixed)" value={form.gradeLevel} onChange={() => {}} readOnly />
                 <Field label="স্কুল / কলেজ" value={form.schoolOrCollege} onChange={(v) => update('schoolOrCollege', v)} />
                 <Field label="অভিভাবকের নাম" value={form.guardianName} onChange={(v) => update('guardianName', v)} />
                 <Field label="অভিভাবকের মোবাইল" value={form.guardianPhone} onChange={(v) => update('guardianPhone', v)} type="tel" />
@@ -114,8 +123,8 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
   );
 }
 
-function Field({ label, value, onChange, icon, required, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; icon?: React.ReactNode; required?: boolean; type?: string }) {
-  return <label className="block"><span className="text-xs font-bold text-slate-600 dark:text-slate-300">{label}</span><span className="relative block mt-1.5">{icon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>}<input required={required} type={type} value={value} onChange={(e) => onChange(e.target.value)} className={`w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-950 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-colors ${icon ? 'pl-10' : ''}`} /></span></label>;
+function Field({ label, value, onChange, icon, required, type = 'text', readOnly }: { label: string; value: string; onChange: (value: string) => void; icon?: React.ReactNode; required?: boolean; type?: string; readOnly?: boolean }) {
+  return <label className="block"><span className="text-xs font-bold text-slate-600 dark:text-slate-300">{label}</span><span className="relative block mt-1.5">{icon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span>}<input required={required} readOnly={readOnly} type={type} value={value} onChange={(e) => onChange(e.target.value)} className={`w-full rounded-2xl border border-slate-200 dark:border-slate-700 ${readOnly ? 'bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 cursor-not-allowed' : 'bg-slate-50/70 dark:bg-slate-950'} px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-colors ${icon ? 'pl-10' : ''}`} /></span></label>;
 }
 
 export default function EnrollmentRequestPage({ params }: { params: Promise<{ batchId: string }> }) {

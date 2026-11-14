@@ -169,6 +169,10 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
     const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject courseFee regularPrice discountPrice');
     if (!batch) return res.status(404).json({ success: false, message: 'ব্যাচটি পাওয়া যায়নি।' });
     if (batch.status === 'archived') return res.status(400).json({ success: false, message: 'এই ব্যাচে নতুন ভর্তি বন্ধ আছে।' });
+    const fixedGradeLevel = String((batch.courseId as any)?.gradeLevel || '').trim();
+    if (fixedGradeLevel && gradeLevel?.trim() && gradeLevel.trim() !== fixedGradeLevel) {
+      return res.status(400).json({ success: false, message: 'এই batch-এর নির্ধারিত শ্রেণি পরিবর্তন করা যাবে না।' });
+    }
 
     const contactFilters = [
       ...(email?.trim() ? [{ email: email.trim().toLowerCase() }] : []),
@@ -220,7 +224,7 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       phone: phone?.trim() || undefined,
       email: email?.trim().toLowerCase() || undefined,
       schoolOrCollege: schoolOrCollege?.trim() || undefined,
-      gradeLevel: gradeLevel?.trim() || undefined,
+      gradeLevel: fixedGradeLevel || gradeLevel?.trim() || undefined,
       guardianName: guardianName?.trim() || undefined,
       guardianPhone: guardianPhone?.trim() || undefined,
       message: message?.trim() || undefined,
