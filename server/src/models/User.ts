@@ -3,7 +3,10 @@ import { ROLES, UserRole, PermissionKey } from '../types/roles';
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
-  userId: string; // e.g. 261024001 (DDMMYY + 3 digit serial)
+  /** Public Grav ID, e.g. 261024001 (DDMMYY + 3 digit serial). */
+  gravId: string;
+  /** @deprecated Compatibility alias for older application code; not stored in MongoDB. */
+  userId: string;
   name: string;
   email?: string;
   passwordHash: string;
@@ -44,7 +47,7 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
-    userId: {
+    gravId: {
       type: String,
       unique: true,
       sparse: true,
@@ -126,11 +129,46 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
+);
+
+// Keep old server call-sites readable during the migration while MongoDB stores
+// only the canonical `gravId` field. Queries and writes using the legacy key
+// are translated before they reach MongoDB.
+UserSchema.virtual('userId')
+  .get(function () {
+    return this.gravId;
+  })
+  .set(function (value: string) {
+    this.gravId = value;
+  });
+
+const rewriteLegacyId = (value: any): any => {
+  if (Array.isArray(value)) return value.map(rewriteLegacyId);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [
+      key === 'userId' ? 'gravId' : key,
+      rewriteLegacyId(child),
+    ]),
+  );
+};
+
+UserSchema.pre(
+  ['find', 'findOne', 'findOneAndUpdate', 'updateOne', 'updateMany', 'deleteOne', 'countDocuments'],
+  function () {
+    this.setQuery(rewriteLegacyId(this.getQuery()));
+    const update = this.getUpdate();
+    if (update) this.setUpdate(rewriteLegacyId(update));
+    const projection = this.projection();
+    if (projection) this.select(rewriteLegacyId(projection));
+  },
 );
 
 // Compound indexes for user search and queries
 UserSchema.index({ role: 1, status: 1 });
-UserSchema.index({ name: 'text', email: 'text', userId: 'text' });
+UserSchema.index({ name: 'text', email: 'text', gravId: 'text' });
 
 export const User = mongoose.model<IUser>('User', UserSchema);

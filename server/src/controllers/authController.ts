@@ -55,11 +55,11 @@ export const generateUniqueUserId = async (): Promise<string> => {
 
   // Find users created with this prefix to determine next sequence number
   const regex = new RegExp(`^${prefix}(\\d{3})$`);
-  const todaysUsers = await User.find({ userId: regex }).select('userId').sort({ userId: -1 }).limit(1);
+  const todaysUsers = await User.find({ gravId: regex }).select('gravId').sort({ gravId: -1 }).limit(1);
 
   let nextSeq = 1;
-  if (todaysUsers.length > 0 && todaysUsers[0].userId) {
-    const lastSeqStr = todaysUsers[0].userId.slice(-3);
+  if (todaysUsers.length > 0 && todaysUsers[0].gravId) {
+    const lastSeqStr = todaysUsers[0].gravId.slice(-3);
     const lastSeqNum = parseInt(lastSeqStr, 10);
     if (!isNaN(lastSeqNum)) {
       nextSeq = lastSeqNum + 1;
@@ -69,7 +69,7 @@ export const generateUniqueUserId = async (): Promise<string> => {
   let candidateId = `${prefix}${String(nextSeq).padStart(3, '0')}`;
   // Ensure uniqueness in case of race condition
   let attempts = 0;
-  while (await User.exists({ userId: candidateId })) {
+  while (await User.exists({ gravId: candidateId })) {
     nextSeq++;
     candidateId = `${prefix}${String(nextSeq).padStart(3, '0')}`;
     attempts++;
@@ -94,7 +94,7 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Generate unique Grav ID (e.g. 261024001)
-    const userId = await generateUniqueUserId();
+    const gravId = await generateUniqueUserId();
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
@@ -102,7 +102,7 @@ export const register = async (req: Request, res: Response) => {
 
     // SECURITY PRINCIPLE: All public signups are assigned the STUDENT role by default.
     const user = await User.create({
-      userId,
+      gravId,
       name: name.trim(),
       email: email && email.trim() ? email.trim().toLowerCase() : undefined,
       passwordHash,
@@ -116,7 +116,7 @@ export const register = async (req: Request, res: Response) => {
 
     await AuditLog.create({
       actorId: user._id,
-      actorEmail: user.email || user.userId,
+      actorEmail: user.email || user.gravId,
       action: 'USER_REGISTER',
       resourceType: 'User',
       resourceId: user._id.toString(),
@@ -131,7 +131,7 @@ export const register = async (req: Request, res: Response) => {
         token,
         user: {
           id: user._id,
-          userId: user.userId,
+          gravId: user.gravId,
           name: user.name,
           email: user.email,
           phone: user.phone,
@@ -160,10 +160,10 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    // Search by either unique userId OR email
+    // Search by either unique Grav ID or email
     const user = await User.findOne({
       $or: [
-        { userId: loginQuery },
+        { gravId: loginQuery },
         { email: loginQuery.toLowerCase() },
       ],
     }).select('+passwordHash');
@@ -194,7 +194,7 @@ export const login = async (req: Request, res: Response) => {
 
     await AuditLog.create({
       actorId: user._id,
-      actorEmail: user.email || user.userId,
+      actorEmail: user.email || user.gravId,
       action: 'USER_LOGIN',
       resourceType: 'User',
       resourceId: user._id.toString(),
@@ -209,7 +209,7 @@ export const login = async (req: Request, res: Response) => {
         token,
         user: {
           id: user._id,
-          userId: user.userId,
+          gravId: user.gravId,
           name: user.name,
           email: user.email,
           phone: user.phone,
@@ -306,7 +306,7 @@ export const resetPassword = async (req: Request, res: Response) => {
 
     await AuditLog.create({
       actorId: user._id,
-      actorEmail: user.email || user.userId,
+      actorEmail: user.email || user.gravId,
       action: 'PASSWORD_RESET',
       resourceType: 'User',
       resourceId: user._id.toString(),
@@ -340,7 +340,7 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
       data: {
         user: {
           id: user._id,
-          userId: user.userId,
+          gravId: user.gravId,
           name: user.name,
           email: user.email,
           phone: user.phone,
@@ -461,7 +461,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
 export const getPublicTeachers = async (_req: any, res: Response) => {
   try {
     const teachers = await User.find({ role: 'teacher', status: 'active' })
-      .select('name userId avatarUrl bio teacherDetails createdAt')
+      .select('name gravId avatarUrl bio teacherDetails createdAt')
       .sort({ createdAt: -1 })
       .limit(12);
 
@@ -497,7 +497,7 @@ export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => 
       });
     }
 
-    const sanitizedName = `avatar_${req.user.userId || req.user._id}_${Date.now()}.${file.mimetype.split('/')[1] || 'jpg'}`;
+    const sanitizedName = `avatar_${req.user.gravId || req.user._id}_${Date.now()}.${file.mimetype.split('/')[1] || 'jpg'}`;
 
     let driveFileId = '';
     const isDriveConfigured =
