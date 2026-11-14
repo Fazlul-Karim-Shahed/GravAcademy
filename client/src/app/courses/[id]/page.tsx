@@ -76,6 +76,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [enrolledBatchIds, setEnrolledBatchIds] = useState<string[]>([]);
+  const [pendingRequestBatchIds, setPendingRequestBatchIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Enrollment Modal state
@@ -116,11 +117,20 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             if (enrollRes.data?.success) {
               setEnrolledBatchIds(enrollRes.data.enrolledBatchIds || []);
             }
+            const requestRes = await api.get('/enrollment-requests/my');
+            if (requestRes.data?.success) {
+              setPendingRequestBatchIds(
+                (requestRes.data.data || [])
+                  .filter((request: any) => request.status === 'pending')
+                  .map((request: any) => request.batchId?._id || request.batchId)
+              );
+            }
           } catch (statusErr) {
             console.warn('Enrollment status check failed:', statusErr);
           }
         } else {
           setEnrolledBatchIds([]);
+          setPendingRequestBatchIds([]);
         }
       }
     } catch (err) {
@@ -138,10 +148,8 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       return;
     }
 
-    // Open confirmation modal
-    setSelectedBatchForEnroll(batch);
-    setEnrollSuccessMessage('');
-    setEnrollErrorMessage('');
+    // Collect a short application before any enrollment is created.
+    router.push(`/enroll/${batch._id}/request`);
   };
 
   const handleConfirmEnrollment = async () => {
@@ -626,6 +634,11 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                                 <span>ক্লাসরুমে প্রবেশ করুন</span>
                                 <ArrowRight className="w-4 h-4" />
                               </Link>
+                            ) : pendingRequestBatchIds.includes(batch._id) ? (
+                              <button type="button" disabled className="w-full py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs sm:text-sm font-extrabold border border-amber-200 dark:border-amber-800 flex items-center justify-center gap-2 cursor-not-allowed">
+                                <Clock className="w-4 h-4" />
+                                <span>Request pending</span>
+                              </button>
                             ) : (
                               <button
                                 type="button"

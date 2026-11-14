@@ -137,7 +137,48 @@ router.get(
   authenticate,
   enrollmentCtrl.getMyBatches
 );
+router.post(
+  '/enrollment-requests',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
+  validateRequest(enrollmentCtrl.createEnrollmentRequestSchema),
+  enrollmentCtrl.createEnrollmentRequest
+);
+router.get(
+  '/enrollment-requests/my',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
+  enrollmentCtrl.getMyEnrollmentRequests
+);
 // Admin Admission & Enrollment Routes
+router.get(
+  '/enrollment-requests/admin',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
+  requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
+  enrollmentCtrl.getAdminEnrollmentRequests
+);
+router.get(
+  '/enrollment-requests/:requestId',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
+  requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
+  enrollmentCtrl.getEnrollmentRequestById
+);
+router.post(
+  '/enrollment-requests/:requestId/approve',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
+  requirePermission(PERMISSIONS.ADMISSIONS_CREATE),
+  enrollmentCtrl.approveEnrollmentRequest
+);
+router.post(
+  '/enrollment-requests/:requestId/reject',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.admissions),
+  requirePermission(PERMISSIONS.ADMISSIONS_CREATE),
+  enrollmentCtrl.rejectEnrollmentRequest
+);
 router.post(
   '/enrollments/admin-admit',
   authenticate,

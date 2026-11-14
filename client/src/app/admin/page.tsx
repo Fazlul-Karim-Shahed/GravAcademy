@@ -23,6 +23,7 @@ import {
   UserPlus,
   Briefcase,
   DollarSign,
+  Inbox,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
@@ -38,6 +39,7 @@ export default function AdminDashboardPage() {
     admissionsCount: 0,
     jobsCount: 0,
     financeTotal: 0,
+    pendingRequestsCount: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,7 @@ export default function AdminDashboardPage() {
   const loadOverview = async () => {
     setLoading(true);
     try {
-      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes, jobsRes, financeRes] = await Promise.all([
+      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes, jobsRes, financeRes, requestRes] = await Promise.all([
         api.get('/courses'),
         api.get('/batches'),
         api.get('/users').catch(() => ({ data: { count: 1 } })),
@@ -56,6 +58,7 @@ export default function AdminDashboardPage() {
         api.get('/enrollments/admin-list?limit=1').catch(() => ({ data: { total: 0 } })),
         api.get('/admin/jobs?limit=1').catch(() => ({ data: { total: 0 } })),
         api.get('/finance/admin-payments?limit=1').catch(() => ({ data: { summary: { totalRevenue: 0 } } })),
+        api.get('/enrollment-requests/admin?status=pending').catch(() => ({ data: { count: 0 } })),
       ]);
 
       setStats({
@@ -66,6 +69,7 @@ export default function AdminDashboardPage() {
         admissionsCount: enrollRes.data.total || 0,
         jobsCount: jobsRes.data.total || 0,
         financeTotal: financeRes.data.summary?.totalRevenue || 0,
+        pendingRequestsCount: requestRes.data.count || requestRes.data.data?.length || 0,
       });
     } catch (e) {
       console.error(e);
@@ -115,6 +119,18 @@ export default function AdminDashboardPage() {
         <div className="space-y-4 mb-10">
           {/* Row 1: 6 Core Modules */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+            <Link
+              href="/admin/admission-requests"
+              style={{ display: isFeatureEnabled('admissions', user?.role === 'superadmin') ? undefined : 'none' }}
+              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between"
+            >
+              <Inbox className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 transition-all duration-300 pointer-events-none" />
+              <div className="relative z-10 flex items-center justify-between mb-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-500 group-hover:text-white transition-colors"><Inbox className="w-4 h-4" /></div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+              </div>
+              <div className="relative z-10"><div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-none mb-1.5">{stats.pendingRequestsCount}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">ভর্তি Requests</div></div>
+            </Link>
             
             {/* Card 0: এডমিশন */}
             <Link

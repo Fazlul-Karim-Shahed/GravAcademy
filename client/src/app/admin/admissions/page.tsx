@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useId } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { FileUploadField } from '@/components/ui/FileUploadField';
 import { useAuth } from '@/context/AuthContext';
@@ -129,6 +130,8 @@ interface EnrollmentRecord {
 
 export default function AdminAdmissionsPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const requestId = searchParams.get('requestId');
 
   // Admission Mode: 'new' (default) vs 'existing'
   const [admissionMode, setAdmissionMode] = useState<'new' | 'existing'>('new');
@@ -229,6 +232,34 @@ export default function AdminAdmissionsPage() {
     fetchInitialData();
     fetchRecentAdmissions();
   }, []);
+
+  useEffect(() => {
+    if (!requestId) return;
+    const loadRequest = async () => {
+      try {
+        const res = await api.get(`/enrollment-requests/${requestId}`);
+        const request = res.data?.data;
+        if (!request) return;
+        setAdmissionMode('existing');
+        setSelectedExistingStudent(request.applicantUserId || null);
+        setStudentName(request.name || request.applicantUserId?.name || '');
+        setStudentPhone(request.phone || request.applicantUserId?.phone || '');
+        setStudentEmail(request.email || request.applicantUserId?.email || '');
+        setSchoolOrCollege(request.schoolOrCollege || request.applicantUserId?.studentDetails?.schoolOrCollege || '');
+        setGradeLevel(request.gradeLevel || request.applicantUserId?.studentDetails?.gradeLevel || '');
+        setGuardianName(request.guardianName || request.applicantUserId?.studentDetails?.guardianName || '');
+        setGuardianPhone(request.guardianPhone || request.applicantUserId?.studentDetails?.guardianPhone || '');
+        setNotes(request.message || '');
+        setSelectedCourseId(request.courseId?._id || request.courseId || '');
+        setSelectedBatchId(request.batchId?._id || request.batchId || '');
+        setPaymentFee(0);
+        setPaymentStatus('unpaid');
+      } catch (err) {
+        console.error('Failed to load enrollment request:', err);
+      }
+    };
+    loadRequest();
+  }, [requestId]);
 
   // Filter courses & batches when gradeLevel (class) changes
   useEffect(() => {
@@ -490,6 +521,8 @@ export default function AdminAdmissionsPage() {
         documentUrl: submittedDocumentUrl || undefined,
         notes: notes.trim() || undefined,
       };
+
+      if (requestId) payload.requestId = requestId;
 
       if (admissionMode === 'existing' && selectedExistingStudent) {
         payload.existingStudentId = selectedExistingStudent._id;
