@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowRight, BookOpen, ChevronRight, Compass, GraduationCap, Layers } from 'lucide-react';
+import { ArrowRight, BookOpen, ChevronRight, Compass, GraduationCap } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatDriveImageUrl } from '@/lib/drive';
 import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib/classes';
@@ -106,18 +106,6 @@ export default function DedicatedClassPage() {
       </section>
 
       <section id="courses-section" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-9 sm:pt-12">
-        <div className="flex items-center justify-between gap-4 mb-5">
-          <div>
-            <h2 className="flex items-center gap-2 text-lg sm:text-xl font-black text-slate-950 dark:text-white">
-              <span className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 flex items-center justify-center"><Layers className="w-4 h-4" /></span>
-              কোর্স বেছে নিন
-            </h2>
-          </div>
-          <Link href="/courses" className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700">
-            সব কোর্স <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
         {courses.length === 0 ? (
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14 text-center">
             <Compass className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
