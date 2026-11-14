@@ -81,7 +81,7 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
               <UploadCloud className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Select a file</span>
+              <span>ফাইল নির্বাচন করুন</span>
             </div>
             <input
               ref={inputRef}
@@ -95,7 +95,7 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
           </div>
           {onUrlChange && (
             <>
-              <span className="text-xs text-slate-500 text-center sm:text-left shrink-0">or add link</span>
+              <span className="text-xs text-slate-500 text-center sm:text-left shrink-0">অথবা link দিন</span>
               <input
                 type="url"
                 value={urlValue || ''}
@@ -126,28 +126,28 @@ export const FileUploadField: React.FC<FileUploadFieldProps> = ({
           <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs overflow-hidden">
             <span className="min-w-0 max-w-full flex items-start gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span className="min-w-0 break-all">Selected: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                  <span className="min-w-0 break-all">নির্বাচিত: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
             </span>
             <button type="button" onClick={removeSelected} className="self-end sm:self-auto shrink-0 whitespace-nowrap text-rose-600 hover:text-rose-700 font-bold inline-flex items-center gap-1">
-              <X className="w-3.5 h-3.5" /> Remove
+              <X className="w-3.5 h-3.5" /> সরান
             </button>
           </div>
         ) : (existingUrl || urlValue) ? (
           <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs overflow-hidden">
             <span className="min-w-0 max-w-full flex items-start gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
               <CheckCircle2 className="w-4 h-4" />
-              <span className="min-w-0 break-all">Attached: {existingFileName || 'File'}</span>
+                  <span className="min-w-0 break-all">সংযুক্ত: {existingFileName || 'ফাইল'}</span>
             </span>
             {(onPreviewExisting || onClearExisting) && (
               <div className="flex flex-wrap items-center justify-end gap-2 shrink-0 max-w-full">
-                {onPreviewExisting && <button type="button" onClick={onPreviewExisting} className="text-blue-600 hover:underline inline-flex items-center gap-1 font-semibold"><Eye className="w-3.5 h-3.5" /> View</button>}
-                {onClearExisting && <button type="button" onClick={onClearExisting} className="text-rose-600 hover:underline font-semibold">Remove</button>}
+                {onPreviewExisting && <button type="button" onClick={onPreviewExisting} className="text-blue-600 hover:underline inline-flex items-center gap-1 font-semibold"><Eye className="w-3.5 h-3.5" /> দেখুন</button>}
+                {onClearExisting && <button type="button" onClick={onClearExisting} className="text-rose-600 hover:underline font-semibold">সরান</button>}
               </div>
             )}
           </div>
         ) : null}
       </div>
-      {errorMessage ? <p className="text-[11px] text-rose-600 font-semibold">{errorMessage}</p> : <p className="text-[11px] text-slate-400">Max {maxSizeMb} MB. Upload starts only after submit/save.</p>}
+      {errorMessage ? <p className="text-[11px] text-rose-600 font-semibold">{errorMessage}</p> : <p className="text-[11px] text-slate-400">সর্বোচ্চ {maxSizeMb} MB। Submit/Save করার পর upload হবে।</p>}
     </div>
   );
 };

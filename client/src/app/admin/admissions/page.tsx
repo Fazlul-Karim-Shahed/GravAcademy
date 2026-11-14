@@ -620,11 +620,11 @@ export default function AdminAdmissionsPage() {
         </div>
 
         {/* Two Column Grid: Form (Left) & Recent Admissions (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
           
           {/* LEFT: Admission Form (7 cols on lg) */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
+          <div className="lg:col-span-8 space-y-6">
+            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/80 dark:border-slate-800 p-5 sm:p-8 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
               <div className="flex items-center justify-between pb-5 mb-6 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
@@ -790,11 +790,11 @@ export default function AdminAdmissionsPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmitAdmission} className="space-y-5">
+              <form onSubmit={handleSubmitAdmission} className="space-y-6">
                 
                 {/* 1. Student Personal Information */}
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                  <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                     <GraduationCap className="w-4 h-4 text-blue-500" /> ১. শিক্ষার্থীর মৌলিক তথ্য
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -909,7 +909,7 @@ export default function AdminAdmissionsPage() {
                 {/* 2. Course & Batch Selection */}
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                       <BookOpen className="w-4 h-4 text-indigo-500" /> ২. কোর্স ও ব্যাচ নির্বাচন
                     </h3>
                     {gradeLevel && (
@@ -965,7 +965,7 @@ export default function AdminAdmissionsPage() {
 
                 {/* 3. Fee & Payment Status */}
                 <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                  <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-emerald-500" /> ৩. ভর্তি ফি ও পেমেন্ট বিবরণী
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1056,20 +1056,29 @@ export default function AdminAdmissionsPage() {
                         </span>
                       </div>
 
-                      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                      <div className="space-y-3">
                         <input
                           type="url"
                           value={documentUrl}
                           onChange={(e) => setDocumentUrl(e.target.value)}
                           placeholder="গুগল ড্রাইভ লিংক বা ফাইলের URL..."
-                          className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                          className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all font-mono"
                         />
 
                         {/* File Upload Button */}
                         <FileUploadField
-                          label="Payment document"
+                          label="ফাইল নির্বাচন করুন"
                           selectedFile={selectedDocumentFile}
-                          onFileChange={(file) => { setSelectedDocumentFile(file); if (file) setDocumentUrl(''); }}
+                          onFileChange={(file) => {
+                            setSelectedDocumentFile(file);
+                            if (file) {
+                              setDocumentUrl('');
+                              setDocUploadSuccess(`"${file.name}" নির্বাচিত হয়েছে। ভর্তি নিশ্চিত করলে upload হবে।`);
+                            } else {
+                              setDocUploadSuccess('');
+                            }
+                          }}
+                          onError={(message) => setErrorMsg(message)}
                           accept="image/*,.pdf,.doc,.docx"
                           maxSizeMb={20}
                           disabled={uploadingDoc}
@@ -1154,7 +1163,7 @@ export default function AdminAdmissionsPage() {
           </div>
 
           {/* RIGHT: Recent Admissions Feed (5 cols on lg) */}
-          <div className="lg:col-span-5 space-y-4">
+          <div className="lg:col-span-4 space-y-4">
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs flex flex-col h-full max-h-[820px]">
               
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
