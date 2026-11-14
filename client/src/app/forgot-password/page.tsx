@@ -16,9 +16,15 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setError('');
     setMessage('');
+    const normalizedEmail = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError('সঠিক email address দিন।');
+      setLoading(false);
+      return;
+    }
     try {
-      const response = await api.post('/auth/forgot-password', { email: email.trim() });
-      setMessage(response.data?.message || 'যদি account থাকে, reset link পাঠানো হয়েছে।');
+      const response = await api.post('/auth/forgot-password', { email: normalizedEmail });
+      setMessage(response.data?.message || 'Password reset link email-এ পাঠানো হয়েছে।');
     } catch (err: any) {
       setError(err.response?.data?.message || 'অনুরোধ পাঠানো যায়নি। আবার চেষ্টা করুন।');
     } finally {

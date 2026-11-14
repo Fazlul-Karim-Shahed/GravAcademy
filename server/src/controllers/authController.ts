@@ -227,39 +227,49 @@ export const login = async (req: Request, res: Response) => {
 };
 
 /**
- * Request a password reset email without revealing whether the email exists.
+ * Request a password reset email for an active account.
  */
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
     const email = String(req.body.email || '').trim().toLowerCase();
     const user = await User.findOne({ email, status: 'active' });
 
-    if (user?.email) {
-      const rawToken = crypto.randomBytes(32).toString('hex');
-      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-      await PasswordResetToken.deleteMany({ userId: user._id, usedAt: { $exists: false } });
-      await PasswordResetToken.create({
-        userId: user._id,
-        tokenHash,
-        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+    if (!user?.email) {
+      return res.status(400).json({
+        success: false,
+        message: 'এই email address দিয়ে কোনো active account পাওয়া যায়নি। Emailটি ঠিক আছে কি না দেখুন।',
       });
-      await sendPasswordResetEmail({
-        to: user.email,
-        name: user.name,
-        token: rawToken,
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    await PasswordResetToken.deleteMany({ userId: user._id, usedAt: { $exists: false } });
+    await PasswordResetToken.create({
+      userId: user._id,
+      tokenHash,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+    });
+    const emailSent = await sendPasswordResetEmail({
+      to: user.email,
+      name: user.name,
+      token: rawToken,
+    });
+
+    if (!emailSent) {
+      await PasswordResetToken.deleteOne({ tokenHash });
+      return res.status(400).json({
+        success: false,
+        message: 'এই email address-এ reset link পাঠানো যায়নি। Emailটি ঠিক আছে কি না দেখে আবার চেষ্টা করুন।',
       });
     }
 
     return res.json({
       success: true,
-      message: 'যদি এই ইমেইলটি registered থাকে, password reset link পাঠানো হয়েছে।',
+      message: 'Password reset link আপনার email-এ পাঠানো হয়েছে।',
     });
   } catch (error) {
     console.error('forgotPassword error:', error);
-    return res.json({
-      success: true,
-      message: 'যদি এই ইমেইলটি registered থাকে, password reset link পাঠানো হয়েছে।',
-    });
+    return res.status(500).json({ success: false, message: 'Reset link পাঠানো যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।' });
   }
 };
 
