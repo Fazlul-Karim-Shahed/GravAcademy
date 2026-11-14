@@ -267,21 +267,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* Breadcrumb Navigation */}
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-              <Link
-                href="/courses"
-                className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 text-blue-400" /> সকল কোর্স
-              </Link>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-200 font-bold">{course.gradeLevel}</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-blue-400 font-bold">{course.title}</span>
-            </div>
-
+          <div className="flex justify-end mb-6">
             {isAdmin && (
               <Link
                 href={`/admin/courses/${course._id}/edit`}
@@ -293,7 +279,22 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Hero Main Content */}
-          <div className="max-w-4xl">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-7 lg:gap-10">
+            <div className="w-full lg:w-[310px] shrink-0 aspect-[4/3] rounded-2xl overflow-hidden border border-white/15 bg-slate-900/60 shadow-2xl">
+              {course.thumbnailUrl ? (
+                <img src={formatDriveImageUrl(course.thumbnailUrl)} alt={course.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-indigo-700 via-violet-700 to-slate-950 flex flex-col items-center justify-center text-center p-5">
+                  <div className="absolute -left-10 -top-10 w-48 h-32 rounded-full bg-sky-400/35 blur-3xl" />
+                  <div className="absolute -right-8 top-4 w-48 h-32 rounded-full bg-violet-300/40 blur-3xl" />
+                  <span className="relative rounded-sm bg-blue-950/90 px-3 py-1 text-sm font-black leading-tight tracking-wide text-amber-300">SCHOOL<br />PROGRAM</span>
+                  <span className="relative mt-1 rounded-sm bg-pink-600 px-3 py-1 text-lg font-black leading-none text-white">{course.gradeLevel || 'CLASS'}</span>
+                  <span className="relative mt-2 text-xs font-bold text-white">Grav Academy</span>
+                </div>
+              )}
+            </div>
+
+          <div className="max-w-4xl flex-1">
             {/* Meta Category Indicator */}
             <div className="flex items-center gap-2 mb-3">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -327,9 +328,27 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
 
           </div>
+          </div>
 
         </div>
       </section>
+
+      <div className="relative z-20 -mt-7 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900">
+          <div className="flex items-center gap-3 px-5 py-4 sm:border-r border-slate-100 dark:border-slate-800">
+            <Users className="w-5 h-5 text-violet-600 shrink-0" />
+            <div><span className="block text-[11px] text-slate-500 dark:text-slate-400">শিক্ষক</span><strong className="text-sm text-slate-900 dark:text-white">{course.instructors?.length || 1} জন</strong></div>
+          </div>
+          <div className="flex items-center gap-3 px-5 py-4 sm:border-r border-slate-100 dark:border-slate-800">
+            <Clock className="w-5 h-5 text-emerald-600 shrink-0" />
+            <div><span className="block text-[11px] text-slate-500 dark:text-slate-400">কোর্সের মেয়াদ</span><strong className="text-sm text-slate-900 dark:text-white">{course.duration || 'পূর্ণাঙ্গ সেশন'}</strong></div>
+          </div>
+          <div className="flex items-center gap-3 px-5 py-4">
+            <ShieldCheck className="w-5 h-5 text-orange-500 shrink-0" />
+            <div><span className="block text-[11px] text-slate-500 dark:text-slate-400">কোর্স এক্সেস</span><strong className="text-sm text-slate-900 dark:text-white">সম্পূর্ণ সেশন</strong></div>
+          </div>
+        </div>
+      </div>
 
       {/* 2. MAIN 2-COLUMN SECTION: Content on Left, Sticky Enrollment Card on Right */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
@@ -553,6 +572,18 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                     <div>
                       <h3 className="text-sm font-black text-slate-900 dark:text-white">কোর্সে ভর্তি হতে প্রস্তুত?</h3>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">এনরোল করার পর আপনার সুবিধাজনক batch বেছে নিন।</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 border-t border-slate-200 pt-4 dark:border-slate-800">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">এই কোর্সে যা থাকছে</h3>
+                    <div className="mt-3 space-y-2.5">
+                      {highlights.slice(0, 5).map((highlight, index) => (
+                        <div key={index} className="flex items-start gap-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                          <span>{highlight}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
