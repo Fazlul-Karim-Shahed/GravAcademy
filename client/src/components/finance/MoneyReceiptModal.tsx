@@ -169,6 +169,9 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           body > *:has(.receipt-print-root) > *:not(:has(.receipt-print-root)) {
             display: none !important;
           }
+          body > *:has(.receipt-print-root) > *:has(.receipt-print-root) > *:not(:has(.receipt-print-root)) {
+            display: none !important;
+          }
           .receipt-print-root {
             position: static !important;
             display: block !important;
