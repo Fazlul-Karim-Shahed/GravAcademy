@@ -14,7 +14,6 @@ export default function DedicatedClassPage() {
   const slugParam = (params?.slug as string) || '';
   const [academicClass, setAcademicClass] = useState<AcademicClassItem | null>(null);
   const [courses, setCourses] = useState<any[]>([]);
-  const [allClasses, setAllClasses] = useState<AcademicClassItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export default function DedicatedClassPage() {
     setLoading(true);
     try {
       const classList = await getSharedAcademicClasses();
-      setAllClasses(classList);
       const matchedLocal = classList.find(
         (item) =>
           getClassSlug(item).toLowerCase() === slugParam.toLowerCase() ||
@@ -79,47 +77,37 @@ export default function DedicatedClassPage() {
   }
 
   const className = academicClass?.name || 'Class';
+  const subtitle = academicClass?.subtitle || `${className}-এর শিক্ষার্থীদের জন্য পরিকল্পিত পূর্ণাঙ্গ একাডেমিক প্রোগ্রাম`;
   const description = academicClass?.description || `${className}-এর জন্য সাজানো কোর্স ও শেখার সুযোগ এক জায়গায়।`;
 
   return (
     <main className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
-      <section className="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-10">
-          <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors">
+      <section className="relative overflow-hidden cosmic-hero-bg text-white border-b border-white/10 shadow-lg">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[16%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute top-[24%] right-[12%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute top-[12%] right-[30%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 sm:py-12 relative z-10">
+          <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-amber-300 transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" />
             সব কোর্স
           </Link>
 
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 rounded-full px-3 py-1.5 mb-3">
-                <GraduationCap className="w-3.5 h-3.5" />
-                {className}
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950 dark:text-white">{className}-এর কোর্সসমূহ</h1>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">{description}</p>
+          <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-3xl">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2">{subtitle}</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl font-medium leading-relaxed">{description}</p>
             </div>
-            <div className="shrink-0 flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <BookOpen className="w-4 h-4 text-blue-600" />
-              <span>{courses.length}টি কোর্স</span>
+            <div className="shrink-0 flex flex-col items-start md:items-end gap-3">
+              <span className="inline-flex items-center gap-2 text-xs font-bold text-slate-200"><BookOpen className="w-4 h-4 text-amber-300" />{courses.length}টি কোর্স</span>
+              <a href="#courses-section" className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/30 transition-all border border-white/20">কোর্সসমূহ দেখুন <ArrowRight className="w-4 h-4" /></a>
             </div>
           </div>
-
-          {allClasses.length > 1 && (
-            <div className="mt-7 -mx-1 overflow-x-auto pb-1">
-              <div className="inline-flex min-w-full sm:min-w-0 items-center gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
-                {allClasses.map((item) => {
-                  const itemSlug = getClassSlug(item);
-                  const active = item._id === academicClass?._id || itemSlug === slugParam;
-                  return (
-                    <Link key={item._id} href={`/classes/${itemSlug}`} className={`whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-bold transition-colors ${active ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 shadow-sm' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}`}>
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
