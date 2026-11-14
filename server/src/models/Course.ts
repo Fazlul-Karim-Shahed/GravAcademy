@@ -18,8 +18,51 @@ export interface ICourse extends Document {
   curriculumHighlights?: string[];
   features?: string[];
   targetAudience?: string;
+  heroEyebrow?: string;
+  accessLabel?: string;
+  instructorProfiles?: ICourseInstructorProfile[];
+  syllabus?: ICourseSyllabusItem[];
+  routine?: ICourseRoutine;
+  supportSection?: ICourseSupportSection;
+  promoCards?: ICoursePromoCard[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ICourseInstructorProfile {
+  instructorId: mongoose.Types.ObjectId;
+  subject?: string;
+  experience?: string;
+}
+
+export interface ICourseSyllabusItem {
+  title: string;
+  details?: string;
+}
+
+export interface ICourseRoutine {
+  title?: string;
+  bannerText?: string;
+  programLabel?: string;
+  routineUrl?: string;
+  prospectusUrl?: string;
+}
+
+export interface ICourseSupportSection {
+  title?: string;
+  description?: string;
+  hours?: string;
+  phone?: string;
+  note?: string;
+  imageUrl?: string;
+}
+
+export interface ICoursePromoCard {
+  key: 'video' | 'facebook';
+  eyebrow?: string;
+  title?: string;
+  buttonLabel?: string;
+  buttonUrl?: string;
 }
 
 const CourseSchema = new Schema<ICourse>(
@@ -88,6 +131,45 @@ const CourseSchema = new Schema<ICourse>(
     curriculumHighlights: [{ type: String }],
     features: [{ type: String }],
     targetAudience: { type: String, default: '' },
+    heroEyebrow: { type: String, default: 'ACADEMIC PROGRAM', trim: true, maxlength: 100 },
+    accessLabel: { type: String, default: 'সীমাহীন সেশন', trim: true, maxlength: 100 },
+    instructorProfiles: [
+      {
+        instructorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        subject: { type: String, default: '', trim: true, maxlength: 120 },
+        experience: { type: String, default: '', trim: true, maxlength: 80 },
+      },
+    ],
+    syllabus: [
+      {
+        title: { type: String, required: true, trim: true, maxlength: 200 },
+        details: { type: String, default: '', trim: true, maxlength: 1000 },
+      },
+    ],
+    routine: {
+      title: { type: String, default: 'প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস', trim: true, maxlength: 150 },
+      bannerText: { type: String, default: 'রুটিন শীঘ্রই আসছে', trim: true, maxlength: 200 },
+      programLabel: { type: String, default: '', trim: true, maxlength: 120 },
+      routineUrl: { type: String, default: '', trim: true },
+      prospectusUrl: { type: String, default: '', trim: true },
+    },
+    supportSection: {
+      title: { type: String, default: 'যেকোনো প্রয়োজনে কল করো এখনই', trim: true, maxlength: 160 },
+      description: { type: String, default: '', trim: true, maxlength: 500 },
+      hours: { type: String, default: '', trim: true, maxlength: 100 },
+      phone: { type: String, default: '16910', trim: true, maxlength: 40 },
+      note: { type: String, default: '', trim: true, maxlength: 200 },
+      imageUrl: { type: String, default: '', trim: true },
+    },
+    promoCards: [
+      {
+        key: { type: String, enum: ['video', 'facebook'], required: true },
+        eyebrow: { type: String, default: '', trim: true, maxlength: 80 },
+        title: { type: String, default: '', trim: true, maxlength: 120 },
+        buttonLabel: { type: String, default: '', trim: true, maxlength: 60 },
+        buttonUrl: { type: String, default: '', trim: true },
+      },
+    ],
   },
   {
     timestamps: true,

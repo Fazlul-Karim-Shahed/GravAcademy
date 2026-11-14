@@ -5,6 +5,11 @@ import { Course } from '../models/Course';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { AuditLog } from '../models/AuditLog';
 
+const courseLinkSchema = z.string().max(500).refine(
+  (value) => value === '' || value.startsWith('/') || /^https?:\/\//i.test(value),
+  'Invalid course link'
+);
+
 export const createCourseSchema = z.object({
   title: z.string().min(3).max(150),
   description: z.string().optional(),
@@ -16,6 +21,43 @@ export const createCourseSchema = z.object({
   discountPrice: z.number().min(0).optional(),
   duration: z.string().optional(),
   isPublished: z.boolean().default(false),
+  targetAudience: z.string().max(300).optional(),
+  heroEyebrow: z.string().max(100).optional(),
+  accessLabel: z.string().max(100).optional(),
+  instructors: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid instructor ID')).optional().default([]),
+  curriculumHighlights: z.array(z.string().max(300)).optional().default([]),
+  features: z.array(z.string().max(300)).optional().default([]),
+  instructorProfiles: z.array(z.object({
+    instructorId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid instructor ID'),
+    subject: z.string().max(120).optional().or(z.literal('')),
+    experience: z.string().max(80).optional().or(z.literal('')),
+  })).optional().default([]),
+  syllabus: z.array(z.object({
+    title: z.string().min(1).max(200),
+    details: z.string().max(1000).optional().or(z.literal('')),
+  })).optional().default([]),
+  routine: z.object({
+    title: z.string().max(150).optional().or(z.literal('')),
+    bannerText: z.string().max(200).optional().or(z.literal('')),
+    programLabel: z.string().max(120).optional().or(z.literal('')),
+    routineUrl: courseLinkSchema.optional(),
+    prospectusUrl: courseLinkSchema.optional(),
+  }).optional(),
+  supportSection: z.object({
+    title: z.string().max(160).optional().or(z.literal('')),
+    description: z.string().max(500).optional().or(z.literal('')),
+    hours: z.string().max(100).optional().or(z.literal('')),
+    phone: z.string().max(40).optional().or(z.literal('')),
+    note: z.string().max(200).optional().or(z.literal('')),
+    imageUrl: courseLinkSchema.optional(),
+  }).optional(),
+  promoCards: z.array(z.object({
+    key: z.enum(['video', 'facebook']),
+    eyebrow: z.string().max(80).optional().or(z.literal('')),
+    title: z.string().max(120).optional().or(z.literal('')),
+    buttonLabel: z.string().max(60).optional().or(z.literal('')),
+    buttonUrl: courseLinkSchema.optional(),
+  })).max(2).optional().default([]),
 });
 
 /**
@@ -36,6 +78,7 @@ export const getCourses = async (req: Request, res: Response) => {
 
     const courses = await Course.find(filter)
       .populate('instructors', 'name email avatarUrl phone role')
+      .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role')
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -60,7 +103,9 @@ export const getCourseById = async (req: Request, res: Response) => {
       ? { $or: [{ _id: id }, { slug: id }] }
       : { slug: id };
 
-    const course = await Course.findOne(query).populate('instructors', 'name email avatarUrl phone role');
+    const course = await Course.findOne(query)
+      .populate('instructors', 'name email avatarUrl phone role')
+      .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role');
 
     if (!course) {
       return res.status(404).json({ success: false, message: 'Course not found' });

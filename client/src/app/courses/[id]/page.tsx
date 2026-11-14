@@ -57,6 +57,37 @@ interface SyllabusItem {
   details: string;
 }
 
+interface InstructorProfile {
+  instructorId: string | { _id: string };
+  subject?: string;
+  experience?: string;
+}
+
+interface RoutineContent {
+  title?: string;
+  bannerText?: string;
+  programLabel?: string;
+  routineUrl?: string;
+  prospectusUrl?: string;
+}
+
+interface SupportContent {
+  title?: string;
+  description?: string;
+  hours?: string;
+  phone?: string;
+  note?: string;
+  imageUrl?: string;
+}
+
+interface PromoCardContent {
+  key: 'video' | 'facebook';
+  eyebrow?: string;
+  title?: string;
+  buttonLabel?: string;
+  buttonUrl?: string;
+}
+
 interface CourseDetail {
   _id: string;
   title: string;
@@ -74,6 +105,12 @@ interface CourseDetail {
   curriculumHighlights?: string[];
   features?: string[];
   syllabus?: SyllabusItem[];
+  heroEyebrow?: string;
+  accessLabel?: string;
+  instructorProfiles?: InstructorProfile[];
+  routine?: RoutineContent;
+  supportSection?: SupportContent;
+  promoCards?: PromoCardContent[];
 }
 
 const fallbackSyllabus: SyllabusItem[] = [
@@ -194,7 +231,32 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   ] as Teacher[];
   const syllabus = course.syllabus?.length ? course.syllabus : fallbackSyllabus;
   const visibleTeachers = showAllTeachers ? teachers.slice(0, 8) : teachers.slice(0, 4);
-  const teacherMeta = ['গণিত · ৮+ বছর', 'পদার্থবিজ্ঞান · ৭+ বছর', 'রসায়ন · ৬+ বছর', 'ইংরেজি · ৯+ বছর'];
+  const instructorProfiles = course.instructorProfiles || [];
+  const routine = {
+    title: 'প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস',
+    bannerText: 'রুটিন শীঘ্রই আসছে',
+    programLabel: `${course.gradeLevel} - ${course.subject || 'Academic'}`,
+    routineUrl: '',
+    prospectusUrl: '',
+    ...(course.routine || {}),
+  };
+  const support = {
+    title: 'যেকোনো প্রয়োজনে কল করো এখনই',
+    description: 'শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।',
+    hours: 'সকাল ৮টা - রাত ১০টা',
+    phone: '16910',
+    note: '* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *',
+    imageUrl: '',
+    ...(course.supportSection || {}),
+  };
+  const promoCards = course.promoCards?.length ? course.promoCards : [
+    { key: 'video' as const, eyebrow: 'Learning', title: 'ফ্রি ভিডিও লাইব্রেরি', buttonLabel: 'ভিডিও দেখুন', buttonUrl: '/free-classes' },
+    { key: 'facebook' as const, eyebrow: 'Community', title: 'Grav Academy ফেসবুক গ্রুপ', buttonLabel: 'গ্রুপে যুক্ত হন', buttonUrl: 'https://www.facebook.com/' },
+  ];
+  const teacherMeta = (teacher: Teacher) => {
+    const profile = instructorProfiles.find((item) => String(typeof item.instructorId === 'object' ? item.instructorId._id : item.instructorId) === String(teacher._id));
+    return [profile?.subject, profile?.experience].filter(Boolean).join(' · ') || `${course.subject || 'Academic'} · Mentor`;
+  };
   const syllabusIcons = [BookMarked, BookMarked, Languages, Languages, Monitor, Calculator, Atom, FlaskConical, Landmark, PenTool];
   const syllabusIconStyles = [
     'bg-rose-100 text-rose-500',
@@ -240,7 +302,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
               )}
             </div>
             <div>
-              <p className="mb-3 text-xs font-bold tracking-wide text-blue-200">{course.gradeLevel} · ACADEMIC PROGRAM</p>
+              <p className="mb-3 text-xs font-bold tracking-wide text-blue-200">{course.gradeLevel} · {course.heroEyebrow || 'ACADEMIC PROGRAM'}</p>
               <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">{course.title}</h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-blue-50/90 sm:text-base">{course.description || 'সম্পূর্ণ সিলেবাস কভার করে পরিকল্পিত একাডেমিক প্রস্তুতি।'}</p>
               <button type="button" className="mt-4 text-xs font-bold text-white underline underline-offset-4">বিস্তারিত দেখুন</button>
@@ -253,7 +315,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
         <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
           <Stat icon={<Users className="h-5 w-5 text-violet-600" />} label="কোর্সের শিক্ষক" value={`${teachers.length} জন`} />
           <Stat icon={<Clock3 className="h-5 w-5 text-emerald-600" />} label="ক্লাস চলবে" value={course.duration || 'পূর্ণাঙ্গ সেশন'} />
-          <Stat icon={<CalendarDays className="h-5 w-5 text-orange-500" />} label="কোর্স এক্সেস" value="সম্পূর্ণ সেশন" />
+          <Stat icon={<CalendarDays className="h-5 w-5 text-orange-500" />} label="কোর্স এক্সেস" value={course.accessLabel || 'সম্পূর্ণ সেশন'} />
         </div>
       </section>
 
@@ -276,7 +338,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                     </div>
                   </div>
                   <h3 className="mt-4 truncate text-sm font-black text-slate-900 dark:text-white">{teacher.name}</h3>
-                  <p className="mt-1 truncate text-[11px] text-slate-500 dark:text-slate-400">{teacherMeta[index % teacherMeta.length]}</p>
+                  <p className="mt-1 truncate text-[11px] text-slate-500 dark:text-slate-400">{teacherMeta(teacher)}</p>
                 </article>;
               })}
             </div>
@@ -307,7 +369,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           </section>
 
           <section className="rounded-[22px]">
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস</h2>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">{routine.title}</h2>
             <div className="mt-5 overflow-hidden rounded-[22px] shadow-[0_10px_28px_rgba(30,65,100,0.12)]">
               <div className="relative flex min-h-[220px] items-center justify-center overflow-hidden bg-[#020b2b] bg-gradient-to-br from-[#06103f] via-[#073b9e] to-[#020817] px-6 text-center sm:min-h-[260px]">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_55%,rgba(24,142,255,0.78),transparent_38%),radial-gradient(circle_at_15%_20%,rgba(0,92,255,0.28),transparent_28%),radial-gradient(circle_at_86%_20%,rgba(0,220,255,0.18),transparent_25%)]" />
@@ -316,14 +378,14 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle,white_1px,transparent_1px)] [background-size:32px_32px]" />
                 <div className="relative">
                   <CalendarDays className="mx-auto h-10 w-10 text-cyan-200" />
-                  <p className="mt-4 text-4xl font-black tracking-tight text-white drop-shadow-[0_4px_0_rgba(0,0,0,0.28)] sm:text-6xl">রুটিন শীঘ্রই আসছে</p>
+                   <p className="mt-4 text-4xl font-black tracking-tight text-white drop-shadow-[0_4px_0_rgba(0,0,0,0.28)] sm:text-6xl">{routine.bannerText}</p>
                 </div>
               </div>
               <div className="flex flex-col gap-4 bg-gradient-to-r from-[#e3f7fa] via-[#f4f5e2] to-[#ffe8bd] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-9">
-                <p className="text-sm font-bold text-slate-700 sm:text-base">ক্লাস ৬ - SSC '32</p>
+                 <p className="text-sm font-bold text-slate-700 sm:text-base">{routine.programLabel}</p>
                 <div className="flex flex-wrap gap-3">
-                  <button type="button" className="rounded-xl bg-[#3555ee] px-5 py-3 text-xs font-black text-white shadow-sm transition hover:bg-[#2946da]">ডাউনলোড ক্লাস রুটিন</button>
-                  <button type="button" className="rounded-xl bg-[#e60087] px-5 py-3 text-xs font-black text-white shadow-sm transition hover:bg-[#c90076]">ডাউনলোড প্রসপেক্টাস</button>
+                   {routine.routineUrl && <a href={routine.routineUrl} target="_blank" rel="noreferrer" className="rounded-xl bg-[#3555ee] px-5 py-3 text-xs font-black text-white shadow-sm transition hover:bg-[#2946da]">ডাউনলোড ক্লাস রুটিন</a>}
+                   {routine.prospectusUrl && <a href={routine.prospectusUrl} target="_blank" rel="noreferrer" className="rounded-xl bg-[#e60087] px-5 py-3 text-xs font-black text-white shadow-sm transition hover:bg-[#c90076]">ডাউনলোড প্রসপেক্টাস</a>}
                 </div>
               </div>
             </div>
@@ -344,14 +406,14 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           <section className="overflow-hidden rounded-[22px] bg-gradient-to-r from-[#dff7fb] via-[#f2f4de] to-[#ffe5b7] shadow-[0_10px_28px_rgba(30,65,100,0.1)]">
             <div className="grid grid-cols-[minmax(0,1fr)_120px] items-center sm:grid-cols-[1fr_190px]">
               <div className="p-4 sm:p-6">
-                <h2 className="mt-3 text-xl font-black leading-7 text-[#24478f] sm:text-2xl">যেকোনো প্রয়োজনে কল করো এখনই</h2>
-                <p className="mt-3 max-w-md text-xs leading-5 text-[#31558e] sm:text-sm sm:leading-6">শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।</p>
-                <p className="mt-4 border-l-4 border-amber-400 pl-3 text-sm font-black text-[#31558e]">সকাল ৮টা - রাত ১০টা</p>
-                <a href="tel:16910" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5269f4] px-6 py-3 text-base font-black text-white shadow-md transition hover:bg-[#4056df]"><Phone className="h-5 w-5" /> ১৬৯১০</a>
-                <p className="mt-2 text-[10px] text-[#31558e]">* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *</p>
+                <h2 className="mt-3 text-xl font-black leading-7 text-[#24478f] sm:text-2xl">{support.title}</h2>
+                <p className="mt-3 max-w-md text-xs leading-5 text-[#31558e] sm:text-sm sm:leading-6">{support.description}</p>
+                <p className="mt-4 border-l-4 border-amber-400 pl-3 text-sm font-black text-[#31558e]">{support.hours}</p>
+                <a href={`tel:${support.phone}`} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5269f4] px-6 py-3 text-base font-black text-white shadow-md transition hover:bg-[#4056df]"><Phone className="h-5 w-5" /> {support.phone}</a>
+                <p className="mt-2 text-[10px] text-[#31558e]">{support.note}</p>
               </div>
               <div className="relative h-44 self-end overflow-hidden sm:h-48">
-                <img src="/images/course-support-student.png" alt="Grav Academy student support" className="absolute left-1/2 top-0 h-[190%] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:h-[205%]" />
+                <img src={support.imageUrl ? formatDriveImageUrl(support.imageUrl) : '/images/course-support-student.png'} alt="Grav Academy student support" className="absolute left-1/2 top-0 h-[190%] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:h-[205%]" />
               </div>
             </div>
           </section>
@@ -360,9 +422,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             <div className="relative min-h-[170px] overflow-hidden rounded-[20px] bg-gradient-to-br from-[#ffc9c9] to-[#ffd8d8] p-5 shadow-[0_8px_22px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,65,100,0.14)] sm:p-6">
               <div className="flex h-full min-h-[138px] items-start justify-between gap-3">
                 <div className="flex h-full flex-col">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#8e4b65]">Learning</p>
-                  <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">ফ্রি ভিডিও লাইব্রেরি</h2>
-                  <Link href="/free-classes" className="mt-auto inline-flex rounded-lg bg-white px-3.5 py-2 text-[11px] font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">ভিডিও দেখুন</Link>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#8e4b65]">{promoCards.find((card) => card.key === 'video')?.eyebrow}</p>
+                  <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">{promoCards.find((card) => card.key === 'video')?.title}</h2>
+                  {promoCards.find((card) => card.key === 'video')?.buttonUrl && <Link href={promoCards.find((card) => card.key === 'video')?.buttonUrl || '/free-classes'} className="mt-auto inline-flex rounded-lg bg-white px-3.5 py-2 text-[11px] font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">{promoCards.find((card) => card.key === 'video')?.buttonLabel}</Link>}
                 </div>
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#ef1717] shadow-lg shadow-red-300/30 backdrop-blur"><Play className="h-7 w-7 fill-current" /></div>
               </div>
@@ -371,9 +433,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             <div className="relative min-h-[170px] overflow-hidden rounded-[20px] bg-gradient-to-br from-[#c6dcff] to-[#d6e5ff] p-5 shadow-[0_8px_22px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,65,100,0.14)] sm:p-6">
               <div className="flex h-full min-h-[138px] items-start justify-between gap-3">
                 <div className="flex h-full flex-col">
-                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#4264a5]">Community</p>
-                  <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">Grav Academy ফেসবুক গ্রুপ</h2>
-                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="mt-auto inline-flex rounded-lg bg-white px-3.5 py-2 text-[11px] font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">গ্রুপে যুক্ত হন</a>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#4264a5]">{promoCards.find((card) => card.key === 'facebook')?.eyebrow}</p>
+                  <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">{promoCards.find((card) => card.key === 'facebook')?.title}</h2>
+                  {promoCards.find((card) => card.key === 'facebook')?.buttonUrl && <a href={promoCards.find((card) => card.key === 'facebook')?.buttonUrl || '#'} target="_blank" rel="noreferrer" className="mt-auto inline-flex rounded-lg bg-white px-3.5 py-2 text-[11px] font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">{promoCards.find((card) => card.key === 'facebook')?.buttonLabel}</a>}
                 </div>
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#3d5a9d] shadow-lg shadow-blue-300/30 backdrop-blur"><UsersRound className="h-7 w-7" /></div>
               </div>
