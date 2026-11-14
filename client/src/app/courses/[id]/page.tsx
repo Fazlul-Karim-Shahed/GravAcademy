@@ -355,11 +355,11 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
           {/* LEFT COLUMN: Curriculum, Teachers & Highlights (7 Cols) */}
-          <div className="lg:col-span-7 space-y-8">
+          <div className="lg:col-span-7 flex flex-col gap-8">
 
             {/* Target Audience */}
             {course.targetAudience && (
-              <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+              <div className="order-1 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-2 h-2 rounded-full bg-blue-600" />
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -376,7 +376,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             )}
 
             {/* Syllabus & Highlights */}
-            <div className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+            <div className="order-3 p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
               <div className="flex items-center justify-between gap-4 mb-2">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -423,7 +423,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Instructors Section */}
-            <div className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+            <div className="order-2 p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-indigo-500" />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -481,7 +481,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* 3 Core Value Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="order-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
                 <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
                   <Video className="w-4 h-4" />
