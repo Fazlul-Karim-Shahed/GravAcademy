@@ -913,11 +913,12 @@ export default function HomePage() {
                       </div>
                     </div>
 
-                    {/* Cute Card Bottom: Enrollment CTA */}
-                    <div className="p-0 sm:p-4 mt-2 sm:mt-1 rounded-none sm:rounded-[24px] border-0 sm:border sm:border-slate-200/70 dark:sm:border-slate-800/80 bg-transparent sm:bg-slate-50/80 dark:sm:bg-slate-900/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5 sm:gap-3 shadow-none sm:shadow-inner">
+                    {/* Clear enrollment footer: status and action stay visually separate */}
+                    <div className="mt-3 sm:mt-2 pt-3 sm:pt-4 px-1 sm:px-4 pb-1 sm:pb-2 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
                       {/* Price Section */}
-                      <div className="min-w-0 flex items-center justify-between sm:block px-1 sm:px-0 mb-0.5 sm:mb-0">
-                        <span className="text-[9px] sm:text-[10px] font-medium sm:font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate">
+                      <div className="min-w-0 flex items-center justify-between sm:block px-0 mb-0.5 sm:mb-0">
+                        <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold tracking-wide text-emerald-700 dark:text-emerald-300 truncate">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.12)] shrink-0" />
                           ভর্তি চলছে
                         </span>
                         <div className="flex items-baseline gap-1 sm:mt-0.5">
@@ -943,7 +944,7 @@ export default function HomePage() {
                       </div>
 
                       {/* Action Button */}
-                      <div className="w-full sm:w-auto py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-blue-600 sm:bg-gradient-to-r sm:from-blue-600 sm:via-indigo-600 sm:to-purple-600 sm:group-hover:from-blue-700 sm:group-hover:to-purple-700 text-white font-bold sm:font-black text-xs shadow-md shadow-blue-500/25 sm:group-hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-1 shrink-0 group-hover:scale-102">
+                      <div className="w-full sm:w-auto py-2 sm:py-2.5 px-3.5 sm:px-4 rounded-xl bg-slate-900 hover:bg-blue-600 dark:bg-white dark:hover:bg-blue-500 text-white dark:text-slate-900 dark:hover:text-white font-bold text-[11px] sm:text-xs shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5 shrink-0 group-hover:scale-[1.02]">
                         <span>ব্যাচ দেখুন</span>
                         <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
