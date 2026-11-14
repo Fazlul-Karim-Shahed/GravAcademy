@@ -156,22 +156,27 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
             color: #000000 !important;
             height: auto !important;
             overflow: visible !important;
+            margin: 0 !important;
           }
-          /* Keep the receipt visible while hiding the surrounding app shell. */
-          body * {
-            visibility: hidden !important;
+          /* Remove the app shell from print flow so page one is not blank. */
+          body > * {
+            display: none !important;
           }
-          .receipt-print-root,
-          .receipt-print-root * {
+          body > *:has(.receipt-print-root) {
+            display: block !important;
             visibility: visible !important;
+          }
+          body > *:has(.receipt-print-root) > *:not(:has(.receipt-print-root)) {
+            display: none !important;
           }
           .receipt-print-root {
             position: static !important;
             display: block !important;
-            width: 122% !important;
+            width: 100% !important;
             min-height: 0 !important;
             background: #ffffff !important;
             zoom: 0.82;
+            margin: 0 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             page-break-inside: avoid !important;
