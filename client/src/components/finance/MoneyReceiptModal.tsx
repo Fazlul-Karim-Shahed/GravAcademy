@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Printer,
   Download,
@@ -143,7 +144,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
       })
     : '';
 
-  return (
+  return typeof document !== 'undefined' ? createPortal((
     <div className="receipt-print-root fixed inset-0 z-50 overflow-y-auto bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:static print:overflow-visible print:z-auto">
       <style jsx global>{`
         @media print {
@@ -162,15 +163,9 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           body > * {
             display: none !important;
           }
-          body > *:has(.receipt-print-root) {
+          body > .receipt-print-root {
             display: block !important;
             visibility: visible !important;
-          }
-          body > *:has(.receipt-print-root) > *:not(:has(.receipt-print-root)) {
-            display: none !important;
-          }
-          body > *:has(.receipt-print-root) > *:has(.receipt-print-root) > *:not(:has(.receipt-print-root)) {
-            display: none !important;
           }
           .receipt-print-root {
             position: static !important;
@@ -496,5 +491,5 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
         </div>
       </div>
     </div>
-  );
+  ), document.body) : null;
 };
