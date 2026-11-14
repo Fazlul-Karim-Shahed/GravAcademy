@@ -346,11 +346,11 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           </section>
 
           <section className="overflow-hidden rounded-[22px] bg-gradient-to-r from-[#dff7fb] via-[#f2f4de] to-[#ffe5b7] shadow-[0_10px_28px_rgba(30,65,100,0.1)]">
-            <div className="grid items-center sm:grid-cols-[1fr_190px]">
-              <div className="p-5 sm:p-6">
+            <div className="grid grid-cols-[minmax(0,1fr)_120px] items-center sm:grid-cols-[1fr_190px]">
+              <div className="p-4 sm:p-6">
                 <p className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-700">Grav Academy support</p>
-                <h2 className="mt-3 text-2xl font-black text-[#24478f]">যেকোনো প্রয়োজনে কল করো এখনই</h2>
-                <p className="mt-3 max-w-md text-sm leading-6 text-[#31558e]">শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।</p>
+                <h2 className="mt-3 text-xl font-black leading-7 text-[#24478f] sm:text-2xl">যেকোনো প্রয়োজনে কল করো এখনই</h2>
+                <p className="mt-3 max-w-md text-xs leading-5 text-[#31558e] sm:text-sm sm:leading-6">শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।</p>
                 <p className="mt-4 border-l-4 border-amber-400 pl-3 text-sm font-black text-[#31558e]">সকাল ৮টা - রাত ১০টা</p>
                 <a href="tel:16910" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5269f4] px-6 py-3 text-base font-black text-white shadow-md transition hover:bg-[#4056df]"><Phone className="h-5 w-5" /> ১৬৯১০</a>
                 <p className="mt-2 text-[10px] text-[#31558e]">* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *</p>
