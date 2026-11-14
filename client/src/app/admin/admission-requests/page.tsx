@@ -47,7 +47,13 @@ export default function AdmissionRequestsPage() {
     setBusyId(id); setError('');
     try {
       const res = await api.post(`/enrollment-requests/${id}/approve`);
-      setNotice(res.data?.message || 'Request approved.');
+      const data = res.data?.data;
+      const student = data?.student;
+      const accountNote = data?.isNewUserCreated && student?.defaultPassword
+        ? ` Login: ${student.userId} / ${student.defaultPassword}`
+        : '';
+      const emailNote = data?.emailSent ? ' Email sent.' : '';
+      setNotice(`${res.data?.message || 'Request approved.'}${accountNote}${emailNote}`);
       await loadRequests();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Approve করা যায়নি।');

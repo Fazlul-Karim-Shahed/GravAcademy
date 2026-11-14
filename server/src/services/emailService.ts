@@ -1,5 +1,122 @@
 import { google } from 'googleapis';
 
+const getPublicAppUrl = () =>
+  (process.env.PUBLIC_APP_URL || 'https://grav-academy.vercel.app').replace(/\/+$/, '');
+
+const sendGmailTextEmail = async ({
+  to,
+  subject,
+  body,
+}: {
+  to: string;
+  subject: string;
+  body: string;
+}): Promise<boolean> => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    console.warn('[Mailer Simulation] Email queued for ' + to + ': ' + subject);
+    return false;
+  }
+
+  try {
+    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
+    oauth2Client.setCredentials({ refresh_token: refreshToken });
+    const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+    const encodedSubject = '=?utf-8?B?' + Buffer.from(subject).toString('base64') + '?=';
+    const rawMessage = Buffer.from(
+      [
+        'To: ' + to,
+        'Subject: ' + encodedSubject,
+        'Content-Type: text/plain; charset=utf-8',
+        'MIME-Version: 1.0',
+        '',
+        body,
+      ].join('\r\n')
+    )
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: { raw: rawMessage },
+    });
+    return true;
+  } catch (error: any) {
+    console.warn('[Mailer] Failed to email ' + to + ':', error?.message || error);
+    return false;
+  }
+};
+
+export const sendPasswordResetEmail = async ({
+  to,
+  name,
+  token,
+}: {
+  to: string;
+  name: string;
+  token: string;
+}): Promise<boolean> => {
+  const resetUrl = getPublicAppUrl() + '/reset-password?token=' + encodeURIComponent(token);
+  return sendGmailTextEmail({
+    to,
+    subject: 'Grav Academy password reset',
+    body: [
+      'প্রিয় ' + (name || 'শিক্ষার্থী') + ',',
+      '',
+      'আপনার Grav Academy password পরিবর্তনের অনুরোধ পাওয়া গেছে।',
+      'নিচের link-এ গিয়ে নতুন password সেট করুন:',
+      resetUrl,
+      '',
+      'এই link ৩০ মিনিট পর কাজ করবে না। আপনি অনুরোধ না করে থাকলে emailটি উপেক্ষা করুন।',
+      '',
+      'Grav Academy',
+    ].join('\n'),
+  });
+};
+
+export const sendEnrollmentApprovalEmail = async ({
+  to,
+  name,
+  batchName,
+  userId,
+  password,
+  existingAccount,
+}: {
+  to: string;
+  name: string;
+  batchName: string;
+  userId: string;
+  password?: string;
+  existingAccount: boolean;
+}): Promise<boolean> => {
+  const credentials = existingAccount
+    ? ['আপনার আগের account দিয়েই login করুন।']
+    : [
+        'User ID: ' + userId,
+        'Password: ' + (password || ''),
+        '',
+        'প্রথম login-এর পর password পরিবর্তন করে নিন।',
+      ];
+  return sendGmailTextEmail({
+    to,
+    subject: 'Grav Academy enrollment approved',
+    body: [
+      'প্রিয় ' + (name || 'শিক্ষার্থী') + ',',
+      '',
+      'আপনার "' + batchName + '" batch-এর enrollment request approve হয়েছে।',
+      '',
+      ...credentials,
+      '',
+      'Grav Academy',
+    ].join('\n'),
+  });
+};
+
 /**
  * Service to send email notifications to members.
  * Supports Gmail API if refresh token is available, or falls back to clean server logging.

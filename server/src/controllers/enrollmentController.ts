@@ -7,12 +7,14 @@ import { Course } from '../models/Course';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { User } from '../models/User';
 import { Payment } from '../models/Payment';
 import { EnrollmentRequest } from '../models/EnrollmentRequest';
 import { generateUniqueUserId } from './authController';
 import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
+import { sendEnrollmentApprovalEmail } from '../services/emailService';
 
 export const enrollBatchSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
@@ -28,6 +30,9 @@ export const createEnrollmentRequestSchema = z.object({
   guardianName: z.string().max(120).optional().or(z.literal('')),
   guardianPhone: z.string().max(30).optional().or(z.literal('')),
   message: z.string().max(500).optional().or(z.literal('')),
+}).refine((data) => Boolean(data.phone?.trim() || data.email?.trim()), {
+  message: 'মোবাইল অথবা ইমেইলের অন্তত একটি দিন',
+  path: ['phone'],
 });
 
 export const adminAdmitStudentSchema = z.object({
@@ -152,35 +157,48 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
   }
 };
 
-/** Student submits an admission request. This never enrolls the student directly. */
+/** A student or guest submits an admission request. This never enrolls directly. */
 export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const applicantUserId = req.user?._id;
-    if (!applicantUserId || req.user?.role !== ROLES.STUDENT) {
-      return res.status(403).json({ success: false, message: 'শুধু শিক্ষার্থীরাই ভর্তি অনুরোধ করতে পারবেন।' });
+    if (req.user && req.user.role !== ROLES.STUDENT) {
+      return res.status(403).json({ success: false, message: 'শুধু শিক্ষার্থী অথবা guest user ভর্তি অনুরোধ করতে পারবেন।' });
     }
 
     const { batchId, name, phone, email, schoolOrCollege, gradeLevel, guardianName, guardianPhone, message } = req.body;
+    const isGuest = !req.user;
+    const applicantUserId = req.user?._id || new mongoose.Types.ObjectId();
     const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject courseFee regularPrice discountPrice');
     if (!batch) return res.status(404).json({ success: false, message: 'ব্যাচটি পাওয়া যায়নি।' });
     if (batch.status === 'archived') return res.status(400).json({ success: false, message: 'এই ব্যাচে নতুন ভর্তি বন্ধ আছে।' });
 
-    const existingEnrollment = await Enrollment.findOne({
-      studentId: applicantUserId,
-      batchId: batch._id,
-      status: { $in: ['enrolled', 'completed'] },
-    });
+    const contactFilters = [
+      ...(email?.trim() ? [{ email: email.trim().toLowerCase() }] : []),
+      ...(phone?.trim() ? [{ phone: phone.trim() }] : []),
+    ];
+    const existingUser = isGuest
+      ? await User.findOne({ role: ROLES.STUDENT, $or: contactFilters })
+      : req.user;
+    const existingEnrollment = existingUser
+      ? await Enrollment.findOne({
+          studentId: existingUser._id,
+          batchId: batch._id,
+          status: { $in: ['enrolled', 'completed'] },
+        })
+      : null;
     if (existingEnrollment) {
       return res.status(409).json({ success: false, message: 'আপনি ইতিমধ্যে এই ব্যাচে ভর্তি আছেন।' });
     }
 
-    const existingRequest = await EnrollmentRequest.findOne({ applicantUserId, batchId: batch._id, status: 'pending' });
+    const existingRequest = isGuest
+      ? await EnrollmentRequest.findOne({ batchId: batch._id, status: 'pending', $or: contactFilters })
+      : await EnrollmentRequest.findOne({ applicantUserId, batchId: batch._id, status: 'pending' });
     if (existingRequest) {
       return res.status(409).json({ success: false, message: 'এই ব্যাচের জন্য আপনার একটি request আগে থেকেই pending আছে।', data: existingRequest });
     }
 
     const request = await EnrollmentRequest.create({
       applicantUserId,
+      isGuest,
       batchId: batch._id,
       courseId: (batch.courseId as any)._id || batch.courseId,
       name: name.trim(),
@@ -248,7 +266,7 @@ export const getEnrollmentRequestById = async (req: AuthenticatedRequest, res: R
   }
 };
 
-/** Approves a request without recording a payment; payment can be collected later. */
+/** Approves a request, reusing an existing student or creating a new account for a guest. */
 export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const reviewerId = req.user?._id;
@@ -264,10 +282,51 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
       if (activeCount >= batch.capacity) return res.status(400).json({ success: false, message: 'এই ব্যাচের আসন পূর্ণ হয়ে গেছে।' });
     }
 
-    const existing = await Enrollment.findOne({ studentId: request.applicantUserId, batchId: batch._id });
+    const contactFilters = [
+      ...(request.email?.trim() ? [{ email: request.email.trim().toLowerCase() }] : []),
+      ...(request.phone?.trim() ? [{ phone: request.phone.trim() }] : []),
+    ];
+    let studentDoc = request.isGuest ? null : await User.findById(request.applicantUserId);
+    if (!studentDoc && contactFilters.length > 0) {
+      studentDoc = await User.findOne({ $or: contactFilters });
+    }
+    if (studentDoc && studentDoc.role !== ROLES.STUDENT) {
+      return res.status(409).json({ success: false, message: 'এই email বা mobile নম্বরটি student account-এর নয়।' });
+    }
+
+    let isNewUserCreated = false;
+    let defaultPassword = '';
+    if (!studentDoc) {
+      const generatedUserId = await generateUniqueUserId();
+      defaultPassword = crypto.randomBytes(6).toString('base64url');
+      const passwordHash = await bcrypt.hash(defaultPassword, 10);
+      studentDoc = await User.create({
+        userId: generatedUserId,
+        name: request.name.trim(),
+        email: request.email?.trim().toLowerCase() || undefined,
+        phone: request.phone?.trim() || undefined,
+        passwordHash,
+        role: ROLES.STUDENT,
+        status: 'active',
+        emailVerified: Boolean(request.email),
+        studentDetails: {
+          schoolOrCollege: request.schoolOrCollege || '',
+          gradeLevel: request.gradeLevel || course?.gradeLevel || '',
+          guardianName: request.guardianName || '',
+          guardianPhone: request.guardianPhone || '',
+        },
+      });
+      isNewUserCreated = true;
+    }
+
+    const existing = await Enrollment.findOne({ studentId: studentDoc._id, batchId: batch._id });
     const fee = course?.discountPrice ?? course?.courseFee ?? course?.regularPrice ?? 0;
+    if (existing && ['enrolled', 'completed'].includes(existing.status)) {
+      return res.status(409).json({ success: false, message: 'এই student ইতিমধ্যে এই batch-এ enrolled আছেন।' });
+    }
+
     const enrollment = existing || await Enrollment.create({
-      studentId: request.applicantUserId,
+      studentId: studentDoc._id,
       batchId: batch._id,
       courseId: course?._id || request.courseId,
       batchFee: fee,
@@ -276,7 +335,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
       paymentStatus: 'unpaid',
       enrolledBy: reviewerId,
       enrolledAt: new Date(),
-      notes: 'Approved from student enrollment request',
+      notes: 'Approved from enrollment request',
     });
 
     if (existing) {
@@ -289,6 +348,8 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
       await existing.save();
     }
 
+    request.applicantUserId = studentDoc._id;
+    request.isGuest = false;
     request.status = 'approved';
     request.reviewedBy = reviewerId;
     request.reviewedAt = new Date();
@@ -296,7 +357,38 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     request.reviewNote = req.body?.reviewNote?.trim() || undefined;
     await request.save();
 
-    return res.json({ success: true, message: 'Request approve করে শিক্ষার্থীকে ব্যাচে ভর্তি করা হয়েছে।', data: { request, enrollment } });
+    let emailSent = false;
+    if (request.email) {
+      emailSent = await sendEnrollmentApprovalEmail({
+        to: request.email,
+        name: studentDoc.name,
+        batchName: batch.name,
+        userId: studentDoc.userId,
+        password: isNewUserCreated ? defaultPassword : undefined,
+        existingAccount: !isNewUserCreated,
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: isNewUserCreated
+        ? 'Request approve করে নতুন student account তৈরি ও batch-এ ভর্তি করা হয়েছে।'
+        : 'Request approve করে student-কে batch-এ ভর্তি করা হয়েছে।',
+      data: {
+        request,
+        enrollment,
+        emailSent,
+        isNewUserCreated,
+        student: {
+          _id: studentDoc._id,
+          name: studentDoc.name,
+          userId: studentDoc.userId,
+          email: studentDoc.email,
+          phone: studentDoc.phone,
+          defaultPassword: isNewUserCreated ? defaultPassword : undefined,
+        },
+      },
+    });
   } catch (error: any) {
     console.error('approveEnrollmentRequest error:', error);
     return res.status(500).json({ success: false, message: 'Request approve করা যায়নি।' });

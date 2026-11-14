@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { z } from 'zod';
 import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
+import { PasswordResetToken } from '../models/PasswordResetToken';
+import { sendPasswordResetEmail } from '../services/emailService';
 import { ROLES, getEffectivePermissions } from '../types/roles';
 import { AuthenticatedRequest } from '../middleware/auth';
 
@@ -22,6 +25,15 @@ export const loginSchema = z.object({
   identifier: z.string().min(1, 'User ID or Email is required').optional(),
   email: z.string().optional(),
   password: z.string().min(1, 'Password is required'),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('সঠিক ইমেইল ঠিকানা দিন'),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(32, 'Invalid reset token'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 const generateToken = (userId: string): string => {
@@ -211,6 +223,91 @@ export const login = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Login error:', error);
     return res.status(500).json({ success: false, message: 'Server error during login.' });
+  }
+};
+
+/**
+ * Request a password reset email without revealing whether the email exists.
+ */
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const user = await User.findOne({ email, status: 'active' });
+
+    if (user?.email) {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+      await PasswordResetToken.deleteMany({ userId: user._id, usedAt: { $exists: false } });
+      await PasswordResetToken.create({
+        userId: user._id,
+        tokenHash,
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+      });
+      await sendPasswordResetEmail({
+        to: user.email,
+        name: user.name,
+        token: rawToken,
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'যদি এই ইমেইলটি registered থাকে, password reset link পাঠানো হয়েছে।',
+    });
+  } catch (error) {
+    console.error('forgotPassword error:', error);
+    return res.json({
+      success: true,
+      message: 'যদি এই ইমেইলটি registered থাকে, password reset link পাঠানো হয়েছে।',
+    });
+  }
+};
+
+/**
+ * Consume a one-time password reset token.
+ */
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, password } = req.body;
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const resetRecord = await PasswordResetToken.findOne({
+      tokenHash,
+      usedAt: { $exists: false },
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!resetRecord) {
+      return res.status(400).json({
+        success: false,
+        message: 'এই password reset linkটি invalid বা expired। নতুন link নিন।',
+      });
+    }
+
+    const user = await User.findById(resetRecord.userId).select('+passwordHash');
+    if (!user || user.status === 'suspended' || user.status === 'deactivated') {
+      return res.status(400).json({ success: false, message: 'এই account-এ password reset করা যাচ্ছে না।' });
+    }
+
+    user.passwordHash = await bcrypt.hash(password, 10);
+    await user.save();
+    resetRecord.usedAt = new Date();
+    await resetRecord.save();
+    await PasswordResetToken.deleteMany({ userId: user._id, _id: { $ne: resetRecord._id } });
+
+    await AuditLog.create({
+      actorId: user._id,
+      actorEmail: user.email || user.userId,
+      action: 'PASSWORD_RESET',
+      resourceType: 'User',
+      resourceId: user._id.toString(),
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+
+    return res.json({ success: true, message: 'Password সফলভাবে পরিবর্তন হয়েছে। এখন নতুন password দিয়ে login করুন।' });
+  } catch (error) {
+    console.error('resetPassword error:', error);
+    return res.status(500).json({ success: false, message: 'Password পরিবর্তন করা যায়নি।' });
   }
 };
 

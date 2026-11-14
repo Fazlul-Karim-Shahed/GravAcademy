@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, GraduationCap, Loader2, Phone, Mail, UserRound, ShieldCheck } from 'lucide-react';
 import { api } from '@/lib/api';
-import ProtectedRoute from '@/components/common/ProtectedRoute';
+import { useAuth } from '@/context/AuthContext';
 
 interface BatchData {
   _id: string;
@@ -25,6 +25,7 @@ interface BatchData {
 function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const { user } = useAuth();
   const [batch, setBatch] = useState<BatchData | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -100,7 +101,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
             <h1 className="text-xl sm:text-2xl font-black">Request পাঠানো হয়েছে</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto">Admin request review করে approve করলে এই batch আপনার classroom-এ দেখা যাবে।</p>
             <div className="flex flex-wrap justify-center gap-3 mt-7">
-              <Link href="/dashboard" className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">Dashboard</Link>
+              {user && <Link href="/dashboard" className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">Dashboard</Link>}
               <Link href="/courses" className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">কোর্স দেখুন</Link>
             </div>
           </div>
@@ -145,5 +146,5 @@ function Field({ label, value, onChange, icon, required, type = 'text' }: { labe
 }
 
 export default function EnrollmentRequestPage({ params }: { params: Promise<{ batchId: string }> }) {
-  return <ProtectedRoute allowedRoles={['student']}><EnrollmentRequestContent params={params} /></ProtectedRoute>;
+  return <EnrollmentRequestContent params={params} />;
 }

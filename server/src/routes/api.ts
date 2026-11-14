@@ -34,6 +34,8 @@ const upload = multer({
 // --- AUTH & PROFILE ROUTES ---
 router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl.register);
 router.post('/auth/login', validateRequest(authCtrl.loginSchema), authCtrl.login);
+router.post('/auth/forgot-password', validateRequest(authCtrl.forgotPasswordSchema), authCtrl.forgotPassword);
+router.post('/auth/reset-password', validateRequest(authCtrl.resetPasswordSchema), authCtrl.resetPassword);
 router.get('/auth/me', authenticate, authCtrl.getMe);
 router.put('/auth/profile', authenticate, authCtrl.updateProfile);
 router.post('/auth/avatar', authenticate, upload.single('avatar'), authCtrl.uploadAvatar);
@@ -133,7 +135,7 @@ router.get(
 );
 router.post(
   '/enrollment-requests',
-  authenticate,
+  optionalAuthenticate,
   requireFeature(FEATURE_FLAGS.admissions),
   validateRequest(enrollmentCtrl.createEnrollmentRequestSchema),
   enrollmentCtrl.createEnrollmentRequest

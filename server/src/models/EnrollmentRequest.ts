@@ -5,6 +5,7 @@ export type EnrollmentRequestStatus = 'pending' | 'approved' | 'rejected' | 'can
 export interface IEnrollmentRequest extends Document {
   _id: mongoose.Types.ObjectId;
   applicantUserId: mongoose.Types.ObjectId;
+  isGuest: boolean;
   batchId: mongoose.Types.ObjectId;
   courseId: mongoose.Types.ObjectId;
   name: string;
@@ -27,6 +28,7 @@ export interface IEnrollmentRequest extends Document {
 const EnrollmentRequestSchema = new Schema<IEnrollmentRequest>(
   {
     applicantUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    isGuest: { type: Boolean, default: false, index: true },
     batchId: { type: Schema.Types.ObjectId, ref: 'Batch', required: true, index: true },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true, index: true },
     name: { type: String, required: true, trim: true },

@@ -165,10 +165,6 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   }, [resolvedParams.id, user]);
 
   const startEnrollment = () => {
-    if (!user) {
-      router.push(`/login?redirect=${encodeURIComponent(`/courses/${resolvedParams.id}`)}`);
-      return;
-    }
     if (batches.length === 0) return;
     setShowBatchPicker(true);
   };
