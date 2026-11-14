@@ -7,7 +7,6 @@ import { Course } from '../models/Course';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { User } from '../models/User';
 import { Payment } from '../models/Payment';
 import { EnrollmentRequest } from '../models/EnrollmentRequest';
@@ -298,7 +297,9 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     let defaultPassword = '';
     if (!studentDoc) {
       const generatedUserId = await generateUniqueUserId();
-      defaultPassword = crypto.randomBytes(6).toString('base64url');
+      // New student accounts use the generated user ID as their initial password.
+      // The student can change it later through the password-reset flow.
+      defaultPassword = generatedUserId;
       const passwordHash = await bcrypt.hash(defaultPassword, 10);
       studentDoc = await User.create({
         userId: generatedUserId,
