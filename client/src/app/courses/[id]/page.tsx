@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDriveImageUrl } from '@/lib/drive';
 import { useAuth } from '@/context/AuthContext';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 import {
   BookOpen,
   GraduationCap,
@@ -73,6 +74,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params);
   const router = useRouter();
   const { user } = useAuth();
+  const { isFeatureEnabled } = useSiteSettings();
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [enrolledBatchIds, setEnrolledBatchIds] = useState<string[]>([]);
@@ -623,7 +625,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                             - Non-user (visitor) OR Student not enrolled: "এনরোল করুন"
                             - Student already enrolled: "ক্লাসরুমে প্রবেশ করুন"
                         */}
-                        {(!user || user.role === 'student') && (
+                        {isFeatureEnabled('admissions', user?.role === 'superadmin') && (!user || user.role === 'student') && (
                           <>
                             {user && user.role === 'student' && enrolledBatchIds.includes(batch._id) ? (
                               <Link
