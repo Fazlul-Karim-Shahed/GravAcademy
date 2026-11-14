@@ -216,6 +216,9 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           .receipt-print-root .mt-32 {
             margin-top: 56px !important;
           }
+          .receipt-print-root .space-y-6 > .mt-32 {
+            margin-top: 72px !important;
+          }
           .receipt-print-root table th,
           .receipt-print-root table td {
             padding-top: 6px !important;
