@@ -113,6 +113,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const [loading, setLoading] = useState(true);
   const [showBatchPicker, setShowBatchPicker] = useState(false);
   const [expandedSyllabus, setExpandedSyllabus] = useState<number | null>(null);
+  const [showAllTeachers, setShowAllTeachers] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -186,6 +187,8 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
     { _id: 'dummy-4', name: 'সাপোর্ট মেন্টর', email: '', role: 'teacher' },
   ] as Teacher[];
   const syllabus = course.syllabus?.length ? course.syllabus : fallbackSyllabus;
+  const visibleTeachers = showAllTeachers ? teachers.slice(0, 8) : teachers.slice(0, 4);
+  const teacherMeta = ['গণিত · ৮+ বছর', 'পদার্থবিজ্ঞান · ৭+ বছর', 'রসায়ন · ৬+ বছর', 'ইংরেজি · ৯+ বছর'];
 
   return (
     <main className="min-h-screen bg-[#f3f8fc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -237,7 +240,95 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
       <section className="mx-auto grid max-w-6xl gap-7 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
         <div className="space-y-7">
-          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-blue-600">Grav Academy</p>
+                <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">শিক্ষকবৃন্দ</h2>
+              </div>
+              <span className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-black text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{teachers.length} জন</span>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {visibleTeachers.map((teacher, index) => {
+                const surface = [
+                  'from-rose-100 via-fuchsia-50 to-white dark:from-rose-950/60 dark:via-fuchsia-950/30 dark:to-slate-900',
+                  'from-amber-100 via-orange-50 to-white dark:from-amber-950/60 dark:via-orange-950/30 dark:to-slate-900',
+                  'from-sky-100 via-cyan-50 to-white dark:from-sky-950/60 dark:via-cyan-950/30 dark:to-slate-900',
+                  'from-emerald-100 via-teal-50 to-white dark:from-emerald-950/60 dark:via-teal-950/30 dark:to-slate-900',
+                ][index % 4];
+                return <article key={teacher._id} className="group min-w-0 text-center">
+                  <div className={"relative aspect-[4/3] overflow-hidden rounded-[22px] bg-gradient-to-br " + surface}>
+                    <div className="absolute -right-5 -top-5 h-20 w-20 rounded-full bg-white/40 blur-2xl dark:bg-white/10" />
+                    <img src={teacherAvatar(teacher, index)} alt={teacher.name} className="relative h-full w-full object-contain object-bottom drop-shadow-md transition-transform duration-500 group-hover:scale-[1.04]" />
+                    <span className="absolute bottom-2 left-2 rounded-full bg-white/85 px-2 py-1 text-[9px] font-black text-slate-700 shadow-sm backdrop-blur dark:bg-slate-950/70 dark:text-slate-200">{teacherMeta[index % teacherMeta.length]}</span>
+                  </div>
+                  <h3 className="mt-3 truncate text-xs font-black text-slate-900 dark:text-white sm:text-sm">{teacher.name}</h3>
+                  <p className="mt-1 truncate text-[10px] text-slate-500 dark:text-slate-400">{course.subject || 'Academic'} · Mentor</p>
+                </article>;
+              })}
+            </div>
+            {teachers.length > 4 && <button type="button" onClick={() => setShowAllTeachers((value) => !value)} className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-blue-200 px-4 py-2 text-xs font-black text-blue-700 transition-colors hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/40">{showAllTeachers ? 'সংক্ষেপে' : 'আরো দেখুন'} <ChevronDown className={showAllTeachers ? 'h-3.5 w-3.5 rotate-180 transition-transform' : 'h-3.5 w-3.5 transition-transform'} /></button>}
+          </section>
+
+          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-600">Course roadmap</p>
+                <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
+              </div>
+              <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-black text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">{syllabus.length}টি বিষয়</span>
+            </div>
+            <div className="mt-6 divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+              {syllabus.map((item, index) => {
+                const open = expandedSyllabus === index;
+                return <div key={item.title + '-new-' + index} className={open ? 'bg-blue-50/70 dark:bg-blue-950/20' : 'bg-white dark:bg-slate-900'}>
+                  <button type="button" onClick={() => setExpandedSyllabus(open ? null : index)} className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 sm:px-5">
+                    <span className={open ? 'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white' : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300'}><Layers3 className="h-4 w-4" /></span>
+                    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black text-slate-900 dark:text-white">{item.title}</span><span className="mt-0.5 block text-[10px] text-slate-500 dark:text-slate-400">Lesson {String(index + 1).padStart(2, '0')} · Core topic</span></span>
+                    <ChevronDown className={open ? 'h-4 w-4 shrink-0 rotate-180 text-blue-600 transition-transform' : 'h-4 w-4 shrink-0 text-slate-400 transition-transform'} />
+                  </button>
+                  {open && <div className="flex gap-3 border-t border-blue-100 px-4 pb-5 pt-3 text-xs leading-6 text-slate-600 dark:border-blue-900/50 dark:text-slate-300 sm:px-5"><span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />{item.details}</div>}
+                </div>;
+              })}
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="grid items-center gap-5 bg-gradient-to-br from-[#eef7ff] via-white to-[#f2edff] p-5 sm:grid-cols-[1fr_210px] sm:p-7 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[10px] font-black text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"><CalendarDays className="h-3.5 w-3.5" /> Course plan</span>
+                <h2 className="mt-3 text-xl font-black text-slate-900 dark:text-white">প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস</h2>
+                <p className="mt-2 max-w-lg text-xs leading-6 text-slate-600 dark:text-slate-300">ক্লাসের সময়সূচি, প্রস্তুতি ও কোর্সের গাইডলাইন এক জায়গায় রাখার জন্য এই sectionটি তৈরি করা হয়েছে।</p>
+                <div className="mt-4 flex flex-wrap gap-2"><button type="button" className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-black text-white shadow-sm hover:bg-blue-700">রুটিন দেখুন</button><button type="button" className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">প্রসপেক্টাস</button></div>
+              </div>
+              <div className="relative mx-auto flex h-36 w-full max-w-[210px] items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 shadow-lg"><div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-cyan-300/30 blur-2xl" /><div className="absolute -bottom-10 -left-6 h-28 w-28 rounded-full bg-fuchsia-300/30 blur-2xl" /><BookOpen className="relative h-14 w-14 text-white/90" /></div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 sm:grid-cols-2">
+            <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-[#122b63] via-[#173e88] to-[#4169d8] p-6 text-white shadow-sm">
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-cyan-300/20 blur-2xl" />
+              <p className="relative text-[11px] font-black uppercase tracking-[0.18em] text-blue-100">Support</p>
+              <h2 className="relative mt-3 text-xl font-black">যেকোনো প্রয়োজনে কথা বলুন</h2>
+              <p className="relative mt-2 text-xs leading-6 text-blue-100">ভর্তি, কোর্স বা পড়াশোনা নিয়ে সাহায্য দরকার?</p>
+              <a href="tel:16910" className="relative mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-black text-blue-700 shadow-sm"><Phone className="h-4 w-4" /> ১৬৯১০</a>
+            </div>
+            <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-600">Learning extras</p>
+              <h2 className="mt-3 text-xl font-black text-slate-900 dark:text-white">আরও শেখার সুযোগ</h2>
+              <p className="mt-2 text-xs leading-6 text-slate-600 dark:text-slate-300">ভিডিও, নোট ও practice materials ধাপে ধাপে যোগ হবে।</p>
+              <div className="mt-5 flex flex-wrap gap-2"><button type="button" className="rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white hover:bg-emerald-700">ভিডিও দেখুন</button><button type="button" className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-black text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200">সাপোর্ট</button></div>
+            </div>
+          </section>
+
+          <section className="rounded-[28px] border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+            <GraduationCap className="mx-auto h-8 w-8 text-blue-600" />
+            <h2 className="mt-3 text-lg font-black text-slate-900 dark:text-white">আপনার শেখার যাত্রা শুরু করুন</h2>
+            <p className="mx-auto mt-2 max-w-xl text-xs leading-6 text-slate-600 dark:text-slate-300">একটি batch বেছে নিয়ে আজই course request পাঠান।</p>
+            <button type="button" onClick={startEnrollment} className="mt-5 rounded-xl bg-blue-600 px-5 py-3 text-xs font-black text-white shadow-sm hover:bg-blue-700">এনরোল করুন <ArrowRight className="ml-1 inline h-4 w-4" /></button>
+          </section>
+
+          <section className="hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white">কোর্সের শিক্ষকবৃন্দ</h2>
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
               {teachers.slice(0, 8).map((teacher, index) => {
@@ -254,7 +345,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             {teachers.length > 8 && <button type="button" className="mt-5 text-xs font-bold text-blue-600 hover:underline">আরো দেখুন</button>}
           </section>
 
-          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+          <section className="hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
               <BookOpen className="h-5 w-5 text-blue-600" />
@@ -274,7 +365,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
           </section>
 
-          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+          <section className="hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
             <h2 className="text-xl font-black text-slate-900 dark:text-white">প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস</h2>
             <div className="mt-4 flex min-h-40 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 text-center dark:from-slate-800 dark:via-slate-800 dark:to-indigo-950">
               <div><CalendarDays className="mx-auto h-9 w-9 text-blue-500" /><p className="mt-2 text-sm font-black text-slate-700 dark:text-slate-200">রুটিন শীঘ্রই যুক্ত হবে</p><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">প্রকাশ হলে এখানে দেখা যাবে।</p></div>
