@@ -1083,7 +1083,7 @@ export default function AdminAdmissionsPage() {
                           maxSizeMb={20}
                           disabled={uploadingDoc}
                         />
-                        <label
+                        {false && <label
                           className={`hidden relative shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                             uploadingDoc
                               ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
@@ -1108,7 +1108,7 @@ export default function AdminAdmissionsPage() {
                               ডিভাইস থেকে ফাইল দিন
                             </>
                           )}
-                        </label>
+                        </label>}
                       </div>
 
                       {docUploadSuccess && (
