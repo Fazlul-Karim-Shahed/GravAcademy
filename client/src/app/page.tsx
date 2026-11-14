@@ -762,18 +762,25 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Cute Class Switcher Pill Tabs */}
-            <div className="p-1.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
+            {/* Class filter: compact, accessible segmented control */}
+            <div
+              role="tablist"
+              aria-label="ক্লাস অনুযায়ী কোর্স বাছাই করুন"
+              className="w-full lg:w-auto flex items-center gap-1 p-1 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-inner overflow-x-auto scrollbar-none max-w-full"
+            >
               {classList.slice(0, 6).map((cls) => {
                 const isActive = selectedClass === cls;
                 return (
                   <button
                     key={cls}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
                     onClick={() => setSelectedClass(cls)}
-                    className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black whitespace-nowrap transition-all duration-300 cursor-pointer ${
+                    className={`min-w-max px-3.5 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/25 scale-[1.02]'
-                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/80'
+                        ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-700'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-slate-800/70'
                     }`}
                   >
                     {cls === 'All' ? 'সকল শ্রেণি' : cls}
