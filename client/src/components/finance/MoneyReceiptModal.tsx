@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Printer,
@@ -16,6 +16,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { formatBDDate, formatBDTime } from '@/lib/dateUtils';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
+import { formatDriveImageUrl } from '@/lib/drive';
 
 export interface PaymentReceiptData {
   _id: string;
@@ -88,8 +90,12 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   allPayments,
 }) => {
   const receiptRef = useRef<HTMLDivElement>(null);
+  const { settings } = useSiteSettings();
+  const [logoFailed, setLogoFailed] = useState(false);
 
   if (!isOpen || !data) return null;
+
+  const logoUrl = settings?.logoUrl ? formatDriveImageUrl(settings.logoUrl) : '';
 
   const handlePrint = () => {
     const originalTitle = document.title;
@@ -257,8 +263,15 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b-2 border-dashed border-slate-200 dark:border-slate-800 print:border-slate-400">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20 print:border print:border-black">
-                  G
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20 print:border print:border-black overflow-hidden">
+                  {logoUrl && !logoFailed ? (
+                    <img
+                      src={logoUrl}
+                      alt="Grav Academy logo"
+                      onError={() => setLogoFailed(true)}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : 'G'}
                 </div>
                 <div>
                   <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white print:text-black">
