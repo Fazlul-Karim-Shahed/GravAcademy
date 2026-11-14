@@ -29,8 +29,10 @@ import {
   Monitor,
   PenTool,
   Phone,
+  Play,
   ShieldCheck,
   Users,
+  UsersRound,
   X,
 } from 'lucide-react';
 
@@ -106,8 +108,7 @@ function classLabel(gradeLevel?: string) {
 
 function teacherAvatar(teacher: Teacher, index: number) {
   if (teacher.avatarUrl) return formatDriveImageUrl(teacher.avatarUrl);
-  const seed = encodeURIComponent(`grav-academy-teacher-${teacher._id || index}`);
-  return `https://api.dicebear.com/9.x/personas/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+  return [1, 2, 3].map((number) => `/images/teacher-${number}.jpg`)[index % 3];
 }
 
 export default function CourseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -263,13 +264,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       <section className="mx-auto grid max-w-6xl gap-7 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
         <div className="space-y-7">
           <section className="rounded-[28px] bg-transparent p-0">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-blue-600">Grav Academy</p>
-                <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">শিক্ষকবৃন্দ</h2>
-              </div>
-              <span className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-black text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{teachers.length} জন</span>
-            </div>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">কোর্সের শিক্ষকবৃন্দ</h2>
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {visibleTeachers.map((teacher, index) => {
                 const surface = [
@@ -363,9 +358,31 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <p className="mt-2 text-[10px] text-[#31558e]">* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *</p>
               </div>
               <div className="relative h-52 self-end overflow-hidden sm:h-64">
-                <img src="/images/hero-student.jpg" alt="Grav Academy student support" className="absolute inset-0 h-full w-full object-cover object-[65%_20%] mix-blend-multiply" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#eaf5df]/95 via-transparent to-transparent sm:from-[#eaf5df]/40" />
+                <img src="/images/course-support-student.png" alt="Grav Academy student support" className="absolute bottom-0 right-0 h-full w-full object-contain object-bottom drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:w-[240px]" />
               </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 sm:grid-cols-2">
+            <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#ffc9c9] to-[#ffd8d8] p-6 shadow-[0_8px_22px_rgba(30,65,100,0.08)]">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="max-w-[190px] text-xl font-black leading-8 text-[#17356e]">ফ্রি ভিডিও লাইব্রেরি</h2>
+                  <Link href="/free-classes" className="mt-6 inline-flex rounded-xl bg-white px-5 py-3 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">ভিডিও দেখুন</Link>
+                </div>
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ef1717] text-white shadow-lg shadow-red-300/50"><Play className="h-9 w-9 fill-white" /></div>
+              </div>
+              <div className="absolute -bottom-8 right-24 h-16 w-16 rounded-full bg-white/25 blur-2xl" />
+            </div>
+            <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#c6dcff] to-[#d6e5ff] p-6 shadow-[0_8px_22px_rgba(30,65,100,0.08)]">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="max-w-[190px] text-xl font-black leading-8 text-[#17356e]">Grav Academy ফেসবুক গ্রুপ</h2>
+                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="mt-6 inline-flex rounded-xl bg-white px-5 py-3 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">গ্রুপে যুক্ত হন</a>
+                </div>
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#3d5a9d] text-white shadow-lg shadow-blue-300/50"><UsersRound className="h-9 w-9" /></div>
+              </div>
+              <div className="absolute -bottom-8 right-24 h-16 w-16 rounded-full bg-white/25 blur-2xl" />
             </div>
           </section>
 
@@ -385,7 +402,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+          <section className="hidden rounded-[28px] border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
             <GraduationCap className="mx-auto h-8 w-8 text-blue-600" />
             <h2 className="mt-3 text-lg font-black text-slate-900 dark:text-white">আপনার শেখার যাত্রা শুরু করুন</h2>
             <p className="mx-auto mt-2 max-w-xl text-xs leading-6 text-slate-600 dark:text-slate-300">একটি batch বেছে নিয়ে আজই course request পাঠান।</p>
