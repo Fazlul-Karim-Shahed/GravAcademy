@@ -543,6 +543,13 @@ router.post(
   requirePermission(PERMISSIONS.USERS_MANAGE),
   userAdminCtrl.createStaffAccount
 );
+router.delete(
+  '/users/:id',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.userManagement),
+  requirePermission(PERMISSIONS.USERS_MANAGE),
+  userAdminCtrl.deleteUser
+);
 router.get('/guardian/overview', authenticate, guardianCtrl.getGuardianOverview);
 router.get(
   '/audit-logs',

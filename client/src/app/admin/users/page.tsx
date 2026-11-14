@@ -18,6 +18,8 @@ import {
   Filter,
   Link2,
   X,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
@@ -79,6 +81,36 @@ export default function AdminUsersPage() {
   const handleSearch = () => {
     setPage(1);
     fetchUsers(1);
+  };
+
+  const canDeleteUser = (target: UserRecord) =>
+    Boolean(user) &&
+    target._id !== user?.id &&
+    target.role !== 'superadmin' &&
+    (target.role !== 'admin' || user?.role === 'superadmin');
+
+  const [deleteTarget, setDeleteTarget] = useState<UserRecord | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState('');
+
+  const handleDeleteUser = async () => {
+    if (!deleteTarget) return;
+    setDeletingUserId(deleteTarget._id);
+    setDeleteError('');
+    try {
+      const res = await api.delete(`/users/${deleteTarget._id}`);
+      if (!res.data?.success) {
+        setDeleteError(res.data?.message || 'ইউজার ডিলিট করা যায়নি');
+        return;
+      }
+      setDeleteTarget(null);
+      await fetchUsers(users.length === 1 && page > 1 ? page - 1 : page);
+      if (users.length === 1 && page > 1) setPage((current) => current - 1);
+    } catch (err: any) {
+      setDeleteError(err.response?.data?.message || 'ইউজার ডিলিট করা যায়নি');
+    } finally {
+      setDeletingUserId(null);
+    }
   };
 
   // Guardian <-> Student linking modal
@@ -391,6 +423,21 @@ export default function AdminUsersPage() {
                     <span>পারমিশন ও অ্যাক্সেস কন্ট্রোল</span>
                     <ChevronRight className="w-3 h-3 ml-auto text-slate-400" />
                   </Link>
+
+                  {canDeleteUser(u) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeleteError('');
+                        setDeleteTarget(u);
+                      }}
+                      disabled={deletingUserId === u._id}
+                      className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-bold text-xs transition-colors border border-rose-200/70 dark:border-rose-800 shadow-2xs disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>ডিলিট</span>
+                    </button>
+                  )}
                 </div>
               ))
             )}
@@ -519,6 +566,20 @@ export default function AdminUsersPage() {
                             <span>পারমিশন ও কন্ট্রোল</span>
                             <ChevronRight className="w-3 h-3" />
                           </Link>
+                          {canDeleteUser(u) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeleteError('');
+                                setDeleteTarget(u);
+                              }}
+                              disabled={deletingUserId === u._id}
+                              title="ইউজার ডিলিট"
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-600 dark:text-rose-300 transition-colors shadow-2xs disabled:opacity-50"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -790,6 +851,44 @@ export default function AdminUsersPage() {
                   {savingLink ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/55 px-4">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">ইউজার ডিলিট করবেন?</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  <span className="font-bold text-slate-700 dark:text-slate-200">{deleteTarget.name}</span>-এর অ্যাকাউন্ট ও সংশ্লিষ্ট রেকর্ড স্থায়ীভাবে মুছে যাবে। এই কাজ ফেরানো যাবে না।
+                </p>
+                <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-300">পেমেন্ট হিসাব থাকবে, শুধু পুরোনো সংগ্রাহকের লিংক সরবে।</p>
+              </div>
+            </div>
+            {deleteError && <div className="px-5 pt-4 text-xs font-bold text-rose-600">{deleteError}</div>}
+            <div className="p-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={Boolean(deletingUserId)}
+                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteUser}
+                disabled={Boolean(deletingUserId)}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
+              >
+                {deletingUserId ? 'ডিলিট হচ্ছে...' : 'স্থায়ীভাবে ডিলিট'}
+              </button>
             </div>
           </div>
         </div>
