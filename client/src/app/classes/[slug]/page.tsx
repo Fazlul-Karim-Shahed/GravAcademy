@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight, BookOpen, ChevronRight, Compass, GraduationCap, Layers } from 'lucide-react';
+import { ArrowRight, BookOpen, ChevronRight, Compass, GraduationCap, Layers } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatDriveImageUrl } from '@/lib/drive';
 import { getSharedAcademicClasses, AcademicClassItem, getClassSlug } from '@/lib/classes';
@@ -91,11 +91,6 @@ export default function DedicatedClassPage() {
           <div className="absolute top-[12%] right-[30%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 sm:py-12 relative z-10">
-          <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-amber-300 transition-colors">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            সব কোর্স
-          </Link>
-
           <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-3xl">
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
@@ -105,7 +100,6 @@ export default function DedicatedClassPage() {
             </div>
             <div className="shrink-0 flex flex-col items-start md:items-end gap-3">
               <span className="inline-flex items-center gap-2 text-xs font-bold text-slate-200"><BookOpen className="w-4 h-4 text-amber-300" />{courses.length}টি কোর্স</span>
-              <a href="#courses-section" className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/30 transition-all border border-white/20">কোর্সসমূহ দেখুন <ArrowRight className="w-4 h-4" /></a>
             </div>
           </div>
         </div>
@@ -118,7 +112,6 @@ export default function DedicatedClassPage() {
               <span className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 flex items-center justify-center"><Layers className="w-4 h-4" /></span>
               কোর্স বেছে নিন
             </h2>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">আপনার পছন্দের কোর্সে প্রবেশ করুন</p>
           </div>
           <Link href="/courses" className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700">
             সব কোর্স <ChevronRight className="w-3.5 h-3.5" />
