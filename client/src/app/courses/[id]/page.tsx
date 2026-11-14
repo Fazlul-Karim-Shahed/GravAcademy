@@ -67,6 +67,7 @@ interface CourseDetail {
   targetAudience?: string;
   instructors?: Teacher[];
   curriculumHighlights?: string[];
+  syllabus?: string[];
   features?: string[];
 }
 
@@ -252,6 +253,29 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       ? course.curriculumHighlights
       : defaultHighlights;
 
+  const defaultSyllabus = [
+    'বাংলা ১ম পত্র',
+    'বাংলা ২য় পত্র',
+    'ইংরেজি ১ম পত্র',
+    'ইংরেজি ২য় পত্র',
+    'গণিত',
+    'বিজ্ঞান',
+    'বাংলাদেশ ও বিশ্বপরিচয়',
+    'তথ্য ও যোগাযোগ প্রযুক্তি',
+    'অধ্যায়ভিত্তিক মডেল টেস্ট',
+    'প্র্যাকটিস ও রিভিশন',
+  ];
+  const syllabusItems = course.syllabus && course.syllabus.length > 0 ? course.syllabus : defaultSyllabus;
+
+  const displayTeachers: Teacher[] = course.instructors && course.instructors.length > 0
+    ? course.instructors
+    : [
+        { _id: 'dummy-1', name: 'প্রধান মেন্টর', email: '', role: 'teacher' },
+        { _id: 'dummy-2', name: 'বিষয়ভিত্তিক শিক্ষক', email: '', role: 'teacher' },
+        { _id: 'dummy-3', name: 'একাডেমিক মেন্টর', email: '', role: 'teacher' },
+        { _id: 'dummy-4', name: 'সাপোর্ট মেন্টর', email: '', role: 'teacher' },
+      ];
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
 
@@ -385,7 +409,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                   </span>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200/60 dark:border-emerald-900/60 px-3 py-1 rounded-full">
-                  {highlights.length} টি বিশেষ মডিউল
+                  {syllabusItems.length} টি বিষয়
                 </span>
               </div>
 
@@ -396,11 +420,11 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 বোর্ড পরীক্ষায় শতভাগ সাফল্যের জন্য কনসেপ্ট, প্র্যাকটিস এবং পরীক্ষার সুবিন্যস্ত রোডম্যাপ।
               </p>
 
-              <div className="grid grid-cols-1 gap-3.5">
-                {highlights.map((h, i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {syllabusItems.map((h, i) => (
                   <div
                     key={i}
-                    className="group relative flex items-start gap-4 p-4 sm:p-4.5 rounded-2xl bg-slate-50/70 dark:bg-slate-950/50 border border-slate-200/70 dark:border-slate-800/80 hover:border-blue-500/60 dark:hover:border-blue-500/60 hover:bg-white dark:hover:bg-slate-900 hover:shadow-md transition-all duration-200"
+                    className="group relative flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-950/50 border border-slate-200/70 dark:border-slate-800/80 hover:border-blue-500/60 dark:hover:border-blue-500/60 hover:bg-white dark:hover:bg-slate-900 hover:shadow-md transition-all duration-200"
                   >
                     {/* Index Number Badge */}
                     <div className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs shrink-0 shadow-2xs group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
@@ -424,60 +448,28 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
             {/* Instructors Section */}
             <div className="order-2 p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  শিক্ষক প্যানেল
-                </span>
-              </div>
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                কোর্সের অভিজ্ঞ শিক্ষকবৃন্দ
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">
-                বুয়েট, ঢাকা বিশ্ববিদ্যালয় ও শীর্ষ মেডিকেল কলেজের অভিজ্ঞ শিক্ষকবৃন্দের তত্ত্বাবধানে বিষয়ভিত্তিক পাঠদান।
-              </p>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">কোর্সের শিক্ষকবৃন্দ</h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">অভিজ্ঞ শিক্ষক ও মেন্টরদের সাথে গোছানোভাবে শেখার সুযোগ।</p>
 
-              {course.instructors && course.instructors.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {course.instructors.map((t) => (
-                    <div
-                      key={t._id}
-                      className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex items-center gap-4"
-                    >
-                      <div className="w-14 h-14 rounded-2xl bg-slate-200 dark:bg-slate-800 overflow-hidden shrink-0 flex items-center justify-center text-slate-700 dark:text-slate-200 font-extrabold text-base">
-                        {t.avatarUrl ? (
-                          <img src={t.avatarUrl} alt={t.name} className="w-full h-full object-cover" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {displayTeachers.slice(0, 8).map((teacher, index) => {
+                  const surface = ['bg-rose-100 dark:bg-rose-950/40', 'bg-amber-100 dark:bg-amber-950/40', 'bg-sky-100 dark:bg-sky-950/40', 'bg-emerald-100 dark:bg-emerald-950/40'][index % 4];
+                  return (
+                    <div key={teacher._id} className="text-center">
+                      <div className={`aspect-[4/3] w-full overflow-hidden rounded-2xl ${surface} flex items-end justify-center`}>
+                        {teacher.avatarUrl ? (
+                          <img src={teacher.avatarUrl} alt={teacher.name} className="h-full w-full object-cover" />
                         ) : (
-                          t.name.slice(0, 2)
+                          <span className="mb-5 text-2xl font-black text-slate-700/70 dark:text-slate-200/80">{teacher.name.slice(0, 2)}</span>
                         )}
                       </div>
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                          {course.subject} স্পেশালিস্ট
-                        </span>
-                        <h4 className="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">
-                          {t.name}
-                        </h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          গ্র্যাভ একাডেমি মেন্টর
-                        </p>
-                      </div>
+                      <h3 className="mt-2 text-xs sm:text-sm font-black text-slate-900 dark:text-white line-clamp-1">{teacher.name}</h3>
+                      <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">{course.subject || 'Academic'} · Mentor</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
-                    GA
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">গ্র্যাভ একাডেমি শিক্ষক প্যানেল</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      বিষয়ভিত্তিক দক্ষ সিনিয়র শিক্ষকবৃন্দের মাধ্যমে ব্যাচসমূহে লাইভ ক্লাস পরিচালিত হচ্ছে।
-                    </p>
-                  </div>
-                </div>
-              )}
+                  );
+                })}
+              </div>
+              {displayTeachers.length > 8 && <button type="button" className="mt-6 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">আরো দেখুন</button>}
             </div>
 
             {/* 3 Core Value Cards */}
