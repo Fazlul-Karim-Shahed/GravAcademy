@@ -95,6 +95,12 @@ function classLabel(gradeLevel?: string) {
   return match ? `CLASS ${match[1]}` : value || 'CLASS';
 }
 
+function teacherAvatar(teacher: Teacher, index: number) {
+  if (teacher.avatarUrl) return formatDriveImageUrl(teacher.avatarUrl);
+  const seed = encodeURIComponent(`grav-academy-teacher-${teacher._id || index}`);
+  return `https://api.dicebear.com/9.x/personas/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+}
+
 export default function CourseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
@@ -231,9 +237,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
               {teachers.slice(0, 8).map((teacher, index) => {
                 const surface = ['bg-rose-100 dark:bg-rose-950/50', 'bg-amber-100 dark:bg-amber-950/50', 'bg-sky-100 dark:bg-sky-950/50', 'bg-emerald-100 dark:bg-emerald-950/50'][index % 4];
-                return <div key={teacher._id} className="text-center">
+                return <div key={teacher._id} className="group text-center">
                   <div className={`flex aspect-[4/3] items-end justify-center overflow-hidden rounded-2xl ${surface}`}>
-                    {teacher.avatarUrl ? <img src={teacher.avatarUrl} alt={teacher.name} className="h-full w-full object-cover" /> : <span className="mb-5 text-2xl font-black text-slate-700/60 dark:text-white/70">{teacher.name.slice(0, 2)}</span>}
+                    <img src={teacherAvatar(teacher, index)} alt={teacher.name} className="h-full w-full object-contain object-bottom drop-shadow-sm transition-transform duration-500 group-hover:scale-105" />
                   </div>
                   <h3 className="mt-2 line-clamp-1 text-xs font-black text-slate-900 dark:text-white sm:text-sm">{teacher.name}</h3>
                   <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">{course.subject || 'Academic'} · Mentor</p>
