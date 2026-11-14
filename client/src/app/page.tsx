@@ -35,6 +35,7 @@ import {
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { CourseCardFeatures } from '@/components/course/CourseCardFeatures';
+import { CourseCard } from '@/components/course/CourseCard';
 
 // Convert English numbers to Bengali numerals
 function toBengaliNumerals(num: number | string): string {
@@ -812,7 +813,9 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-              {filteredCourses.slice(0, 6).map((c, idx) => {
+              {filteredCourses.slice(0, 6).map((c: any, idx) => {
+                return <CourseCard key={c._id} course={c} className={idx >= 4 ? 'hidden lg:flex' : 'flex'} />;
+
                 const instructorName =
                   c.instructors && c.instructors.length > 0
                     ? typeof c.instructors[0] === 'object'

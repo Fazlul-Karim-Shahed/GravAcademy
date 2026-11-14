@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { CourseCardFeatures } from '@/components/course/CourseCardFeatures';
+import { CourseCard } from '@/components/course/CourseCard';
 
 interface Teacher {
   _id: string;
@@ -287,141 +288,9 @@ export default function CoursesCatalogPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredCourses.map((c, idx) => {
-              // Cute vibrant card thumbnail gradients matching homepage
-              const cardThemes = [
-                {
-                  gradient: 'from-[#4f46e5] via-[#7c3aed] to-[#c026d3]',
-                  pillBg: 'from-purple-500 to-indigo-600',
-                  accentColor: 'text-purple-600 dark:text-purple-400',
-                  glow: 'shadow-purple-500/20',
-                },
-                {
-                  gradient: 'from-[#0284c7] via-[#2563eb] to-[#4f46e5]',
-                  pillBg: 'from-blue-500 to-indigo-600',
-                  accentColor: 'text-blue-600 dark:text-blue-400',
-                  glow: 'shadow-blue-500/20',
-                },
-                {
-                  gradient: 'from-[#059669] via-[#0d9488] to-[#0284c7]',
-                  pillBg: 'from-emerald-500 to-teal-600',
-                  accentColor: 'text-teal-600 dark:text-teal-400',
-                  glow: 'shadow-teal-500/20',
-                },
-                {
-                  gradient: 'from-[#ea580c] via-[#e11d48] to-[#c026d3]',
-                  pillBg: 'from-rose-500 to-orange-500',
-                  accentColor: 'text-rose-600 dark:text-rose-400',
-                  glow: 'shadow-rose-500/20',
-                },
-                {
-                  gradient: 'from-[#d97706] via-[#ea580c] to-[#e11d48]',
-                  pillBg: 'from-amber-500 to-orange-600',
-                  accentColor: 'text-amber-600 dark:text-amber-400',
-                  glow: 'shadow-amber-500/20',
-                },
-              ];
+            {filteredCourses.map((c: any, idx) => {
+              return <CourseCard key={c._id} course={c} />;
 
-              const currentTheme = cardThemes[idx % cardThemes.length];
-
-              return (
-                <Link
-                  key={c._id}
-                  href={`/courses/${c.slug || c._id}`}
-                  className="cute-course-card group rounded-[34px] overflow-hidden flex flex-col justify-between p-2.5 sm:p-3 border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 transition-all duration-300"
-                >
-                  <div>
-                    {/* Top Thumbnail Banner with Smooth Curved Mask */}
-                    <div className="relative w-full aspect-[16/9.5] rounded-[26px] overflow-hidden border border-slate-200/60 dark:border-white/10 shadow-sm">
-                      <div className={`relative w-full h-full ${c.thumbnailUrl ? 'bg-slate-900' : `bg-gradient-to-br ${currentTheme.gradient}`}`}>
-                        {c.thumbnailUrl ? (
-                          <img
-                            src={formatDriveImageUrl(c.thumbnailUrl)}
-                            alt={c.title}
-                            className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                            <BookOpen className="w-12 h-12 text-white/80 drop-shadow-md mb-2 group-hover:scale-110 transition-transform duration-300" />
-                            <span className="text-white font-black text-sm drop-shadow-md tracking-wide px-3">
-                              {c.title}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Gloss Sheen Shine Across Thumbnail */}
-                        <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-card-sheen" />
-
-                        {/* Top Badges Overlay */}
-                        <div className="absolute top-2.5 inset-x-2.5 z-20 flex items-center justify-between pointer-events-none">
-                          {/* Grade Level Tag */}
-                          <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-black border border-white/25 shadow-md flex items-center gap-1.5">
-                            <GraduationCap className="w-3 h-3 text-amber-300" />
-                            <span>{c.gradeLevel}</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Card Content Body */}
-                    <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
-                      {/* Course Title */}
-                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                        {c.title}
-                      </h3>
-
-                      {/* Short Description (Strictly max 1 line with ellipsis) */}
-                      {c.description && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 leading-relaxed mt-1.5 overflow-hidden">
-                          {c.description.length > 55
-                            ? c.description.slice(0, 55).trim() + '...'
-                            : c.description}
-                        </p>
-                      )}
-
-                      {/* Cute Feature Micro-Badges */}
-                      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                        <CourseCardFeatures features={c.features} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Cute Card Bottom: Enrollment CTA */}
-                  <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
-                        ভর্তি চলছে
-                      </span>
-                      <div className="flex items-baseline gap-1.5 mt-0.5">
-                        {c.discountPrice && c.discountPrice > 0 && c.regularPrice && c.regularPrice > c.discountPrice ? (
-                          <>
-                            <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                              ৳{c.discountPrice}
-                            </span>
-                            <span className="text-[11px] text-slate-400 line-through font-semibold">
-                              ৳{c.regularPrice}
-                            </span>
-                          </>
-                        ) : c.regularPrice || c.courseFee ? (
-                          <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                            ৳{c.regularPrice || c.courseFee}
-                          </span>
-                        ) : (
-                          <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">
-                            ফ্রি কোর্স
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Cute Action Button */}
-                    <div className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102">
-                      <span>ব্যাচ দেখুন</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </Link>
-              );
             })}
           </div>
         )}
