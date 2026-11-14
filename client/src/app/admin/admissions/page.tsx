@@ -240,15 +240,21 @@ export default function AdminAdmissionsPage() {
         const res = await api.get(`/enrollment-requests/${requestId}`);
         const request = res.data?.data;
         if (!request) return;
-        setAdmissionMode('existing');
-        setSelectedExistingStudent(request.applicantUserId || null);
-        setStudentName(request.name || request.applicantUserId?.name || '');
-        setStudentPhone(request.phone || request.applicantUserId?.phone || '');
-        setStudentEmail(request.email || request.applicantUserId?.email || '');
-        setSchoolOrCollege(request.schoolOrCollege || request.applicantUserId?.studentDetails?.schoolOrCollege || '');
-        setGradeLevel(request.gradeLevel || request.applicantUserId?.studentDetails?.gradeLevel || '');
-        setGuardianName(request.guardianName || request.applicantUserId?.studentDetails?.guardianName || '');
-        setGuardianPhone(request.guardianPhone || request.applicantUserId?.studentDetails?.guardianPhone || '');
+        // Guest requests contain a placeholder applicantUserId, not a real
+        // User document. Only a successfully populated student is an existing
+        // account; guests must remain in the New Student flow.
+        const existingStudent = request.applicantUserId && typeof request.applicantUserId === 'object'
+          ? request.applicantUserId
+          : null;
+        setAdmissionMode(existingStudent ? 'existing' : 'new');
+        setSelectedExistingStudent(existingStudent);
+        setStudentName(request.name || existingStudent?.name || '');
+        setStudentPhone(request.phone || existingStudent?.phone || '');
+        setStudentEmail(request.email || existingStudent?.email || '');
+        setSchoolOrCollege(request.schoolOrCollege || existingStudent?.studentDetails?.schoolOrCollege || '');
+        setGradeLevel(request.gradeLevel || existingStudent?.studentDetails?.gradeLevel || '');
+        setGuardianName(request.guardianName || existingStudent?.studentDetails?.guardianName || '');
+        setGuardianPhone(request.guardianPhone || existingStudent?.studentDetails?.guardianPhone || '');
         setNotes(request.message || '');
         setSelectedCourseId(request.courseId?._id || request.courseId || '');
         setSelectedBatchId(request.batchId?._id || request.batchId || '');
