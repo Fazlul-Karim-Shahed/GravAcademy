@@ -366,7 +366,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <div className="flex h-full flex-col">
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#8e4b65]">Learning</p>
                   <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">ফ্রি ভিডিও লাইব্রেরি</h2>
-                  <Link href="/free-classes" className="mt-auto inline-flex rounded-lg bg-white px-5 py-2.5 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">ভিডিও দেখুন</Link>
+                  <Link href="/free-classes" className="mt-auto inline-flex rounded-lg bg-white px-3.5 py-2 text-[11px] font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">ভিডিও দেখুন</Link>
                 </div>
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#ef1717] shadow-lg shadow-red-300/30 backdrop-blur"><Play className="h-7 w-7 fill-current" /></div>
               </div>
@@ -377,7 +377,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <div className="flex h-full flex-col">
                   <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#4264a5]">Community</p>
                   <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">Grav Academy ফেসবুক গ্রুপ</h2>
-                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="mt-auto inline-flex rounded-lg bg-white px-5 py-2.5 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">গ্রুপে যুক্ত হন</a>
+                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="mt-auto inline-flex rounded-lg bg-white px-3.5 py-2 text-[11px] font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">গ্রুপে যুক্ত হন</a>
                 </div>
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#3d5a9d] shadow-lg shadow-blue-300/30 backdrop-blur"><UsersRound className="h-7 w-7" /></div>
               </div>
