@@ -69,7 +69,7 @@ export const getBatches = async (req: Request, res: Response) => {
     if (status) filter.status = status;
 
     const batches = await Batch.find(filter)
-      .populate('courseId', 'title slug gradeLevel subject')
+      .populate('courseId', 'title slug gradeLevel subject courseFee regularPrice discountPrice')
       .populate('assignedTeachers', 'name email')
       .sort({ createdAt: -1 })
       .lean();
