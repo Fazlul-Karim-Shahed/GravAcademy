@@ -108,7 +108,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
                 <Field label="নাম *" icon={<UserRound className="w-4 h-4" />} value={form.name} onChange={(v) => update('name', v)} required readOnly={Boolean(user?.name)} />
                 <Field label="মোবাইল *" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} required type="tel" readOnly={Boolean(user?.phone)} />
                 <Field label="ইমেইল" icon={<Mail className="w-4 h-4" />} value={form.email} onChange={(v) => update('email', v)} type="email" readOnly={Boolean(user?.email)} />
-                <Field label="শ্রেণি (fixed)" value={form.gradeLevel} onChange={() => {}} readOnly />
+                <Field label="শ্রেণি" value={form.gradeLevel} onChange={() => {}} readOnly />
                 <Field label="স্কুল / কলেজ" value={form.schoolOrCollege} onChange={(v) => update('schoolOrCollege', v)} readOnly={Boolean(user?.studentDetails?.schoolOrCollege)} />
                 <Field label="অভিভাবকের নাম" value={form.guardianName} onChange={(v) => update('guardianName', v)} readOnly={Boolean(user?.studentDetails?.guardianName)} />
                 <Field label="অভিভাবকের মোবাইল" value={form.guardianPhone} onChange={(v) => update('guardianPhone', v)} type="tel" readOnly={Boolean(user?.studentDetails?.guardianPhone)} />
