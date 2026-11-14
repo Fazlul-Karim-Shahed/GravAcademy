@@ -121,12 +121,6 @@ router.delete(
 );
 
 // --- ENROLLMENT ROUTES ---
-router.post(
-  '/enrollments/enroll',
-  authenticate,
-  validateRequest(enrollmentCtrl.enrollBatchSchema),
-  enrollmentCtrl.enrollInBatch
-);
 router.get(
   '/enrollments/my-status',
   authenticate,
