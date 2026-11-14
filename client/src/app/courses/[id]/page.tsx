@@ -8,40 +8,29 @@ import { formatDriveImageUrl } from '@/lib/drive';
 import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import {
-  BookOpen,
-  GraduationCap,
-  Users,
-  Clock,
-  Layers,
-  CheckCircle2,
-  Calendar,
   ArrowRight,
-  ArrowLeft,
-  Video,
-  FileText,
-  Award,
+  BookOpen,
+  CalendarDays,
   Check,
-  CheckCircle,
-  PhoneCall,
+  ChevronDown,
+  Clock3,
   Edit,
-  ShieldCheck,
-  AlertCircle,
+  GraduationCap,
+  Layers3,
   Loader2,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Users,
   X,
-  LogIn,
 } from 'lucide-react';
-import { ScheduleSlot, getDayInfo, formatTo12Hour } from '@/lib/schedule';
 
 interface Batch {
   _id: string;
   name: string;
-  capacity?: number;
-  scheduleText?: string;
-  weeklySchedule?: ScheduleSlot[];
   status: string;
-  fee?: number;
-  startDate?: string;
-  enrolledStudentCount?: number;
+  scheduleText?: string;
+  weeklySchedule?: any[];
 }
 
 interface Teacher {
@@ -50,6 +39,11 @@ interface Teacher {
   email: string;
   role: string;
   avatarUrl?: string;
+}
+
+interface SyllabusItem {
+  title: string;
+  details: string;
 }
 
 interface CourseDetail {
@@ -67,8 +61,38 @@ interface CourseDetail {
   targetAudience?: string;
   instructors?: Teacher[];
   curriculumHighlights?: string[];
-  syllabus?: string[];
   features?: string[];
+  syllabus?: SyllabusItem[];
+}
+
+const fallbackSyllabus: SyllabusItem[] = [
+  { title: 'বাংলা ১ম পত্র', details: 'গল্প, কবিতা, সৃজনশীল প্রশ্ন ও বোর্ডভিত্তিক অনুশীলন।' },
+  { title: 'বাংলা ২য় পত্র', details: 'ব্যাকরণ, নির্মিতি ও লিখিত অংশের নিয়মিত practice।' },
+  { title: 'ইংরেজি ১ম পত্র', details: 'Reading, comprehension, writing এবং পরীক্ষার প্রশ্ন অনুশীলন।' },
+  { title: 'ইংরেজি ২য় পত্র', details: 'Grammar, paragraph, composition ও model test practice।' },
+  { title: 'গণিত', details: 'অধ্যায়ভিত্তিক concept, shortcut এবং ধাপে ধাপে problem solving।' },
+  { title: 'বিজ্ঞান', details: 'মূল ধারণা, diagram, প্রয়োগ ও পরীক্ষাভিত্তিক প্রস্তুতি।' },
+  { title: 'বাংলাদেশ ও বিশ্বপরিচয়', details: 'গুরুত্বপূর্ণ অধ্যায়, short note ও CQ/MCQ প্রস্তুতি।' },
+  { title: 'তথ্য ও যোগাযোগ প্রযুক্তি', details: 'ধারণা পরিষ্কার, practical topic এবং নির্বাচিত প্রশ্ন সমাধান।' },
+  { title: 'মডেল টেস্ট', details: 'সময় ধরে পরীক্ষা, ফলাফল বিশ্লেষণ ও revision plan।' },
+  { title: 'রিভিশন ও ডাউট সলভিং', details: 'দুর্বল অধ্যায় চিহ্নিত করে focused revision support।' },
+];
+
+function cleanBenefit(value: string) {
+  return value.replace(/^icon:[^|]+\|/, '').trim();
+}
+
+function courseProgram(gradeLevel?: string) {
+  const value = String(gradeLevel || '').toLowerCase();
+  if (/college|hsc|11|12|xi|xii/.test(value)) return 'COLLEGE PROGRAM';
+  if (/9|10|ssc/.test(value)) return 'SECONDARY PROGRAM';
+  return 'SCHOOL PROGRAM';
+}
+
+function classLabel(gradeLevel?: string) {
+  const value = String(gradeLevel || '').trim();
+  const match = value.match(/(?:class|grade|শ্রেণি)\s*[-:]?\s*(\d{1,2})/i);
+  return match ? `CLASS ${match[1]}` : value || 'CLASS';
 }
 
 export default function CourseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -81,820 +105,203 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const [enrolledBatchIds, setEnrolledBatchIds] = useState<string[]>([]);
   const [pendingRequestBatchIds, setPendingRequestBatchIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Enrollment Modal state
-  const [selectedBatchForEnroll, setSelectedBatchForEnroll] = useState<Batch | null>(null);
-  const [enrolling, setEnrolling] = useState(false);
-  const [enrollSuccessMessage, setEnrollSuccessMessage] = useState('');
-  const [enrollErrorMessage, setEnrollErrorMessage] = useState('');
   const [showBatchPicker, setShowBatchPicker] = useState(false);
+  const [expandedSyllabus, setExpandedSyllabus] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchCourseAndBatches();
+    const load = async () => {
+      setLoading(true);
+      try {
+        const courseRes = await api.get(`/courses/${resolvedParams.id}`);
+        const loaded = courseRes.data?.data;
+        if (!loaded) return;
+        setCourse(loaded);
+
+        try {
+          const batchRes = await api.get(`/batches?courseId=${loaded._id || resolvedParams.id}`);
+          if (batchRes.data?.success) setBatches(batchRes.data.data || []);
+        } catch (error) {
+          console.warn('Batch data unavailable:', error);
+        }
+
+        if (user?.role === 'student') {
+          try {
+            const status = await api.get(`/enrollments/my-status?courseId=${loaded._id || resolvedParams.id}`);
+            setEnrolledBatchIds(status.data?.enrolledBatchIds || []);
+            const requests = await api.get('/enrollment-requests/my');
+            setPendingRequestBatchIds(
+              (requests.data?.data || [])
+                .filter((request: any) => request.status === 'pending')
+                .map((request: any) => request.batchId?._id || request.batchId),
+            );
+          } catch (error) {
+            console.warn('Enrollment status unavailable:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load course:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [resolvedParams.id, user]);
 
-  const fetchCourseAndBatches = async () => {
-    setLoading(true);
-    try {
-      // 1. Fetch course details (supports both slug and _id)
-      const courseRes = await api.get(`/courses/${resolvedParams.id}`);
-      if (courseRes.data?.success) {
-        const loadedCourse = courseRes.data.data;
-        setCourse(loadedCourse);
-
-        // 2. Fetch batches using the actual course MongoDB _id (since backend expects ObjectId for courseId)
-        try {
-          const actualCourseId = loadedCourse._id || resolvedParams.id;
-          const batchesRes = await api.get(`/batches?courseId=${actualCourseId}`);
-          if (batchesRes.data?.success) {
-            setBatches(batchesRes.data.data || []);
-          }
-        } catch (batchErr) {
-          console.warn('Batches not loaded for course:', batchErr);
-        }
-
-        // 3. If logged in as student, fetch enrollment status for this course
-        if (user && user.role === 'student') {
-          try {
-            const actualCourseId = loadedCourse._id || resolvedParams.id;
-            const enrollRes = await api.get(`/enrollments/my-status?courseId=${actualCourseId}`);
-            if (enrollRes.data?.success) {
-              setEnrolledBatchIds(enrollRes.data.enrolledBatchIds || []);
-            }
-            const requestRes = await api.get('/enrollment-requests/my');
-            if (requestRes.data?.success) {
-              setPendingRequestBatchIds(
-                (requestRes.data.data || [])
-                  .filter((request: any) => request.status === 'pending')
-                  .map((request: any) => request.batchId?._id || request.batchId)
-              );
-            }
-          } catch (statusErr) {
-            console.warn('Enrollment status check failed:', statusErr);
-          }
-        } else {
-          setEnrolledBatchIds([]);
-          setPendingRequestBatchIds([]);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load course details', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEnrollClick = (_batch?: Batch) => {
-    // If not logged in, redirect to login with return path
+  const startEnrollment = () => {
     if (!user) {
-      const currentPath = `/courses/${resolvedParams.id}`;
-      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      router.push(`/login?redirect=${encodeURIComponent(`/courses/${resolvedParams.id}`)}`);
       return;
     }
-
-    if (batches.length === 0) {
-      setEnrollErrorMessage('এই কোর্সের কোনো active batch এখনো available নেই।');
-      return;
-    }
-
-    setEnrollErrorMessage('');
+    if (batches.length === 0) return;
     setShowBatchPicker(true);
   };
 
-  const handleBatchSelection = (batch: Batch) => {
-    setShowBatchPicker(false);
-    router.push(`/enroll/${batch._id}/request`);
-  };
-
-  const handleConfirmEnrollment = async () => {
-    if (!selectedBatchForEnroll) return;
-    setEnrolling(true);
-    setEnrollErrorMessage('');
-    setEnrollSuccessMessage('');
-
-    try {
-      const res = await api.post('/enrollments/enroll', {
-        batchId: selectedBatchForEnroll._id,
-      });
-
-      if (res.data?.success) {
-        setEnrollSuccessMessage(res.data.message || 'সফলভাবে ব্যাচে এনরোল সম্পন্ন হয়েছে!');
-        // Update local state
-        setEnrolledBatchIds((prev) => [...prev, selectedBatchForEnroll._id]);
-        // Update batch enrolledStudentCount locally
-        setBatches((prev) =>
-          prev.map((b) =>
-            b._id === selectedBatchForEnroll._id
-              ? { ...b, enrolledStudentCount: (b.enrolledStudentCount || 0) + 1 }
-              : b
-          )
-        );
-
-        // After a brief delay, close modal or redirect to classroom
-        setTimeout(() => {
-          setSelectedBatchForEnroll(null);
-          setEnrollSuccessMessage('');
-          router.push(`/classroom/${selectedBatchForEnroll._id}`);
-        }, 1500);
-      }
-    } catch (err: any) {
-      setEnrollErrorMessage(err.response?.data?.message || 'এনরোলমেন্ট সম্পন্ন করা সম্ভব হয়নি। পুনরায় চেষ্টা করুন।');
-    } finally {
-      setEnrolling(false);
-    }
-  };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
-          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্সের তথ্য লোড হচ্ছে...</p>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen bg-[#f3f8fc] flex items-center justify-center"><Loader2 className="h-9 w-9 animate-spin text-blue-600" /></div>;
   }
 
   if (!course) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-24 text-center">
-        <div className="max-w-md mx-auto px-4">
-          <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400 flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="w-7 h-7" />
-          </div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white">কোর্সটি পাওয়া যায়নি</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 mb-6 leading-relaxed">
-            এই কোর্সটি হয়তো সরিয়ে নেওয়া হয়েছে বা ঠিকানাটি সঠিক নয়।
-          </p>
-          <Link
-            href="/courses"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> সকল কোর্সের তালিকায় ফিরুন
-          </Link>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen bg-[#f3f8fc] flex items-center justify-center text-sm font-bold text-slate-600">কোর্সটি পাওয়া যায়নি।</div>;
   }
 
-  const isAdmin = user?.role === 'superadmin' || user?.role === 'admin';
-  const hasDiscount = Boolean(course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice);
-  const regularPrice = hasDiscount ? course.regularPrice : null;
-
-  const defaultHighlights = [
-    'বোর্ড প্রশ্ন বিশ্লেষণ এবং শীর্ষ স্কুল/কলেজের টেস্ট পেপার সলভিং',
-    'সাপ্তাহিক লাইভ ইন্টারঅ্যাক্টিভ ডাউট সলভিং ও রিভিশন সেশন',
-    'প্রতিটি ক্লাসের পূর্ণাঙ্গ অধ্যায়ভিত্তিক লেকচার শিট ও ফর্মুলা বুকলেট',
-    'টাইমড অনলাইন এমসিকিউ (MCQ) ও স্ট্যান্ডার্ড রিটেন প্র্যাকটিস এক্সাম',
-  ];
-
-  const highlights =
-    course.curriculumHighlights && course.curriculumHighlights.length > 0
-      ? course.curriculumHighlights
-      : defaultHighlights;
-
-  const defaultSyllabus = [
-    'বাংলা ১ম পত্র',
-    'বাংলা ২য় পত্র',
-    'ইংরেজি ১ম পত্র',
-    'ইংরেজি ২য় পত্র',
-    'গণিত',
-    'বিজ্ঞান',
-    'বাংলাদেশ ও বিশ্বপরিচয়',
-    'তথ্য ও যোগাযোগ প্রযুক্তি',
-    'অধ্যায়ভিত্তিক মডেল টেস্ট',
-    'প্র্যাকটিস ও রিভিশন',
-  ];
-  const syllabusItems = course.syllabus && course.syllabus.length > 0 ? course.syllabus : defaultSyllabus;
-
-  const displayTeachers: Teacher[] = course.instructors && course.instructors.length > 0
-    ? course.instructors
-    : [
-        { _id: 'dummy-1', name: 'প্রধান মেন্টর', email: '', role: 'teacher' },
-        { _id: 'dummy-2', name: 'বিষয়ভিত্তিক শিক্ষক', email: '', role: 'teacher' },
-        { _id: 'dummy-3', name: 'একাডেমিক মেন্টর', email: '', role: 'teacher' },
-        { _id: 'dummy-4', name: 'সাপোর্ট মেন্টর', email: '', role: 'teacher' },
-      ];
+  const hasDiscount = Boolean(course.discountPrice && course.regularPrice && course.regularPrice > course.discountPrice);
+  const price = hasDiscount ? course.discountPrice : course.regularPrice || course.courseFee;
+  const benefits = (course.features?.length ? course.features : course.curriculumHighlights?.length ? course.curriculumHighlights : [
+    'অভিজ্ঞ শিক্ষক ও মেন্টরদের সাথে গোছানো প্রস্তুতি',
+    'লাইভ ক্লাস, রেকর্ডেড ক্লাস ও স্মার্ট নোটস',
+    'অধ্যায়ভিত্তিক MCQ, CQ ও মডেল টেস্ট',
+    'ফলাফল বিশ্লেষণ ও নিয়মিত progress tracking',
+    'ডাউট সলভিং ও revision support',
+  ]).map(cleanBenefit).slice(0, 6);
+  const teachers = course.instructors?.length ? course.instructors : [
+    { _id: 'dummy-1', name: 'প্রধান মেন্টর', email: '', role: 'teacher' },
+    { _id: 'dummy-2', name: 'বিষয়ভিত্তিক শিক্ষক', email: '', role: 'teacher' },
+    { _id: 'dummy-3', name: 'একাডেমিক মেন্টর', email: '', role: 'teacher' },
+    { _id: 'dummy-4', name: 'সাপোর্ট মেন্টর', email: '', role: 'teacher' },
+  ] as Teacher[];
+  const syllabus = course.syllabus?.length ? course.syllabus : fallbackSyllabus;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-
-      {/* 1. PROFESSIONAL EDITORIAL HERO WITH RICH GRADIENT TEXTURE OR PICTURE BANNER */}
-      <section className="relative overflow-hidden cosmic-hero-bg text-white pt-9 pb-12 sm:pt-12 sm:pb-14 border-b border-white/10 shadow-lg">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[16%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[24%] right-[12%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[12%] right-[30%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          <div className="flex justify-end mb-6">
-            {isAdmin && (
-              <Link
-                href={`/admin/courses/${course._id}/edit`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 backdrop-blur-md transition-colors"
-              >
-                <Edit className="w-3.5 h-3.5 text-blue-300" /> কোর্স এডিট করুন
-              </Link>
+    <main className="min-h-screen bg-[#f3f8fc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <section className="relative overflow-hidden bg-[#202d68] pb-14 pt-8 text-white sm:pb-16 sm:pt-10">
+        <div className="absolute -left-20 -top-32 h-96 w-96 rounded-full bg-indigo-400/25 blur-3xl" />
+        <div className="absolute -right-20 top-0 h-80 w-96 rounded-full bg-sky-300/15 blur-3xl" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex justify-end">
+            {(['superadmin', 'admin'].includes(user?.role || '')) && (
+              <Link href={`/admin/courses/${course._id}/edit`} className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20"><Edit className="h-3.5 w-3.5" /> Edit</Link>
             )}
           </div>
-
-          {/* Hero Main Content */}
-          <div className="flex flex-col lg:flex-row lg:items-center gap-7 lg:gap-10">
-            <div className="w-full lg:w-[310px] shrink-0 aspect-[4/3] rounded-2xl overflow-hidden border border-white/15 bg-slate-900/60 shadow-2xl">
+          <div className="grid items-center gap-7 lg:grid-cols-[310px_1fr] lg:gap-10">
+            <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-white/20 bg-slate-900/50 shadow-2xl">
               {course.thumbnailUrl ? (
-                <img src={formatDriveImageUrl(course.thumbnailUrl)} alt={course.title} className="w-full h-full object-cover" />
+                <img src={formatDriveImageUrl(course.thumbnailUrl)} alt={course.title} className="h-full w-full object-cover" />
               ) : (
-                <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-indigo-700 via-violet-700 to-slate-950 flex flex-col items-center justify-center text-center p-5">
-                  <div className="absolute -left-10 -top-10 w-48 h-32 rounded-full bg-sky-400/35 blur-3xl" />
-                  <div className="absolute -right-8 top-4 w-48 h-32 rounded-full bg-violet-300/40 blur-3xl" />
-                  <span className="relative rounded-sm bg-blue-950/90 px-3 py-1 text-sm font-black leading-tight tracking-wide text-amber-300">SCHOOL<br />PROGRAM</span>
-                  <span className="relative mt-1 rounded-sm bg-pink-600 px-3 py-1 text-lg font-black leading-none text-white">{course.gradeLevel || 'CLASS'}</span>
+                <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-sky-300 via-indigo-500 to-[#15183d] p-5 text-center">
+                  <div className="absolute -left-10 -top-10 h-40 w-56 rounded-full bg-cyan-200/35 blur-3xl" />
+                  <div className="absolute -right-10 top-6 h-40 w-56 rounded-full bg-violet-300/40 blur-3xl" />
+                  <span className="relative rounded-sm bg-[#122f68] px-3 py-1 text-sm font-black leading-tight tracking-wide text-amber-300">{courseProgram(course.gradeLevel).split(' ').map((word) => <span key={word} className="block">{word}</span>)}</span>
+                  <span className="relative mt-1 rounded-sm bg-pink-600 px-3 py-1 text-lg font-black leading-none text-white">{classLabel(course.gradeLevel)}</span>
                   <span className="relative mt-2 text-xs font-bold text-white">Grav Academy</span>
                 </div>
               )}
             </div>
-
-          <div className="max-w-4xl flex-1">
-            {/* Meta Category Indicator */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-300">
-                {course.gradeLevel} • স্পেশাল একাডেমিক প্রোগ্রাম
-              </span>
+            <div>
+              <p className="mb-3 text-xs font-bold tracking-wide text-blue-200">{course.gradeLevel} · ACADEMIC PROGRAM</p>
+              <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">{course.title}</h1>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-blue-50/90 sm:text-base">{course.description || 'সম্পূর্ণ সিলেবাস কভার করে পরিকল্পিত একাডেমিক প্রস্তুতি।'}</p>
+              <button type="button" className="mt-4 text-xs font-bold text-white underline underline-offset-4">বিস্তারিত দেখুন</button>
             </div>
-
-            {/* Course Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black tracking-tight text-white leading-[1.28]">
-              {course.title}
-            </h1>
-
-            {/* Overview description */}
-            <p className="mt-4 text-base sm:text-lg text-slate-200/90 leading-[1.8] max-w-3xl">
-              {course.description ||
-                'সম্পূর্ণ সিলেবাস কভার করে বেসিক টু অ্যাডভান্সড লেভেলের পাঠদান, টেস্ট পেপার সলভিং এবং বোর্ড পরীক্ষার চূড়ান্ত প্রস্তুতি।'}
-            </p>
-
-            {/* Micro Metadata Strip with Glass Elements */}
-            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-7 pt-6 border-t border-white/10 text-xs sm:text-sm">
-              <div className="flex items-center gap-2 text-slate-200">
-                <Clock className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>মেয়াদ: <strong className="text-white font-extrabold">{course.duration || 'পূর্ণাঙ্গ সেশন'}</strong></span>
-              </div>
-
-              <div className="flex items-center gap-2 text-slate-200">
-                <GraduationCap className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>ফ্যাকাল্টি: <strong className="text-white font-extrabold">{course.instructors?.length || 1} জন শিক্ষক</strong></span>
-              </div>
-            </div>
-
           </div>
-          </div>
-
         </div>
       </section>
 
-      <div className="relative z-20 -mt-7 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex items-center gap-3 px-5 py-4 sm:border-r border-slate-100 dark:border-slate-800">
-            <Users className="w-5 h-5 text-violet-600 shrink-0" />
-            <div><span className="block text-[11px] text-slate-500 dark:text-slate-400">শিক্ষক</span><strong className="text-sm text-slate-900 dark:text-white">{course.instructors?.length || 1} জন</strong></div>
-          </div>
-          <div className="flex items-center gap-3 px-5 py-4 sm:border-r border-slate-100 dark:border-slate-800">
-            <Clock className="w-5 h-5 text-emerald-600 shrink-0" />
-            <div><span className="block text-[11px] text-slate-500 dark:text-slate-400">কোর্সের মেয়াদ</span><strong className="text-sm text-slate-900 dark:text-white">{course.duration || 'পূর্ণাঙ্গ সেশন'}</strong></div>
-          </div>
-          <div className="flex items-center gap-3 px-5 py-4">
-            <ShieldCheck className="w-5 h-5 text-orange-500 shrink-0" />
-            <div><span className="block text-[11px] text-slate-500 dark:text-slate-400">কোর্স এক্সেস</span><strong className="text-sm text-slate-900 dark:text-white">সম্পূর্ণ সেশন</strong></div>
-          </div>
+      <section className="relative z-10 mx-auto -mt-7 max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
+          <Stat icon={<Users className="h-5 w-5 text-violet-600" />} label="কোর্সের শিক্ষক" value={`${teachers.length} জন`} />
+          <Stat icon={<Clock3 className="h-5 w-5 text-emerald-600" />} label="ক্লাস চলবে" value={course.duration || 'পূর্ণাঙ্গ সেশন'} />
+          <Stat icon={<CalendarDays className="h-5 w-5 text-orange-500" />} label="কোর্স এক্সেস" value="সম্পূর্ণ সেশন" />
         </div>
-      </div>
+      </section>
 
-      {/* 2. MAIN 2-COLUMN SECTION: Content on Left, Sticky Enrollment Card on Right */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-
-          {/* LEFT COLUMN: Curriculum, Teachers & Highlights (7 Cols) */}
-          <div className="lg:col-span-7 flex flex-col gap-8">
-
-            {/* Target Audience */}
-            {course.targetAudience && (
-              <div className="order-1 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    টার্গেট অডিয়েন্স
-                  </span>
-                </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  এই কোর্সটি কাদের জন্য?
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-                  {course.targetAudience}
-                </p>
-              </div>
-            )}
-
-            {/* Syllabus & Highlights */}
-            <div className="order-3 p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-              <div className="flex items-center justify-between gap-4 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    সিলেবাস ও পাঠ পরিকল্পনা
-                  </span>
-                </div>
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200/60 dark:border-emerald-900/60 px-3 py-1 rounded-full">
-                  {syllabusItems.length} টি বিষয়
-                </span>
-              </div>
-
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                এই কোর্সে যা যা শেখানো হবে
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 mb-7 leading-relaxed">
-                বোর্ড পরীক্ষায় শতভাগ সাফল্যের জন্য কনসেপ্ট, প্র্যাকটিস এবং পরীক্ষার সুবিন্যস্ত রোডম্যাপ।
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {syllabusItems.map((h, i) => (
-                  <div
-                    key={i}
-                    className="group relative flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-950/50 border border-slate-200/70 dark:border-slate-800/80 hover:border-blue-500/60 dark:hover:border-blue-500/60 hover:bg-white dark:hover:bg-slate-900 hover:shadow-md transition-all duration-200"
-                  >
-                    {/* Index Number Badge */}
-                    <div className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs shrink-0 shadow-2xs group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors">
-                      {String(i + 1).padStart(2, '0')}
-                    </div>
-
-                    <div className="flex-1 pt-0.5">
-                      <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-bold leading-[1.7]">
-                        {h}
-                      </p>
-                    </div>
-
-                    {/* Verified Icon Accent */}
-                    <div className="shrink-0 pt-1 text-slate-400 group-hover:text-emerald-500 transition-colors">
-                      <Check className="w-4 h-4 stroke-[2.5]" />
-                    </div>
+      <section className="mx-auto grid max-w-6xl gap-7 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
+        <div className="space-y-7">
+          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">কোর্সের শিক্ষকবৃন্দ</h2>
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+              {teachers.slice(0, 8).map((teacher, index) => {
+                const surface = ['bg-rose-100 dark:bg-rose-950/50', 'bg-amber-100 dark:bg-amber-950/50', 'bg-sky-100 dark:bg-sky-950/50', 'bg-emerald-100 dark:bg-emerald-950/50'][index % 4];
+                return <div key={teacher._id} className="text-center">
+                  <div className={`flex aspect-[4/3] items-end justify-center overflow-hidden rounded-2xl ${surface}`}>
+                    {teacher.avatarUrl ? <img src={teacher.avatarUrl} alt={teacher.name} className="h-full w-full object-cover" /> : <span className="mb-5 text-2xl font-black text-slate-700/60 dark:text-white/70">{teacher.name.slice(0, 2)}</span>}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Instructors Section */}
-            <div className="order-2 p-7 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">কোর্সের শিক্ষকবৃন্দ</h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">অভিজ্ঞ শিক্ষক ও মেন্টরদের সাথে গোছানোভাবে শেখার সুযোগ।</p>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {displayTeachers.slice(0, 8).map((teacher, index) => {
-                  const surface = ['bg-rose-100 dark:bg-rose-950/40', 'bg-amber-100 dark:bg-amber-950/40', 'bg-sky-100 dark:bg-sky-950/40', 'bg-emerald-100 dark:bg-emerald-950/40'][index % 4];
-                  return (
-                    <div key={teacher._id} className="text-center">
-                      <div className={`aspect-[4/3] w-full overflow-hidden rounded-2xl ${surface} flex items-end justify-center`}>
-                        {teacher.avatarUrl ? (
-                          <img src={teacher.avatarUrl} alt={teacher.name} className="h-full w-full object-cover" />
-                        ) : (
-                          <span className="mb-5 text-2xl font-black text-slate-700/70 dark:text-slate-200/80">{teacher.name.slice(0, 2)}</span>
-                        )}
-                      </div>
-                      <h3 className="mt-2 text-xs sm:text-sm font-black text-slate-900 dark:text-white line-clamp-1">{teacher.name}</h3>
-                      <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">{course.subject || 'Academic'} · Mentor</p>
-                    </div>
-                  );
-                })}
-              </div>
-              {displayTeachers.length > 8 && <button type="button" className="mt-6 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">আরো দেখুন</button>}
-            </div>
-
-            {/* 3 Core Value Cards */}
-            <div className="order-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
-                  <Video className="w-4 h-4" />
-                </div>
-                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">লাইভ ক্লাস</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  ডিজিটাল স্মার্টবোর্ডে প্রশ্নোত্তরমূলক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস ও ডাউট সলভ।
-                </p>
-              </div>
-
-              <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3">
-                  <FileText className="w-4 h-4" />
-                </div>
-                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">হ্যান্ডনোট ও পিডিএফ</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  অধ্যায়ভিত্তিক সূত্র, ফর্মুলা বুক ও বোর্ড সমাধান সরাসরি ডাউনলোডের সুযোগ।
-                </p>
-              </div>
-
-              <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
-                  <Award className="w-4 h-4" />
-                </div>
-                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">মডেল টেস্ট ও মূল্যায়ন</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  টাইমড অনলাইন পরীক্ষা, অটোমেটেড মেধা তালিকা ও বিস্তারিত ব্যাখ্যা।
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-          {/* RIGHT COLUMN: Modern Enrollment & Batch Selection Card (5 Cols Sticky) */}
-          <div className="lg:col-span-5 sticky top-20 space-y-6">
-
-            {/* Premium Enrollment & Batches Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
-
-              {/* Top Card Banner: Course Fee & Admission Focus */}
-              <div className="p-7 sm:p-8 bg-gradient-to-b from-blue-50/60 to-white dark:from-slate-800/50 dark:to-slate-900 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    কোর্স ভর্তি ফি
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black border border-emerald-500/20 tracking-wide">
-                    {course.gradeLevel}
-                  </span>
-                </div>
-
-                {/* Course Tuition Fee Display */}
-                <div className="flex items-baseline gap-2.5">
-                  {course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice ? (
-                    <>
-                      <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                        ৳ {course.discountPrice.toLocaleString()}
-                      </span>
-                      <span className="text-base text-slate-400 line-through font-semibold">
-                        ৳ {course.regularPrice.toLocaleString()}
-                      </span>
-                      <span className="px-2 py-0.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-black">
-                        অফার চলছে
-                      </span>
-                    </>
-                  ) : course.regularPrice || course.courseFee ? (
-                    <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                      ৳ {(course.regularPrice || course.courseFee).toLocaleString()}
-                    </span>
-                  ) : (
-                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-                      ফ্রি কোর্স
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium leading-relaxed">
-                  এনরোল করার পর আপনার সুবিধাজনক batch ও class schedule বেছে নিতে পারবেন।
-                </p>
-              </div>
-
-              {/* Enrollment action: batch selection is shown only after clicking. */}
-              <div className="p-7 sm:p-8">
-                <div className="rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800 p-5">
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center shrink-0">
-                      <GraduationCap className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black text-slate-900 dark:text-white">কোর্সে ভর্তি হতে প্রস্তুত?</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">এনরোল করার পর আপনার সুবিধাজনক batch বেছে নিন।</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 border-t border-slate-200 pt-4 dark:border-slate-800">
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white">এই কোর্সে যা থাকছে</h3>
-                    <div className="mt-3 space-y-2.5">
-                      {highlights.slice(0, 5).map((highlight, index) => (
-                        <div key={index} className="flex items-start gap-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
-                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                          <span>{highlight}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {isFeatureEnabled('admissions', user?.role === 'superadmin') && (!user || user.role === 'student') && (
-                    <button type="button" onClick={() => handleEnrollClick()} className="w-full mt-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-black flex items-center justify-center gap-2 transition-colors">
-                      <CheckCircle className="w-4 h-4 text-emerald-300" />
-                      এনরোল করুন
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  )}
-
-                  {user?.role === 'student' && enrolledBatchIds.length > 0 && (
-                    <Link href={`/classroom/${enrolledBatchIds[0]}`} className="w-full mt-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black flex items-center justify-center gap-2 transition-colors">
-                      ক্লাসরুমে প্রবেশ করুন <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  )}
-                  {enrollErrorMessage && <p className="mt-3 text-xs font-bold text-rose-600 dark:text-rose-400">{enrollErrorMessage}</p>}
-                </div>
-              </div>
-
-              {/* Legacy batch detail block kept out of the public course view. */}
-              <div className="hidden p-7 sm:p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-600" />
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                      চলতি ব্যাচ ও শিডিউল
-                    </h3>
-                  </div>
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                    {batches.length}টি ব্যাচ
-                  </span>
-                </div>
-
-                {batches.length === 0 ? (
-                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 text-center border border-slate-100 dark:border-slate-800">
-                    <p className="text-xs text-slate-500 font-semibold">
-                      নতুন ব্যাচের শিডিউল খুব শীঘ্রই যুক্ত করা হচ্ছে।
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {batches.map((batch) => (
-                      <div
-                        key={batch._id}
-                        className="group/b p-5 rounded-2xl bg-slate-50/90 dark:bg-slate-950/80 border border-slate-200/80 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 transition-all duration-200"
-                      >
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover/b:text-blue-600 dark:group-hover/b:text-blue-400 transition-colors">
-                            {batch.name}
-                          </h4>
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 text-[11px] font-black border border-emerald-200/80 dark:border-emerald-800/80 shrink-0">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            সক্রিয়
-                          </span>
-                        </div>
-
-                        {batch.weeklySchedule && batch.weeklySchedule.length > 0 ? (
-                          <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                            {batch.weeklySchedule.map((slot, sIdx) => {
-                              const dInfo = getDayInfo(slot.day);
-                              return (
-                                <span
-                                  key={sIdx}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-[11px] text-blue-700 dark:text-blue-300 font-bold"
-                                >
-                                  <Calendar className="w-3 h-3 text-blue-500" />
-                                  <span>{dInfo.shortBn} ({formatTo12Hour(slot.startTime)}{slot.endTime ? ` - ${formatTo12Hour(slot.endTime)}` : ''})</span>
-                                </span>
-                              );
-                            })}
-                          </div>
-                        ) : batch.scheduleText ? (
-                          <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 mb-3 bg-white dark:bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-200/60 dark:border-slate-800/80">
-                            <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                            <span className="font-semibold text-[11px]">{batch.scheduleText}</span>
-                          </div>
-                        ) : null}
-
-                        {/* Enrolled Student Count Display */}
-                        <div className="flex items-center justify-between py-2 px-3 rounded-xl bg-white dark:bg-slate-900/90 border border-slate-200/60 dark:border-slate-800/80 mb-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                          <span>আসন পরিস্থিতি:</span>
-                          <span className="inline-flex items-center gap-1 text-xs font-black text-blue-600 dark:text-blue-400">
-                            <Users className="w-3.5 h-3.5" />
-                            <span>{batch.enrolledStudentCount ?? 0} জন এনরোল্ড</span>
-                            {batch.capacity && batch.capacity > 0 && (
-                              <span className="text-[10px] text-slate-400 font-normal">
-                                (আসন: {batch.capacity})
-                              </span>
-                            )}
-                          </span>
-                        </div>
-
-                        {/* Role-based action button:
-                            - Admin / Teacher / Guardian / Employee: NO action button shown
-                            - Non-user (visitor) OR Student not enrolled: "এনরোল করুন"
-                            - Student already enrolled: "ক্লাসরুমে প্রবেশ করুন"
-                        */}
-                        {isFeatureEnabled('admissions', user?.role === 'superadmin') && (!user || user.role === 'student') && (
-                          <>
-                            {user && user.role === 'student' && enrolledBatchIds.includes(batch._id) ? (
-                              <Link
-                                href={`/classroom/${batch._id}`}
-                                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
-                              >
-                                <GraduationCap className="w-4 h-4" />
-                                <span>ক্লাসরুমে প্রবেশ করুন</span>
-                                <ArrowRight className="w-4 h-4" />
-                              </Link>
-                            ) : pendingRequestBatchIds.includes(batch._id) ? (
-                              <button type="button" disabled className="w-full py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs sm:text-sm font-extrabold border border-amber-200 dark:border-amber-800 flex items-center justify-center gap-2 cursor-not-allowed">
-                                <Clock className="w-4 h-4" />
-                                <span>Request pending</span>
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => handleEnrollClick(batch)}
-                                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 cursor-pointer"
-                              >
-                                <CheckCircle className="w-4 h-4 text-emerald-300" />
-                                <span>এনরোল করুন</span>
-                                <ArrowRight className="w-4 h-4" />
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Trust Badges */}
-                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3 text-xs text-slate-600 dark:text-slate-400">
-                  <div className="flex items-center gap-2.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span className="font-medium">নিরাপদ অনলাইন ভর্তি (বিকাশ / নগদ / কার্ড)</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span className="font-medium">মিস হওয়া ক্লাসের সার্বক্ষণিক রেকর্ডেড ব্যাকআপ</span>
-                  </div>
-                </div>
-
-                {/* Direct Helpline */}
-                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
-                  <span className="text-xs text-slate-400 block mb-1 font-medium">
-                    ভর্তি সংক্রান্ত তথ্যের জন্য সরাসরি কথা বলুন:
-                  </span>
-                  <a
-                    href="tel:16910"
-                    className="inline-flex items-center gap-2 text-sm font-black text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    <PhoneCall className="w-3.5 h-3.5" /> ১৬৯১০ (সকাল ৮টা - রাত ১০টা)
-                  </a>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-      {showBatchPicker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-            <button type="button" onClick={() => setShowBatchPicker(false)} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white" aria-label="বন্ধ করুন">
-              <X className="w-4 h-4" />
-            </button>
-            <div className="pr-8">
-              <p className="text-xs font-bold text-blue-600 dark:text-blue-400">এনরোলমেন্ট</p>
-              <h2 className="mt-1 text-xl font-black text-slate-900 dark:text-white">আপনার batch বেছে নিন</h2>
-              <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">আপনার পছন্দের batch নির্বাচন করলে পরের ধাপে request form খুলবে।</p>
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {batches.map((batch) => {
-                const alreadyJoined = enrolledBatchIds.includes(batch._id);
-                const requestPending = pendingRequestBatchIds.includes(batch._id);
-                return (
-                  <div key={batch._id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white">{batch.name}</h3>
-                        {batch.scheduleText && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{batch.scheduleText}</p>}
-                      </div>
-                      <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">সক্রিয়</span>
-                    </div>
-                    {alreadyJoined ? (
-                      <Link href={`/classroom/${batch._id}`} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-black text-white">ক্লাসরুমে যান <ArrowRight className="w-3.5 h-3.5" /></Link>
-                    ) : requestPending ? (
-                      <button type="button" disabled className="mt-3 w-full rounded-xl border border-amber-200 bg-amber-50 py-2.5 text-xs font-black text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">Request pending</button>
-                    ) : (
-                      <button type="button" onClick={() => handleBatchSelection(batch)} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 text-xs font-black text-white hover:bg-blue-700">এই batch বেছে নিন <ArrowRight className="w-3.5 h-3.5" /></button>
-                    )}
-                  </div>
-                );
+                  <h3 className="mt-2 line-clamp-1 text-xs font-black text-slate-900 dark:text-white sm:text-sm">{teacher.name}</h3>
+                  <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">{course.subject || 'Academic'} · Mentor</p>
+                </div>;
               })}
             </div>
-          </div>
+            {teachers.length > 8 && <button type="button" className="mt-5 text-xs font-bold text-blue-600 hover:underline">আরো দেখুন</button>}
+          </section>
+
+          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
+              <BookOpen className="h-5 w-5 text-blue-600" />
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {syllabus.map((item, index) => {
+                const open = expandedSyllabus === index;
+                return <div key={`${item.title}-${index}`} className={`overflow-hidden rounded-2xl border transition-colors ${open ? 'border-blue-300 bg-blue-50/60 dark:border-blue-800 dark:bg-blue-950/30' : 'border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-950/50'}`}>
+                  <button type="button" onClick={() => setExpandedSyllabus(open ? null : index)} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm dark:bg-slate-800"><Layers3 className="h-4 w-4" /></span>
+                    <span className="flex-1 text-xs font-black text-slate-800 dark:text-slate-100">{item.title}</span>
+                    <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? 'rotate-180 text-blue-600' : ''}`} />
+                  </button>
+                  {open && <div className="border-t border-blue-200/70 px-4 pb-4 pt-3 text-xs leading-relaxed text-slate-600 dark:border-blue-900 dark:text-slate-300">{item.details}</div>}
+                </div>;
+              })}
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+            <h2 className="text-xl font-black text-slate-900 dark:text-white">প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস</h2>
+            <div className="mt-4 flex min-h-40 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 text-center dark:from-slate-800 dark:via-slate-800 dark:to-indigo-950">
+              <div><CalendarDays className="mx-auto h-9 w-9 text-blue-500" /><p className="mt-2 text-sm font-black text-slate-700 dark:text-slate-200">রুটিন শীঘ্রই যুক্ত হবে</p><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">প্রকাশ হলে এখানে দেখা যাবে।</p></div>
+            </div>
+          </section>
         </div>
-      )}
 
-      {/* Legacy confirmation popup is no longer used; enrollment now starts with batch selection. */}
-      {selectedBatchForEnroll && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-200/80 dark:border-slate-800 transition-all scale-100">
-            {/* Close button */}
-            <button
-              onClick={() => {
-                if (!enrolling) {
-                  setSelectedBatchForEnroll(null);
-                  setEnrollErrorMessage('');
-                  setEnrollSuccessMessage('');
-                }
-              }}
-              disabled={enrolling}
-              className="absolute top-4 right-4 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Modal Icon */}
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200/70 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-4">
-              <GraduationCap className="w-7 h-7" />
+        <aside className="lg:sticky lg:top-20 lg:self-start">
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="border-b border-slate-100 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 sm:p-7">
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্স ফি</p>
+              <div className="mt-1 flex items-baseline gap-2">
+                {price ? <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">৳{price.toLocaleString('bn-BD')}</span> : <span className="text-2xl font-black text-emerald-600">ফ্রি কোর্স</span>}
+                {hasDiscount && <><span className="text-sm text-slate-400 line-through">৳{course.regularPrice?.toLocaleString('bn-BD')}</span><span className="rounded-full bg-pink-100 px-2 py-1 text-[10px] font-black text-pink-600">অফার</span></>}
+              </div>
+              <button type="button" onClick={startEnrollment} disabled={Boolean(user?.role && !['student'].includes(user.role))} className="mt-5 w-full rounded-xl bg-blue-600 py-3 text-sm font-black text-white shadow-md shadow-blue-500/20 transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">প্রোগ্রামে ভর্তি হও <ArrowRight className="ml-1 inline h-4 w-4" /></button>
             </div>
-
-            {/* Title & Description */}
-            <div className="text-center mb-5">
-              <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                ক্লাসে জয়েন নিশ্চিতকরণ
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                আপনি কি সত্যিই <span className="font-bold text-slate-900 dark:text-white">&ldquo;{selectedBatchForEnroll.name}&rdquo;</span> ব্যাচে জয়েন করতে চান?
-              </p>
-            </div>
-
-            {/* Course & Batch Summary Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/70 dark:border-slate-800 mb-5 space-y-2 text-xs">
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                <span className="font-semibold">কোর্স:</span>
-                <span className="font-bold text-slate-900 dark:text-white truncate max-w-[200px]">
-                  {course.title}
-                </span>
+            <div className="p-6 sm:p-7">
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">এই কোর্সে যা থাকছে</h2>
+              <div className="mt-4 space-y-3">
+                {benefits.map((benefit, index) => <div key={index} className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />{benefit}</div>)}
               </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                <span className="font-semibold">ব্যাচ:</span>
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  {selectedBatchForEnroll.name}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400">
-                <span className="font-semibold">ভর্তি ফি (কোর্স):</span>
-                <span className="font-black text-emerald-600 dark:text-emerald-400">
-                  {course.discountPrice && course.discountPrice > 0 && course.regularPrice && course.regularPrice > course.discountPrice
-                    ? `৳ ${course.discountPrice.toLocaleString()}`
-                    : course.regularPrice || course.courseFee
-                    ? `৳ ${(course.regularPrice || course.courseFee).toLocaleString()}`
-                    : 'ফ্রি'}
-                </span>
-              </div>
-            </div>
-
-            {/* Success or Error Alert */}
-            {enrollSuccessMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
-                <span>{enrollSuccessMessage}</span>
-              </div>
-            )}
-
-            {enrollErrorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
-                <span>{enrollErrorMessage}</span>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedBatchForEnroll(null);
-                  setEnrollErrorMessage('');
-                  setEnrollSuccessMessage('');
-                }}
-                disabled={enrolling}
-                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
-              >
-                বাতিল করুন
-              </button>
-
-              <button
-                type="button"
-                onClick={handleConfirmEnrollment}
-                disabled={enrolling}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-              >
-                {enrolling ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>এনরোল হচ্ছে...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>হ্যাঁ, জয়েন করুন</span>
-                  </>
-                )}
-              </button>
+              <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-800"><div className="flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400"><ShieldCheck className="h-4 w-4 shrink-0 text-emerald-500" /> Payment এখনই লাগবে না; request review-এর পর admin যোগাযোগ করবে।</div></div>
+              <div className="mt-5 flex items-center justify-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400"><Phone className="h-3.5 w-3.5" /> ১৬৯১০ · <Mail className="h-3.5 w-3.5" /> support</div>
             </div>
           </div>
-        </div>
-      )}
+        </aside>
+      </section>
 
-    </div>
+      {showBatchPicker && <BatchPicker batches={batches} enrolledBatchIds={enrolledBatchIds} pendingRequestBatchIds={pendingRequestBatchIds} onClose={() => setShowBatchPicker(false)} onSelect={(batch) => router.push(`/enroll/${batch._id}/request`)} />}
+    </main>
   );
+}
+
+function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return <div className="flex items-center gap-3 border-slate-100 px-5 py-4 sm:border-r dark:border-slate-800"><span>{icon}</span><div><span className="block text-[11px] text-slate-500 dark:text-slate-400">{label}</span><strong className="text-sm text-slate-900 dark:text-white">{value}</strong></div></div>;
+}
+
+function BatchPicker({ batches, enrolledBatchIds, pendingRequestBatchIds, onClose, onSelect }: { batches: Batch[]; enrolledBatchIds: string[]; pendingRequestBatchIds: string[]; onClose: () => void; onSelect: (batch: Batch) => void }) {
+  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"><div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900"><button type="button" onClick={onClose} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"><X className="h-4 w-4" /></button><p className="text-xs font-bold text-blue-600">এনরোলমেন্ট</p><h2 className="mt-1 pr-8 text-xl font-black text-slate-900 dark:text-white">আপনার batch বেছে নিন</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">একটি batch নির্বাচন করলে request form খুলবে।</p><div className="mt-5 space-y-3">{batches.map((batch) => { const joined = enrolledBatchIds.includes(batch._id); const pending = pendingRequestBatchIds.includes(batch._id); return <div key={batch._id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/50"><div className="flex items-start justify-between gap-3"><h3 className="text-sm font-black text-slate-900 dark:text-white">{batch.name}</h3><span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">Active</span></div>{batch.scheduleText && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{batch.scheduleText}</p>}{joined ? <Link href={`/classroom/${batch._id}`} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-black text-white">ক্লাসরুমে যান <ArrowRight className="h-3.5 w-3.5" /></Link> : pending ? <button type="button" disabled className="mt-3 w-full rounded-xl border border-amber-200 bg-amber-50 py-2.5 text-xs font-black text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">Request pending</button> : <button type="button" onClick={() => onSelect(batch)} className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 text-xs font-black text-white hover:bg-blue-700">এই batch বেছে নিন <ArrowRight className="h-3.5 w-3.5" /></button>}</div>; })}</div></div></div>;
 }
