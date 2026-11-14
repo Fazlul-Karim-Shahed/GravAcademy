@@ -101,7 +101,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
               <div className="relative mt-6 pt-4 border-t border-blue-100 dark:border-slate-700 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300"><ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" /> এখনই payment লাগবে না—Admin approve করার পর payment arrange করা যাবে।</div>
             </section>
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 sm:rounded-[28px] sm:border border-slate-200/90 dark:border-slate-800 sm:p-8 lg:p-10 sm:shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+            <form onSubmit={handleSubmit} className="bg-transparent dark:bg-transparent sm:bg-white sm:dark:bg-slate-900 sm:rounded-[28px] sm:border border-slate-200/90 dark:border-slate-800 sm:p-8 lg:p-10 sm:shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
               <div className="mb-7"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center"><UserRound className="w-5 h-5" /></div><div><h2 className="text-lg font-black">আপনার তথ্য</h2><p className="text-xs text-slate-500 mt-0.5">শুধু প্রয়োজনীয় তথ্য দিয়ে request পাঠান</p></div></div></div>
               {error && <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold">{error}</div>}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
