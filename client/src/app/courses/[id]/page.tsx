@@ -189,9 +189,14 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
   return (
     <main className="min-h-screen bg-[#f3f8fc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <section className="relative overflow-hidden bg-[#202d68] pb-14 pt-8 text-white sm:pb-16 sm:pt-10">
-        <div className="absolute -left-20 -top-32 h-96 w-96 rounded-full bg-indigo-400/25 blur-3xl" />
-        <div className="absolute -right-20 top-0 h-80 w-96 rounded-full bg-sky-300/15 blur-3xl" />
+      <section className="relative overflow-hidden cosmic-hero-bg pb-14 pt-8 text-white shadow-lg sm:pb-16 sm:pt-10">
+        <div className="absolute left-1/2 top-0 h-[380px] w-[1000px] -translate-x-1/2 bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl" />
+        <div className="absolute left-1/2 top-1/4 h-[250px] w-[750px] -translate-x-1/2 animate-atmosphere rounded-full bg-red-600/15 blur-[100px]" />
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <div className="absolute left-[10%] top-[16%] h-1 w-1 rounded-full bg-white animate-star-twinkle-slow" />
+          <div className="absolute right-[12%] top-[24%] h-1.5 w-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
+          <div className="absolute right-[30%] top-[12%] h-1 w-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
+        </div>
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 flex justify-end">
             {(['superadmin', 'admin'].includes(user?.role || '')) && (
