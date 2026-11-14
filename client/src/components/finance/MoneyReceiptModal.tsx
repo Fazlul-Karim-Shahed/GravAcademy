@@ -144,7 +144,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
     : '';
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:static print:overflow-visible print:z-auto">
+    <div className="receipt-print-root fixed inset-0 z-50 overflow-y-auto bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:static print:overflow-visible print:z-auto">
       <style jsx global>{`
         @media print {
           @page {
@@ -157,9 +157,20 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
             height: auto !important;
             overflow: visible !important;
           }
-          /* Hide all page background contents when printing modal */
-          body > *:not(#__next):not(div.fixed) {
-            display: none !important;
+          /* Keep the receipt visible while hiding the surrounding app shell. */
+          body * {
+            visibility: hidden !important;
+          }
+          .receipt-print-root,
+          .receipt-print-root * {
+            visibility: visible !important;
+          }
+          .receipt-print-root {
+            position: static !important;
+            display: block !important;
+            width: 100% !important;
+            min-height: 0 !important;
+            background: #ffffff !important;
           }
           .print\\:hidden {
             display: none !important;
