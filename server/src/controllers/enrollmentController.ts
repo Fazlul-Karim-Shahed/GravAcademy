@@ -13,7 +13,7 @@ import { EnrollmentRequest } from '../models/EnrollmentRequest';
 import { generateUniqueUserId } from './authController';
 import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
-import { sendEnrollmentApprovalEmail } from '../services/emailService';
+import { sendEnrollmentApprovalEmail, sendEnrollmentRequestReceivedEmail } from '../services/emailService';
 
 export const enrollBatchSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
@@ -193,6 +193,22 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       : await EnrollmentRequest.findOne({ applicantUserId, batchId: batch._id, status: 'pending' });
     if (existingRequest) {
       return res.status(409).json({ success: false, message: 'এই ব্যাচের জন্য আপনার একটি request আগে থেকেই pending আছে।', data: existingRequest });
+    }
+
+    if (isGuest) {
+      const normalizedEmail = email?.trim().toLowerCase();
+      if (!normalizedEmail) {
+        return res.status(400).json({ success: false, message: 'Guest request-এর জন্য একটি valid email address দিন।' });
+      }
+
+      const emailSent = await sendEnrollmentRequestReceivedEmail({
+        to: normalizedEmail,
+        name: name.trim(),
+        batchName: batch.name,
+      });
+      if (!emailSent) {
+        return res.status(400).json({ success: false, message: 'এই email address-এ confirmation email পাঠানো যায়নি। Email address ঠিক আছে কি না দেখে আবার চেষ্টা করুন।' });
+      }
     }
 
     const request = await EnrollmentRequest.create({

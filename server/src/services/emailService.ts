@@ -101,6 +101,31 @@ export const sendPasswordResetEmail = async ({
   });
 };
 
+export const sendEnrollmentRequestReceivedEmail = async ({
+  to,
+  name,
+  batchName,
+}: {
+  to: string;
+  name: string;
+  batchName: string;
+}): Promise<boolean> => {
+  return sendGmailTextEmail({
+    to,
+    subject: 'We received your enrollment request | Grav Academy',
+    body: [
+      'Hi ' + (name || 'there') + ',',
+      '',
+      'We received your request to join the batch "' + batchName + '".',
+      'Our admission team will review your request and contact you soon.',
+      '',
+      'If you did not submit this request, you can ignore this email.',
+      '',
+      'Grav Academy',
+    ].join('\n'),
+  });
+};
+
 export const sendEnrollmentApprovalEmail = async ({
   to,
   name,
