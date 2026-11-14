@@ -148,6 +148,7 @@ UserSchema.virtual('userId')
 const rewriteLegacyId = (value: any): any => {
   if (Array.isArray(value)) return value.map(rewriteLegacyId);
   if (!value || typeof value !== 'object') return value;
+  if (value instanceof Date || value instanceof mongoose.Types.ObjectId || value._bsontype) return value;
   return Object.fromEntries(
     Object.entries(value).map(([key, child]) => [
       key === 'userId' ? 'gravId' : key,

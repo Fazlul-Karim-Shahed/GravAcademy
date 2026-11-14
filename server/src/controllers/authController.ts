@@ -358,6 +358,7 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
       },
     });
   } catch (error: any) {
+    console.error('Get authenticated user error:', error);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
