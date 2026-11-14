@@ -236,9 +236,7 @@ export default function AdminAdmissionsPage() {
   useEffect(() => {
     if (!requestId) return;
     const loadRequest = async () => {
-      try {
-        const res = await api.get(`/enrollment-requests/${requestId}`);
-        const request = res.data?.data;
+      const applyRequestToForm = (request: any) => {
         if (!request) return;
         // Guest requests contain a placeholder applicantUserId, not a real
         // User document. Only a successfully populated student is an existing
@@ -260,8 +258,20 @@ export default function AdminAdmissionsPage() {
         setSelectedBatchId(request.batchId?._id || request.batchId || '');
         setPaymentFee(0);
         setPaymentStatus('unpaid');
+      };
+
+      try {
+        const res = await api.get(`/enrollment-requests/${requestId}`);
+        applyRequestToForm(res.data?.data);
       } catch (err) {
         console.error('Failed to load enrollment request:', err);
+        try {
+          const fallback = await api.get('/enrollment-requests/admin', { params: { status: 'pending' } });
+          const request = (fallback.data?.data || []).find((item: any) => item._id === requestId);
+          applyRequestToForm(request);
+        } catch (fallbackError) {
+          console.error('Failed to load enrollment request fallback:', fallbackError);
+        }
       }
     };
     loadRequest();
