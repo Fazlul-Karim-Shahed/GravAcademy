@@ -9,16 +9,25 @@ import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import {
   ArrowRight,
+  Atom,
   BookOpen,
+  BookMarked,
+  Calculator,
   CalendarDays,
   Check,
   ChevronDown,
   Clock3,
   Edit,
+  FlaskConical,
+  Globe2,
   GraduationCap,
+  Languages,
+  Landmark,
   Layers3,
   Loader2,
   Mail,
+  Monitor,
+  PenTool,
   Phone,
   ShieldCheck,
   Users,
@@ -189,6 +198,19 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const syllabus = course.syllabus?.length ? course.syllabus : fallbackSyllabus;
   const visibleTeachers = showAllTeachers ? teachers.slice(0, 8) : teachers.slice(0, 4);
   const teacherMeta = ['গণিত · ৮+ বছর', 'পদার্থবিজ্ঞান · ৭+ বছর', 'রসায়ন · ৬+ বছর', 'ইংরেজি · ৯+ বছর'];
+  const syllabusIcons = [BookMarked, BookMarked, Languages, Languages, Monitor, Calculator, Atom, FlaskConical, Landmark, PenTool];
+  const syllabusIconStyles = [
+    'bg-rose-100 text-rose-500',
+    'bg-rose-100 text-rose-500',
+    'bg-teal-100 text-teal-600',
+    'bg-teal-100 text-teal-600',
+    'bg-cyan-100 text-cyan-600',
+    'bg-orange-100 text-orange-600',
+    'bg-emerald-100 text-emerald-600',
+    'bg-violet-100 text-violet-600',
+    'bg-amber-100 text-amber-600',
+    'bg-blue-100 text-blue-600',
+  ];
 
   return (
     <main className="min-h-screen bg-[#f3f8fc] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -240,7 +262,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
       <section className="mx-auto grid max-w-6xl gap-7 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
         <div className="space-y-7">
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+          <section className="rounded-[28px] bg-transparent p-0">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-blue-600">Grav Academy</p>
@@ -273,27 +295,50 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-end justify-between gap-3">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-600">Course roadmap</p>
-                <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
               </div>
               <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-black text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">{syllabus.length}টি বিষয়</span>
             </div>
-            <div className="mt-6 divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+            <div className="mt-5 space-y-3">
               {syllabus.map((item, index) => {
                 const open = expandedSyllabus === index;
-                return <div key={item.title + '-new-' + index} className={open ? 'bg-blue-50/70 dark:bg-blue-950/20' : 'bg-white dark:bg-slate-900'}>
-                  <button type="button" onClick={() => setExpandedSyllabus(open ? null : index)} className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 sm:px-5">
-                    <span className={open ? 'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white' : 'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300'}><Layers3 className="h-4 w-4" /></span>
-                    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black text-slate-900 dark:text-white">{item.title}</span><span className="mt-0.5 block text-[10px] text-slate-500 dark:text-slate-400">Lesson {String(index + 1).padStart(2, '0')} · Core topic</span></span>
+                const SyllabusIcon = syllabusIcons[index % syllabusIcons.length];
+                return <div key={item.title + '-new-' + index} className={open ? 'overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(30,65,100,0.12)] ring-1 ring-blue-200 dark:bg-slate-900 dark:ring-blue-900' : 'overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(30,65,100,0.08)] dark:bg-slate-900'}>
+                  <button type="button" onClick={() => setExpandedSyllabus(open ? null : index)} className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 sm:px-6">
+                    <span className={"flex h-10 w-10 shrink-0 items-center justify-center rounded-none " + syllabusIconStyles[index % syllabusIconStyles.length]}><SyllabusIcon className="h-5 w-5" /></span>
+                    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black text-slate-900 dark:text-white">{item.title}</span></span>
                     <ChevronDown className={open ? 'h-4 w-4 shrink-0 rotate-180 text-blue-600 transition-transform' : 'h-4 w-4 shrink-0 text-slate-400 transition-transform'} />
                   </button>
-                  {open && <div className="flex gap-3 border-t border-blue-100 px-4 pb-5 pt-3 text-xs leading-6 text-slate-600 dark:border-blue-900/50 dark:text-slate-300 sm:px-5"><span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />{item.details}</div>}
+                  {open && <div className="flex gap-3 border-t border-slate-100 px-5 pb-5 pt-3 text-xs leading-6 text-slate-600 dark:border-slate-800 dark:text-slate-300 sm:px-6"><span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />{item.details}</div>}
                 </div>;
               })}
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <section className="rounded-[22px]">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস</h2>
+            <div className="mt-5 overflow-hidden rounded-[22px] shadow-[0_10px_28px_rgba(30,65,100,0.12)]">
+              <div className="relative flex min-h-[220px] items-center justify-center overflow-hidden bg-[#020b2b] bg-gradient-to-br from-[#06103f] via-[#073b9e] to-[#020817] px-6 text-center sm:min-h-[260px]">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_55%,rgba(24,142,255,0.78),transparent_38%),radial-gradient(circle_at_15%_20%,rgba(0,92,255,0.28),transparent_28%),radial-gradient(circle_at_86%_20%,rgba(0,220,255,0.18),transparent_25%)]" />
+                <div className="absolute -bottom-24 left-[-8%] h-36 w-[120%] rotate-[-8deg] bg-blue-950/80 shadow-[0_-8px_30px_rgba(24,164,255,0.55)]" />
+                <div className="absolute -bottom-20 left-[-8%] h-24 w-[120%] rotate-[6deg] bg-cyan-500/60" />
+                <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle,white_1px,transparent_1px)] [background-size:32px_32px]" />
+                <div className="relative">
+                  <CalendarDays className="mx-auto h-10 w-10 text-cyan-200" />
+                  <p className="mt-4 text-4xl font-black tracking-tight text-white drop-shadow-[0_4px_0_rgba(0,0,0,0.28)] sm:text-6xl">রুটিন শীঘ্রই আসছে</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 bg-gradient-to-r from-[#e3f7fa] via-[#f4f5e2] to-[#ffe8bd] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-9">
+                <p className="text-sm font-bold text-slate-700 sm:text-base">ক্লাস ৬ - SSC '32</p>
+                <div className="flex flex-wrap gap-3">
+                  <button type="button" className="rounded-xl bg-[#3555ee] px-5 py-3 text-xs font-black text-white shadow-sm transition hover:bg-[#2946da]">ডাউনলোড ক্লাস রুটিন</button>
+                  <button type="button" className="rounded-xl bg-[#e60087] px-5 py-3 text-xs font-black text-white shadow-sm transition hover:bg-[#c90076]">ডাউনলোড প্রসপেক্টাস</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="hidden overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="grid items-center gap-5 bg-gradient-to-br from-[#eef7ff] via-white to-[#f2edff] p-5 sm:grid-cols-[1fr_210px] sm:p-7 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40">
               <div>
                 <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[10px] font-black text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"><CalendarDays className="h-3.5 w-3.5" /> Course plan</span>
@@ -305,7 +350,24 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
           </section>
 
-          <section className="grid gap-4 sm:grid-cols-2">
+          <section className="overflow-hidden rounded-[22px] bg-gradient-to-r from-[#dff7fb] via-[#f2f4de] to-[#ffe5b7] shadow-[0_10px_28px_rgba(30,65,100,0.1)]">
+            <div className="grid items-center sm:grid-cols-[1fr_220px]">
+              <div className="p-6 sm:p-8">
+                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-700">Grav Academy support</p>
+                <h2 className="mt-3 text-2xl font-black text-[#24478f]">যেকোনো প্রয়োজনে কল করো এখনই</h2>
+                <p className="mt-3 max-w-md text-sm leading-6 text-[#31558e]">শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।</p>
+                <p className="mt-4 border-l-4 border-amber-400 pl-3 text-sm font-black text-[#31558e]">সকাল ৮টা - রাত ১০টা</p>
+                <a href="tel:16910" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5269f4] px-6 py-3 text-base font-black text-white shadow-md transition hover:bg-[#4056df]"><Phone className="h-5 w-5" /> ১৬৯১০</a>
+                <p className="mt-2 text-[10px] text-[#31558e]">* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *</p>
+              </div>
+              <div className="relative h-52 self-end overflow-hidden sm:h-64">
+                <img src="/images/hero-student.jpg" alt="Grav Academy student support" className="absolute inset-0 h-full w-full object-cover object-[65%_20%] mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#eaf5df]/95 via-transparent to-transparent sm:from-[#eaf5df]/40" />
+              </div>
+            </div>
+          </section>
+
+          <section className="hidden grid gap-4 sm:grid-cols-2">
             <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-[#122b63] via-[#173e88] to-[#4169d8] p-6 text-white shadow-sm">
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-cyan-300/20 blur-2xl" />
               <p className="relative text-[11px] font-black uppercase tracking-[0.18em] text-blue-100">Support</p>
