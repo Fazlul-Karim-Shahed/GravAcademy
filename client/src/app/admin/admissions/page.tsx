@@ -1111,11 +1111,6 @@ export default function AdminAdmissionsPage() {
                         </label>}
                       </div>
 
-                      {docUploadSuccess && (
-                        <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1.5">
-                          {docUploadSuccess}
-                        </p>
-                      )}
                     </div>
 
                     {/* Notes */}
