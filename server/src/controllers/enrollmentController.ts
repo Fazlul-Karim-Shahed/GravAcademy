@@ -843,7 +843,7 @@ export const getAdminEnrollments = async (req: AuthenticatedRequest, res: Respon
     const limitNum = Math.min(100, Math.max(1, parseInt(limit as string, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
 
-    // If search keyword provided, find matching student IDs
+    // If search keyword provided, first resolve matching public Grav IDs.
     if (search && typeof search === 'string' && search.trim() !== '') {
       const regex = new RegExp(search.trim(), 'i');
       const matchingStudents = await User.find({
