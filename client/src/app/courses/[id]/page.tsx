@@ -278,21 +278,23 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                   'from-sky-100 via-cyan-50 to-white dark:from-sky-950/60 dark:via-cyan-950/30 dark:to-slate-900',
                   'from-emerald-100 via-teal-50 to-white dark:from-emerald-950/60 dark:via-teal-950/30 dark:to-slate-900',
                 ][index % 4];
-                return <article key={teacher._id} className="group min-w-0 text-center">
-                  <div className={"relative aspect-[4/3] overflow-hidden rounded-[22px] bg-gradient-to-br " + surface}>
-                    <div className="absolute -right-5 -top-5 h-20 w-20 rounded-full bg-white/40 blur-2xl dark:bg-white/10" />
-                    <img src={teacherAvatar(teacher, index)} alt={teacher.name} className="relative h-full w-full object-contain object-bottom drop-shadow-md transition-transform duration-500 group-hover:scale-[1.04]" />
-                    <span className="absolute bottom-2 left-2 rounded-full bg-white/85 px-2 py-1 text-[9px] font-black text-slate-700 shadow-sm backdrop-blur dark:bg-slate-950/70 dark:text-slate-200">{teacherMeta[index % teacherMeta.length]}</span>
+                return <article key={teacher._id} className="group min-w-0 overflow-hidden rounded-[24px] border border-slate-200/90 bg-white p-2 text-center shadow-[0_8px_24px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(30,65,100,0.14)] dark:border-slate-800 dark:bg-slate-900">
+                  <div className={"relative aspect-[4/5] overflow-hidden rounded-[18px] bg-gradient-to-br " + surface}>
+                    <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/50 blur-2xl dark:bg-white/10" />
+                    <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-blue-300/20 blur-2xl dark:bg-blue-400/10" />
+                    <img src={teacherAvatar(teacher, index)} alt={teacher.name} className={"relative h-full w-full object-center drop-shadow-md transition-transform duration-500 group-hover:scale-[1.04] " + (teacher.avatarUrl ? 'object-cover' : 'object-contain')} />
                   </div>
-                  <h3 className="mt-3 truncate text-xs font-black text-slate-900 dark:text-white sm:text-sm">{teacher.name}</h3>
-                  <p className="mt-1 truncate text-[10px] text-slate-500 dark:text-slate-400">{course.subject || 'Academic'} · Mentor</p>
+                  <div className="px-1 pb-1 pt-3">
+                    <h3 className="truncate text-xs font-black text-slate-900 dark:text-white sm:text-sm">{teacher.name}</h3>
+                    <span className="mt-2 inline-flex max-w-full truncate rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">{teacherMeta[index % teacherMeta.length]}</span>
+                  </div>
                 </article>;
               })}
             </div>
             {teachers.length > 4 && <button type="button" onClick={() => setShowAllTeachers((value) => !value)} className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-blue-200 px-4 py-2 text-xs font-black text-blue-700 transition-colors hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/40">{showAllTeachers ? 'সংক্ষেপে' : 'আরো দেখুন'} <ChevronDown className={showAllTeachers ? 'h-3.5 w-3.5 rotate-180 transition-transform' : 'h-3.5 w-3.5 transition-transform'} /></button>}
           </section>
 
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 dark:border-slate-800 dark:bg-slate-900">
+          <section className="rounded-[28px] bg-transparent p-0">
             <div className="flex items-end justify-between gap-3">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
