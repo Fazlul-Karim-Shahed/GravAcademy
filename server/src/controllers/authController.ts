@@ -36,9 +36,9 @@ export const resetPasswordSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-const generateToken = (userId: string): string => {
+const generateToken = (accountId: string): string => {
   const secret = process.env.JWT_SECRET || 'grav_academy_jwt_secret_dev';
-  return jwt.sign({ userId }, secret, {
+  return jwt.sign({ accountId }, secret, {
     expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any,
   });
 };
@@ -46,7 +46,7 @@ const generateToken = (userId: string): string => {
 /**
  * Generate unique Grav ID in format: YYMMDD### (e.g. 261024001)
  */
-export const generateUniqueUserId = async (): Promise<string> => {
+export const generateUniquegravId = async (): Promise<string> => {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
   const mm = String(now.getMonth() + 1).padStart(2, '0');
@@ -94,7 +94,7 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Generate unique Grav ID (e.g. 261024001)
-    const gravId = await generateUniqueUserId();
+    const gravId = await generateUniquegravId();
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
@@ -243,9 +243,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const rawToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-    await PasswordResetToken.deleteMany({ userId: user._id, usedAt: { $exists: false } });
+    await PasswordResetToken.deleteMany({ accountId: user._id, usedAt: { $exists: false } });
     await PasswordResetToken.create({
-      userId: user._id,
+      accountId: user._id,
       tokenHash,
       expiresAt: new Date(Date.now() + 30 * 60 * 1000),
     });
@@ -293,7 +293,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       });
     }
 
-    const user = await User.findById(resetRecord.userId).select('+passwordHash');
+    const user = await User.findById(resetRecord.accountId).select('+passwordHash');
     if (!user || user.status === 'suspended' || user.status === 'deactivated') {
       return res.status(400).json({ success: false, message: 'এই account-এ password reset করা যাচ্ছে না।' });
     }
@@ -302,7 +302,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     await user.save();
     resetRecord.usedAt = new Date();
     await resetRecord.save();
-    await PasswordResetToken.deleteMany({ userId: user._id, _id: { $ne: resetRecord._id } });
+    await PasswordResetToken.deleteMany({ accountId: user._id, _id: { $ne: resetRecord._id } });
 
     await AuditLog.create({
       actorId: user._id,
@@ -436,7 +436,7 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
       data: {
         user: {
           id: user._id,
-          userId: user.userId,
+          gravId: user.gravId,
           name: user.name,
           email: user.email,
           phone: user.phone,

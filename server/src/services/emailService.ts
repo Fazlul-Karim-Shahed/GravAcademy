@@ -130,21 +130,21 @@ export const sendEnrollmentApprovalEmail = async ({
   to,
   name,
   batchName,
-  userId,
+  gravId,
   password,
   existingAccount,
 }: {
   to: string;
   name: string;
   batchName: string;
-  userId: string;
+  gravId: string;
   password?: string;
   existingAccount: boolean;
 }): Promise<boolean> => {
   const credentials = existingAccount
     ? ['আপনার আগের account দিয়েই login করুন।']
     : [
-        'Grav ID: ' + userId,
+        'Grav ID: ' + gravId,
         'Password: ' + (password || ''),
         '',
         'প্রথম login-এর পর password পরিবর্তন করে নিন।',

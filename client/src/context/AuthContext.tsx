@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 
 export interface User {
   id: string;
-  userId?: string;
+  gravId?: string;
   name: string;
   email?: string;
   phone?: string;

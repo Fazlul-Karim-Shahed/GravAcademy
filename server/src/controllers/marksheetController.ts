@@ -39,7 +39,7 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
     } else if (user.role === ROLES.STUDENT) {
       const enrollment = await Enrollment.findOne({
         batchId,
-        studentId: user._id,
+        gravId: user.gravId,
         status: { $in: ['enrolled', 'completed'] },
       });
       if (!enrollment) {
@@ -47,13 +47,13 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
       }
     } else if (user.role === ROLES.GUARDIAN) {
       const guardian = await User.findById(user._id);
-      const linked = guardian?.guardianDetails?.linkedStudents || [];
+      const linked = guardian?.guardianDetails?.linkedGravIds || [];
       if (linked.length === 0) {
         return res.status(403).json({ success: false, message: 'No linked student found' });
       }
       const hasChildEnrolled = await Enrollment.findOne({
         batchId,
-        studentId: { $in: linked },
+        gravId: { $in: linked },
         status: { $in: ['enrolled', 'completed'] },
       });
       if (!hasChildEnrolled) {
@@ -62,32 +62,32 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
     }
 
     // Determine target students
-    let targetStudentIds: mongoose.Types.ObjectId[] = [];
+    let targetgravIds: string[] = [];
 
     if (isStaff) {
       // Find all enrolled students in the batch
       const enrollments = await Enrollment.find({
         batchId: new mongoose.Types.ObjectId(batchId),
         status: { $in: ['enrolled', 'completed'] },
-      }).select('studentId');
-      targetStudentIds = enrollments.map((e) => e.studentId as mongoose.Types.ObjectId);
+      }).select('gravId');
+      targetgravIds = enrollments.map((e) => e.gravId);
     } else if (user.role === ROLES.STUDENT) {
       // STRICT: student only views self
-      targetStudentIds = [new mongoose.Types.ObjectId(user._id)];
+      targetgravIds = [user.gravId];
     } else if (user.role === ROLES.GUARDIAN) {
       const guardian = await User.findById(user._id);
-      const linked = guardian?.guardianDetails?.linkedStudents || [];
+      const linked = guardian?.guardianDetails?.linkedGravIds || [];
       const childEnrollments = await Enrollment.find({
         batchId: new mongoose.Types.ObjectId(batchId),
-        studentId: { $in: linked },
+        gravId: { $in: linked },
         status: { $in: ['enrolled', 'completed'] },
-      }).select('studentId');
-      targetStudentIds = childEnrollments.map((e) => e.studentId as mongoose.Types.ObjectId);
+      }).select('gravId');
+      targetgravIds = childEnrollments.map((e) => e.gravId);
     }
 
     // Fetch students info
-    const students = await User.find({ _id: { $in: targetStudentIds } })
-      .select('name email avatarUrl userId phone')
+    const students = await User.find({ gravId: { $in: targetgravIds } })
+      .select('name email avatarUrl gravId phone')
       .lean();
 
     // Fetch all Exams in this batch
@@ -111,27 +111,27 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
     // Fetch attempts for target students
     const examAttempts = await ExamAttempt.find({
       batchId: new mongoose.Types.ObjectId(batchId),
-      studentId: { $in: targetStudentIds },
+      gravId: { $in: targetgravIds },
     })
-      .select('examId studentId mcqScore cqScore totalScore passed isEvaluated status submittedAt')
+      .select('examId gravId mcqScore cqScore totalScore passed isEvaluated status submittedAt')
       .lean();
 
     // Fetch assignment submissions for target students
     const assignmentSubmissions = await AssignmentSubmission.find({
       batchId: new mongoose.Types.ObjectId(batchId),
-      studentId: { $in: targetStudentIds },
+      gravId: { $in: targetgravIds },
     })
-      .select('assignmentId studentId score feedback annotatedFileUrl annotatedFileName isEvaluated isLate status submittedAt')
+      .select('assignmentId gravId score feedback annotatedFileUrl annotatedFileName isEvaluated isLate status submittedAt')
       .lean();
 
     // Build Student Marksheet Matrix
     const studentMarksheets = students.map((st) => {
-      const stIdStr = st._id.toString();
+      const stIdStr = st.gravId;
 
       // Exam records
       const studentExams = exams.map((ex) => {
         const attempt = examAttempts.find(
-          (att) => att.studentId.toString() === stIdStr && att.examId.toString() === ex._id.toString()
+          (att) => att.gravId.toString() === stIdStr && att.examId.toString() === ex._id.toString()
         );
         return {
           examId: ex._id,
@@ -152,7 +152,7 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
       // Assignment records
       const studentAssignments = assignments.map((asgn) => {
         const sub = assignmentSubmissions.find(
-          (s) => s.studentId.toString() === stIdStr && s.assignmentId.toString() === asgn._id.toString()
+          (s) => s.gravId.toString() === stIdStr && s.assignmentId.toString() === asgn._id.toString()
         );
         return {
           assignmentId: asgn._id,

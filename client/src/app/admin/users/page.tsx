@@ -27,7 +27,7 @@ import ComingSoonCard from '@/components/common/ComingSoonCard';
 
 interface UserRecord {
   _id: string;
-  userId?: string;
+  gravId?: string;
   name: string;
   email?: string;
   phone?: string;
@@ -90,12 +90,12 @@ export default function AdminUsersPage() {
     (target.role !== 'admin' || user?.role === 'superadmin');
 
   const [deleteTarget, setDeleteTarget] = useState<UserRecord | null>(null);
-  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [deletinggravId, setDeletinggravId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState('');
 
   const handleDeleteUser = async () => {
     if (!deleteTarget) return;
-    setDeletingUserId(deleteTarget._id);
+    setDeletinggravId(deleteTarget._id);
     setDeleteError('');
     try {
       const res = await api.delete(`/users/${deleteTarget._id}`);
@@ -109,14 +109,14 @@ export default function AdminUsersPage() {
     } catch (err: any) {
       setDeleteError(err.response?.data?.message || 'ইউজার ডিলিট করা যায়নি');
     } finally {
-      setDeletingUserId(null);
+      setDeletinggravId(null);
     }
   };
 
   // Guardian <-> Student linking modal
   const [linkModalGuardian, setLinkModalGuardian] = useState<UserRecord | null>(null);
   const [allStudents, setAllStudents] = useState<UserRecord[]>([]);
-  const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+  const [selectedgravIds, setSelectedgravIds] = useState<string[]>([]);
   const [loadingLinkModal, setLoadingLinkModal] = useState(false);
   const [savingLink, setSavingLink] = useState(false);
   const [linkError, setLinkError] = useState('');
@@ -132,8 +132,8 @@ export default function AdminUsersPage() {
         api.get(`/users/${guardian._id}`),
         api.get('/users', { params: { role: 'student', limit: 500 } }),
       ]);
-      const linked = (guardianRes.data?.data?.guardianDetails?.linkedStudents || []) as any[];
-      setSelectedStudentIds(linked.map((s: any) => (typeof s === 'string' ? s : s._id)));
+      const linked = (guardianRes.data?.data?.guardianDetails?.linkedGravIds || []) as any[];
+      setSelectedgravIds(linked.map((s: any) => (typeof s === 'string' ? s : s._id)));
       setAllStudents(studentsRes.data?.data || []);
     } catch (e) {
       setLinkError('তথ্য লোড করতে সমস্যা হয়েছে');
@@ -142,9 +142,9 @@ export default function AdminUsersPage() {
     }
   };
 
-  const toggleStudentSelection = (studentId: string) => {
-    setSelectedStudentIds((prev) =>
-      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId]
+  const toggleStudentSelection = (gravId: string) => {
+    setSelectedgravIds((prev) =>
+      prev.includes(gravId) ? prev.filter((id) => id !== gravId) : [...prev, gravId]
     );
   };
 
@@ -154,7 +154,7 @@ export default function AdminUsersPage() {
     setLinkError('');
     try {
       const res = await api.put(`/users/${linkModalGuardian._id}/link-students`, {
-        studentIds: selectedStudentIds,
+        gravIds: selectedgravIds,
       });
       if (res.data?.success) {
         setLinkModalGuardian(null);
@@ -171,7 +171,7 @@ export default function AdminUsersPage() {
   const filteredModalStudents = allStudents.filter((s) => {
     if (!linkStudentSearch.trim()) return true;
     const q = linkStudentSearch.trim().toLowerCase();
-    return s.name.toLowerCase().includes(q) || (s.userId || '').toLowerCase().includes(q);
+    return s.name.toLowerCase().includes(q) || (s.gravId || '').toLowerCase().includes(q);
   });
 
   // Create Staff Account (Teacher / Guardian / Employee) modal
@@ -207,7 +207,7 @@ export default function AdminUsersPage() {
         role: staffRole,
       });
       if (res.data?.success) {
-        setCreateStaffSuccess(`"${staffName}" সফলভাবে তৈরি হয়েছে (ID: ${res.data.data?.userId})`);
+        setCreateStaffSuccess(`"${staffName}" সফলভাবে তৈরি হয়েছে (ID: ${res.data.data?.gravId})`);
         resetStaffForm();
         fetchUsers(1);
         setPage(1);
@@ -396,7 +396,7 @@ export default function AdminUsersPage() {
 
                   <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/60">
                     <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold">
-                      ID: {u.userId || '—'}
+                      ID: {u.gravId || '—'}
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -431,7 +431,7 @@ export default function AdminUsersPage() {
                         setDeleteError('');
                         setDeleteTarget(u);
                       }}
-                      disabled={deletingUserId === u._id}
+                      disabled={deletinggravId === u._id}
                       className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-bold text-xs transition-colors border border-rose-200/70 dark:border-rose-800 shadow-2xs disabled:opacity-50"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -492,7 +492,7 @@ export default function AdminUsersPage() {
                       {/* Grav ID */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span className="font-mono font-bold text-xs px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
-                          {u.userId || '—'}
+                          {u.gravId || '—'}
                         </span>
                       </td>
 
@@ -573,7 +573,7 @@ export default function AdminUsersPage() {
                                 setDeleteError('');
                                 setDeleteTarget(u);
                               }}
-                              disabled={deletingUserId === u._id}
+                              disabled={deletinggravId === u._id}
                               title="ইউজার ডিলিট"
                               className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-600 dark:text-rose-300 transition-colors shadow-2xs disabled:opacity-50"
                             >
@@ -800,7 +800,7 @@ export default function AdminUsersPage() {
                 <div className="text-center py-10 text-slate-400 text-xs font-medium">কোনো শিক্ষার্থী পাওয়া যায়নি</div>
               ) : (
                 filteredModalStudents.map((s) => {
-                  const checked = selectedStudentIds.includes(s._id);
+                  const checked = selectedgravIds.includes(s._id);
                   return (
                     <label
                       key={s._id}
@@ -818,7 +818,7 @@ export default function AdminUsersPage() {
                       />
                       <div className="min-w-0">
                         <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{s.name}</div>
-                        <div className="text-[11px] text-slate-500">#{s.userId || '—'}</div>
+                        <div className="text-[11px] text-slate-500">#{s.gravId || '—'}</div>
                       </div>
                     </label>
                   );
@@ -832,7 +832,7 @@ export default function AdminUsersPage() {
 
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <span className="text-xs text-slate-500 font-medium">
-                {selectedStudentIds.length} জন নির্বাচিত
+                {selectedgravIds.length} জন নির্বাচিত
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -876,7 +876,7 @@ export default function AdminUsersPage() {
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                disabled={Boolean(deletingUserId)}
+                disabled={Boolean(deletinggravId)}
                 className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
               >
                 বাতিল
@@ -884,10 +884,10 @@ export default function AdminUsersPage() {
               <button
                 type="button"
                 onClick={handleDeleteUser}
-                disabled={Boolean(deletingUserId)}
+                disabled={Boolean(deletinggravId)}
                 className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
               >
-                {deletingUserId ? 'ডিলিট হচ্ছে...' : 'স্থায়ীভাবে ডিলিট'}
+                {deletinggravId ? 'ডিলিট হচ্ছে...' : 'স্থায়ীভাবে ডিলিট'}
               </button>
             </div>
           </div>

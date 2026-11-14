@@ -26,7 +26,7 @@ interface RecentResult {
 interface LinkedStudent {
   _id: string;
   name: string;
-  userId?: string;
+  gravId?: string;
   avatarUrl?: string;
   batches: { batchId: string; batchName: string; courseName: string }[];
   examSummary: {
@@ -68,7 +68,7 @@ export default function GuardianPortalPage() {
     try {
       const res = await api.get('/guardian/overview');
       if (res.data?.success) {
-        setStudents(res.data.data?.linkedStudents || []);
+        setStudents(res.data.data?.linkedGravIds || []);
       } else {
         setError(res.data?.message || 'তথ্য লোড করা যায়নি');
       }
@@ -83,7 +83,7 @@ export default function GuardianPortalPage() {
     setPaymentModalStudent(student);
     setLoadingPayments(true);
     try {
-      const res = await api.get('/finance/my-payments', { params: { studentId: student._id } });
+      const res = await api.get('/finance/my-payments', { params: { gravId: student._id } });
       if (res.data?.success) {
         setPayments(res.data.data || []);
         setPaymentSummary(res.data.summary || null);
@@ -151,7 +151,7 @@ export default function GuardianPortalPage() {
                     <div>
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white">{student.name}</h3>
                       <p className="text-xs text-slate-600 dark:text-slate-400">
-                        #{student.userId || '—'} •{' '}
+                        #{student.gravId || '—'} •{' '}
                         {student.batches.length > 0
                           ? student.batches.map((b) => b.batchName).join(', ')
                           : 'কোনো ব্যাচে ভর্তি নেই'}

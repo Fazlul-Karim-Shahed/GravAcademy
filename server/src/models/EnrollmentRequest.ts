@@ -4,7 +4,7 @@ export type EnrollmentRequestStatus = 'pending' | 'approved' | 'rejected' | 'can
 
 export interface IEnrollmentRequest extends Document {
   _id: mongoose.Types.ObjectId;
-  applicantUserId: mongoose.Types.ObjectId;
+  applicantGravId?: string;
   isGuest: boolean;
   batchId: mongoose.Types.ObjectId;
   courseId: mongoose.Types.ObjectId;
@@ -27,7 +27,7 @@ export interface IEnrollmentRequest extends Document {
 
 const EnrollmentRequestSchema = new Schema<IEnrollmentRequest>(
   {
-    applicantUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    applicantGravId: { type: String, index: true },
     isGuest: { type: Boolean, default: false, index: true },
     batchId: { type: Schema.Types.ObjectId, ref: 'Batch', required: true, index: true },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true, index: true },
@@ -55,7 +55,7 @@ const EnrollmentRequestSchema = new Schema<IEnrollmentRequest>(
 
 // A student may have only one active request for a batch.
 EnrollmentRequestSchema.index(
-  { applicantUserId: 1, batchId: 1 },
+  { applicantGravId: 1, batchId: 1 },
   { unique: true, partialFilterExpression: { status: 'pending' } }
 );
 

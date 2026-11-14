@@ -60,7 +60,7 @@ interface BatchInfo {
 
 interface MemberUser {
   _id: string;
-  userId?: string;
+  gravId?: string;
   name: string;
   email?: string;
   role: string;
@@ -247,7 +247,7 @@ export default function BatchClassroomPage({
     setShiftingStudent(true);
     try {
       const res = await api.post('/enrollments/shift', {
-        studentId: studentToShift._id,
+        gravId: studentToShift._id,
         currentBatchId: batchId,
         targetBatchId: selectedTargetBatchId,
       });
@@ -273,7 +273,7 @@ export default function BatchClassroomPage({
     try {
       const res = await api.post('/enrollments/cancel', {
         batchId,
-        studentId: studentToRemove._id,
+        gravId: studentToRemove._id,
       });
 
       if (res.data?.success) {
@@ -890,7 +890,7 @@ export default function BatchClassroomPage({
                         {roleBadge('teacher')}
                       </div>
                       <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 block truncate">
-                        {t.userId ? `ID: ${t.userId}` : 'শিক্ষক'}
+                        {t.gravId ? `ID: ${t.gravId}` : 'শিক্ষক'}
                       </span>
                     </div>
                   </div>
@@ -917,7 +917,7 @@ export default function BatchClassroomPage({
                           {roleBadge('student')}
                         </div>
                         <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
-                          {s.userId ? `ID: ${s.userId}` : 'শিক্ষার্থী'}
+                          {s.gravId ? `ID: ${s.gravId}` : 'শিক্ষার্থী'}
                         </span>
                       </div>
                     </div>
@@ -981,7 +981,7 @@ export default function BatchClassroomPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Grav ID:</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToRemove.userId || 'N/A'}</span>
+                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToRemove.gravId || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">বর্তমান ব্যাচ:</span>
@@ -1050,7 +1050,7 @@ export default function BatchClassroomPage({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Grav ID:</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToShift.userId || 'N/A'}</span>
+                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToShift.gravId || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">বর্তমান ব্যাচ:</span>

@@ -24,9 +24,9 @@ export const authenticate = async (req: AuthenticatedRequest, res: Response, nex
     }
 
     const secret = process.env.JWT_SECRET || 'grav_academy_jwt_secret_dev';
-    const decoded = jwt.verify(token, secret) as { userId: string };
+    const decoded = jwt.verify(token, secret) as { accountId: string };
 
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.accountId);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -66,9 +66,9 @@ export const optionalAuthenticate = async (req: AuthenticatedRequest, res: Respo
     }
 
     const secret = process.env.JWT_SECRET || 'grav_academy_jwt_secret_dev';
-    const decoded = jwt.verify(token, secret) as { userId: string };
+    const decoded = jwt.verify(token, secret) as { accountId: string };
 
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.accountId);
     if (user && user.status !== 'suspended' && user.status !== 'deactivated') {
       req.user = user;
     }

@@ -68,11 +68,11 @@ interface AssignmentItem {
 
 interface SubmissionRecord {
   _id: string;
-  studentId: {
+  gravId: {
     _id: string;
     name: string;
     email: string;
-    userId?: string;
+    gravId?: string;
     avatarUrl?: string;
   };
   submissionText?: string;
@@ -874,14 +874,14 @@ export default function AssignmentRoomPage({
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5">
                           <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs">
-                            {sub.studentId?.name?.charAt(0) || 'S'}
+                            {sub.gravId?.name?.charAt(0) || 'S'}
                           </div>
                           <div>
                             <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                              {sub.studentId?.name}
+                              {sub.gravId?.name}
                             </h4>
                             <span className="text-[10px] text-slate-500">
-                              {sub.studentId?.userId || sub.studentId?.email}
+                              {sub.gravId?.gravId || sub.gravId?.email}
                             </span>
                           </div>
                         </div>
@@ -919,7 +919,7 @@ export default function AssignmentRoomPage({
                               setPreviewDoc({
                                 isOpen: true,
                                 url: sub.fileUrl!,
-                                title: `${sub.studentId?.name || 'শিক্ষার্থী'} - সাবমিশন ফাইল`,
+                                title: `${sub.gravId?.name || 'শিক্ষার্থী'} - সাবমিশন ফাইল`,
                                 fileName: sub.fileName || 'ডকুমেন্ট',
                               })
                             }

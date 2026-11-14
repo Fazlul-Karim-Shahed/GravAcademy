@@ -59,7 +59,7 @@ export const gradeAssignmentSchema = z.object({
 // Access Helper
 // ==========================================
 async function verifyAssignmentBatchAccess(
-  userId: string,
+  gravId: string,
   userRole: string,
   batchId: string,
   requireEnrolledStudent = false
@@ -74,14 +74,14 @@ async function verifyAssignmentBatchAccess(
   if (userRole === ROLES.TEACHER) {
     if (!requireEnrolledStudent) {
       if (batch.assignedTeachers && batch.assignedTeachers.length > 0) {
-        return batch.assignedTeachers.some((id) => id.toString() === userId.toString());
+        return batch.assignedTeachers.some((id) => id.toString() === gravId.toString());
       }
 
       // When no teacher is assigned directly to the batch, only the parent
       // course instructors may manage its assignments. Never grant access to
       // every teacher as a fallback.
       const course = await Course.findById(batch.courseId).select('instructors').lean();
-      return (course?.instructors || []).some((id: mongoose.Types.ObjectId) => id.toString() === userId.toString());
+      return (course?.instructors || []).some((id: mongoose.Types.ObjectId) => id.toString() === gravId.toString());
     }
     return false;
   }
@@ -89,7 +89,7 @@ async function verifyAssignmentBatchAccess(
   if (userRole === ROLES.STUDENT) {
     const enrollment = await Enrollment.findOne({
       batchId,
-      studentId: userId,
+      gravId: gravId,
       status: { $in: ['enrolled', 'completed'] },
     });
     return !!enrollment;
@@ -107,7 +107,11 @@ export const createAssignment = async (req: AuthenticatedRequest, res: Response)
     if (!user) return res.status(401).json({ success: false, message: 'Unauthorized' });
 
     const data = createAssignmentSchema.parse(req.body);
-    const hasAccess = await verifyAssignmentBatchAccess(user._id.toString(), user.role, data.batchId);
+    const hasAccess = await verifyAssignmentBatchAccess(
+      user.role === ROLES.STUDENT ? user.gravId : user._id.toString(),
+      user.role,
+      data.batchId,
+    );
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'You do not have permission to manage assignments in this batch' });
     }
@@ -123,7 +127,7 @@ export const createAssignment = async (req: AuthenticatedRequest, res: Response)
       latePenaltyPercent: data.latePenaltyPercent,
       attachmentUrl: data.attachmentUrl,
       isPublished: data.isPublished,
-      createdBy: new mongoose.Types.ObjectId(user._id),
+      createdBy: user._id,
     });
 
     return res.status(201).json({
@@ -148,7 +152,7 @@ export const getBatchAssignments = async (req: AuthenticatedRequest, res: Respon
     const { batchId } = req.params;
     if (!batchId) return res.status(400).json({ success: false, message: 'Batch ID is required' });
 
-    const hasAccess = await verifyAssignmentBatchAccess(user._id.toString(), user.role, batchId);
+    const hasAccess = await verifyAssignmentBatchAccess(user.role === ROLES.STUDENT ? user.gravId : user._id.toString(), user.role, batchId);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'You do not have access to this batch' });
     }
@@ -168,7 +172,7 @@ export const getBatchAssignments = async (req: AuthenticatedRequest, res: Respon
       const assignmentIds = assignments.map((a) => a._id);
       const studentSubmissions = await AssignmentSubmission.find({
         assignmentId: { $in: assignmentIds },
-        studentId: new mongoose.Types.ObjectId(user._id),
+        gravId: user.gravId,
       }).lean();
 
       const subMap = new Map();
@@ -239,7 +243,7 @@ export const getAssignmentDetails = async (req: AuthenticatedRequest, res: Respo
     if (user.role === ROLES.STUDENT) {
       mySubmission = await AssignmentSubmission.findOne({
         assignmentId: assignment._id,
-        studentId: user._id,
+        gravId: user.gravId,
       }).lean();
     }
 
@@ -392,7 +396,7 @@ export const submitAssignment = async (req: AuthenticatedRequest, res: Response)
     // Check existing submission
     let submission = await AssignmentSubmission.findOne({
       assignmentId: assignment._id,
-      studentId: user._id,
+      gravId: user.gravId,
     });
 
     if (submission && submission.isEvaluated) {
@@ -406,7 +410,7 @@ export const submitAssignment = async (req: AuthenticatedRequest, res: Response)
       submission = new AssignmentSubmission({
         assignmentId: assignment._id,
         batchId: assignment.batchId,
-        studentId: user._id,
+        gravId: user.gravId,
         submissionText: data.submissionText,
         fileUrl: data.fileUrl,
         fileName: data.fileName,
@@ -462,7 +466,6 @@ export const getAssignmentSubmissions = async (req: AuthenticatedRequest, res: R
     }
 
     const submissions = await AssignmentSubmission.find({ assignmentId: assignment._id })
-      .populate('studentId', 'name email avatarUrl userId')
       .populate('evaluatedBy', 'name email')
       .sort({ submittedAt: -1 })
       .lean();
@@ -530,7 +533,7 @@ export const gradeAssignmentSubmission = async (req: AuthenticatedRequest, res: 
       submission.annotatedFileName = data.annotatedFileName || 'evaluated_script.png';
     }
     submission.isEvaluated = true;
-    submission.evaluatedBy = new mongoose.Types.ObjectId(user._id);
+    submission.evaluatedBy = user._id;
     submission.evaluatedAt = new Date();
     submission.status = data.status;
 

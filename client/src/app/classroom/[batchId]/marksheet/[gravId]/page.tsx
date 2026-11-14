@@ -20,7 +20,7 @@ interface StudentRow {
     _id: string;
     name: string;
     email: string;
-    userId?: string;
+    gravId?: string;
     avatarUrl?: string;
   };
   exams: {
@@ -65,9 +65,9 @@ export const dynamic = 'force-dynamic';
 export default function StudentMarksheetPage({
   params,
 }: {
-  params: Promise<{ batchId: string; studentId: string }>;
+  params: Promise<{ batchId: string; gravId: string }>;
 }) {
-  const { batchId, studentId } = use(params);
+  const { batchId, gravId } = use(params);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [batchName, setBatchName] = useState('');
@@ -83,11 +83,11 @@ export default function StudentMarksheetPage({
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push(`/login?redirect=/classroom/${batchId}/marksheet/${studentId}`);
+      router.push(`/login?redirect=/classroom/${batchId}/marksheet/${gravId}`);
       return;
     }
     if (user) loadStudentMarksheet();
-  }, [authLoading, user, batchId, studentId]);
+  }, [authLoading, user, batchId, gravId]);
 
   const loadStudentMarksheet = async () => {
     setLoading(true);
@@ -96,7 +96,7 @@ export default function StudentMarksheetPage({
       const res = await api.get(`/batches/${batchId}/marksheet`);
       if (!res.data?.success) throw new Error('Marksheet load করা যায়নি');
       setBatchName(res.data.batch?.name || 'Classroom');
-      const row = (res.data.data || []).find((item: StudentRow) => item.student?._id === studentId);
+      const row = (res.data.data || []).find((item: StudentRow) => item.student?._id === gravId);
       if (!row) throw new Error('এই student-এর marksheet পাওয়া যায়নি');
       setStudent(row);
     } catch (err: any) {
@@ -169,7 +169,7 @@ export default function StudentMarksheetPage({
                   )}
                   <div className="min-w-0">
                     <h2 className="text-lg sm:text-xl font-black truncate">{student.student.name}</h2>
-                    <p className="text-xs text-slate-500 truncate">{student.student.userId || student.student.email}</p>
+                    <p className="text-xs text-slate-500 truncate">{student.student.gravId || student.student.email}</p>
                   </div>
                 </div>
                 <div className="text-left sm:text-right">

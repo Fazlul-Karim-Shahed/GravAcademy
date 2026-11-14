@@ -25,13 +25,13 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface SubmissionItem {
   _id: string;
-  studentId: {
+  gravId: {
     _id: string;
     name: string;
     email: string;
     phone?: string;
     avatarUrl?: string;
-    studentId?: string;
+    gravId?: string;
   };
   submittedAt: string;
   answers: {
@@ -230,16 +230,16 @@ export default function ExamSubmissionsPage({
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <UserAvatar
-                            name={sub.studentId?.name || 'শিক্ষার্থী'}
-                            avatarUrl={sub.studentId?.avatarUrl}
+                            name={sub.gravId?.name || 'শিক্ষার্থী'}
+                            avatarUrl={sub.gravId?.avatarUrl}
                             size="sm"
                           />
                           <div>
                             <div className="font-bold text-slate-900 dark:text-white">
-                              {sub.studentId?.name}
+                              {sub.gravId?.name}
                             </div>
                             <div className="text-[11px] text-slate-500">
-                              {sub.studentId?.studentId ? `#${sub.studentId.studentId}` : sub.studentId?.email}
+                              {sub.gravId?.gravId ? `#${sub.gravId.gravId}` : sub.gravId?.email}
                             </div>
                           </div>
                         </div>
@@ -298,16 +298,16 @@ export default function ExamSubmissionsPage({
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <UserAvatar
-                        name={sub.studentId?.name || 'শিক্ষার্থী'}
-                        avatarUrl={sub.studentId?.avatarUrl}
+                        name={sub.gravId?.name || 'শিক্ষার্থী'}
+                        avatarUrl={sub.gravId?.avatarUrl}
                         size="md"
                       />
                       <div>
                         <div className="font-black text-sm text-slate-900 dark:text-white">
-                          {sub.studentId?.name}
+                          {sub.gravId?.name}
                         </div>
                         <div className="text-[11px] text-slate-500">
-                          {sub.studentId?.studentId ? `#${sub.studentId.studentId}` : sub.studentId?.email}
+                          {sub.gravId?.gravId ? `#${sub.gravId.gravId}` : sub.gravId?.email}
                         </div>
                       </div>
                     </div>
@@ -358,7 +358,7 @@ export default function ExamSubmissionsPage({
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
-                  শিক্ষার্থীর খাতা মূল্যায়ন: {selectedSub.studentId?.name}
+                  শিক্ষার্থীর খাতা মূল্যায়ন: {selectedSub.gravId?.name}
                 </h3>
                 <p className="text-xs text-slate-500">
                   MCQ স্বয়ংক্রিয়ভাবে মূল্যায়িত হয়েছে ({selectedSub.mcqScore} নম্বর)। CQ ও ডকুমেন্টের নম্বর দিন।

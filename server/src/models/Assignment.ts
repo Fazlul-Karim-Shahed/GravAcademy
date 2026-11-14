@@ -64,7 +64,7 @@ export interface IAssignmentSubmission extends Document {
   _id: mongoose.Types.ObjectId;
   assignmentId: mongoose.Types.ObjectId;
   batchId: mongoose.Types.ObjectId;
-  studentId: mongoose.Types.ObjectId;
+  gravId: string;
   submissionText?: string;
   fileUrl?: string; // Uploaded student file / homework document
   fileName?: string;
@@ -97,9 +97,8 @@ const AssignmentSubmissionSchema = new Schema<IAssignmentSubmission>(
       required: true,
       index: true,
     },
-    studentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    gravId: {
+      type: String,
       required: true,
       index: true,
     },
@@ -129,7 +128,7 @@ const AssignmentSubmissionSchema = new Schema<IAssignmentSubmission>(
 );
 
 // Enforce one submission record per student per assignment (can update if not yet evaluated or resubmit)
-AssignmentSubmissionSchema.index({ assignmentId: 1, studentId: 1 }, { unique: true });
+AssignmentSubmissionSchema.index({ assignmentId: 1, gravId: 1 }, { unique: true });
 
 export const AssignmentSubmission = mongoose.model<IAssignmentSubmission>(
   'AssignmentSubmission',

@@ -414,7 +414,7 @@ export const getScheduleOverview = async (req: AuthenticatedRequest, res: Respon
     if (currentUser) {
       if (currentUser.role === 'student') {
         const studentEnrollments = await Enrollment.find({
-          studentId: currentUser._id,
+          gravId: currentUser.gravId,
           status: { $in: ['enrolled', 'completed'] },
         }).select('batchId');
 

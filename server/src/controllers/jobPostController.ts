@@ -174,7 +174,7 @@ export const getAdminJobPosts = async (req: AuthenticatedRequest, res: Response)
 
     const total = await JobPost.countDocuments(filter);
     const jobs = await JobPost.find(filter)
-      .populate('postedBy', 'name userId role')
+      .populate('postedBy', 'name gravId role')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum)

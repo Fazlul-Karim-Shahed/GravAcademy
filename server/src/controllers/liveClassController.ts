@@ -90,10 +90,10 @@ export const createLiveClass = async (req: AuthenticatedRequest, res: Response) 
  */
 export const getStudentLiveClasses = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const studentId = req.user?._id;
+    const gravId = req.user?.gravId;
 
     // Get batches student is enrolled in
-    const enrollments = await Enrollment.find({ studentId, status: 'enrolled' }).select('batchId');
+    const enrollments = await Enrollment.find({ gravId, status: 'enrolled' }).select('batchId');
     const batchIds = enrollments.map((e) => e.batchId);
 
     const liveClasses = await LiveClass.find({

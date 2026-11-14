@@ -44,7 +44,7 @@ interface UserDetail {
 export default function UserPermissionsEditPage() {
   const params = useParams();
   const router = useRouter();
-  const userId = params?.id as string;
+  const gravId = params?.id as string;
   const { user: currentUser } = useAuth();
 
   const [targetUser, setTargetUser] = useState<UserDetail | null>(null);
@@ -56,15 +56,15 @@ export default function UserPermissionsEditPage() {
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    if (userId) {
+    if (gravId) {
       loadUserDetails();
     }
-  }, [userId]);
+  }, [gravId]);
 
   const loadUserDetails = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/users/${userId}`);
+      const res = await api.get(`/users/${gravId}`);
       if (res.data?.success && res.data.data) {
         const u: UserDetail = res.data.data;
         setTargetUser(u);
@@ -98,7 +98,7 @@ export default function UserPermissionsEditPage() {
     setStatusMessage(null);
 
     try {
-      const res = await api.put(`/users/${userId}/role`, {
+      const res = await api.put(`/users/${gravId}/role`, {
         role: selectedRole,
         customPermissions: customPermissions,
       });

@@ -129,7 +129,7 @@ export const streamProtectedDocument = async (req: AuthenticatedRequest, res: Re
       }
 
       const isEnrolled = await Enrollment.findOne({
-        studentId: user._id,
+        gravId: user.gravId,
         batchId: lessonWithFile.batchId,
         status: 'enrolled',
       });

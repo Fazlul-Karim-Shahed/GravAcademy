@@ -26,7 +26,7 @@ import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 
 interface UserRecord {
   _id: string;
-  userId?: string;
+  gravId?: string;
   name: string;
   email?: string;
   phone?: string;
@@ -298,7 +298,7 @@ export default function AdminSettingsPage() {
                                 {u.name}
                               </div>
                               <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold block">
-                                ID: {u.userId || '—'}
+                                ID: {u.gravId || '—'}
                               </span>
                             </div>
                           </div>
@@ -380,7 +380,7 @@ export default function AdminSettingsPage() {
                             {/* Grav ID Column */}
                             <td className="py-3 px-4 whitespace-nowrap">
                               <span className="font-mono font-bold text-xs px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
-                                {u.userId || '—'}
+                                {u.gravId || '—'}
                               </span>
                             </td>
 

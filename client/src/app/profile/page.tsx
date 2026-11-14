@@ -123,12 +123,12 @@ export default function ProfileViewPage() {
 
               {/* ID & Basic Info */}
               <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs text-slate-500 dark:text-slate-400 mt-2">
-                {user.userId && (
+                {user.gravId && (
                   <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/60 px-3 py-1 rounded-xl border border-slate-200/70 dark:border-slate-800">
                     <Hash className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                     <span className="font-semibold text-slate-600 dark:text-slate-300">Grav ID:</span>
                     <span className="font-mono font-bold text-blue-700 dark:text-blue-300 select-all">
-                      {user.userId}
+                      {user.gravId}
                     </span>
                   </div>
                 )}

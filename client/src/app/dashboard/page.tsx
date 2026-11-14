@@ -92,11 +92,11 @@ export default function StudentDashboard() {
               </h1>
 
               {/* Unique Grav ID Display (Visible on mobile/small screens below greeting) */}
-              {user?.userId && (
+              {user?.gravId && (
                 <div className="inline-flex md:hidden items-center gap-1.5 mt-2 text-white">
                   <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Grav ID:</span>
                   <span className="text-xs font-black tracking-wider text-indigo-600 dark:text-indigo-300 select-all font-mono">
-                    {user.userId}
+                    {user.gravId}
                   </span>
                 </div>
               )}
@@ -106,11 +106,11 @@ export default function StudentDashboard() {
             {/* Right section: Grav ID (large screen) + Quick Actions */}
             <div className="flex flex-col md:items-end gap-3 self-start md:self-auto w-full md:w-auto min-w-0">
               {/* Unique Grav ID Display (Visible on md/lg screens on the right) */}
-              {user?.userId && (
+              {user?.gravId && (
                 <div className="hidden md:inline-flex items-center gap-1.5 text-white">
                   <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Grav ID:</span>
                   <span className="text-xs font-black tracking-wider text-indigo-600 dark:text-indigo-300 select-all font-mono">
-                    {user.userId}
+                    {user.gravId}
                   </span>
                 </div>
               )}

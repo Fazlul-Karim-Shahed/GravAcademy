@@ -18,7 +18,7 @@ import { PasswordResetToken } from '../models/PasswordResetToken';
 import { JobPost } from '../models/JobPost';
 import { Payment } from '../models/Payment';
 import { AuthenticatedRequest } from '../middleware/auth';
-import { generateUniqueUserId } from './authController';
+import { generateUniquegravId } from './authController';
 import {
   ROLES,
   UserRole,
@@ -29,14 +29,14 @@ import {
 
 export const createStaffSchema = z
   .object({
-    name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষরের হতে হবে').max(100),
-    email: z.string().email('সঠিক ইমেইল ঠিকানা দিন').optional().or(z.literal('')),
+    name: z.string().min(2, 'à¦¨à¦¾à¦® à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§¨ à¦…à¦•à§à¦·à¦°à§‡à¦° à¦¹à¦¤à§‡ à¦¹à¦¬à§‡').max(100),
+    email: z.string().email('à¦¸à¦ à¦¿à¦• à¦‡à¦®à§‡à¦‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾ à¦¦à¦¿à¦¨').optional().or(z.literal('')),
     phone: z.string().optional().or(z.literal('')),
-    password: z.string().min(6, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'),
+    password: z.string().min(6, 'à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§¬ à¦…à¦•à§à¦·à¦°à§‡à¦° à¦¹à¦¤à§‡ à¦¹à¦¬à§‡'),
     role: z.enum(['teacher', 'guardian', 'employee']),
   })
   .refine((data) => (data.email && data.email.trim() !== '') || (data.phone && data.phone.trim() !== ''), {
-    message: 'অ্যাকাউন্ট খোলার জন্য একটি ইমেইল অথবা ফোন নম্বর আবশ্যক।',
+    message: 'à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦–à§‹à¦²à¦¾à¦° à¦œà¦¨à§à¦¯ à¦à¦•à¦Ÿà¦¿ à¦‡à¦®à§‡à¦‡à¦² à¦…à¦¥à¦¬à¦¾ à¦«à§‹à¦¨ à¦¨à¦®à§à¦¬à¦° à¦†à¦¬à¦¶à§à¦¯à¦•à¥¤',
     path: ['email'],
   });
 
@@ -71,7 +71,7 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
       filter.$or = [
         { name: { $regex: search as string, $options: 'i' } },
         { email: { $regex: search as string, $options: 'i' } },
-        { userId: { $regex: search as string, $options: 'i' } },
+        { gravId: { $regex: search as string, $options: 'i' } },
         { phone: { $regex: search as string, $options: 'i' } },
       ];
     }
@@ -194,7 +194,7 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
 
 /**
  * Create a Teacher, Guardian, or Employee account (Superadmin, Admin, or user with permissions.manage).
- * Deliberately excludes 'admin'/'superadmin' here — role escalation stays on the dedicated
+ * Deliberately excludes 'admin'/'superadmin' here â€” role escalation stays on the dedicated
  * role-change endpoint (updateUserRole), which already enforces the superadmin-only check.
  */
 export const createStaffAccount = async (req: AuthenticatedRequest, res: Response) => {
@@ -217,16 +217,16 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
     if (body.email) {
       const existing = await User.findOne({ email: body.email.trim().toLowerCase() });
       if (existing) {
-        return res.status(400).json({ success: false, message: 'এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট আছে' });
+        return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦‡à¦®à§‡à¦‡à¦² à¦¦à¦¿à¦¯à¦¼à§‡ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦•à¦Ÿà¦¿ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦†à¦›à§‡' });
       }
     }
 
-    const userId = await generateUniqueUserId();
+    const gravId = await generateUniquegravId();
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(body.password, salt);
 
     const user = await User.create({
-      userId,
+      gravId,
       name: body.name.trim(),
       email: body.email && body.email.trim() ? body.email.trim().toLowerCase() : undefined,
       phone: body.phone ? body.phone.trim() : undefined,
@@ -248,15 +248,15 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
 
     return res.status(201).json({
       success: true,
-      message: 'অ্যাকাউন্ট সফলভাবে তৈরি করা হয়েছে',
-      data: { _id: user._id, userId: user.userId, name: user.name, role: user.role },
+      message: 'à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡',
+      data: { _id: user._id, gravId: user.gravId, name: user.name, role: user.role },
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ success: false, message: error.errors[0]?.message || 'Invalid data' });
     }
     console.error('createStaffAccount error:', error);
-    return res.status(500).json({ success: false, message: 'অ্যাকাউন্ট তৈরি করা যায়নি' });
+    return res.status(500).json({ success: false, message: 'à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿' });
   }
 };
 
@@ -322,15 +322,16 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
       }
 
       const targetId = target._id;
+      const targetGravId = target.gravId;
       deletedRole = target.role;
       targetEmail = target.email || '';
 
       // Student-owned academic and finance records.
-      counts.enrollments = (await Enrollment.deleteMany({ studentId: targetId }, { session })).deletedCount;
-      counts.studentPayments = (await Payment.deleteMany({ studentId: targetId }, { session })).deletedCount;
-      counts.assignmentSubmissions = (await AssignmentSubmission.deleteMany({ studentId: targetId }, { session })).deletedCount;
-      counts.examAttempts = (await ExamAttempt.deleteMany({ studentId: targetId }, { session })).deletedCount;
-      counts.enrollmentRequests += (await EnrollmentRequest.deleteMany({ applicantUserId: targetId }, { session })).deletedCount;
+      counts.enrollments = (await Enrollment.deleteMany({ gravId: targetGravId }, { session })).deletedCount;
+      counts.studentPayments = (await Payment.deleteMany({ gravId: targetGravId }, { session })).deletedCount;
+      counts.assignmentSubmissions = (await AssignmentSubmission.deleteMany({ gravId: targetGravId }, { session })).deletedCount;
+      counts.examAttempts = (await ExamAttempt.deleteMany({ gravId: targetGravId }, { session })).deletedCount;
+      counts.enrollmentRequests += (await EnrollmentRequest.deleteMany({ applicantGravId: targetGravId }, { session })).deletedCount;
 
       // Teacher-owned work is removed with the account; student work they
       // evaluated stays available, but no longer points at the deleted user.
@@ -353,7 +354,7 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
       counts.announcements = (await Announcement.deleteMany({ authorId: targetId }, { session })).deletedCount;
       counts.discussionMessages = (await DiscussionMessage.deleteMany({ senderId: targetId }, { session })).deletedCount;
       counts.fileAssets = (await FileAsset.deleteMany({ uploaderId: targetId }, { session })).deletedCount;
-      counts.passwordResetTokens = (await PasswordResetToken.deleteMany({ userId: targetId }, { session })).deletedCount;
+      counts.passwordResetTokens = (await PasswordResetToken.deleteMany({ accountId: targetId }, { session })).deletedCount;
       counts.jobPosts = (await JobPost.deleteMany({ postedBy: targetId }, { session })).deletedCount;
 
       // Remove references that should not keep a deleted account ID alive.
@@ -364,8 +365,8 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
         { session }
       );
       await User.updateMany(
-        { 'guardianDetails.linkedStudents': targetId },
-        { $pull: { 'guardianDetails.linkedStudents': targetId } },
+        { 'guardianDetails.linkedGravIds': targetGravId },
+        { $pull: { 'guardianDetails.linkedGravIds': targetGravId } },
         { session }
       );
       await Enrollment.updateMany({ enrolledBy: targetId }, { $unset: { enrolledBy: 1 } }, { session });
@@ -427,7 +428,7 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
 export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { studentIds } = req.body;
+    const { gravIds } = req.body;
 
     const caller = req.user;
     if (!caller) return res.status(401).json({ success: false, message: 'Unauthorized' });
@@ -442,25 +443,25 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
       });
     }
 
-    if (!Array.isArray(studentIds)) {
-      return res.status(400).json({ success: false, message: 'studentIds একটি array হতে হবে' });
+    if (!Array.isArray(gravIds)) {
+      return res.status(400).json({ success: false, message: 'gravIds à¦à¦•à¦Ÿà¦¿ array à¦¹à¦¤à§‡ à¦¹à¦¬à§‡' });
     }
 
     const guardian = await User.findById(id);
-    if (!guardian) return res.status(404).json({ success: false, message: 'অভিভাবক পাওয়া যায়নি' });
+    if (!guardian) return res.status(404).json({ success: false, message: 'à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦• à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿' });
     if (guardian.role !== ROLES.GUARDIAN) {
-      return res.status(400).json({ success: false, message: 'এই ইউজার একজন অভিভাবক নন' });
+      return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦‡à¦‰à¦œà¦¾à¦° à¦à¦•à¦œà¦¨ à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦• à¦¨à¦¨' });
     }
 
-    const validStudents = await User.find({ _id: { $in: studentIds }, role: ROLES.STUDENT }).select('_id');
-    if (validStudents.length !== studentIds.length) {
-      return res.status(400).json({ success: false, message: 'এক বা একাধিক শিক্ষার্থী সঠিক নয়' });
+    const validStudents = await User.find({ gravId: { $in: gravIds }, role: ROLES.STUDENT }).select('gravId');
+    if (validStudents.length !== gravIds.length) {
+      return res.status(400).json({ success: false, message: 'à¦à¦• à¦¬à¦¾ à¦à¦•à¦¾à¦§à¦¿à¦• à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦¸à¦ à¦¿à¦• à¦¨à¦¯à¦¼' });
     }
 
-    const previousLinkedStudents = guardian.guardianDetails?.linkedStudents || [];
+    const previouslinkedGravIds = guardian.guardianDetails?.linkedGravIds || [];
     guardian.guardianDetails = {
       ...(guardian.guardianDetails || {}),
-      linkedStudents: studentIds,
+      linkedGravIds: gravIds,
     } as typeof guardian.guardianDetails;
     await guardian.save();
 
@@ -472,8 +473,8 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
       resourceId: guardian._id.toString(),
       metadata: {
         targetEmail: guardian.email,
-        previousLinkedStudents,
-        newLinkedStudents: studentIds,
+        previouslinkedGravIds,
+        newlinkedGravIds: gravIds,
       },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
@@ -481,11 +482,10 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
 
     const populatedGuardian = await User.findById(id)
       .select('-passwordHash')
-      .populate('guardianDetails.linkedStudents', 'name userId avatarUrl phone');
 
     return res.status(200).json({
       success: true,
-      message: 'অভিভাবক-শিক্ষার্থী সংযোগ সফলভাবে আপডেট হয়েছে',
+      message: 'à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦•-à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦¸à¦‚à¦¯à§‹à¦— à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦¹à¦¯à¦¼à§‡à¦›à§‡',
       data: populatedGuardian,
     });
   } catch (error) {

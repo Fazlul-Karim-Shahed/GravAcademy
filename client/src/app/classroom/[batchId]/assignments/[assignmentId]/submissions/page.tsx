@@ -24,12 +24,12 @@ import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 
 interface SubmissionItem {
   _id: string;
-  studentId: {
+  gravId: {
     _id: string;
     name: string;
     email: string;
     phone?: string;
-    studentId?: string;
+    gravId?: string;
     avatarUrl?: string;
   };
   submittedAt: string;
@@ -164,7 +164,7 @@ export default function AssignmentSubmissionsPage({
       // If teacher annotated the document, upload the checked script to Google Drive
       if (annotatedBlob) {
         const formData = new FormData();
-        const scriptFileName = `evaluated_${selectedSub.studentId?.name || 'student'}_${Date.now()}.png`;
+        const scriptFileName = `evaluated_${selectedSub.gravId?.name || 'student'}_${Date.now()}.png`;
         formData.append('file', annotatedBlob, scriptFileName);
 
         const uploadRes = await api.post('/documents/upload', formData, {
@@ -239,9 +239,9 @@ export default function AssignmentSubmissionsPage({
   // Filtered submissions
   const filteredSubmissions = submissions.filter((s) => {
     const matchesSearch =
-      s.studentId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.studentId?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (s.studentId?.studentId && s.studentId.studentId.includes(searchQuery));
+      s.gravId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.gravId?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (s.gravId?.gravId && s.gravId.gravId.includes(searchQuery));
 
     if (!matchesSearch) return false;
     if (filterMode === 'pending') return !s.isEvaluated;
@@ -411,23 +411,23 @@ export default function AssignmentSubmissionsPage({
                         >
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-3">
-                              {sub.studentId?.avatarUrl ? (
+                              {sub.gravId?.avatarUrl ? (
                                 <img
-                                  src={sub.studentId.avatarUrl}
-                                  alt={sub.studentId.name || 'শিক্ষার্থী'}
+                                  src={sub.gravId.avatarUrl}
+                                  alt={sub.gravId.name || 'শিক্ষার্থী'}
                                   className="w-9 h-9 rounded-full object-cover border border-purple-200 dark:border-purple-800 shrink-0"
                                 />
                               ) : (
                                 <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs shrink-0">
-                                  {sub.studentId?.name?.charAt(0) || 'S'}
+                                  {sub.gravId?.name?.charAt(0) || 'S'}
                                 </div>
                               )}
                               <div>
                                 <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                                  {sub.studentId?.name || 'শিক্ষার্থী'}
+                                  {sub.gravId?.name || 'শিক্ষার্থী'}
                                 </h4>
                                 <span className="text-[11px] text-slate-500">
-                                  {sub.studentId?.studentId || sub.studentId?.email}
+                                  {sub.gravId?.gravId || sub.gravId?.email}
                                 </span>
                               </div>
                             </div>
@@ -480,21 +480,21 @@ export default function AssignmentSubmissionsPage({
                 {selectedSub ? (
                   <div className="lg:bg-white lg:dark:bg-slate-900 rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-slate-800 p-1 sm:p-6 lg:shadow-sm flex flex-col gap-4">
                     <div className="flex items-center gap-3 pb-4 border-b border-slate-200/80 dark:border-slate-800">
-                      {selectedSub.studentId?.avatarUrl ? (
+                      {selectedSub.gravId?.avatarUrl ? (
                         <img
-                          src={selectedSub.studentId.avatarUrl}
-                          alt={selectedSub.studentId.name || 'শিক্ষার্থী'}
+                          src={selectedSub.gravId.avatarUrl}
+                          alt={selectedSub.gravId.name || 'শিক্ষার্থী'}
                           className="w-10 h-10 rounded-2xl object-cover border border-purple-200 dark:border-purple-800 shrink-0"
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 flex items-center justify-center text-sm font-black shrink-0">
-                          {selectedSub.studentId?.name?.charAt(0) || 'শি'}
+                          {selectedSub.gravId?.name?.charAt(0) || 'শি'}
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-bold text-purple-600 dark:text-purple-300 mb-0.5">রিভিউ</p>
                         <h3 className="text-sm font-black text-slate-900 dark:text-white truncate">
-                          {selectedSub.studentId?.name}
+                          {selectedSub.gravId?.name}
                         </h3>
                       </div>
                       <span
@@ -612,7 +612,7 @@ export default function AssignmentSubmissionsPage({
                                 setPreviewDoc({
                                   isOpen: true,
                                   url: selectedSub.fileUrl!,
-                                  title: `${selectedSub.studentId?.name || 'স্টুডেন্ট'} - সাবমিশন`,
+                                  title: `${selectedSub.gravId?.name || 'স্টুডেন্ট'} - সাবমিশন`,
                                   fileName: selectedSub.fileName || 'স্টুডেন্ট ফাইল',
                                 })
                               }

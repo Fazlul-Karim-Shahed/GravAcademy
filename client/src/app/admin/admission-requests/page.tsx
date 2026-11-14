@@ -17,7 +17,8 @@ interface AdmissionRequest {
   status: string;
   createdAt: string;
   batchId?: { _id: string; name: string; status: string; capacity?: number; courseId?: { title?: string } };
-  applicantUserId?: { _id: string; name: string; userId: string; phone?: string; email?: string };
+  applicantGravId?: string;
+  applicant?: { _id: string; name: string; gravId: string; phone?: string; email?: string };
 }
 
 export default function AdmissionRequestsPage() {
@@ -50,7 +51,7 @@ export default function AdmissionRequestsPage() {
       const data = res.data?.data;
       const student = data?.student;
       const accountNote = data?.isNewUserCreated && student?.defaultPassword
-        ? ` Login: ${student.userId} / ${student.defaultPassword}`
+        ? ` Login: ${student.gravId} / ${student.defaultPassword}`
         : '';
       const emailNote = data?.emailSent ? ' Email sent.' : '';
       setNotice(`${res.data?.message || 'Request approved.'}${accountNote}${emailNote}`);

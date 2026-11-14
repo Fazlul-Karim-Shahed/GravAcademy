@@ -138,7 +138,7 @@ export interface ICQAnswer {
 
 export interface IExamAttempt extends Document {
   _id: mongoose.Types.ObjectId;
-  studentId: mongoose.Types.ObjectId;
+  gravId: string;
   examId: mongoose.Types.ObjectId;
   batchId: mongoose.Types.ObjectId;
   startedAt: Date;
@@ -163,9 +163,8 @@ export interface IExamAttempt extends Document {
 
 const ExamAttemptSchema = new Schema<IExamAttempt>(
   {
-    studentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    gravId: {
+      type: String,
       required: true,
       index: true,
     },
@@ -216,6 +215,6 @@ const ExamAttemptSchema = new Schema<IExamAttempt>(
   { timestamps: true }
 );
 
-ExamAttemptSchema.index({ studentId: 1, examId: 1 });
+ExamAttemptSchema.index({ gravId: 1, examId: 1 });
 
 export const ExamAttempt = mongoose.model<IExamAttempt>('ExamAttempt', ExamAttemptSchema);

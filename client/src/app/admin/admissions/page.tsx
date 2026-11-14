@@ -67,7 +67,7 @@ interface AdmissionResult {
   student: {
     _id: string;
     name: string;
-    userId: string;
+    gravId: string;
     phone?: string;
     email?: string;
     defaultPassword?: string | null;
@@ -84,7 +84,7 @@ interface AdmissionResult {
 interface StudentOption {
   _id: string;
   name: string;
-  userId: string;
+  gravId: string;
   phone?: string;
   email?: string;
   studentDetails?: {
@@ -97,10 +97,11 @@ interface StudentOption {
 
 interface EnrollmentRecord {
   _id: string;
-  studentId: {
+  gravId: string;
+  student?: {
     _id: string;
     name: string;
-    userId: string;
+    gravId: string;
     email?: string;
     phone?: string;
     avatarUrl?: string;
@@ -108,7 +109,7 @@ interface EnrollmentRecord {
       schoolOrCollege?: string;
       gradeLevel?: string;
     };
-  };
+  } | null;
   batchId: {
     _id: string;
     name: string;
@@ -121,7 +122,7 @@ interface EnrollmentRecord {
   };
   enrolledBy?: {
     name: string;
-    userId: string;
+    gravId: string;
   };
   paymentFee: number;
   paymentStatus: 'paid' | 'unpaid' | 'partial';
@@ -238,11 +239,11 @@ export default function AdminAdmissionsPage() {
     const loadRequest = async () => {
       const applyRequestToForm = (request: any) => {
         if (!request) return;
-        // Guest requests contain a placeholder applicantUserId, not a real
+        // Guest requests do not have an applicant account; existing accounts
         // User document. Only a successfully populated student is an existing
         // account; guests must remain in the New Student flow.
-        const existingStudent = request.applicantUserId && typeof request.applicantUserId === 'object'
-          ? request.applicantUserId
+        const existingStudent = request.applicant && typeof request.applicant === 'object'
+          ? request.applicant
           : null;
         setAdmissionMode(existingStudent ? 'existing' : 'new');
         setSelectedExistingStudent(existingStudent);
@@ -480,7 +481,7 @@ export default function AdminAdmissionsPage() {
       const res = await api.delete(`/enrollments/${admissionToCancel._id}`);
       if (res.data?.success) {
         setCancelNotice(
-          `${admissionToCancel.studentId?.name || 'শিক্ষার্থী'} কে ব্যাচ থেকে সফলভাবে রিমুভ করা হয়েছে।`
+          `${admissionToCancel.student?.name || 'শিক্ষার্থী'} কে ব্যাচ থেকে সফলভাবে রিমুভ করা হয়েছে।`
         );
         setTimeout(() => setCancelNotice(''), 5000);
         setAdmissionToCancel(null);
@@ -541,7 +542,7 @@ export default function AdminAdmissionsPage() {
       if (requestId) payload.requestId = requestId;
 
       if (admissionMode === 'existing' && selectedExistingStudent) {
-        payload.existingStudentId = selectedExistingStudent._id;
+        payload.existingGravId = selectedExistingStudent.gravId;
       }
 
       const res = await api.post('/enrollments/admin-admit', payload);
@@ -714,7 +715,7 @@ export default function AdminAdmissionsPage() {
                           <div className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                             <span>{selectedExistingStudent.name}</span>
                             <span className="text-[11px] px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono">
-                              #{selectedExistingStudent.userId}
+                              #{selectedExistingStudent.gravId}
                             </span>
                           </div>
                           <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex flex-wrap gap-2">
@@ -733,7 +734,7 @@ export default function AdminAdmissionsPage() {
                         type="text"
                         value={existingStudentSearch}
                         onChange={(e) => setExistingStudentSearch(e.target.value)}
-                        placeholder="নাম, আইডি (UserId), ফোন নম্বর বা ইমেইল লিখুন..."
+                        placeholder="নাম, আইডি (gravId), ফোন নম্বর বা ইমেইল লিখুন..."
                         className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       {/* Suggestion dropdown: Only appears when user types something */}
@@ -744,7 +745,7 @@ export default function AdminAdmissionsPage() {
                               const q = existingStudentSearch.toLowerCase().trim();
                               return (
                                 s.name?.toLowerCase().includes(q) ||
-                                s.userId?.toLowerCase().includes(q) ||
+                                s.gravId?.toLowerCase().includes(q) ||
                                 (s.phone && s.phone.includes(q)) ||
                                 (s.email && s.email.toLowerCase().includes(q))
                               );
@@ -765,7 +766,7 @@ export default function AdminAdmissionsPage() {
                                   </span>
                                 </div>
                                 <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                  #{s.userId}
+                                  #{s.gravId}
                                 </span>
                               </div>
                             ))}
@@ -774,7 +775,7 @@ export default function AdminAdmissionsPage() {
                             const q = existingStudentSearch.toLowerCase().trim();
                             return (
                               s.name?.toLowerCase().includes(q) ||
-                              s.userId?.toLowerCase().includes(q) ||
+                              s.gravId?.toLowerCase().includes(q) ||
                               (s.phone && s.phone.includes(q)) ||
                               (s.email && s.email.toLowerCase().includes(q))
                             );
@@ -1222,10 +1223,10 @@ export default function AdminAdmissionsPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <h4 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                            {adm.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
+                            {adm.student?.name || 'অজ্ঞাত শিক্ষার্থী'}
                           </h4>
                           <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                            #{adm.studentId?.userId || 'N/A'}
+                            #{adm.gravId || 'N/A'}
                           </span>
                         </div>
 
@@ -1294,11 +1295,11 @@ export default function AdminAdmissionsPage() {
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 mb-4 space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500">শিক্ষার্থী:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{admissionToCancel.studentId?.name}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{admissionToCancel.student?.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Grav ID:</span>
-                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">#{admissionToCancel.studentId?.userId || 'N/A'}</span>
+                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">#{admissionToCancel.gravId || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">ব্যাচ:</span>
@@ -1397,7 +1398,7 @@ export default function AdminAdmissionsPage() {
                       লগইন Grav ID
                     </span>
                     <button
-                      onClick={() => copyToClipboard(successModalData.student.userId, 'id')}
+                      onClick={() => copyToClipboard(successModalData.student.gravId, 'id')}
                       className="text-xs text-slate-500 hover:text-blue-600 flex items-center gap-1 font-semibold"
                     >
                       {copiedId ? (
@@ -1412,7 +1413,7 @@ export default function AdminAdmissionsPage() {
                     </button>
                   </div>
                   <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-base font-extrabold text-blue-600 dark:text-blue-400 tracking-wider">
-                    {successModalData.student.userId}
+                    {successModalData.student.gravId}
                   </div>
                 </div>
 
@@ -1423,7 +1424,7 @@ export default function AdminAdmissionsPage() {
                       ডিফল্ট পাসওয়ার্ড (Password = Grav ID)
                     </span>
                     <button
-                      onClick={() => copyToClipboard(successModalData.student.userId, 'pass')}
+                      onClick={() => copyToClipboard(successModalData.student.gravId, 'pass')}
                       className="text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 font-semibold"
                     >
                       {copiedPass ? (
@@ -1438,7 +1439,7 @@ export default function AdminAdmissionsPage() {
                     </button>
                   </div>
                   <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-base font-extrabold text-indigo-600 dark:text-indigo-400 tracking-wider">
-                    {successModalData.student.userId}
+                    {successModalData.student.gravId}
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
                     💡 শিক্ষার্থী এই Grav ID এবং পাসওয়ার্ড দিয়ে ওয়েবসাইটে সরাসরি লগইন করতে পারবে।
@@ -1453,16 +1454,16 @@ export default function AdminAdmissionsPage() {
                   <button
                     onClick={() => {
                       const pay = successModalData.payment!;
-                      // Ensure studentId, batchId, courseId have objects with name/userId if not already populated
+                      // Ensure gravId, batchId, courseId have objects with name/gravId if not already populated
                       const enrichedReceipt: PaymentReceiptData = {
                         ...pay,
-                        studentId:
-                          pay.studentId && typeof pay.studentId === 'object' && pay.studentId.name
-                            ? pay.studentId
+                        gravId:
+                          pay.gravId && typeof pay.gravId === 'object' && pay.gravId.name
+                            ? pay.gravId
                             : {
                                 _id: successModalData.student._id,
                                 name: successModalData.student.name,
-                                userId: successModalData.student.userId,
+                                gravId: successModalData.student.gravId,
                                 phone: successModalData.student.phone,
                                 email: successModalData.student.email,
                               },

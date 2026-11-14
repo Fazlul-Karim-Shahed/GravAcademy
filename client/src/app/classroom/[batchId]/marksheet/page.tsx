@@ -43,7 +43,7 @@ interface StudentRow {
     _id: string;
     name: string;
     email: string;
-    userId?: string;
+    gravId?: string;
     avatarUrl?: string;
     phone?: string;
   };
@@ -158,7 +158,7 @@ export default function MarksheetPage({
     return (
       row.student.name.toLowerCase().includes(q) ||
       (row.student.email && row.student.email.toLowerCase().includes(q)) ||
-      (row.student.userId && row.student.userId.toLowerCase().includes(q))
+      (row.student.gravId && row.student.gravId.toLowerCase().includes(q))
     );
   });
 
@@ -460,7 +460,7 @@ export default function MarksheetPage({
                                 </div>
                                 <div>
                                   <div className="font-bold text-slate-900 dark:text-white">{row.student.name}</div>
-                                  <div className="text-[10px] text-slate-400">{row.student.userId || row.student.email}</div>
+                                  <div className="text-[10px] text-slate-400">{row.student.gravId || row.student.email}</div>
                                 </div>
                               </div>
                             </td>
@@ -528,7 +528,7 @@ export default function MarksheetPage({
               <span>{selectedStudentRow.student.name} - মার্কশিট ও বিশ্লেষণ</span>
             </h3>
             <p className="text-xs text-slate-500 mb-5">
-              Grav ID: {selectedStudentRow.student.userId || selectedStudentRow.student.email} · সামগ্রিক সফলতা: {selectedStudentRow.summary.percentage}%
+              Grav ID: {selectedStudentRow.student.gravId || selectedStudentRow.student.email} · সামগ্রিক সফলতা: {selectedStudentRow.summary.percentage}%
             </p>
 
             <div className="space-y-6">

@@ -10,7 +10,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { Payment } from '../models/Payment';
 import { EnrollmentRequest } from '../models/EnrollmentRequest';
-import { generateUniqueUserId } from './authController';
+import { generateUniquegravId } from './authController';
 import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
 import { sendEnrollmentApprovalEmail, sendEnrollmentRequestReceivedEmail } from '../services/emailService';
@@ -30,15 +30,15 @@ export const createEnrollmentRequestSchema = z.object({
   guardianPhone: z.string().max(30).optional().or(z.literal('')),
   message: z.string().max(500).optional().or(z.literal('')),
 }).refine((data) => Boolean(data.phone?.trim() || data.email?.trim()), {
-  message: 'মোবাইল অথবা ইমেইলের অন্তত একটি দিন',
+  message: 'à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦…à¦¥à¦¬à¦¾ à¦‡à¦®à§‡à¦‡à¦²à§‡à¦° à¦…à¦¨à§à¦¤à¦¤ à¦à¦•à¦Ÿà¦¿ à¦¦à¦¿à¦¨',
   path: ['phone'],
 });
 
 export const adminAdmitStudentSchema = z.object({
-  name: z.string().min(2, 'শিক্ষার্থীর নাম আবশ্যক'),
+  name: z.string().min(2, 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¨à¦¾à¦® à¦†à¦¬à¦¶à§à¦¯à¦•'),
   phone: z.string().optional().or(z.literal('')),
-  email: z.string().email('সঠিক ইমেইল ঠিকানা দিন').optional().or(z.literal('')),
-  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল ব্যাচ আইডি'),
+  email: z.string().email('à¦¸à¦ à¦¿à¦• à¦‡à¦®à§‡à¦‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾ à¦¦à¦¿à¦¨').optional().or(z.literal('')),
+  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'à¦­à§à¦² à¦¬à§à¦¯à¦¾à¦š à¦†à¦‡à¦¡à¦¿'),
   courseId: z.string().optional().or(z.literal('')),
   schoolOrCollege: z.string().optional().or(z.literal('')),
   gradeLevel: z.string().optional().or(z.literal('')),
@@ -51,7 +51,7 @@ export const adminAdmitStudentSchema = z.object({
   senderNumber: z.string().optional().or(z.literal('')),
   documentUrl: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
-  existingStudentId: z.string().optional().or(z.literal('')), // in case an existing student is selected
+      existingGravId: z.string().optional().or(z.literal('')), // existing student's public Grav ID
   requestId: z.string().regex(/^[0-9a-fA-F]{24}$/).optional().or(z.literal('')),
 });
 
@@ -61,28 +61,28 @@ export const adminAdmitStudentSchema = z.object({
 export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { batchId } = req.body;
-    const studentId = req.user?._id;
+    const gravId = req.user?.gravId;
     const userRole = req.user?.role;
 
-    if (!studentId) {
+    if (!gravId) {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
     if (userRole !== 'student') {
       return res.status(403).json({
         success: false,
-        message: 'শুধুমাত্র শিক্ষার্থীদের জন্য এনরোলমেন্ট উন্মুক্ত।',
+        message: 'à¦¶à§à¦§à§à¦®à¦¾à¦¤à§à¦° à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦¦à§‡à¦° à¦œà¦¨à§à¦¯ à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦‰à¦¨à§à¦®à§à¦•à§à¦¤à¥¤',
       });
     }
 
     const batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
     if (!batch) {
-      return res.status(404).json({ success: false, message: 'ব্যাচটি পাওয়া যায়নি' });
+      return res.status(404).json({ success: false, message: 'à¦¬à§à¦¯à¦¾à¦šà¦Ÿà¦¿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
     }
 
     // Check if batch is archived or draft
     if (batch.status === 'archived') {
-      return res.status(400).json({ success: false, message: 'এই ব্যাচে নতুন ভর্তি বন্ধ রয়েছে' });
+      return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦¨à¦¤à§à¦¨ à¦­à¦°à§à¦¤à¦¿ à¦¬à¦¨à§à¦§ à¦°à§Ÿà§‡à¦›à§‡' });
     }
 
     const courseDoc = batch.courseId as any;
@@ -91,7 +91,7 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
 
     // Check if already enrolled
     const existingEnrollment = await Enrollment.findOne({
-      studentId,
+      gravId,
       batchId,
     });
 
@@ -99,7 +99,7 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
       if (existingEnrollment.status === 'enrolled' || existingEnrollment.status === 'completed') {
         return res.status(200).json({
           success: true,
-          message: 'আপনি ইতিমধ্যে এই ব্যাচে এনরোল করা আছেন।',
+          message: 'à¦†à¦ªà¦¨à¦¿ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦à¦¨à¦°à§‹à¦² à¦•à¦°à¦¾ à¦†à¦›à§‡à¦¨à¥¤',
           data: existingEnrollment,
         });
       }
@@ -113,7 +113,7 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
 
       return res.status(200).json({
         success: true,
-        message: 'সফলভাবে ব্যাচে এনরোল সম্পন্ন হয়েছে!',
+        message: 'à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦à¦¨à¦°à§‹à¦² à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¹à§Ÿà§‡à¦›à§‡!',
         data: existingEnrollment,
       });
     }
@@ -127,14 +127,14 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
       if (activeCount >= batch.capacity) {
         return res.status(400).json({
           success: false,
-          message: 'দুঃখিত, এই ব্যাচের আসন সংখ্যা পূর্ণ হয়ে গেছে।',
+          message: 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦†à¦¸à¦¨ à¦¸à¦‚à¦–à§à¦¯à¦¾ à¦ªà§‚à¦°à§à¦£ à¦¹à§Ÿà§‡ à¦—à§‡à¦›à§‡à¥¤',
         });
       }
     }
 
     // Create Enrollment with batchFee snapshot
     const newEnrollment = await Enrollment.create({
-      studentId,
+      gravId,
       batchId,
       courseId: batch.courseId._id || batch.courseId,
       batchFee: currentPriceAtEnrollment,
@@ -144,14 +144,14 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
 
     return res.status(201).json({
       success: true,
-      message: 'অভিনন্দন! সফলভাবে ব্যাচে ভর্তি সম্পন্ন হয়েছে।',
+      message: 'à¦…à¦­à¦¿à¦¨à¦¨à§à¦¦à¦¨! à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦­à¦°à§à¦¤à¦¿ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
       data: newEnrollment,
     });
   } catch (error: any) {
     console.error('enrollInBatch error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'এনরোলমেন্ট সম্পন্ন করা সম্ভব হয়নি। পুনরায় চেষ্টা করুন।',
+      message: error?.message || 'à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦•à¦°à¦¾ à¦¸à¦®à§à¦­à¦¬ à¦¹à§Ÿà¦¨à¦¿à¥¤ à¦ªà§à¦¨à¦°à¦¾à§Ÿ à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤',
     });
   }
 };
@@ -160,18 +160,18 @@ export const enrollInBatch = async (req: AuthenticatedRequest, res: Response) =>
 export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (req.user && req.user.role !== ROLES.STUDENT) {
-      return res.status(403).json({ success: false, message: 'শুধু শিক্ষার্থী অথবা guest user ভর্তি অনুরোধ করতে পারবেন।' });
+      return res.status(403).json({ success: false, message: 'à¦¶à§à¦§à§ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦…à¦¥à¦¬à¦¾ guest user à¦­à¦°à§à¦¤à¦¿ à¦…à¦¨à§à¦°à§‹à¦§ à¦•à¦°à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡à¦¨à¥¤' });
     }
 
     const { batchId, name, phone, email, schoolOrCollege, gradeLevel, guardianName, guardianPhone, message } = req.body;
     const isGuest = !req.user;
-    const applicantUserId = req.user?._id || new mongoose.Types.ObjectId();
+    const applicantGravId = req.user?.gravId;
     const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject courseFee regularPrice discountPrice');
-    if (!batch) return res.status(404).json({ success: false, message: 'ব্যাচটি পাওয়া যায়নি।' });
-    if (batch.status === 'archived') return res.status(400).json({ success: false, message: 'এই ব্যাচে নতুন ভর্তি বন্ধ আছে।' });
+    if (!batch) return res.status(404).json({ success: false, message: 'à¦¬à§à¦¯à¦¾à¦šà¦Ÿà¦¿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    if (batch.status === 'archived') return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦¨à¦¤à§à¦¨ à¦­à¦°à§à¦¤à¦¿ à¦¬à¦¨à§à¦§ à¦†à¦›à§‡à¥¤' });
     const fixedGradeLevel = String((batch.courseId as any)?.gradeLevel || '').trim();
     if (fixedGradeLevel && gradeLevel?.trim() && gradeLevel.trim() !== fixedGradeLevel) {
-      return res.status(400).json({ success: false, message: 'এই batch-এর নির্ধারিত শ্রেণি পরিবর্তন করা যাবে না।' });
+      return res.status(400).json({ success: false, message: 'à¦à¦‡ batch-à¦à¦° à¦¨à¦¿à¦°à§à¦§à¦¾à¦°à¦¿à¦¤ à¦¶à§à¦°à§‡à¦£à¦¿ à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦•à¦°à¦¾ à¦¯à¦¾à¦¬à§‡ à¦¨à¦¾à¥¤' });
     }
 
     const contactFilters = [
@@ -183,26 +183,26 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       : req.user;
     const existingEnrollment = existingUser
       ? await Enrollment.findOne({
-          studentId: existingUser._id,
+          gravId: existingUser.gravId,
           batchId: batch._id,
           status: { $in: ['enrolled', 'completed'] },
         })
       : null;
     if (existingEnrollment) {
-      return res.status(409).json({ success: false, message: 'আপনি ইতিমধ্যে এই ব্যাচে ভর্তি আছেন।' });
+      return res.status(409).json({ success: false, message: 'à¦†à¦ªà¦¨à¦¿ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦­à¦°à§à¦¤à¦¿ à¦†à¦›à§‡à¦¨à¥¤' });
     }
 
     const existingRequest = isGuest
       ? await EnrollmentRequest.findOne({ batchId: batch._id, status: 'pending', $or: contactFilters })
-      : await EnrollmentRequest.findOne({ applicantUserId, batchId: batch._id, status: 'pending' });
+      : await EnrollmentRequest.findOne({ applicantGravId, batchId: batch._id, status: 'pending' });
     if (existingRequest) {
-      return res.status(409).json({ success: false, message: 'এই ব্যাচের জন্য আপনার একটি request আগে থেকেই pending আছে।', data: existingRequest });
+      return res.status(409).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦à¦•à¦Ÿà¦¿ request à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ pending à¦†à¦›à§‡à¥¤', data: existingRequest });
     }
 
     if (isGuest) {
       const normalizedEmail = email?.trim().toLowerCase();
       if (!normalizedEmail) {
-        return res.status(400).json({ success: false, message: 'Guest request-এর জন্য একটি valid email address দিন।' });
+        return res.status(400).json({ success: false, message: 'Guest request-à¦à¦° à¦œà¦¨à§à¦¯ à¦à¦•à¦Ÿà¦¿ valid email address à¦¦à¦¿à¦¨à¥¤' });
       }
 
       const emailSent = await sendEnrollmentRequestReceivedEmail({
@@ -211,12 +211,12 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
         batchName: batch.name,
       });
       if (!emailSent) {
-        return res.status(400).json({ success: false, message: 'এই email address-এ confirmation email পাঠানো যায়নি। Email address ঠিক আছে কি না দেখে আবার চেষ্টা করুন।' });
+        return res.status(400).json({ success: false, message: 'à¦à¦‡ email address-à¦ confirmation email à¦ªà¦¾à¦ à¦¾à¦¨à§‹ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤ Email address à¦ à¦¿à¦• à¦†à¦›à§‡ à¦•à¦¿ à¦¨à¦¾ à¦¦à§‡à¦–à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤' });
       }
     }
 
     const request = await EnrollmentRequest.create({
-      applicantUserId,
+      applicantGravId,
       isGuest,
       batchId: batch._id,
       courseId: (batch.courseId as any)._id || batch.courseId,
@@ -230,25 +230,25 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       message: message?.trim() || undefined,
     });
 
-    return res.status(201).json({ success: true, message: 'ভর্তি request সফলভাবে পাঠানো হয়েছে।', data: request });
+    return res.status(201).json({ success: true, message: 'à¦­à¦°à§à¦¤à¦¿ request à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà¦¾à¦ à¦¾à¦¨à§‹ à¦¹à§Ÿà§‡à¦›à§‡à¥¤', data: request });
   } catch (error: any) {
     console.error('createEnrollmentRequest error:', error);
-    if (error?.code === 11000) return res.status(409).json({ success: false, message: 'এই ব্যাচের জন্য আপনার একটি request আগে থেকেই আছে।' });
-    return res.status(500).json({ success: false, message: 'ভর্তি request পাঠানো যায়নি।' });
+    if (error?.code === 11000) return res.status(409).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦à¦•à¦Ÿà¦¿ request à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡à¥¤' });
+    return res.status(500).json({ success: false, message: 'à¦­à¦°à§à¦¤à¦¿ request à¦ªà¦¾à¦ à¦¾à¦¨à§‹ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
   }
 };
 
 export const getMyEnrollmentRequests = async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (!req.user?._id) return res.status(401).json({ success: false, message: 'Authentication required' });
-    const requests = await EnrollmentRequest.find({ applicantUserId: req.user._id })
+    const requests = await EnrollmentRequest.find({ applicantGravId: req.user.gravId })
       .populate('batchId', 'name status')
       .populate('courseId', 'title gradeLevel')
       .sort({ createdAt: -1 })
       .lean();
     return res.json({ success: true, data: requests });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'আপনার request তালিকা লোড করা যায়নি।' });
+    return res.status(500).json({ success: false, message: 'à¦†à¦ªà¦¨à¦¾à¦° request à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
   }
 };
 
@@ -257,31 +257,43 @@ export const getAdminEnrollmentRequests = async (req: AuthenticatedRequest, res:
     const status = typeof req.query.status === 'string' ? req.query.status : 'pending';
     const filter = status === 'all' ? {} : { status };
     const requests = await EnrollmentRequest.find(filter)
-      .populate('applicantUserId', 'name userId email phone avatarUrl studentDetails')
       .populate({ path: 'batchId', select: 'name status capacity courseId', populate: { path: 'courseId', select: 'title gradeLevel' } })
       .populate('courseId', 'title gradeLevel')
-      .populate('reviewedBy', 'name userId role')
+      .populate('reviewedBy', 'name gravId role')
       .sort({ createdAt: -1 })
       .limit(100)
       .lean();
-    return res.json({ success: true, count: requests.length, data: requests });
+    const applicantGravIds = requests.map((request) => request.applicantGravId).filter(Boolean) as string[];
+    const applicants = await User.find({ gravId: { $in: applicantGravIds }, role: ROLES.STUDENT })
+      .select('name gravId phone email avatarUrl studentDetails')
+      .lean();
+    const applicantMap = new Map(applicants.map((applicant) => [applicant.gravId, applicant]));
+    const enrichedRequests = requests.map((request) => ({
+      ...request,
+      applicant: request.applicantGravId ? applicantMap.get(request.applicantGravId) || null : null,
+    }));
+    return res.json({ success: true, count: enrichedRequests.length, data: enrichedRequests });
   } catch (error) {
     console.error('getAdminEnrollmentRequests error:', error);
-    return res.status(500).json({ success: false, message: 'ভর্তি request তালিকা লোড করা যায়নি।' });
+    return res.status(500).json({ success: false, message: 'à¦­à¦°à§à¦¤à¦¿ request à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
   }
 };
 
 export const getEnrollmentRequestById = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const request = await EnrollmentRequest.findById(req.params.requestId)
-      .populate('applicantUserId', 'name userId email phone avatarUrl studentDetails')
       .populate({ path: 'batchId', select: 'name status capacity courseId', populate: { path: 'courseId', select: 'title gradeLevel' } })
       .populate('courseId', 'title gradeLevel')
       .lean();
-    if (!request) return res.status(404).json({ success: false, message: 'Request পাওয়া যায়নি।' });
-    return res.json({ success: true, data: request });
+    if (!request) return res.status(404).json({ success: false, message: 'Request à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    const applicant = request.applicantGravId
+      ? await User.findOne({ gravId: request.applicantGravId, role: ROLES.STUDENT })
+        .select('name gravId phone email avatarUrl studentDetails')
+        .lean()
+      : null;
+    return res.json({ success: true, data: { ...request, applicant } });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Request লোড করা যায়নি।' });
+    return res.status(500).json({ success: false, message: 'Request à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
   }
 };
 
@@ -290,39 +302,41 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
   try {
     const reviewerId = req.user?._id;
     const request = await EnrollmentRequest.findOne({ _id: req.params.requestId, status: 'pending' }).populate('batchId').populate('courseId');
-    if (!request) return res.status(404).json({ success: false, message: 'Pending request পাওয়া যায়নি।' });
+    if (!request) return res.status(404).json({ success: false, message: 'Pending request à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
 
     const batch: any = request.batchId;
     const course: any = request.courseId;
-    if (!batch || batch.status === 'archived') return res.status(400).json({ success: false, message: 'এই ব্যাচে নতুন ভর্তি বন্ধ আছে।' });
+    if (!batch || batch.status === 'archived') return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦¨à¦¤à§à¦¨ à¦­à¦°à§à¦¤à¦¿ à¦¬à¦¨à§à¦§ à¦†à¦›à§‡à¥¤' });
 
     if (batch.capacity && batch.capacity > 0) {
       const activeCount = await Enrollment.countDocuments({ batchId: batch._id, status: { $in: ['enrolled', 'completed'] } });
-      if (activeCount >= batch.capacity) return res.status(400).json({ success: false, message: 'এই ব্যাচের আসন পূর্ণ হয়ে গেছে।' });
+      if (activeCount >= batch.capacity) return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦†à¦¸à¦¨ à¦ªà§‚à¦°à§à¦£ à¦¹à§Ÿà§‡ à¦—à§‡à¦›à§‡à¥¤' });
     }
 
     const contactFilters = [
       ...(request.email?.trim() ? [{ email: request.email.trim().toLowerCase() }] : []),
       ...(request.phone?.trim() ? [{ phone: request.phone.trim() }] : []),
     ];
-    let studentDoc = request.isGuest ? null : await User.findById(request.applicantUserId);
+    let studentDoc = request.isGuest || !request.applicantGravId
+      ? null
+      : await User.findOne({ gravId: request.applicantGravId });
     if (!studentDoc && contactFilters.length > 0) {
       studentDoc = await User.findOne({ $or: contactFilters });
     }
     if (studentDoc && studentDoc.role !== ROLES.STUDENT) {
-      return res.status(409).json({ success: false, message: 'এই email বা mobile নম্বরটি student account-এর নয়।' });
+      return res.status(409).json({ success: false, message: 'à¦à¦‡ email à¦¬à¦¾ mobile à¦¨à¦®à§à¦¬à¦°à¦Ÿà¦¿ student account-à¦à¦° à¦¨à§Ÿà¥¤' });
     }
 
     let isNewUserCreated = false;
     let defaultPassword = '';
     if (!studentDoc) {
-      const generatedUserId = await generateUniqueUserId();
+      const generatedgravId = await generateUniquegravId();
       // New student accounts use the generated user ID as their initial password.
       // The student can change it later through the password-reset flow.
-      defaultPassword = generatedUserId;
+      defaultPassword = generatedgravId;
       const passwordHash = await bcrypt.hash(defaultPassword, 10);
       studentDoc = await User.create({
-        userId: generatedUserId,
+        gravId: generatedgravId,
         name: request.name.trim(),
         email: request.email?.trim().toLowerCase() || undefined,
         phone: request.phone?.trim() || undefined,
@@ -340,14 +354,14 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
       isNewUserCreated = true;
     }
 
-    const existing = await Enrollment.findOne({ studentId: studentDoc._id, batchId: batch._id });
+    const existing = await Enrollment.findOne({ gravId: studentDoc.gravId, batchId: batch._id });
     const fee = course?.discountPrice ?? course?.courseFee ?? course?.regularPrice ?? 0;
     if (existing && ['enrolled', 'completed'].includes(existing.status)) {
-      return res.status(409).json({ success: false, message: 'এই student ইতিমধ্যে এই batch-এ enrolled আছেন।' });
+      return res.status(409).json({ success: false, message: 'à¦à¦‡ student à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦‡ batch-à¦ enrolled à¦†à¦›à§‡à¦¨à¥¤' });
     }
 
     const enrollment = existing || await Enrollment.create({
-      studentId: studentDoc._id,
+      gravId: studentDoc.gravId,
       batchId: batch._id,
       courseId: course?._id || request.courseId,
       batchFee: fee,
@@ -369,7 +383,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
       await existing.save();
     }
 
-    request.applicantUserId = studentDoc._id;
+    request.applicantGravId = studentDoc.gravId;
     request.isGuest = false;
     request.status = 'approved';
     request.reviewedBy = reviewerId;
@@ -384,7 +398,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
         to: request.email,
         name: studentDoc.name,
         batchName: batch.name,
-        userId: studentDoc.userId,
+        gravId: studentDoc.gravId,
         password: isNewUserCreated ? defaultPassword : undefined,
         existingAccount: !isNewUserCreated,
       });
@@ -393,8 +407,8 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     return res.json({
       success: true,
       message: isNewUserCreated
-        ? 'Request approve করে নতুন student account তৈরি ও batch-এ ভর্তি করা হয়েছে।'
-        : 'Request approve করে student-কে batch-এ ভর্তি করা হয়েছে।',
+        ? 'Request approve à¦•à¦°à§‡ à¦¨à¦¤à§à¦¨ student account à¦¤à§ˆà¦°à¦¿ à¦“ batch-à¦ à¦­à¦°à§à¦¤à¦¿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤'
+        : 'Request approve à¦•à¦°à§‡ student-à¦•à§‡ batch-à¦ à¦­à¦°à§à¦¤à¦¿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
       data: {
         request,
         enrollment,
@@ -403,7 +417,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
         student: {
           _id: studentDoc._id,
           name: studentDoc.name,
-          userId: studentDoc.userId,
+          gravId: studentDoc.gravId,
           email: studentDoc.email,
           phone: studentDoc.phone,
           defaultPassword: isNewUserCreated ? defaultPassword : undefined,
@@ -412,22 +426,22 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     });
   } catch (error: any) {
     console.error('approveEnrollmentRequest error:', error);
-    return res.status(500).json({ success: false, message: 'Request approve করা যায়নি।' });
+    return res.status(500).json({ success: false, message: 'Request approve à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
   }
 };
 
 export const rejectEnrollmentRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const request = await EnrollmentRequest.findOne({ _id: req.params.requestId, status: 'pending' });
-    if (!request) return res.status(404).json({ success: false, message: 'Pending request পাওয়া যায়নি।' });
+    if (!request) return res.status(404).json({ success: false, message: 'Pending request à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
     request.status = 'rejected';
     request.reviewedBy = req.user?._id;
     request.reviewedAt = new Date();
     request.reviewNote = req.body?.reviewNote?.trim() || 'Request rejected by admin';
     await request.save();
-    return res.json({ success: true, message: 'Request reject করা হয়েছে।', data: request });
+    return res.json({ success: true, message: 'Request reject à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤', data: request });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Request reject করা যায়নি।' });
+    return res.status(500).json({ success: false, message: 'Request reject à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
   }
 };
 
@@ -436,15 +450,15 @@ export const rejectEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
  */
 export const getMyEnrollmentStatus = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const studentId = req.user?._id;
+    const gravId = req.user?.gravId;
     const { courseId, batchId } = req.query;
 
-    if (!studentId) {
+    if (!gravId) {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
     const filter: any = {
-      studentId,
+      gravId,
       status: { $in: ['enrolled', 'completed'] },
     };
 
@@ -481,14 +495,14 @@ export const getMyEnrollmentStatus = async (req: AuthenticatedRequest, res: Resp
  */
 export const getMyBatches = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const studentId = req.user?._id;
-    if (!studentId) {
+    const gravId = req.user?.gravId;
+    if (!gravId) {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
     // Find active or completed enrollments
     const enrollments = await Enrollment.find({
-      studentId,
+      gravId,
       status: { $in: ['enrolled', 'completed'] },
     }).select('batchId');
 
@@ -523,7 +537,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত এক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦à¦•à§à¦¸à§‡à¦¸' });
     }
 
     const {
@@ -542,35 +556,35 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       senderNumber = '',
       documentUrl = '',
       notes = '',
-      existingStudentId,
+      existingGravId,
       requestId,
     } = req.body;
 
     // Verify batch
     const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject courseFee regularPrice discountPrice');
     if (!batch) {
-      return res.status(404).json({ success: false, message: 'নির্বাচিত ব্যাচটি পাওয়া যায়নি।' });
+      return res.status(404).json({ success: false, message: 'à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¿à¦¤ à¦¬à§à¦¯à¦¾à¦šà¦Ÿà¦¿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
     }
 
     let studentDoc: any = null;
     let isNewUserCreated = false;
-    let generatedUserId = '';
+    let generatedgravId = '';
     let defaultPassword = '';
 
     // If an existing student was selected
-    if (existingStudentId && mongoose.Types.ObjectId.isValid(existingStudentId)) {
-      studentDoc = await User.findById(existingStudentId);
+    if (existingGravId) {
+      studentDoc = await User.findOne({ gravId: existingGravId, role: ROLES.STUDENT });
       if (!studentDoc) {
-        return res.status(404).json({ success: false, message: 'বিদ্যমান শিক্ষার্থী পাওয়া যায়নি।' });
+        return res.status(404).json({ success: false, message: 'à¦¬à¦¿à¦¦à§à¦¯à¦®à¦¾à¦¨ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
       }
-      generatedUserId = studentDoc.userId;
+      generatedgravId = studentDoc.gravId;
     } else {
       // Check if student with email or phone already exists
       if (email && email.trim() !== '') {
         const found = await User.findOne({ email: email.trim().toLowerCase() });
         if (found) {
           studentDoc = found;
-          generatedUserId = found.userId;
+          generatedgravId = found.gravId;
         }
       }
 
@@ -578,19 +592,19 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         const found = await User.findOne({ phone: phone.trim() });
         if (found) {
           studentDoc = found;
-          generatedUserId = found.userId;
+          generatedgravId = found.gravId;
         }
       }
 
       // If still not found, create new student account
       if (!studentDoc) {
-        generatedUserId = await generateUniqueUserId();
-        // The default password is EXACTLY the generated userId
-        defaultPassword = generatedUserId;
+        generatedgravId = await generateUniquegravId();
+        // The default password is EXACTLY the generated gravId
+        defaultPassword = generatedgravId;
         const passwordHash = await bcrypt.hash(defaultPassword, 10);
 
         studentDoc = await User.create({
-          userId: generatedUserId,
+          gravId: generatedgravId,
           name: name.trim(),
           email: email && email.trim() !== '' ? email.trim().toLowerCase() : undefined,
           phone: phone && phone.trim() !== '' ? phone.trim() : undefined,
@@ -611,7 +625,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
 
     // Check if already enrolled in this batch
     const existingEnrollment = await Enrollment.findOne({
-      studentId: studentDoc._id,
+      gravId: studentDoc.gravId,
       batchId: batch._id,
     });
 
@@ -619,11 +633,11 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       if (existingEnrollment.status === 'enrolled' || existingEnrollment.status === 'completed') {
         return res.status(400).json({
           success: false,
-          message: `শিক্ষার্থী (${studentDoc.name} - Grav ID: ${studentDoc.userId}) ইতিমধ্যে এই ব্যাচে ভর্তি আছেন।`,
+          message: `à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ (${studentDoc.name} - Grav ID: ${studentDoc.gravId}) à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦­à¦°à§à¦¤à¦¿ à¦†à¦›à§‡à¦¨à¥¤`,
           student: {
             _id: studentDoc._id,
             name: studentDoc.name,
-            userId: studentDoc.userId,
+            gravId: studentDoc.gravId,
             phone: studentDoc.phone,
             email: studentDoc.email,
           },
@@ -662,7 +676,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
 
         const newPay = await Payment.create({
           receiptNo,
-          studentId: studentDoc._id,
+          gravId: studentDoc.gravId,
           enrollmentId: existingEnrollment._id,
           batchId: batch._id,
           courseId: batch.courseId._id || batch.courseId,
@@ -681,22 +695,21 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         });
 
         reactivatedPayment = await Payment.findById(newPay._id)
-          .populate('studentId', 'name userId phone email avatarUrl studentDetails')
           .populate('batchId', 'name courseId')
           .populate('courseId', 'title')
-          .populate('collectedBy', 'name userId role');
+          .populate('collectedBy', 'name gravId role');
       } catch (payErr) {
         console.error('Failed to create Payment record on reactivation:', payErr);
       }
 
       return res.status(200).json({
         success: true,
-        message: 'শিক্ষার্থীর ভর্তি স্ট্যাটাস সফলভাবে পুনরায় সক্রিয় করা হয়েছে!',
+        message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦­à¦°à§à¦¤à¦¿ à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà§à¦¨à¦°à¦¾à§Ÿ à¦¸à¦•à§à¦°à¦¿à§Ÿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡!',
         isNewUserCreated,
         student: {
           _id: studentDoc._id,
           name: studentDoc.name,
-          userId: studentDoc.userId,
+          gravId: studentDoc.gravId,
           phone: studentDoc.phone,
           email: studentDoc.email,
           defaultPassword: isNewUserCreated ? defaultPassword : null,
@@ -717,7 +730,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
 
     // Create new Enrollment record
     const enrollment = await Enrollment.create({
-      studentId: studentDoc._id,
+      gravId: studentDoc.gravId,
       batchId: batch._id,
       courseId: batch.courseId._id || batch.courseId,
       batchFee: currentPriceAtEnrollment,
@@ -746,7 +759,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       const receiptNo = await generateReceiptNumber();
       const newPay = await Payment.create({
         receiptNo,
-        studentId: studentDoc._id,
+        gravId: studentDoc.gravId,
         enrollmentId: enrollment._id,
         batchId: batch._id,
         courseId: batch.courseId._id || batch.courseId,
@@ -765,22 +778,21 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       });
 
       createdPayment = await Payment.findById(newPay._id)
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name fee courseId')
         .populate('courseId', 'title')
-        .populate('collectedBy', 'name userId role');
+        .populate('collectedBy', 'name gravId role');
     } catch (payErr) {
       console.error('Failed to create initial Payment record:', payErr);
     }
 
     return res.status(201).json({
       success: true,
-      message: 'অভিনন্দন! শিক্ষার্থীকে সফলভাবে ব্যাচে ভর্তি করানো হয়েছে।',
+      message: 'à¦…à¦­à¦¿à¦¨à¦¨à§à¦¦à¦¨! à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦•à§‡ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦­à¦°à§à¦¤à¦¿ à¦•à¦°à¦¾à¦¨à§‹ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
       isNewUserCreated,
       student: {
         _id: studentDoc._id,
         name: studentDoc.name,
-        userId: studentDoc.userId,
+        gravId: studentDoc.gravId,
         phone: studentDoc.phone,
         email: studentDoc.email,
         defaultPassword: isNewUserCreated ? defaultPassword : null,
@@ -797,7 +809,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
     console.error('adminAdmitStudent error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'ভর্তি প্রক্রিয়া সম্পন্ন করা সম্ভব হয়নি।',
+      message: error?.message || 'à¦­à¦°à§à¦¤à¦¿ à¦ªà§à¦°à¦•à§à¦°à¦¿à§Ÿà¦¾ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦•à¦°à¦¾ à¦¸à¦®à§à¦­à¦¬ à¦¹à§Ÿà¦¨à¦¿à¥¤',
     });
   }
 };
@@ -835,23 +847,32 @@ export const getAdminEnrollments = async (req: AuthenticatedRequest, res: Respon
     if (search && typeof search === 'string' && search.trim() !== '') {
       const regex = new RegExp(search.trim(), 'i');
       const matchingStudents = await User.find({
-        $or: [{ name: regex }, { userId: regex }, { phone: regex }, { email: regex }],
-      }).select('_id');
-      const studentIds = matchingStudents.map((s) => s._id);
-      filter.studentId = { $in: studentIds };
+        $or: [{ name: regex }, { gravId: regex }, { phone: regex }, { email: regex }],
+      }).select('gravId');
+      const gravIds = matchingStudents.map((s) => s.gravId);
+      filter.gravId = { $in: gravIds };
     }
 
     const total = await Enrollment.countDocuments(filter);
 
     const enrollments = await Enrollment.find(filter)
-      .populate('studentId', 'name userId email phone avatarUrl studentDetails')
       .populate('batchId', 'name fee capacity status')
       .populate('courseId', 'title slug gradeLevel subject')
-      .populate('enrolledBy', 'name userId role')
+      .populate('enrolledBy', 'name gravId role')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum)
       .lean();
+
+    const enrollmentGravIds = enrollments.map((enrollment) => enrollment.gravId).filter(Boolean);
+    const students = await User.find({ gravId: { $in: enrollmentGravIds }, role: ROLES.STUDENT })
+      .select('name gravId email phone avatarUrl studentDetails')
+      .lean();
+    const studentMap = new Map(students.map((student) => [student.gravId, student]));
+    const enrichedEnrollments = enrollments.map((enrollment) => ({
+      ...enrollment,
+      student: studentMap.get(enrollment.gravId) || null,
+    }));
 
     return res.status(200).json({
       success: true,
@@ -859,40 +880,40 @@ export const getAdminEnrollments = async (req: AuthenticatedRequest, res: Respon
       total,
       page: pageNum,
       totalPages: Math.ceil(total / limitNum),
-      data: enrollments,
+      data: enrichedEnrollments,
     });
   } catch (error: any) {
     console.error('getAdminEnrollments error:', error);
     return res.status(500).json({
       success: false,
-      message: 'ভর্তি তালিকা লোড করা সম্ভব হয়নি।',
+      message: 'à¦­à¦°à§à¦¤à¦¿ à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¸à¦®à§à¦­à¦¬ à¦¹à§Ÿà¦¨à¦¿à¥¤',
     });
   }
 };
 
 /**
  * Admin action to remove/cancel student enrollment from a batch/course.
- * Supports either enrollmentId (in params) OR { batchId, studentId } in body/query.
- * Rule 1: "আমি যদি ক্লাস রুম থেকে রিমুভ করে দেই ওর ওই ব্যাচের যেই ট্রানজেকশনগুলো করছিল টাকা পয়সা রিলেটেড সেগুলো ডিলিট হয়ে যাবে এবং ফাইন্যান্সও নতুন করে আপডেট হবে"
+ * Supports either enrollmentId (in params) OR { batchId, gravId } in body/query.
+ * Rule 1: "à¦†à¦®à¦¿ à¦¯à¦¦à¦¿ à¦•à§à¦²à¦¾à¦¸ à¦°à§à¦® à¦¥à§‡à¦•à§‡ à¦°à¦¿à¦®à§à¦­ à¦•à¦°à§‡ à¦¦à§‡à¦‡ à¦“à¦° à¦“à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦¯à§‡à¦‡ à¦Ÿà§à¦°à¦¾à¦¨à¦œà§‡à¦•à¦¶à¦¨à¦—à§à¦²à§‹ à¦•à¦°à¦›à¦¿à¦² à¦Ÿà¦¾à¦•à¦¾ à¦ªà¦¯à¦¼à¦¸à¦¾ à¦°à¦¿à¦²à§‡à¦Ÿà§‡à¦¡ à¦¸à§‡à¦—à§à¦²à§‹ à¦¡à¦¿à¦²à¦¿à¦Ÿ à¦¹à¦¯à¦¼à§‡ à¦¯à¦¾à¦¬à§‡ à¦à¦¬à¦‚ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸à¦“ à¦¨à¦¤à§à¦¨ à¦•à¦°à§‡ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦¹à¦¬à§‡"
  */
 export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
     }
 
     const { enrollmentId } = req.params;
-    const { batchId, studentId, reason } = req.body || {};
+    const { batchId, gravId, reason } = req.body || {};
 
     let enrollment = null;
 
     if (enrollmentId && mongoose.Types.ObjectId.isValid(enrollmentId)) {
       enrollment = await Enrollment.findById(enrollmentId);
-    } else if (batchId && studentId) {
+    } else if (batchId && gravId) {
       enrollment = await Enrollment.findOne({
         batchId,
-        studentId,
+        gravId,
         status: { $in: ['enrolled', 'completed', 'pending'] },
       });
     }
@@ -900,17 +921,17 @@ export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Res
     if (!enrollment) {
       return res.status(404).json({
         success: false,
-        message: 'কোনো সক্রিয় এনরোলমেন্ট বা ভর্তি রেকর্ড পাওয়া যায়নি।',
+        message: 'à¦•à§‹à¦¨à§‹ à¦¸à¦•à§à¦°à¦¿à§Ÿ à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦¬à¦¾ à¦­à¦°à§à¦¤à¦¿ à¦°à§‡à¦•à¦°à§à¦¡ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤',
       });
     }
 
     const prevStatus = enrollment.status;
-    const targetStudentId = enrollment.studentId;
+    const targetgravId = enrollment.gravId;
     const targetBatchId = enrollment.batchId;
 
     // 1. Delete all transactions/payments associated with this student and batch
     const deletePaymentResult = await Payment.deleteMany({
-      studentId: targetStudentId,
+      gravId: targetgravId,
       batchId: targetBatchId,
     });
 
@@ -930,7 +951,7 @@ export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Res
 
     return res.status(200).json({
       success: true,
-      message: 'শিক্ষার্থীকে ব্যাচ থেকে রিমুভ করা হয়েছে এবং সংশ্লিষ্ট ট্রানজ্যাকশনগুলো মুছে ফাইন্যান্স আপডেট করা হয়েছে।',
+      message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦•à§‡ à¦¬à§à¦¯à¦¾à¦š à¦¥à§‡à¦•à§‡ à¦°à¦¿à¦®à§à¦­ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦¸à¦‚à¦¶à§à¦²à¦¿à¦·à§à¦Ÿ à¦Ÿà§à¦°à¦¾à¦¨à¦œà§à¦¯à¦¾à¦•à¦¶à¦¨à¦—à§à¦²à§‹ à¦®à§à¦›à§‡ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
       data: {
         enrollmentId: enrollment._id,
         deletedTransactionsCount: deletePaymentResult.deletedCount,
@@ -942,7 +963,7 @@ export const removeStudentFromBatch = async (req: AuthenticatedRequest, res: Res
     console.error('removeStudentFromBatch error:', error);
     return res.status(500).json({
       success: false,
-      message: 'শিক্ষার্থীকে রিমুভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+      message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦•à§‡ à¦°à¦¿à¦®à§à¦­ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤',
     });
   }
 };
@@ -959,17 +980,17 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
     }
 
-    const { enrollmentId, studentId, currentBatchId, targetBatchId, targetCourseId, reason } = req.body || {};
+    const { enrollmentId, gravId, currentBatchId, targetBatchId, targetCourseId, reason } = req.body || {};
 
     let enrollment = null;
     if (enrollmentId && mongoose.Types.ObjectId.isValid(enrollmentId)) {
       enrollment = await Enrollment.findById(enrollmentId);
-    } else if (studentId && currentBatchId) {
+    } else if (gravId && currentBatchId) {
       enrollment = await Enrollment.findOne({
-        studentId,
+        gravId,
         batchId: currentBatchId,
         status: { $in: ['enrolled', 'completed', 'pending'] },
       });
@@ -978,14 +999,14 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
     if (!enrollment) {
       return res.status(404).json({
         success: false,
-        message: 'শিক্ষার্থীর বর্তমান কোনো সক্রিয় ভর্তি রেকর্ড পাওয়া যায়নি।',
+        message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨ à¦•à§‹à¦¨à§‹ à¦¸à¦•à§à¦°à¦¿à§Ÿ à¦­à¦°à§à¦¤à¦¿ à¦°à§‡à¦•à¦°à§à¦¡ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤',
       });
     }
 
     if (!targetBatchId) {
       return res.status(400).json({
         success: false,
-        message: 'শিফট করার জন্য নতুন ব্যাচ নির্ধারণ করা আবশ্যক।',
+        message: 'à¦¶à¦¿à¦«à¦Ÿ à¦•à¦°à¦¾à¦° à¦œà¦¨à§à¦¯ à¦¨à¦¤à§à¦¨ à¦¬à§à¦¯à¦¾à¦š à¦¨à¦¿à¦°à§à¦§à¦¾à¦°à¦£ à¦•à¦°à¦¾ à¦†à¦¬à¦¶à§à¦¯à¦•à¥¤',
       });
     }
 
@@ -993,7 +1014,7 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
     if (!targetBatch) {
       return res.status(404).json({
         success: false,
-        message: 'উদ্দিষ্ট নতুন ব্যাচ খুঁজে পাওয়া যায়নি।',
+        message: 'à¦‰à¦¦à§à¦¦à¦¿à¦·à§à¦Ÿ à¦¨à¦¤à§à¦¨ à¦¬à§à¦¯à¦¾à¦š à¦–à§à¦à¦œà§‡ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤',
       });
     }
 
@@ -1001,7 +1022,7 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
     if (!targetCourse) {
       return res.status(404).json({
         success: false,
-        message: 'উদ্দিষ্ট ব্যাচের কোর্স তথ্য পাওয়া যায়নি।',
+        message: 'à¦‰à¦¦à§à¦¦à¦¿à¦·à§à¦Ÿ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦•à§‹à¦°à§à¦¸ à¦¤à¦¥à§à¦¯ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤',
       });
     }
 
@@ -1015,13 +1036,13 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
 
     const oldBatchId = enrollment.batchId;
     const oldCourseId = enrollment.courseId;
-    const studentObjectId = enrollment.studentId;
+    const studentObjectId = enrollment.gravId;
 
     // Check if student is already enrolled in targetBatch
     if (oldBatchId.toString() === targetBatch._id.toString()) {
       return res.status(400).json({
         success: false,
-        message: 'শিক্ষার্থী ইতিমধ্যেই এই ব্যাচে ভর্তি আছে।',
+        message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡à¦‡ à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡ à¦­à¦°à§à¦¤à¦¿ à¦†à¦›à§‡à¥¤',
       });
     }
 
@@ -1037,7 +1058,7 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
 
     // Re-link previous completed payments for this enrollment to the new batch and course
     await Payment.updateMany(
-      { studentId: studentObjectId, batchId: oldBatchId },
+      { gravId: studentObjectId, batchId: oldBatchId },
       {
         $set: {
           batchId: targetBatch._id,
@@ -1053,7 +1074,7 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
 
     return res.status(200).json({
       success: true,
-      message: `শিক্ষার্থীকে সফলভাবে "${targetBatch.name}" (${targetCourse.title}) ব্যাচে শিফট করা হয়েছে। নতুন ব্যাচ ফি: ৳${currentTargetCourseFee.toLocaleString('bn-BD')}`,
+      message: `à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦•à§‡ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ "${targetBatch.name}" (${targetCourse.title}) à¦¬à§à¦¯à¦¾à¦šà§‡ à¦¶à¦¿à¦«à¦Ÿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦¨à¦¤à§à¦¨ à¦¬à§à¦¯à¦¾à¦š à¦«à¦¿: à§³${currentTargetCourseFee.toLocaleString('bn-BD')}`,
       data: {
         enrollmentId: enrollment._id,
         newBatchId: targetBatch._id,
@@ -1067,7 +1088,7 @@ export const shiftStudentBatch = async (req: AuthenticatedRequest, res: Response
     console.error('shiftStudentBatch error:', error);
     return res.status(500).json({
       success: false,
-      message: 'ব্যাচ পরিবর্তন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+      message: 'à¦¬à§à¦¯à¦¾à¦š à¦ªà¦°à¦¿à¦¬à¦°à§à¦¤à¦¨ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤',
     });
   }
 };

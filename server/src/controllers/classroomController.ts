@@ -27,7 +27,7 @@ export const createDiscussionSchema = z.object({
  * - Student: enrolled in batch
  * - Guardian: linked to an enrolled student
  */
-async function verifyClassroomAccess(userId: string, userRole: string, batchId: string) {
+async function verifyClassroomAccess(gravId: string, userRole: string, batchId: string) {
   // Admin & Superadmin have unrestricted access everywhere
   if (userRole === 'admin' || userRole === 'superadmin') {
     return true;
@@ -40,29 +40,29 @@ async function verifyClassroomAccess(userId: string, userRole: string, batchId: 
   // course when no batch-level assignment has been configured.
   if (userRole === 'teacher') {
     if (batch.assignedTeachers && batch.assignedTeachers.length > 0) {
-      return batch.assignedTeachers.some((tId) => tId.toString() === userId.toString());
+      return batch.assignedTeachers.some((tId) => tId.toString() === gravId.toString());
     }
     const course = await Course.findById(batch.courseId).select('instructors').lean();
-    return (course?.instructors || []).some((tId: mongoose.Types.ObjectId) => tId.toString() === userId.toString());
+    return (course?.instructors || []).some((tId: mongoose.Types.ObjectId) => tId.toString() === gravId.toString());
   }
 
   if (userRole === 'student') {
     const enrollment = await Enrollment.findOne({
       batchId,
-      studentId: userId,
+      gravId: gravId,
       status: { $in: ['enrolled', 'completed'] },
     });
     return !!enrollment;
   }
 
   if (userRole === 'guardian') {
-    const guardian = await User.findById(userId);
-    const studentIds = guardian?.guardianDetails?.linkedStudents || [];
-    if (studentIds.length === 0) return false;
+    const guardian = await User.findOne({ gravId });
+    const gravIds = guardian?.guardianDetails?.linkedGravIds || [];
+    if (gravIds.length === 0) return false;
 
     const enrollment = await Enrollment.findOne({
       batchId,
-      studentId: { $in: studentIds },
+      gravId: { $in: gravIds },
       status: { $in: ['enrolled', 'completed'] },
     });
     return !!enrollment;
@@ -81,14 +81,14 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
       return res.status(400).json({ success: false, message: 'Invalid Batch ID' });
     }
 
-    const userId = req.user?._id?.toString() || '';
+    const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(userId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {
       return res.status(403).json({
         success: false,
-        message: 'আপনি এই ক্লাসরুমের সদস্য নন বা আপনার অনুমোদিত অ্যাক্সেস নেই।',
+        message: 'à¦†à¦ªà¦¨à¦¿ à¦à¦‡ à¦•à§à¦²à¦¾à¦¸à¦°à§à¦®à§‡à¦° à¦¸à¦¦à¦¸à§à¦¯ à¦¨à¦¨ à¦¬à¦¾ à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸ à¦¨à§‡à¦‡à¥¤',
       });
     }
 
@@ -98,10 +98,10 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
         select: 'title slug gradeLevel subject instructors',
         populate: {
           path: 'instructors',
-          select: 'name email role userId avatarUrl',
+          select: 'name email role gravId avatarUrl',
         },
       })
-      .populate('assignedTeachers', 'name email role userId avatarUrl');
+      .populate('assignedTeachers', 'name email role gravId avatarUrl');
 
     if (!batch) {
       return res.status(404).json({ success: false, message: 'Batch not found' });
@@ -156,22 +156,22 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
 export const getClassroomMembers = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { batchId } = req.params;
-    const userId = req.user?._id?.toString() || '';
+    const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(userId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
     const batch = await Batch.findById(batchId)
-      .populate('assignedTeachers', 'name userId role avatarUrl email')
+      .populate('assignedTeachers', 'name gravId role avatarUrl email')
       .populate({
         path: 'courseId',
         select: 'instructors',
         populate: {
           path: 'instructors',
-          select: 'name userId role avatarUrl email',
+          select: 'name gravId role avatarUrl email',
         },
       });
 
@@ -200,11 +200,10 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
       batchId,
       status: { $in: ['enrolled', 'completed'] },
     })
-      .populate('studentId', 'name userId role avatarUrl createdAt')
       .sort({ createdAt: -1 });
 
     const students = enrollments
-      .map((e) => e.studentId)
+      .map((e) => e.gravId)
       .filter(Boolean);
 
     return res.status(200).json({
@@ -227,10 +226,10 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
 export const getAnnouncements = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { batchId } = req.params;
-    const userId = req.user?._id?.toString() || '';
+    const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(userId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
@@ -258,10 +257,10 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
     const { batchId } = req.params;
     const { title, content, isPinned } = req.body;
 
-    const userId = req.user?._id?.toString() || '';
+    const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(userId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied to post announcements' });
     }
@@ -281,11 +280,11 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
 
-    const author = await User.findById(userId);
+    const author = req.user;
 
     const announcement = await Announcement.create({
       batchId,
-      authorId: userId,
+      authorId: req.user!._id,
       authorName: author?.name || 'User',
       authorRole: userRole,
       title,
@@ -302,10 +301,12 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
     const enrollments = await Enrollment.find({
       batchId,
       status: { $in: ['enrolled', 'completed'] },
-    }).populate('studentId', 'email');
-
-    const studentEmails = enrollments
-      .map((e: any) => e.studentId?.email)
+    }).lean();
+    const studentUsers = await User.find({ gravId: { $in: enrollments.map((e) => e.gravId) } })
+      .select('email')
+      .lean();
+    const studentEmails = studentUsers
+      .map((student) => student.email)
       .filter(Boolean);
 
     // Merge unique emails excluding the author
@@ -317,7 +318,7 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
     sendClassroomEmailNotification({
       toEmails: recipientEmails,
       batchName: batch.name,
-      announcerName: `${author?.name} (${userRole === 'teacher' ? 'শিক্ষক' : userRole === 'admin' ? 'এডমিন' : 'শিক্ষার্থী'})`,
+      announcerName: `${author?.name} (${userRole === 'teacher' ? 'à¦¶à¦¿à¦•à§à¦·à¦•' : userRole === 'admin' ? 'à¦à¦¡à¦®à¦¿à¦¨' : 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€'})`,
       announcementTitle: title,
       announcementContent: content,
     })
@@ -344,10 +345,10 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
 export const getDiscussionMessages = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { batchId } = req.params;
-    const userId = req.user?._id?.toString() || '';
+    const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(userId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
@@ -376,19 +377,19 @@ export const postDiscussionMessage = async (req: AuthenticatedRequest, res: Resp
     const { batchId } = req.params;
     const { message } = req.body;
 
-    const userId = req.user?._id?.toString() || '';
+    const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(userId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
-    const sender = await User.findById(userId);
+    const sender = req.user;
 
     const newMsg = await DiscussionMessage.create({
       batchId,
-      senderId: userId,
+      senderId: req.user!._id,
       senderName: sender?.name || 'User',
       senderRole: userRole,
       senderAvatar: sender?.avatarUrl,

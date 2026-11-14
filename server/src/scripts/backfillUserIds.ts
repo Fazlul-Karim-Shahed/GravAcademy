@@ -4,7 +4,7 @@ import { User } from '../models/User';
 
 dotenv.config();
 
-const backfillUserIds = async () => {
+const backfillgravIds = async () => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     console.error('❌ MONGODB_URI is missing');
@@ -16,9 +16,9 @@ const backfillUserIds = async () => {
     await mongoose.connect(uri);
     console.log('Connected!');
 
-    // Find all users missing userId or with null/empty userId
+    // Find all users missing gravId or with null/empty gravId
     const usersWithoutId = await User.find({
-      $or: [{ userId: { $exists: false } }, { userId: null }, { userId: '' }],
+      $or: [{ gravId: { $exists: false } }, { gravId: null }, { gravId: '' }],
     }).sort({ createdAt: 1 });
 
     console.log(`Found ${usersWithoutId.length} users needing Grav ID.`);
@@ -44,11 +44,11 @@ const backfillUserIds = async () => {
     for (const [dateKey, group] of Object.entries(dateGroups)) {
       // Find highest existing seq for this dateKey
       const regex = new RegExp(`^${dateKey}(\\d{3})$`);
-      const existingToday = await User.find({ userId: regex }).select('userId').sort({ userId: -1 }).limit(1);
+      const existingToday = await User.find({ gravId: regex }).select('gravId').sort({ gravId: -1 }).limit(1);
 
       let seq = 1;
-      if (existingToday.length > 0 && existingToday[0].userId) {
-        const lastSeq = parseInt(existingToday[0].userId.slice(-3), 10);
+      if (existingToday.length > 0 && existingToday[0].gravId) {
+        const lastSeq = parseInt(existingToday[0].gravId.slice(-3), 10);
         if (!isNaN(lastSeq)) {
           seq = lastSeq + 1;
         }
@@ -56,7 +56,7 @@ const backfillUserIds = async () => {
 
       for (const user of group) {
         const newId = `${dateKey}${String(seq).padStart(3, '0')}`;
-        await User.updateOne({ _id: user._id }, { $set: { userId: newId } });
+        await User.updateOne({ _id: user._id }, { $set: { gravId: newId } });
         console.log(`✔ Assigned ${newId} to ${user.name} (${user.email || 'No email'})`);
         seq++;
         updatedCount++;
@@ -71,4 +71,4 @@ const backfillUserIds = async () => {
   }
 };
 
-backfillUserIds();
+backfillgravIds();

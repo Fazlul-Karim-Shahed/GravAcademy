@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IEnrollment extends Document {
   _id: mongoose.Types.ObjectId;
-  studentId: mongoose.Types.ObjectId;
+  gravId: string;
   batchId: mongoose.Types.ObjectId;
   courseId: mongoose.Types.ObjectId;
   status: 'pending' | 'enrolled' | 'completed' | 'cancelled';
@@ -20,9 +20,8 @@ export interface IEnrollment extends Document {
 
 const EnrollmentSchema = new Schema<IEnrollment>(
   {
-    studentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    gravId: {
+      type: String,
       required: true,
       index: true,
     },
@@ -79,7 +78,7 @@ const EnrollmentSchema = new Schema<IEnrollment>(
 );
 
 // Prevent duplicate enrollments for the same student in the same batch
-EnrollmentSchema.index({ studentId: 1, batchId: 1 }, { unique: true });
+EnrollmentSchema.index({ gravId: 1, batchId: 1 }, { unique: true });
 EnrollmentSchema.index({ batchId: 1, status: 1 });
 
 export const Enrollment = mongoose.model<IEnrollment>('Enrollment', EnrollmentSchema);

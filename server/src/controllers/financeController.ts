@@ -37,9 +37,9 @@ export const generateReceiptNumber = async (): Promise<string> => {
 };
 
 export const collectPaymentSchema = z.object({
-  studentId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল শিক্ষার্থী রেকর্ড'),
-  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল ব্যাচ আইডি').optional(),
-  amountPaid: z.number().min(0, 'টাকার পরিমাণ ০ বা তার বেশি হতে হবে'),
+  gravId: z.string().regex(/^\d{9}$/, 'à¦­à§à¦² Grav ID'),
+  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'à¦­à§à¦² à¦¬à§à¦¯à¦¾à¦š à¦†à¦‡à¦¡à¦¿').optional(),
+  amountPaid: z.number().min(0, 'à¦Ÿà¦¾à¦•à¦¾à¦° à¦ªà¦°à¦¿à¦®à¦¾à¦£ à§¦ à¦¬à¦¾ à¦¤à¦¾à¦° à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦¹à¦¬à§‡'),
   paymentMethod: z.enum(['cash', 'bkash', 'nagad', 'rocket', 'bank_transfer', 'other']).default('cash'),
   paymentType: z.enum(['admission', 'due_payment', 'monthly_fee', 'refund', 'adjustment', 'other']).default('due_payment'),
   transactionId: z.string().optional().or(z.literal('')),
@@ -56,11 +56,11 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
     }
 
     const {
-      studentId,
+      gravId,
       batchId,
       amountPaid,
       paymentMethod = 'cash',
@@ -72,9 +72,9 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
       paidAt,
     } = req.body;
 
-    const student = await User.findById(studentId);
+    const student = await User.findOne({ gravId });
     if (!student) {
-      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
+      return res.status(404).json({ success: false, message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
     }
 
     let batch = null;
@@ -85,7 +85,7 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
     if (batchId) {
       batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
       if (batch) {
-        enrollment = await Enrollment.findOne({ studentId, batchId });
+        enrollment = await Enrollment.findOne({ gravId, batchId });
         const courseDoc = batch.courseId as any;
         const currentCoursePrice = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         // Batch fee snapshot: If enrollment exists and has batchFee, use it. Otherwise use currentCoursePrice and save it.
@@ -101,7 +101,7 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
     let previousPaid = 0;
     if (batchId) {
       const pastPayments = await Payment.find({
-        studentId,
+        gravId,
         batchId,
         status: 'completed',
       });
@@ -115,7 +115,7 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
 
     const payment = await Payment.create({
       receiptNo,
-      studentId,
+      gravId,
       batchId: batch?._id,
       courseId: batch?.courseId,
       enrollmentId: enrollment?._id,
@@ -147,21 +147,20 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
     }
 
     const populatedPayment = await Payment.findById(payment._id)
-      .populate('studentId', 'name userId phone email avatarUrl studentDetails')
       .populate('batchId', 'name fee courseId')
       .populate('courseId', 'title')
-      .populate('collectedBy', 'name userId role');
+      .populate('collectedBy', 'name gravId role');
 
     return res.status(201).json({
       success: true,
-      message: 'পেমেন্ট সফলভাবে সংরক্ষিত হয়েছে এবং মানি রিসিট প্রস্তুত!',
+      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦®à¦¾à¦¨à¦¿ à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦ªà§à¦°à¦¸à§à¦¤à§à¦¤!',
       data: populatedPayment,
     });
   } catch (error: any) {
     console.error('collectPayment error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'পেমেন্ট সংগ্রহ ব্যর্থ হয়েছে।',
+      message: error?.message || 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à¦‚à¦—à§à¦°à¦¹ à¦¬à§à¦¯à¦°à§à¦¥ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
     });
   }
 };
@@ -177,7 +176,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       paymentType,
       filterType, // 'today' | 'due' | 'all'
       batchId,
-      studentId,
+      gravId,
       startDate,
       endDate,
       page = 1,
@@ -207,8 +206,8 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     if (batchId && batchId !== 'all') {
       query.batchId = batchId;
     }
-    if (studentId) {
-      query.studentId = studentId;
+    if (gravId) {
+      query.gravId = gravId;
     }
 
     if (startDate || endDate) {
@@ -223,23 +222,23 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       }
     }
 
-    // Search by receiptNo or student name / phone / userId
+    // Search by receiptNo or student name / phone / gravId
     if (search) {
       const searchStr = (search as string).trim();
       const matchingUsers = await User.find({
         $or: [
           { name: { $regex: searchStr, $options: 'i' } },
           { phone: { $regex: searchStr, $options: 'i' } },
-          { userId: { $regex: searchStr, $options: 'i' } },
+          { gravId: { $regex: searchStr, $options: 'i' } },
         ],
-      }).select('_id');
+      }).select('gravId');
 
-      const userIds = matchingUsers.map((u) => u._id);
+      const gravIds = matchingUsers.map((u) => u.gravId);
 
       query.$or = [
         { receiptNo: { $regex: searchStr, $options: 'i' } },
         { transactionId: { $regex: searchStr, $options: 'i' } },
-        { studentId: { $in: userIds } },
+        { gravId: { $in: gravIds } },
       ];
     }
 
@@ -255,7 +254,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       (paymentMethod && paymentMethod !== 'all') ||
       (paymentType && paymentType !== 'all') ||
       (batchId && batchId !== 'all') ||
-      studentId ||
+      gravId ||
       startDate ||
       endDate
     );
@@ -271,20 +270,20 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         .lean();
 
       const allCompletedPayments = await Payment.find({ status: 'completed' })
-        .select('studentId batchId amountPaid')
+        .select('gravId batchId amountPaid')
         .lean();
 
-      // Aggregate payments per studentId + batchId
+      // Aggregate payments per gravId + batchId
       const studentBatchPaidMap = new Map<string, number>();
       for (const p of allCompletedPayments) {
-        if (!p.studentId) continue;
-        const key = `${p.studentId.toString()}_${p.batchId ? p.batchId.toString() : 'no_batch'}`;
+        if (!p.gravId) continue;
+        const key = `${p.gravId.toString()}_${p.batchId ? p.batchId.toString() : 'no_batch'}`;
         studentBatchPaidMap.set(key, (studentBatchPaidMap.get(key) || 0) + (p.amountPaid || 0));
       }
 
       let systemDue = 0;
       for (const enr of activeEnrollments) {
-        if (!enr.studentId) continue;
+        if (!enr.gravId) continue;
         const courseDoc = enr.courseId as any;
         const currentCoursePrice =
           courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
@@ -294,7 +293,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           ? enr.batchFee
           : currentCoursePrice;
 
-        const key = `${enr.studentId.toString()}_${enr.batchId ? enr.batchId.toString() : 'no_batch'}`;
+        const key = `${enr.gravId.toString()}_${enr.batchId ? enr.batchId.toString() : 'no_batch'}`;
         const actualPaid = studentBatchPaidMap.has(key)
           ? studentBatchPaidMap.get(key)!
           : (enr.paymentFee || 0);
@@ -309,31 +308,31 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     // Helper to enrich payment items with student's locked batchFee snapshot and accurate due
     const enrichPaymentsWithDynamicPricing = async (paymentDocs: any[]) => {
       const [allCompletedPayments, activeEnrollments] = await Promise.all([
-        Payment.find({ status: 'completed' }).select('studentId batchId amountPaid').lean(),
+        Payment.find({ status: 'completed' }).select('gravId batchId amountPaid').lean(),
         Enrollment.find({ status: { $in: ['enrolled', 'completed'] } })
           .populate('courseId', 'courseFee regularPrice discountPrice')
-          .select('studentId batchId batchFee courseId isManualPaid paymentStatus')
+          .select('gravId batchId batchFee courseId isManualPaid paymentStatus')
           .lean(),
       ]);
 
       const studentBatchPaidMap = new Map<string, number>();
       for (const p of allCompletedPayments) {
-        if (!p.studentId) continue;
-        const key = `${p.studentId.toString()}_${p.batchId ? p.batchId.toString() : 'no_batch'}`;
+        if (!p.gravId) continue;
+        const key = `${p.gravId.toString()}_${p.batchId ? p.batchId.toString() : 'no_batch'}`;
         studentBatchPaidMap.set(key, (studentBatchPaidMap.get(key) || 0) + (p.amountPaid || 0));
       }
 
       const enrollmentMap = new Map<string, any>();
       for (const enr of activeEnrollments) {
-        if (!enr.studentId) continue;
-        const key = `${enr.studentId.toString()}_${enr.batchId ? enr.batchId.toString() : 'no_batch'}`;
+        if (!enr.gravId) continue;
+        const key = `${enr.gravId.toString()}_${enr.batchId ? enr.batchId.toString() : 'no_batch'}`;
         enrollmentMap.set(key, enr);
       }
 
       return paymentDocs.map((p) => {
-        const studentIdStr = p.studentId?._id?.toString() || p.studentId?.toString() || '';
+        const gravIdStr = p.gravId?.toString() || '';
         const batchIdStr = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
-        const key = `${studentIdStr}_${batchIdStr}`;
+        const key = `${gravIdStr}_${batchIdStr}`;
 
         const enr = enrollmentMap.get(key);
         const courseDoc = p.courseId as any;
@@ -372,16 +371,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       const dueEnrollments = await Enrollment.find({
         status: { $in: ['enrolled', 'completed'] },
       })
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name courseId')
         .populate('courseId', 'title courseFee regularPrice discountPrice')
         .lean();
 
       const paymentsRaw = await Payment.find(query)
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name courseId')
         .populate('courseId', 'title courseFee regularPrice discountPrice')
-        .populate('collectedBy', 'name userId role')
+        .populate('collectedBy', 'name gravId role')
         .sort({ paidAt: -1, createdAt: -1 })
         .lean();
 
@@ -392,7 +389,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       );
       const existingStudentBatchKeys = new Set(
         paymentsWithDue.map((p) => {
-          const s = p.studentId?._id?.toString() || p.studentId?.toString() || '';
+          const s = p.gravId?.toString() || '';
           const b = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
           return `${s}_${b}`;
         })
@@ -407,13 +404,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         const paid = enr.paymentFee || 0;
         const dueAmount = Math.max(0, currentCoursePrice - paid);
 
-        const enrKey = `${enr.studentId?._id?.toString() || enr.studentId?.toString()}_${enr.batchId?._id?.toString() || enr.batchId?.toString() || 'no_batch'}`;
+        const enrKey = `${enr.gravId?.toString() || ''}_${enr.batchId?._id?.toString() || enr.batchId?.toString() || 'no_batch'}`;
         if (dueAmount > 0 && !enr.isManualPaid && !existingEnrollmentIdsWithPayment.has(enr._id.toString()) && !existingStudentBatchKeys.has(enrKey)) {
           if (search) {
             const searchStr = (search as string).trim().toLowerCase();
-            const sName = (enr.studentId as any)?.name?.toLowerCase() || '';
-            const sId = (enr.studentId as any)?.userId?.toLowerCase() || '';
-            const sPhone = (enr.studentId as any)?.phone || '';
+            const linkedStudent = await User.findOne({ gravId: enr.gravId }).select('name phone').lean();
+            const sName = linkedStudent?.name?.toLowerCase() || '';
+            const sId = enr.gravId?.toLowerCase() || '';
+            const sPhone = linkedStudent?.phone || '';
             if (!sName.includes(searchStr) && !sId.includes(searchStr) && !sPhone.includes(searchStr)) {
               continue;
             }
@@ -422,7 +420,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           syntheticDues.push({
             _id: `due_${enr._id}`,
             receiptNo: `DUE-${enr._id.toString().slice(-6).toUpperCase()}`,
-            studentId: enr.studentId,
+            gravId: enr.gravId,
             batchId: enr.batchId,
             courseId: enr.courseId,
             enrollmentId: enr._id,
@@ -434,7 +432,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
-            notes: 'এনরোলমেন্ট ফি বকেয়া রয়েছে (Self/Manual Enrolled)',
+            notes: 'à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦«à¦¿ à¦¬à¦•à§‡à§Ÿà¦¾ à¦°à§Ÿà§‡à¦›à§‡ (Self/Manual Enrolled)',
             paidAt: enr.enrolledAt || (enr as any).createdAt,
             createdAt: enr.enrolledAt || (enr as any).createdAt,
           });
@@ -543,16 +541,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       const dueEnrollments = await Enrollment.find({
         status: { $in: ['enrolled', 'completed'] },
       })
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name courseId')
         .populate('courseId', 'title courseFee regularPrice discountPrice')
         .lean();
 
       const allPaymentsRaw = await Payment.find(query)
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name courseId')
         .populate('courseId', 'title courseFee regularPrice discountPrice')
-        .populate('collectedBy', 'name userId role')
+        .populate('collectedBy', 'name gravId role')
         .sort({ paidAt: -1, createdAt: -1 })
         .lean();
 
@@ -563,7 +559,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
       );
       const existingStudentBatchKeys = new Set(
         allPayments.map((p) => {
-          const s = p.studentId?._id?.toString() || p.studentId?.toString() || '';
+          const s = p.gravId?.toString() || '';
           const b = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
           return `${s}_${b}`;
         })
@@ -578,13 +574,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         const paid = enr.paymentFee || 0;
         const dueAmount = Math.max(0, currentCoursePrice - paid);
 
-        const enrKey = `${enr.studentId?._id?.toString() || enr.studentId?.toString()}_${enr.batchId?._id?.toString() || enr.batchId?.toString() || 'no_batch'}`;
+        const enrKey = `${enr.gravId?.toString() || ''}_${enr.batchId?._id?.toString() || enr.batchId?.toString() || 'no_batch'}`;
         if (!existingEnrollmentIdsWithPayment.has(enr._id.toString()) && !existingStudentBatchKeys.has(enrKey)) {
           if (search) {
             const searchStr = (search as string).trim().toLowerCase();
-            const sName = (enr.studentId as any)?.name?.toLowerCase() || '';
-            const sId = (enr.studentId as any)?.userId?.toLowerCase() || '';
-            const sPhone = (enr.studentId as any)?.phone || '';
+            const linkedStudent = await User.findOne({ gravId: enr.gravId }).select('name phone').lean();
+            const sName = linkedStudent?.name?.toLowerCase() || '';
+            const sId = enr.gravId?.toLowerCase() || '';
+            const sPhone = linkedStudent?.phone || '';
             if (!sName.includes(searchStr) && !sId.includes(searchStr) && !sPhone.includes(searchStr)) {
               continue;
             }
@@ -593,7 +590,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
           syntheticUnpaid.push({
             _id: `due_${enr._id}`,
             receiptNo: `DUE-${enr._id.toString().slice(-6).toUpperCase()}`,
-            studentId: enr.studentId,
+            gravId: enr.gravId,
             batchId: enr.batchId,
             courseId: enr.courseId,
             enrollmentId: enr._id,
@@ -605,7 +602,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
-            notes: dueAmount > 0 ? 'এনরোলমেন্ট ফি বকেয়া রয়েছে (Self/Manual Enrolled)' : 'সম্পূর্ণ পরিশোধিত',
+            notes: dueAmount > 0 ? 'à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦«à¦¿ à¦¬à¦•à§‡à§Ÿà¦¾ à¦°à§Ÿà§‡à¦›à§‡ (Self/Manual Enrolled)' : 'à¦¸à¦®à§à¦ªà§‚à¦°à§à¦£ à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤',
             paidAt: enr.enrolledAt || (enr as any).createdAt,
             createdAt: enr.enrolledAt || (enr as any).createdAt,
           });
@@ -709,10 +706,9 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     // Specific filtered queries (e.g. today or other filters)
     const [paymentsRaw, totalCount, aggregateStats] = await Promise.all([
       Payment.find(query)
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name courseId')
         .populate('courseId', 'title courseFee regularPrice discountPrice')
-        .populate('collectedBy', 'name userId role')
+        .populate('collectedBy', 'name gravId role')
         .sort({ paidAt: -1, createdAt: -1 })
         .skip(skip)
         .limit(limitNum)
@@ -808,7 +804,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     console.error('getAdminPayments error:', error);
     return res.status(500).json({
       success: false,
-      message: 'পেমেন্ট তালিকা লোড করা যায়নি',
+      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿',
     });
   }
 };
@@ -822,14 +818,14 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
  */
 export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { studentId, batchId } = req.query;
+    const { gravId, batchId } = req.query;
 
-    if (!studentId) {
-      return res.status(400).json({ success: false, message: 'শিক্ষার্থী নির্বাচন করা আবশ্যক' });
+    if (!gravId) {
+      return res.status(400).json({ success: false, message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à¦¾ à¦†à¦¬à¦¶à§à¦¯à¦•' });
     }
 
     const query: any = {
-      studentId,
+      gravId,
       status: 'completed',
     };
     if (batchId && batchId !== 'no_batch') {
@@ -837,17 +833,16 @@ export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Re
     }
 
     const payments = await Payment.find(query)
-      .populate('studentId', 'name userId phone email avatarUrl studentDetails')
       .populate('batchId', 'name fee courseId')
       .populate('courseId', 'title courseFee regularPrice discountPrice')
-      .populate('collectedBy', 'name userId role')
+      .populate('collectedBy', 'name gravId role')
       .sort({ paidAt: 1, createdAt: 1 })
       .lean();
 
     // Also get enrollment info if exists
     let enrollment = null;
     if (batchId && batchId !== 'no_batch') {
-      enrollment = await Enrollment.findOne({ studentId, batchId })
+      enrollment = await Enrollment.findOne({ gravId, batchId })
         .populate('courseId', 'title courseFee regularPrice discountPrice')
         .lean();
     }
@@ -859,7 +854,7 @@ export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Re
     });
   } catch (error: any) {
     console.error('getStudentBatchPayments error:', error);
-    return res.status(500).json({ success: false, message: 'পেমেন্ট বিবরণী লোড করা যায়নি' });
+    return res.status(500).json({ success: false, message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¬à¦¿à¦¬à¦°à¦£à§€ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
   }
 };
 
@@ -872,50 +867,48 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
     const query = isObjectId ? { _id: id } : { receiptNo: id };
 
     const payment = await Payment.findOne(query)
-      .populate('studentId', 'name userId phone email avatarUrl studentDetails')
       .populate('batchId', 'name fee courseId')
       .populate('courseId', 'title courseFee regularPrice discountPrice')
-      .populate('collectedBy', 'name userId role')
+      .populate('collectedBy', 'name gravId role')
       .lean();
 
     if (!payment) {
-      return res.status(404).json({ success: false, message: 'মানি রিসিট পাওয়া যায়নি' });
+      return res.status(404).json({ success: false, message: 'à¦®à¦¾à¦¨à¦¿ à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
     }
 
     // Authorization: Superadmin, Admin, the student himself, or a guardian linked to the student
-    const paymentStudentId = (payment.studentId as any)?._id?.toString();
-    const isOwner = user?._id?.toString() === paymentStudentId;
+    const paymentGravId = payment.gravId?.toString();
+    const isOwner = user?.role === 'student' && user.gravId === paymentGravId;
     const isAdmin = ['superadmin', 'admin'].includes(user?.role || '');
 
     let isLinkedGuardian = false;
-    if (!isOwner && !isAdmin && user?.role === 'guardian' && paymentStudentId) {
+    if (!isOwner && !isAdmin && user?.role === 'guardian' && paymentGravId) {
       const guardianDoc = await User.findById(user._id).select('guardianDetails').lean();
       isLinkedGuardian = Boolean(
-        guardianDoc?.guardianDetails?.linkedStudents?.some(
-          (sid: any) => sid.toString() === paymentStudentId
+        guardianDoc?.guardianDetails?.linkedGravIds?.some(
+          (linkedGravId: string) => linkedGravId === paymentGravId
         )
       );
     }
 
     if (!isOwner && !isAdmin && !isLinkedGuardian) {
-      return res.status(403).json({ success: false, message: 'এই রিসিট দেখার অনুমতি আপনার নেই' });
+      return res.status(403).json({ success: false, message: 'à¦à¦‡ à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦¦à§‡à¦–à¦¾à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à§‡à¦‡' });
     }
 
     // Also fetch all historical payments for this student and batch to form complete installment list
     let allPayments: any[] = [];
-    const studentId = (payment.studentId as any)?._id || payment.studentId;
+    const gravId = payment.gravId;
     const batchId = (payment.batchId as any)?._id || payment.batchId;
 
-    if (studentId && batchId) {
+    if (gravId && batchId) {
       allPayments = await Payment.find({
-        studentId,
+        gravId,
         batchId,
         status: 'completed',
       })
-        .populate('studentId', 'name userId phone email avatarUrl studentDetails')
         .populate('batchId', 'name fee courseId')
         .populate('courseId', 'title courseFee regularPrice discountPrice')
-        .populate('collectedBy', 'name userId role')
+        .populate('collectedBy', 'name gravId role')
         .sort({ paidAt: 1, createdAt: 1 })
         .lean();
     } else {
@@ -929,7 +922,7 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
     });
   } catch (error: any) {
     console.error('getPaymentReceipt error:', error);
-    return res.status(500).json({ success: false, message: 'রিসিট লোড করা যায়নি' });
+    return res.status(500).json({ success: false, message: 'à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
   }
 };
 
@@ -940,27 +933,27 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
   try {
     const user = req.user;
     if (!user) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
     }
 
-    // Guardians may pass ?studentId=<wardId> to view a linked ward's payments.
-    let studentId: any = user._id;
-    const requestedStudentId = req.query.studentId as string | undefined;
-    if (requestedStudentId && requestedStudentId !== user._id.toString()) {
+    // Guardians may pass ?gravId=<wardId> to view a linked ward's payments.
+    let gravId: string | undefined = user.role === 'student' ? user.gravId : undefined;
+    const requestedGravId = req.query.gravId as string | undefined;
+    if (requestedGravId && requestedGravId !== user.gravId) {
       if (user.role !== 'guardian') {
-        return res.status(403).json({ success: false, message: 'এই তথ্য দেখার অনুমতি আপনার নেই' });
+        return res.status(403).json({ success: false, message: 'à¦à¦‡ à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¾à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à§‡à¦‡' });
       }
       const guardianDoc = await User.findById(user._id).select('guardianDetails').lean();
-      const isLinked = guardianDoc?.guardianDetails?.linkedStudents?.some(
-        (sid: any) => sid.toString() === requestedStudentId
+      const isLinked = guardianDoc?.guardianDetails?.linkedGravIds?.some(
+        (linkedGravId: string) => linkedGravId === requestedGravId
       );
       if (!isLinked) {
-        return res.status(403).json({ success: false, message: 'এই শিক্ষার্থীর তথ্য দেখার অনুমতি আপনার নেই' });
+        return res.status(403).json({ success: false, message: 'à¦à¦‡ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¾à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à§‡à¦‡' });
       }
-      studentId = requestedStudentId;
+      gravId = requestedGravId;
     }
 
-    const payments = await Payment.find({ studentId, status: 'completed' })
+    const payments = await Payment.find({ gravId, status: 'completed' })
       .populate('batchId', 'name')
       .populate('courseId', 'title')
       .populate('collectedBy', 'name')
@@ -969,7 +962,7 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
 
     // Calculate total paid & due for this student across enrolled courses
     const enrollments = await Enrollment.find({
-      studentId,
+      gravId,
       status: { $in: ['enrolled', 'completed'] },
     })
       .populate('courseId', 'courseFee regularPrice discountPrice')
@@ -1000,7 +993,7 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
     console.error('getMyPayments error:', error);
     return res.status(500).json({
       success: false,
-      message: 'পেমেন্ট হিস্ট্রি লোড করা যায়নি',
+      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¹à¦¿à¦¸à§à¦Ÿà§à¦°à¦¿ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿',
     });
   }
 };
@@ -1012,7 +1005,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
   try {
     const file = req.file;
     if (!file) {
-      return res.status(400).json({ success: false, message: 'কোনো ফাইল আপলোড করা হয়নি।' });
+      return res.status(400).json({ success: false, message: 'à¦•à§‹à¦¨à§‹ à¦«à¦¾à¦‡à¦² à¦†à¦ªà¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¹à§Ÿà¦¨à¦¿à¥¤' });
     }
 
     const allowedMimeTypes = [
@@ -1027,7 +1020,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
     if (!allowedMimeTypes.includes(file.mimetype)) {
       return res.status(400).json({
         success: false,
-        message: 'শুধুমাত্র ছবি (JPG, PNG, WebP) অথবা PDF/ডকুমেন্ট আপলোড করা যাবে।',
+        message: 'à¦¶à§à¦§à§à¦®à¦¾à¦¤à§à¦° à¦›à¦¬à¦¿ (JPG, PNG, WebP) à¦…à¦¥à¦¬à¦¾ PDF/à¦¡à¦•à§à¦®à§‡à¦¨à§à¦Ÿ à¦†à¦ªà¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à¦¬à§‡à¥¤',
       });
     }
 
@@ -1045,7 +1038,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
       const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
       driveFileId = driveRes.fileId;
     } else {
-      console.warn('⚠️ Google Drive OAuth not configured. Using placeholder.');
+      console.warn('âš ï¸ Google Drive OAuth not configured. Using placeholder.');
       driveFileId = `stub_drive_${Date.now()}`;
     }
 
@@ -1056,7 +1049,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
 
     return res.status(200).json({
       success: true,
-      message: 'পেমেন্ট স্লিপ সফলভাবে ড্রাইভে আপলোড হয়েছে!',
+      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à§à¦²à¦¿à¦ª à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¡à§à¦°à¦¾à¦‡à¦­à§‡ à¦†à¦ªà¦²à§‹à¦¡ à¦¹à§Ÿà§‡à¦›à§‡!',
       data: {
         fileUrl,
         driveFileId,
@@ -1067,7 +1060,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
     console.error('uploadPaymentDocument error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'স্লিপ আপলোড করতে সমস্যা হয়েছে।',
+      message: error?.message || 'à¦¸à§à¦²à¦¿à¦ª à¦†à¦ªà¦²à§‹à¦¡ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
     });
   }
 };
@@ -1082,15 +1075,15 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
     const adminUser = req.user;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'ভুল পেমেন্ট আইডি' });
+      return res.status(400).json({ success: false, message: 'à¦­à§à¦² à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦†à¦‡à¦¡à¦¿' });
     }
 
     const payment = await Payment.findById(id);
     if (!payment) {
-      return res.status(404).json({ success: false, message: 'লেনদেনটি পাওয়া যায়নি' });
+      return res.status(404).json({ success: false, message: 'à¦²à§‡à¦¨à¦¦à§‡à¦¨à¦Ÿà¦¿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
     }
 
-    const { studentId, batchId, amountPaid, receiptNo } = payment;
+    const { gravId, batchId, amountPaid, receiptNo } = payment;
 
     // Delete the payment document
     await Payment.findByIdAndDelete(id);
@@ -1101,13 +1094,13 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
       action: 'FINANCE_PAYMENT_DELETE',
       resourceType: 'Payment',
       resourceId: id,
-      metadata: { studentId, batchId, amountPaid, receiptNo },
+      metadata: { gravId, batchId, amountPaid, receiptNo },
     });
 
     // If linked to an enrollment, update enrollment's total paid and status
-    if (studentId && batchId) {
+    if (gravId && batchId) {
       const remainingPayments = await Payment.find({
-        studentId,
+        gravId,
         batchId,
         status: 'completed',
       });
@@ -1117,7 +1110,7 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
         0
       );
 
-      const enrollment = await Enrollment.findOne({ studentId, batchId });
+      const enrollment = await Enrollment.findOne({ gravId, batchId });
       if (enrollment) {
         enrollment.paymentFee = remainingTotalPaid;
         const targetFee = enrollment.batchFee || 0;
@@ -1135,13 +1128,13 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
 
     return res.status(200).json({
       success: true,
-      message: 'লেনদেনটি সফলভাবে মুছে ফেলা হয়েছে এবং বকেয়া হিসাব হালনাগাদ করা হয়েছে!',
+      message: 'à¦²à§‡à¦¨à¦¦à§‡à¦¨à¦Ÿà¦¿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦®à§à¦›à§‡ à¦«à§‡à¦²à¦¾ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¹à¦¿à¦¸à¦¾à¦¬ à¦¹à¦¾à¦²à¦¨à¦¾à¦—à¦¾à¦¦ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡!',
     });
   } catch (error: any) {
     console.error('deletePayment error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'লেনদেন মুছে ফেলতে ত্রুটি ঘটেছে',
+      message: error?.message || 'à¦²à§‡à¦¨à¦¦à§‡à¦¨ à¦®à§à¦›à§‡ à¦«à§‡à¦²à¦¤à§‡ à¦¤à§à¦°à§à¦Ÿà¦¿ à¦˜à¦Ÿà§‡à¦›à§‡',
     });
   }
 };
@@ -1149,28 +1142,28 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
 /**
  * Admin action to toggle or mark student's enrollment/payment as 'paid' (isManualPaid).
  * Rule 2:
- * "এডমিন চাইলে কোন স্টুডেন্টকে পেইড করে দিতে পারে। অর্থাৎ ধরো কোন কোর্সের প্রাইস ৫০০ টাকা কিন্তু স্টুডেন্ট দিল ২০০ টাকা তখন তো সিস্টেম অটো ডিটেক্ট করবে পার্সিয়াল। কিন্তু এডমিন চাইলে ম্যানুয়ালি সেটাকে পেইড করে দিতে পারে। যদি সেটাকে এডমিন পেইড করে দেয় তাহলে ওই বকেয়া বিলটা ফাইন্যান্সে মোট বকেয়ায় আর যোগ হবে না। কিন্তু তার মানে এই না যে তার টাকা ২০০ টাকা কি তুমি ৫০০ টাকা বানাই দিবা। ফাইন্যান্সে সবই ঠিক থাকবে তার রো-তে ২০০ পরিশোধ ও ৩০০ বকেয়া দেখাবে কিন্তু স্ট্যাটাস 'পরিশোধিত' (পেইড) হয়ে যাবে। মোট বকেয়ায় ওইটা আর কাউন্ট হবে না।"
+ * "à¦à¦¡à¦®à¦¿à¦¨ à¦šà¦¾à¦‡à¦²à§‡ à¦•à§‹à¦¨ à¦¸à§à¦Ÿà§à¦¡à§‡à¦¨à§à¦Ÿà¦•à§‡ à¦ªà§‡à¦‡à¦¡ à¦•à¦°à§‡ à¦¦à¦¿à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¥¤ à¦…à¦°à§à¦¥à¦¾à§Ž à¦§à¦°à§‹ à¦•à§‹à¦¨ à¦•à§‹à¦°à§à¦¸à§‡à¦° à¦ªà§à¦°à¦¾à¦‡à¦¸ à§«à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦•à¦¿à¦¨à§à¦¤à§ à¦¸à§à¦Ÿà§à¦¡à§‡à¦¨à§à¦Ÿ à¦¦à¦¿à¦² à§¨à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦¤à¦–à¦¨ à¦¤à§‹ à¦¸à¦¿à¦¸à§à¦Ÿà§‡à¦® à¦…à¦Ÿà§‹ à¦¡à¦¿à¦Ÿà§‡à¦•à§à¦Ÿ à¦•à¦°à¦¬à§‡ à¦ªà¦¾à¦°à§à¦¸à¦¿à§Ÿà¦¾à¦²à¥¤ à¦•à¦¿à¦¨à§à¦¤à§ à¦à¦¡à¦®à¦¿à¦¨ à¦šà¦¾à¦‡à¦²à§‡ à¦®à§à¦¯à¦¾à¦¨à§à§Ÿà¦¾à¦²à¦¿ à¦¸à§‡à¦Ÿà¦¾à¦•à§‡ à¦ªà§‡à¦‡à¦¡ à¦•à¦°à§‡ à¦¦à¦¿à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¥¤ à¦¯à¦¦à¦¿ à¦¸à§‡à¦Ÿà¦¾à¦•à§‡ à¦à¦¡à¦®à¦¿à¦¨ à¦ªà§‡à¦‡à¦¡ à¦•à¦°à§‡ à¦¦à§‡à§Ÿ à¦¤à¦¾à¦¹à¦²à§‡ à¦“à¦‡ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¬à¦¿à¦²à¦Ÿà¦¾ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸à§‡ à¦®à§‹à¦Ÿ à¦¬à¦•à§‡à§Ÿà¦¾à§Ÿ à¦†à¦° à¦¯à§‹à¦— à¦¹à¦¬à§‡ à¦¨à¦¾à¥¤ à¦•à¦¿à¦¨à§à¦¤à§ à¦¤à¦¾à¦° à¦®à¦¾à¦¨à§‡ à¦à¦‡ à¦¨à¦¾ à¦¯à§‡ à¦¤à¦¾à¦° à¦Ÿà¦¾à¦•à¦¾ à§¨à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦•à¦¿ à¦¤à§à¦®à¦¿ à§«à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦¬à¦¾à¦¨à¦¾à¦‡ à¦¦à¦¿à¦¬à¦¾à¥¤ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸à§‡ à¦¸à¦¬à¦‡ à¦ à¦¿à¦• à¦¥à¦¾à¦•à¦¬à§‡ à¦¤à¦¾à¦° à¦°à§‹-à¦¤à§‡ à§¨à§¦à§¦ à¦ªà¦°à¦¿à¦¶à§‹à¦§ à¦“ à§©à§¦à§¦ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¦à§‡à¦–à¦¾à¦¬à§‡ à¦•à¦¿à¦¨à§à¦¤à§ à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ 'à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤' (à¦ªà§‡à¦‡à¦¡) à¦¹à§Ÿà§‡ à¦¯à¦¾à¦¬à§‡à¥¤ à¦®à§‹à¦Ÿ à¦¬à¦•à§‡à§Ÿà¦¾à§Ÿ à¦“à¦‡à¦Ÿà¦¾ à¦†à¦° à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¹à¦¬à§‡ à¦¨à¦¾à¥¤"
  */
 export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
     }
 
-    const { studentId, batchId, enrollmentId, isManualPaid = true } = req.body;
+    const { gravId, batchId, enrollmentId, isManualPaid = true } = req.body;
 
     let enrollment = null;
     if (enrollmentId && mongoose.Types.ObjectId.isValid(enrollmentId)) {
       enrollment = await Enrollment.findById(enrollmentId);
-    } else if (studentId && batchId) {
-      enrollment = await Enrollment.findOne({ studentId, batchId });
+    } else if (gravId && batchId) {
+      enrollment = await Enrollment.findOne({ gravId, batchId });
     }
 
     if (!enrollment) {
       return res.status(404).json({
         success: false,
-        message: 'শিক্ষার্থীর এনরোলমেন্ট রেকর্ড পাওয়া যায়নি।',
+        message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦°à§‡à¦•à¦°à§à¦¡ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤',
       });
     }
 
@@ -1180,7 +1173,7 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     } else {
       // Re-evaluate based on actual payments
       const payments = await Payment.find({
-        studentId: enrollment.studentId,
+        gravId: enrollment.gravId,
         batchId: enrollment.batchId,
         status: 'completed',
       });
@@ -1199,7 +1192,7 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
 
     // Also sync existing payments isManualPaid flag
     await Payment.updateMany(
-      { studentId: enrollment.studentId, batchId: enrollment.batchId },
+      { gravId: enrollment.gravId, batchId: enrollment.batchId },
       { $set: { isManualPaid: Boolean(isManualPaid) } }
     );
 
@@ -1210,7 +1203,7 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
       resourceType: 'Enrollment',
       resourceId: enrollment._id.toString(),
       metadata: {
-        studentId: enrollment.studentId,
+        gravId: enrollment.gravId,
         batchId: enrollment.batchId,
         isManualPaid: enrollment.isManualPaid,
       },
@@ -1219,8 +1212,8 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     return res.status(200).json({
       success: true,
       message: isManualPaid
-        ? 'শিক্ষার্থীকে সফলভাবে পেইড (পরিশোধিত) হিসেবে চিহ্নিত করা হয়েছে। মোট বকেয়া থেকে এই বকেয়া বাদ দেওয়া হয়েছে।'
-        : 'পেইড স্ট্যাটাস সফলভাবে প্রত্যাহার করা হয়েছে।',
+        ? 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦•à§‡ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà§‡à¦‡à¦¡ (à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤) à¦¹à¦¿à¦¸à§‡à¦¬à§‡ à¦šà¦¿à¦¹à§à¦¨à¦¿à¦¤ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦®à§‹à¦Ÿ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¥à§‡à¦•à§‡ à¦à¦‡ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¬à¦¾à¦¦ à¦¦à§‡à¦“à§Ÿà¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤'
+        : 'à¦ªà§‡à¦‡à¦¡ à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà§à¦°à¦¤à§à¦¯à¦¾à¦¹à¦¾à¦° à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
       data: {
         isManualPaid: enrollment.isManualPaid,
         paymentStatus: enrollment.paymentStatus,
@@ -1230,23 +1223,23 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     console.error('toggleManualPaidStatus error:', error);
     return res.status(500).json({
       success: false,
-      message: 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+      message: 'à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤',
     });
   }
 };
 
 /**
- * Admin: Refund / Adjustment of Excess Payment (রিফান্ড বা অতিরিক্ত টাকা ফেরত)
+ * Admin: Refund / Adjustment of Excess Payment (à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦¬à¦¾ à¦…à¦¤à¦¿à¦°à¦¿à¦•à§à¦¤ à¦Ÿà¦¾à¦•à¦¾ à¦«à§‡à¦°à¦¤)
  */
 export const refundExcessPayment = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
+      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
     }
 
     const {
-      studentId,
+      gravId,
       batchId,
       refundAmount,
       paymentMethod = 'cash',
@@ -1259,13 +1252,13 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
     if (!numRefund || numRefund <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'রিফান্ডের পরিমাণ অবশ্যই ০ টাকার বেশি হতে হবে।',
+        message: 'à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡à§‡à¦° à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦…à¦¬à¦¶à§à¦¯à¦‡ à§¦ à¦Ÿà¦¾à¦•à¦¾à¦° à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦¹à¦¬à§‡à¥¤',
       });
     }
 
-    const student = await User.findById(studentId);
+    const student = await User.findOne({ gravId });
     if (!student) {
-      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
+      return res.status(404).json({ success: false, message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿' });
     }
 
     let batch = null;
@@ -1275,7 +1268,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
     if (batchId) {
       batch = await Batch.findById(batchId).populate('courseId', 'courseFee regularPrice discountPrice');
       if (batch) {
-        enrollment = await Enrollment.findOne({ studentId, batchId });
+        enrollment = await Enrollment.findOne({ gravId, batchId });
         const courseDoc = batch.courseId as any;
         const currentCoursePrice = courseDoc?.discountPrice ?? courseDoc?.courseFee ?? courseDoc?.regularPrice ?? 0;
         totalFee = enrollment?.batchFee || currentCoursePrice;
@@ -1284,7 +1277,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
 
     // Previous completed payments for this batch
     const pastPayments = await Payment.find({
-      studentId,
+      gravId,
       batchId,
       status: 'completed',
     });
@@ -1293,7 +1286,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
     if (numRefund > previousPaid) {
       return res.status(400).json({
         success: false,
-        message: `রিফান্ডের পরিমাণ শিক্ষার্থীর সর্বোচ্চ পরিশোধিত টাকার (৳${previousPaid}) চেয়ে বেশি হতে পারবে না।`,
+        message: `à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡à§‡à¦° à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¸à¦°à§à¦¬à§‹à¦šà§à¦š à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤ à¦Ÿà¦¾à¦•à¦¾à¦° (à§³${previousPaid}) à¦šà§‡à¦¯à¦¼à§‡ à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡ à¦¨à¦¾à¥¤`,
       });
     }
 
@@ -1304,7 +1297,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
 
     const refundPayment = await Payment.create({
       receiptNo,
-      studentId,
+      gravId,
       batchId: batch?._id,
       courseId: batch?.courseId,
       enrollmentId: enrollment?._id,
@@ -1315,7 +1308,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
       paymentType: 'refund',
       transactionId: transactionId.trim(),
       senderNumber: senderNumber.trim(),
-      notes: notes.trim() || 'অতিরিক্ত টাকা রিফান্ড / ফেরত প্রদান',
+      notes: notes.trim() || 'à¦…à¦¤à¦¿à¦°à¦¿à¦•à§à¦¤ à¦Ÿà¦¾à¦•à¦¾ à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ / à¦«à§‡à¦°à¦¤ à¦ªà§à¦°à¦¦à¦¾à¦¨',
       collectedBy: adminUser._id,
       paidAt: new Date(),
       status: 'completed',
@@ -1334,10 +1327,9 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
     }
 
     const populatedRefund = await Payment.findById(refundPayment._id)
-      .populate('studentId', 'name userId phone email avatarUrl studentDetails')
       .populate('batchId', 'name fee courseId')
       .populate('courseId', 'title')
-      .populate('collectedBy', 'name userId role');
+      .populate('collectedBy', 'name gravId role');
 
     await AuditLog.create({
       actorId: adminUser._id,
@@ -1346,7 +1338,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
       resourceType: 'Payment',
       resourceId: refundPayment._id.toString(),
       metadata: {
-        studentId,
+        gravId,
         batchId,
         refundAmount: numRefund,
         previousPaid,
@@ -1356,14 +1348,14 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
 
     return res.status(201).json({
       success: true,
-      message: `৳${numRefund.toLocaleString('bn-BD')} সফলভাবে রিফান্ড করা হয়েছে এবং ফাইন্যান্স আপডেট হয়েছে!`,
+      message: `à§³${numRefund.toLocaleString('bn-BD')} à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦¹à§Ÿà§‡à¦›à§‡!`,
       data: populatedRefund,
     });
   } catch (error: any) {
     console.error('refundExcessPayment error:', error);
     return res.status(500).json({
       success: false,
-      message: error.message || 'রিফান্ড প্রক্রিয়াকরণে সমস্যা হয়েছে।',
+      message: error.message || 'à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦ªà§à¦°à¦•à§à¦°à¦¿à§Ÿà¦¾à¦•à¦°à¦£à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
     });
   }
 };

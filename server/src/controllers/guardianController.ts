@@ -7,46 +7,48 @@ import { Payment } from '../models/Payment';
 
 /**
  * Guardian dashboard overview: for each linked student (ward), returns their
- * enrolled batches, recent exam results, and payment total — all authorization
- * is scoped to guardianDetails.linkedStudents, never arbitrary studentIds.
+ * enrolled batches, recent exam results, and payment total â€” all authorization
+ * is scoped to guardianDetails.linkedGravIds, never arbitrary gravIds.
  */
 export const getGuardianOverview = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = req.user;
     if (!user || user.role !== 'guardian') {
-      return res.status(403).json({ success: false, message: 'শুধুমাত্র অভিভাবকরা এই তথ্য দেখতে পারবেন' });
+      return res.status(403).json({ success: false, message: 'à¦¶à§à¦§à§à¦®à¦¾à¦¤à§à¦° à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦•à¦°à¦¾ à¦à¦‡ à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡à¦¨' });
     }
 
     const guardianDoc = await User.findById(user._id)
-      .populate('guardianDetails.linkedStudents', 'name userId avatarUrl phone studentDetails')
       .lean();
 
-    const linkedStudents = (guardianDoc?.guardianDetails?.linkedStudents || []) as any[];
+    const linkedGravIds = guardianDoc?.guardianDetails?.linkedGravIds || [];
 
-    if (linkedStudents.length === 0) {
-      return res.status(200).json({ success: true, data: { linkedStudents: [] } });
+    if (linkedGravIds.length === 0) {
+      return res.status(200).json({ success: true, data: { linkedGravIds: [] } });
     }
 
-    const studentIds = linkedStudents.map((s) => s._id);
+    const students = await User.find({ gravId: { $in: linkedGravIds }, role: 'student' })
+      .select('name gravId avatarUrl')
+      .lean();
+    const gravIds = linkedGravIds;
 
     const [enrollments, examAttempts, payments] = await Promise.all([
-      Enrollment.find({ studentId: { $in: studentIds }, status: { $in: ['enrolled', 'completed'] } })
+      Enrollment.find({ gravId: { $in: gravIds }, status: { $in: ['enrolled', 'completed'] } })
         .populate('batchId', 'name')
         .populate('courseId', 'title')
         .lean(),
-      ExamAttempt.find({ studentId: { $in: studentIds }, status: { $in: ['submitted', 'evaluated'] } })
+      ExamAttempt.find({ gravId: { $in: gravIds }, status: { $in: ['submitted', 'evaluated'] } })
         .populate('examId', 'title totalMarks passMarks')
         .sort({ submittedAt: -1 })
         .lean(),
-      Payment.find({ studentId: { $in: studentIds }, status: 'completed' }).lean(),
+      Payment.find({ gravId: { $in: gravIds }, status: 'completed' }).lean(),
     ]);
 
-    const data = linkedStudents.map((student) => {
-      const sId = student._id.toString();
+    const data = students.map((student) => {
+      const sId = student.gravId;
 
-      const studentEnrollments = enrollments.filter((e) => e.studentId.toString() === sId);
-      const studentAttempts = examAttempts.filter((a) => a.studentId.toString() === sId);
-      const studentPayments = payments.filter((p) => p.studentId.toString() === sId);
+      const studentEnrollments = enrollments.filter((e) => e.gravId.toString() === sId);
+      const studentAttempts = examAttempts.filter((a) => a.gravId.toString() === sId);
+      const studentPayments = payments.filter((p) => p.gravId.toString() === sId);
 
       const evaluatedAttempts = studentAttempts.filter((a) => a.isEvaluated);
       const averageScorePercent =
@@ -65,7 +67,7 @@ export const getGuardianOverview = async (req: AuthenticatedRequest, res: Respon
       return {
         _id: student._id,
         name: student.name,
-        userId: student.userId,
+        gravId: student.gravId,
         avatarUrl: student.avatarUrl,
         batches: studentEnrollments.map((e) => ({
           batchId: (e.batchId as any)?._id,
@@ -91,9 +93,9 @@ export const getGuardianOverview = async (req: AuthenticatedRequest, res: Respon
       };
     });
 
-    return res.status(200).json({ success: true, data: { linkedStudents: data } });
+    return res.status(200).json({ success: true, data: { linkedGravIds: data } });
   } catch (error: any) {
     console.error('getGuardianOverview error:', error);
-    return res.status(500).json({ success: false, message: 'ড্যাশবোর্ড তথ্য লোড করতে ব্যর্থ' });
+    return res.status(500).json({ success: false, message: 'à¦¡à§à¦¯à¦¾à¦¶à¦¬à§‹à¦°à§à¦¡ à¦¤à¦¥à§à¦¯ à¦²à§‹à¦¡ à¦•à¦°à¦¤à§‡ à¦¬à§à¦¯à¦°à§à¦¥' });
   }
 };

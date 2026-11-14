@@ -34,10 +34,10 @@ export interface PaymentReceiptData {
   notes?: string;
   paidAt?: string;
   createdAt?: string;
-  studentId: {
+  gravId: {
     _id?: string;
     name: string;
-    userId: string;
+    gravId: string;
     phone?: string;
     email?: string;
     studentDetails?: {
@@ -59,7 +59,7 @@ export interface PaymentReceiptData {
   };
   collectedBy?: {
     name: string;
-    userId?: string;
+    gravId?: string;
     role?: string;
   };
   isManualPaid?: boolean;
@@ -100,7 +100,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   const handlePrint = () => {
     const originalTitle = document.title;
     // Set file name for browser's "Save as PDF"
-    const studentName = data.studentId?.name ? `-${data.studentId.name.replace(/[^a-zA-Z0-9\u0980-\u09FF]/g, '_')}` : '';
+    const studentName = data.gravId?.name ? `-${data.gravId.name.replace(/[^a-zA-Z0-9\u0980-\u09FF]/g, '_')}` : '';
     document.title = `${data.receiptNo || 'Money-Receipt'}${studentName}`;
 
     window.print();
@@ -307,15 +307,15 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                 শিক্ষার্থীর তথ্য (Student Info)
               </span>
               <h3 className="text-base font-extrabold text-slate-900 dark:text-white print:text-black mt-1">
-                {data.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
+                {data.gravId?.name || 'অজ্ঞাত শিক্ষার্থী'}
               </h3>
               <p className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400 print:text-black mt-0.5">
-                Grav ID: {data.studentId?.userId || 'N/A'}
+                Grav ID: {data.gravId?.gravId || 'N/A'}
               </p>
-              {data.studentId?.phone && (
+              {data.gravId?.phone && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 print:text-slate-700 mt-1 flex items-center gap-1">
                   <Phone className="w-3 h-3" />
-                  {data.studentId.phone}
+                  {data.gravId.phone}
                 </p>
               )}
             </div>
@@ -332,9 +332,9 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                   কোর্স: {data.courseId.title}
                 </p>
               )}
-              {data.studentId?.studentDetails?.schoolOrCollege && (
+              {data.gravId?.studentDetails?.schoolOrCollege && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 print:text-slate-600 mt-1">
-                  প্রতিষ্ঠান: {data.studentId.studentDetails.schoolOrCollege}
+                  প্রতিষ্ঠান: {data.gravId.studentDetails.schoolOrCollege}
                 </p>
               )}
             </div>

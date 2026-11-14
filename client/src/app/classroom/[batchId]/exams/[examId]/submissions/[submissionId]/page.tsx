@@ -12,7 +12,7 @@ import { Check, ExternalLink, FileText, Save, AlertCircle, PenTool, Eye } from '
 
 interface SubmissionItem {
   _id: string;
-  studentId: { _id: string; name: string; email: string; avatarUrl?: string; studentId?: string };
+  gravId: { _id: string; name: string; email: string; avatarUrl?: string; gravId?: string };
   submittedAt: string;
   cqAnswers?: { questionIndex: number; answerText: string }[];
   studentDocumentUrl?: string;
@@ -92,7 +92,7 @@ export default function SubmissionEvaluationPage({
 
       if (annotatedBlob) {
         const formData = new FormData();
-        formData.append('file', annotatedBlob, `exam_checked_${submission.studentId?.name || 'student'}_${Date.now()}.png`);
+        formData.append('file', annotatedBlob, `exam_checked_${submission.gravId?.name || 'student'}_${Date.now()}.png`);
         const uploadRes = await api.post('/documents/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -134,7 +134,7 @@ export default function SubmissionEvaluationPage({
 
     try {
       const formData = new FormData();
-      formData.append('file', blob, `exam_checked_${submission.studentId?.name || 'student'}_${Date.now()}.png`);
+      formData.append('file', blob, `exam_checked_${submission.gravId?.name || 'student'}_${Date.now()}.png`);
       const uploadRes = await api.post('/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -177,9 +177,9 @@ export default function SubmissionEvaluationPage({
       <div className="w-[98%] mx-auto mt-4 rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <UserAvatar name={submission.studentId.name} avatarUrl={submission.studentId.avatarUrl} size="lg" className="border-2 border-white/30" />
+            <UserAvatar name={submission.gravId.name} avatarUrl={submission.gravId.avatarUrl} size="lg" className="border-2 border-white/30" />
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">{submission.studentId.name}</h1>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">{submission.gravId.name}</h1>
               <p className="text-xs text-white/70 mt-1">{exam.title} · জমা: {formatBDTime(submission.submittedAt)}</p>
             </div>
             <div className="sm:ml-auto text-left sm:text-right">

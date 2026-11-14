@@ -99,8 +99,8 @@ export default function TakeExamPage({
   const questionsVersionRef = useRef<number>(1);
 
   // Storage key for local draft persistence
-  const studentIdentifier = user?.id || user?.userId || 'guest';
-  const storageKey = `grav_exam_draft_${examId}_${studentIdentifier}`;
+  const gravIdentifier = user?.id || user?.gravId || 'guest';
+  const storageKey = `grav_exam_draft_${examId}_${gravIdentifier}`;
 
   // Track network online / offline
   useEffect(() => {

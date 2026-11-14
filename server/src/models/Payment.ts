@@ -7,7 +7,7 @@ export type PaymentStatus = 'completed' | 'pending' | 'refunded';
 export interface IPayment extends Document {
   _id: mongoose.Types.ObjectId;
   receiptNo: string; // e.g. "REC-261025-001"
-  studentId: mongoose.Types.ObjectId;
+  gravId: string;
   enrollmentId?: mongoose.Types.ObjectId;
   batchId?: mongoose.Types.ObjectId;
   courseId?: mongoose.Types.ObjectId;
@@ -36,9 +36,8 @@ const PaymentSchema = new Schema<IPayment>(
       unique: true,
       index: true,
     },
-    studentId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    gravId: {
+      type: String,
       required: true,
       index: true,
     },
@@ -121,7 +120,7 @@ const PaymentSchema = new Schema<IPayment>(
   { timestamps: true }
 );
 
-PaymentSchema.index({ studentId: 1, paidAt: -1 });
+PaymentSchema.index({ gravId: 1, paidAt: -1 });
 PaymentSchema.index({ batchId: 1, paidAt: -1 });
 
 export const Payment = mongoose.model<IPayment>('Payment', PaymentSchema);

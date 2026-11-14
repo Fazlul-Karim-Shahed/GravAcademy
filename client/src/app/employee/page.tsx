@@ -16,7 +16,7 @@ import {
 
 interface EnrollmentRow {
   _id: string;
-  studentId?: { name?: string };
+  gravId?: { name?: string };
   batchId?: { name?: string };
   paymentStatus?: string;
   status?: string;
@@ -159,7 +159,7 @@ export default function EmployeePanelPage() {
               <tbody className="divide-y divide-slate-800 text-slate-300">
                 {pendingEnrollments.map((e) => (
                   <tr key={e._id}>
-                    <td className="py-3 px-4 font-semibold text-white">{e.studentId?.name || '—'}</td>
+                    <td className="py-3 px-4 font-semibold text-white">{e.gravId?.name || '—'}</td>
                     <td className="py-3 px-4">{e.batchId?.name || '—'}</td>
                     <td className="py-3 px-4">
                       <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold">

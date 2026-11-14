@@ -5,8 +5,6 @@ export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   /** Public Grav ID, e.g. 261024001 (DDMMYY + 3 digit serial). */
   gravId: string;
-  /** @deprecated Compatibility alias for older application code; not stored in MongoDB. */
-  userId: string;
   name: string;
   email?: string;
   passwordHash: string;
@@ -35,7 +33,7 @@ export interface IUser extends Document {
     guardianPhone?: string;
   };
   guardianDetails?: {
-    linkedStudents: mongoose.Types.ObjectId[];
+    linkedGravIds: string[];
   };
   employeeDetails?: {
     department: string;
@@ -120,7 +118,7 @@ const UserSchema = new Schema<IUser>(
       guardianPhone: { type: String, trim: true },
     },
     guardianDetails: {
-      linkedStudents: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+      linkedGravIds: [{ type: String, trim: true }],
     },
     employeeDetails: {
       department: { type: String },
@@ -132,40 +130,6 @@ const UserSchema = new Schema<IUser>(
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
-);
-
-// Keep old server call-sites readable during the migration while MongoDB stores
-// only the canonical `gravId` field. Queries and writes using the legacy key
-// are translated before they reach MongoDB.
-UserSchema.virtual('userId')
-  .get(function () {
-    return this.gravId;
-  })
-  .set(function (value: string) {
-    this.gravId = value;
-  });
-
-const rewriteLegacyId = (value: any): any => {
-  if (Array.isArray(value)) return value.map(rewriteLegacyId);
-  if (!value || typeof value !== 'object') return value;
-  if (value instanceof Date || value instanceof mongoose.Types.ObjectId || value._bsontype) return value;
-  return Object.fromEntries(
-    Object.entries(value).map(([key, child]) => [
-      key === 'userId' ? 'gravId' : key,
-      rewriteLegacyId(child),
-    ]),
-  );
-};
-
-UserSchema.pre(
-  ['find', 'findOne', 'findOneAndUpdate', 'updateOne', 'updateMany', 'deleteOne', 'countDocuments'],
-  function () {
-    this.setQuery(rewriteLegacyId(this.getQuery()));
-    const update = this.getUpdate();
-    if (update) this.setUpdate(rewriteLegacyId(update));
-    const projection = this.projection();
-    if (projection) this.select(rewriteLegacyId(projection));
-  },
 );
 
 // Compound indexes for user search and queries

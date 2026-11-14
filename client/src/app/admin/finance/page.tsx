@@ -60,7 +60,7 @@ interface FinancialStats {
 interface StudentOption {
   _id: string;
   name: string;
-  userId: string;
+  gravId: string;
   phone?: string;
 }
 
@@ -71,7 +71,7 @@ interface BatchOption {
 
 export interface GroupedStudentBatchPayment {
   key: string;
-  studentId: PaymentReceiptData['studentId'];
+  gravId: PaymentReceiptData['gravId'];
   batchId?: PaymentReceiptData['batchId'];
   courseId?: PaymentReceiptData['courseId'];
   totalAmountPaid: number;
@@ -100,15 +100,15 @@ export default function AdminFinancePage() {
 
   // Helper to fetch complete payment history for a student and batch
   const handleOpenReceiptWithHistory = async (group: GroupedStudentBatchPayment) => {
-    const studentId = group.studentId?._id || (group.studentId as any);
+    const gravId = group.gravId?._id || (group.gravId as any);
     const batchId = group.batchId?._id || (group.batchId as any);
 
     setActiveReceipt(group.latestPayment);
     setActiveReceiptPayments(group.payments);
 
-    if (studentId && batchId && batchId !== 'no_batch') {
+    if (gravId && batchId && batchId !== 'no_batch') {
       try {
-        const res = await api.get(`/finance/student-batch-payments?studentId=${studentId}&batchId=${batchId}`);
+        const res = await api.get(`/finance/student-batch-payments?gravId=${gravId}&batchId=${batchId}`);
         if (res.data?.success && res.data.data?.length > 0) {
           setActiveReceiptPayments(res.data.data);
         }
@@ -121,13 +121,13 @@ export default function AdminFinancePage() {
   const handleOpenDetailsWithHistory = async (group: GroupedStudentBatchPayment) => {
     setActiveDetailsGroup(group);
 
-    const studentId = group.studentId?._id || (group.studentId as any);
+    const gravId = group.gravId?._id || (group.gravId as any);
     const batchId = group.batchId?._id || (group.batchId as any);
 
-    if (studentId && batchId && batchId !== 'no_batch') {
+    if (gravId && batchId && batchId !== 'no_batch') {
       setLoadingHistoryKey(group.key);
       try {
-        const res = await api.get(`/finance/student-batch-payments?studentId=${studentId}&batchId=${batchId}`);
+        const res = await api.get(`/finance/student-batch-payments?gravId=${gravId}&batchId=${batchId}`);
         if (res.data?.success && res.data.data?.length > 0) {
           const fullPayments: PaymentReceiptData[] = res.data.data;
           const totalPaid = fullPayments.reduce((sum, p) => sum + (p.amountPaid || 0), 0);
@@ -157,14 +157,14 @@ export default function AdminFinancePage() {
     const map = new Map<string, GroupedStudentBatchPayment>();
 
     for (const p of payments) {
-      const studentKey = p.studentId?._id || p.studentId?.userId || (p.studentId as any) || 'unknown';
+      const studentKey = p.gravId?._id || p.gravId?.gravId || (p.gravId as any) || 'unknown';
       const batchKey = p.batchId?._id || (p.batchId as any) || 'no_batch';
       const key = `${studentKey}_${batchKey}`;
 
       if (!map.has(key)) {
         map.set(key, {
           key,
-          studentId: p.studentId,
+          gravId: p.gravId,
           batchId: p.batchId,
           courseId: p.courseId,
           totalAmountPaid: p.amountPaid || 0,
@@ -302,24 +302,24 @@ export default function AdminFinancePage() {
   const [togglingPaidKey, setTogglingPaidKey] = useState<string | null>(null);
 
   const handleToggleManualPaid = async (group: GroupedStudentBatchPayment) => {
-    const studentId = group.studentId?._id || (group.studentId as any);
+    const gravId = group.gravId?._id || (group.gravId as any);
     const batchId = group.batchId?._id || (group.batchId as any);
     const currentlyManualPaid = Boolean(group.latestPayment.isManualPaid);
     const willBePaid = !currentlyManualPaid;
 
     const confirmMsg = willBePaid
-      ? `আপনি কি "${group.studentId?.name}" এর এই কোর্সের ফি ম্যানুয়ালি "পরিশোধিত" (Paid) করতে চান?\n\n• পরিশোধিত করলে মোট বকেয়ার (Due) হিসেব থেকে এই বকেয়াটি বাদ হয়ে যাবে।\n• তবে শিক্ষার্থীর রো-তে পরিশোধিত ও বকেয়ার অংক যথারীতি প্রদর্শিত থাকবে।`
-      : `আপনি কি "${group.studentId?.name}" এর ম্যানুয়াল পেইড স্ট্যাটাস প্রত্যাহার করতে চান?\n\n• এর ফলে বকেয়া থাকলে তা পুনরায় সিস্টেমের মোট বকেয়াতে যোগ হবে।`;
+      ? `আপনি কি "${group.gravId?.name}" এর এই কোর্সের ফি ম্যানুয়ালি "পরিশোধিত" (Paid) করতে চান?\n\n• পরিশোধিত করলে মোট বকেয়ার (Due) হিসেব থেকে এই বকেয়াটি বাদ হয়ে যাবে।\n• তবে শিক্ষার্থীর রো-তে পরিশোধিত ও বকেয়ার অংক যথারীতি প্রদর্শিত থাকবে।`
+      : `আপনি কি "${group.gravId?.name}" এর ম্যানুয়াল পেইড স্ট্যাটাস প্রত্যাহার করতে চান?\n\n• এর ফলে বকেয়া থাকলে তা পুনরায় সিস্টেমের মোট বকেয়াতে যোগ হবে।`;
 
     setConfirmDialog({
       message: confirmMsg,
-      onConfirm: () => executeToggleManualPaid(group, studentId, batchId, willBePaid),
+      onConfirm: () => executeToggleManualPaid(group, gravId, batchId, willBePaid),
     });
   };
 
   const executeToggleManualPaid = async (
     group: GroupedStudentBatchPayment,
-    studentId: string,
+    gravId: string,
     batchId: string,
     willBePaid: boolean
   ) => {
@@ -327,7 +327,7 @@ export default function AdminFinancePage() {
     setTogglingPaidKey(group.key);
     try {
       const res = await api.post('/finance/toggle-paid', {
-        studentId,
+        gravId,
         batchId,
         isManualPaid: willBePaid,
       });
@@ -371,11 +371,11 @@ export default function AdminFinancePage() {
 
     setRefundSubmitting(true);
     try {
-      const studentId = refundTargetGroup.studentId?._id || (refundTargetGroup.studentId as any);
+      const gravId = refundTargetGroup.gravId?._id || (refundTargetGroup.gravId as any);
       const batchId = refundTargetGroup.batchId?._id || (refundTargetGroup.batchId as any);
 
       const res = await api.post('/finance/refund-payment', {
-        studentId,
+        gravId,
         batchId,
         refundAmount: numRefund,
         paymentMethod: refundMethod,
@@ -574,7 +574,7 @@ export default function AdminFinancePage() {
         ? await uploadSelectedCollectDoc()
         : collectDocUrl.trim();
       const payload = {
-        studentId: selectedStudent._id,
+        gravId: selectedStudent.gravId,
         batchId: collectBatchId || undefined,
         amountPaid: numAmount,
         paymentMethod: collectMethod,
@@ -617,7 +617,7 @@ export default function AdminFinancePage() {
     ? students.filter(
         (s) =>
           s.name?.toLowerCase().includes(studentSearch.toLowerCase()) ||
-          s.userId?.toLowerCase().includes(studentSearch.toLowerCase()) ||
+          s.gravId?.toLowerCase().includes(studentSearch.toLowerCase()) ||
           (s.phone && s.phone.includes(studentSearch))
       )
     : students.slice(0, 8);
@@ -1101,8 +1101,8 @@ export default function AdminFinancePage() {
 
                     <div className="bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl text-xs space-y-1">
                       <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between">
-                        <span>{group.studentId?.name || 'অজ্ঞাত'}</span>
-                        <span className="font-mono text-[10px] text-slate-400">ID: #{group.studentId?.userId || '—'}</span>
+                        <span>{group.gravId?.name || 'অজ্ঞাত'}</span>
+                        <span className="font-mono text-[10px] text-slate-400">ID: #{group.gravId?.gravId || '—'}</span>
                       </div>
                       <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
                         <span>{group.batchId?.name || '—'}</span>
@@ -1114,12 +1114,12 @@ export default function AdminFinancePage() {
                       {group.totalDue > 0 && (
                         <button
                           onClick={() => {
-                            if (group.studentId) {
+                            if (group.gravId) {
                               setSelectedStudent({
-                                _id: group.studentId._id || (group.studentId as any),
-                                name: group.studentId.name,
-                                userId: group.studentId.userId,
-                                phone: group.studentId.phone,
+                                _id: group.gravId._id || (group.gravId as any),
+                                name: group.gravId.name,
+                                gravId: group.gravId.gravId,
+                                phone: group.gravId.phone,
                               });
                             }
                             if (group.batchId) {
@@ -1239,11 +1239,11 @@ export default function AdminFinancePage() {
                         {/* Student (Name and ID only) */}
                         <td className="py-4 px-6">
                           <div className="font-bold text-slate-900 dark:text-white">
-                            {group.studentId?.name || 'অজ্ঞাত'}
+                            {group.gravId?.name || 'অজ্ঞাত'}
                           </div>
                           <div className="mt-0.5 text-xs text-slate-400">
                             <span className="font-mono text-slate-500 dark:text-slate-300">
-                              #{group.studentId?.userId || 'N/A'}
+                              #{group.gravId?.gravId || 'N/A'}
                             </span>
                           </div>
                         </td>
@@ -1316,12 +1316,12 @@ export default function AdminFinancePage() {
                           {group.totalDue > 0 ? (
                             <button
                               onClick={() => {
-                                if (group.studentId) {
+                                if (group.gravId) {
                                   setSelectedStudent({
-                                    _id: group.studentId._id || (group.studentId as any),
-                                    name: group.studentId.name,
-                                    userId: group.studentId.userId,
-                                    phone: group.studentId.phone,
+                                    _id: group.gravId._id || (group.gravId as any),
+                                    name: group.gravId.name,
+                                    gravId: group.gravId.gravId,
+                                    phone: group.gravId.phone,
                                   });
                                 }
                                 if (group.batchId) {
@@ -1449,7 +1449,7 @@ export default function AdminFinancePage() {
                         {selectedStudent.name}
                       </span>
                       <span className="font-mono text-slate-500 dark:text-slate-400 ml-2">
-                        #{selectedStudent.userId}
+                        #{selectedStudent.gravId}
                       </span>
                     </div>
                     <button
@@ -1484,7 +1484,7 @@ export default function AdminFinancePage() {
                             <span className="font-bold text-slate-900 dark:text-white">
                               {s.name}
                             </span>
-                            <span className="font-mono text-slate-400">#{s.userId}</span>
+                            <span className="font-mono text-slate-400">#{s.gravId}</span>
                           </div>
                         ))
                       )}
@@ -1505,9 +1505,9 @@ export default function AdminFinancePage() {
                     setCollectBatchId(bId);
                     if (selectedStudent && bId) {
                       const matched = groupedPayments.find((g) => {
-                        const sId = g.studentId?._id || (g.studentId as any);
+                        const sId = g.gravId?.toString();
                         const batId = g.batchId?._id || (g.batchId as any);
-                        return sId === selectedStudent._id && batId === bId;
+                        return sId === selectedStudent.gravId && batId === bId;
                       });
                       if (matched && matched.totalDue > 0) {
                         setCollectAmount(matched.totalDue);
@@ -1528,9 +1528,9 @@ export default function AdminFinancePage() {
               {/* Student Financial Preview (If selected) */}
               {selectedStudent && (() => {
                 const matchedGroup = groupedPayments.find((g) => {
-                  const sId = g.studentId?._id || (g.studentId as any);
+                  const sId = g.gravId?.toString();
                   const batId = g.batchId?._id || (g.batchId as any);
-                  return sId === selectedStudent._id && (!collectBatchId || batId === collectBatchId);
+                  return sId === selectedStudent.gravId && (!collectBatchId || batId === collectBatchId);
                 });
 
                 if (!matchedGroup) return null;
@@ -1773,10 +1773,10 @@ export default function AdminFinancePage() {
               <div className="flex justify-between items-center">
                 <div>
                   <span className="font-extrabold text-amber-900 dark:text-amber-200 block text-sm">
-                    {refundTargetGroup.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
+                    {refundTargetGroup.gravId?.name || 'অজ্ঞাত শিক্ষার্থী'}
                   </span>
                   <span className="font-mono text-slate-500 dark:text-slate-400 text-[11px]">
-                    #{refundTargetGroup.studentId?.userId || 'N/A'} • {refundTargetGroup.batchId?.name || 'ব্যাচ'}
+                    #{refundTargetGroup.gravId?.gravId || 'N/A'} • {refundTargetGroup.batchId?.name || 'ব্যাচ'}
                   </span>
                 </div>
                 <div className="text-right">
@@ -1962,10 +1962,10 @@ export default function AdminFinancePage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                      {activeDetailsGroup.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
+                      {activeDetailsGroup.gravId?.name || 'অজ্ঞাত শিক্ষার্থী'}
                     </h4>
                     <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
-                      Grav ID: #{activeDetailsGroup.studentId?.userId || 'N/A'}
+                      Grav ID: #{activeDetailsGroup.gravId?.gravId || 'N/A'}
                     </span>
                   </div>
                   <div className="text-right">
@@ -1984,28 +1984,28 @@ export default function AdminFinancePage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-xs">
-                  {activeDetailsGroup.studentId?.phone && (
+                  {activeDetailsGroup.gravId?.phone && (
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                       <Phone className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{activeDetailsGroup.studentId.phone}</span>
+                      <span>{activeDetailsGroup.gravId.phone}</span>
                     </div>
                   )}
-                  {activeDetailsGroup.studentId?.email && (
+                  {activeDetailsGroup.gravId?.email && (
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                       <Mail className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{activeDetailsGroup.studentId.email}</span>
+                      <span>{activeDetailsGroup.gravId.email}</span>
                     </div>
                   )}
-                  {activeDetailsGroup.studentId?.studentDetails?.schoolOrCollege && (
+                  {activeDetailsGroup.gravId?.studentDetails?.schoolOrCollege && (
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                       <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                      <span>প্রতিষ্ঠান: {activeDetailsGroup.studentId.studentDetails.schoolOrCollege}</span>
+                      <span>প্রতিষ্ঠান: {activeDetailsGroup.gravId.studentDetails.schoolOrCollege}</span>
                     </div>
                   )}
-                  {activeDetailsGroup.studentId?.studentDetails?.gradeLevel && (
+                  {activeDetailsGroup.gravId?.studentDetails?.gradeLevel && (
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                       <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
-                      <span>শ্রেণি: {activeDetailsGroup.studentId.studentDetails.gradeLevel}</span>
+                      <span>শ্রেণি: {activeDetailsGroup.gravId.studentDetails.gradeLevel}</span>
                     </div>
                   )}
                 </div>
@@ -2221,7 +2221,7 @@ export default function AdminFinancePage() {
             {/* Modal Footer */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 flex items-center justify-between">
               <span className="text-xs text-slate-400">
-                Grav ID: #{activeDetailsGroup.studentId?.userId || 'N/A'}
+                Grav ID: #{activeDetailsGroup.gravId?.gravId || 'N/A'}
               </span>
               <button
                 type="button"
