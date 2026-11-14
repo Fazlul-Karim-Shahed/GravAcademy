@@ -310,7 +310,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                 {data.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
               </h3>
               <p className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400 print:text-black mt-0.5">
-                স্টুডেন্ট আইডি: {data.studentId?.userId || 'N/A'}
+                Grav ID: {data.studentId?.userId || 'N/A'}
               </p>
               {data.studentId?.phone && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 print:text-slate-700 mt-1 flex items-center gap-1">

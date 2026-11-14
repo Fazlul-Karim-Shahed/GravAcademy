@@ -1965,7 +1965,7 @@ export default function AdminFinancePage() {
                       {activeDetailsGroup.studentId?.name || 'অজ্ঞাত শিক্ষার্থী'}
                     </h4>
                     <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
-                      আইডি: #{activeDetailsGroup.studentId?.userId || 'N/A'}
+                      Grav ID: #{activeDetailsGroup.studentId?.userId || 'N/A'}
                     </span>
                   </div>
                   <div className="text-right">
@@ -2221,7 +2221,7 @@ export default function AdminFinancePage() {
             {/* Modal Footer */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 flex items-center justify-between">
               <span className="text-xs text-slate-400">
-                শিক্ষার্থী আইডি: #{activeDetailsGroup.studentId?.userId || 'N/A'}
+                Grav ID: #{activeDetailsGroup.studentId?.userId || 'N/A'}
               </span>
               <button
                 type="button"

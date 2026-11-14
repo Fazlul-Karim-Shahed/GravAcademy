@@ -980,7 +980,7 @@ export default function BatchClassroomPage({
                 <span className="font-bold text-slate-900 dark:text-white">{studentToRemove.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">আইডি:</span>
+                <span className="text-slate-500">Grav ID:</span>
                 <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToRemove.userId || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
@@ -1049,7 +1049,7 @@ export default function BatchClassroomPage({
                 <span className="font-bold text-slate-900 dark:text-white">{studentToShift.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">আইডি:</span>
+                <span className="text-slate-500">Grav ID:</span>
                 <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToShift.userId || 'N/A'}</span>
               </div>
               <div className="flex justify-between">

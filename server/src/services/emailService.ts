@@ -144,7 +144,7 @@ export const sendEnrollmentApprovalEmail = async ({
   const credentials = existingAccount
     ? ['আপনার আগের account দিয়েই login করুন।']
     : [
-        'User ID: ' + userId,
+        'Grav ID: ' + userId,
         'Password: ' + (password || ''),
         '',
         'প্রথম login-এর পর password পরিবর্তন করে নিন।',

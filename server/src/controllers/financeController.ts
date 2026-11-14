@@ -37,7 +37,7 @@ export const generateReceiptNumber = async (): Promise<string> => {
 };
 
 export const collectPaymentSchema = z.object({
-  studentId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল শিক্ষার্থী আইডি'),
+  studentId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল শিক্ষার্থী রেকর্ড'),
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল ব্যাচ আইডি').optional(),
   amountPaid: z.number().min(0, 'টাকার পরিমাণ ০ বা তার বেশি হতে হবে'),
   paymentMethod: z.enum(['cash', 'bkash', 'nagad', 'rocket', 'bank_transfer', 'other']).default('cash'),
@@ -825,7 +825,7 @@ export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Re
     const { studentId, batchId } = req.query;
 
     if (!studentId) {
-      return res.status(400).json({ success: false, message: 'শিক্ষার্থী আইডি আবশ্যক' });
+      return res.status(400).json({ success: false, message: 'শিক্ষার্থী নির্বাচন করা আবশ্যক' });
     }
 
     const query: any = {

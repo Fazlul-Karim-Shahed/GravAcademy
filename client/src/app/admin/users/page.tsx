@@ -324,7 +324,7 @@ export default function AdminUsersPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder="নাম বা ইউজার আইডি লিখে খুঁজুন..."
+                  placeholder="নাম বা Grav ID লিখে খুঁজুন..."
                   className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 w-60 sm:w-72 focus:outline-none focus:border-blue-500"
                 />
               </div>
@@ -449,7 +449,7 @@ export default function AdminUsersPage() {
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-400 font-bold uppercase text-[11px] tracking-wider">
                   <th className="py-3.5 px-4 sm:px-6">ইউজার</th>
-                  <th className="py-3.5 px-4">ইউজার আইডি (User ID)</th>
+                  <th className="py-3.5 px-4">Grav ID</th>
                   <th className="py-3.5 px-4">যোগাযোগ (Email / Phone)</th>
                   <th className="py-3.5 px-3">রোল (Role)</th>
                   <th className="py-3.5 px-3">স্ট্যাটাস</th>
@@ -489,7 +489,7 @@ export default function AdminUsersPage() {
                         </div>
                       </td>
 
-                      {/* User ID */}
+                      {/* Grav ID */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span className="font-mono font-bold text-xs px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
                           {u.userId || '—'}

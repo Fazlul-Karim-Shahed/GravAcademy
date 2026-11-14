@@ -517,7 +517,7 @@ export const getMyBatches = async (req: AuthenticatedRequest, res: Response) => 
 
 /**
  * Admin Manual Admission: Admit/Enroll a student into a batch.
- * If new student: generates unique User ID (YYMMDD###) and sets password equal to User ID!
+ * If new student: generates unique Grav ID (YYMMDD###) and sets password equal to Grav ID!
  */
 export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -619,7 +619,7 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       if (existingEnrollment.status === 'enrolled' || existingEnrollment.status === 'completed') {
         return res.status(400).json({
           success: false,
-          message: `শিক্ষার্থী (${studentDoc.name} - আইডি: ${studentDoc.userId}) ইতিমধ্যে এই ব্যাচে ভর্তি আছেন।`,
+          message: `শিক্ষার্থী (${studentDoc.name} - Grav ID: ${studentDoc.userId}) ইতিমধ্যে এই ব্যাচে ভর্তি আছেন।`,
           student: {
             _id: studentDoc._id,
             name: studentDoc.name,

@@ -403,11 +403,11 @@ export const Navbar: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Compact User ID strip */}
+                    {/* Compact Grav ID strip */}
                     {user.userId && (
                       <div className="mt-3 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-800 flex items-center justify-between text-xs">
                         <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                          ইউজার আইডি
+                          Grav ID
                         </span>
                         <span className="font-mono font-black text-xs text-blue-600 dark:text-blue-400 tracking-wide select-all">
                           {user.userId}

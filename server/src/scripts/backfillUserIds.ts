@@ -21,7 +21,7 @@ const backfillUserIds = async () => {
       $or: [{ userId: { $exists: false } }, { userId: null }, { userId: '' }],
     }).sort({ createdAt: 1 });
 
-    console.log(`Found ${usersWithoutId.length} users needing User ID.`);
+    console.log(`Found ${usersWithoutId.length} users needing Grav ID.`);
 
     // Group assignment by creation date so serial starts from 001 for each date
     const dateGroups: { [key: string]: typeof usersWithoutId } = {};
@@ -63,7 +63,7 @@ const backfillUserIds = async () => {
       }
     }
 
-    console.log(`🎉 Successfully assigned User IDs to ${updatedCount} users!`);
+    console.log(`🎉 Successfully assigned Grav IDs to ${updatedCount} users!`);
     process.exit(0);
   } catch (err) {
     console.error('Error during backfill:', err);

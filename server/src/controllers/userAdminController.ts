@@ -454,7 +454,7 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
 
     const validStudents = await User.find({ _id: { $in: studentIds }, role: ROLES.STUDENT }).select('_id');
     if (validStudents.length !== studentIds.length) {
-      return res.status(400).json({ success: false, message: 'এক বা একাধিক শিক্ষার্থী আইডি সঠিক নয়' });
+      return res.status(400).json({ success: false, message: 'এক বা একাধিক শিক্ষার্থী সঠিক নয়' });
     }
 
     const previousLinkedStudents = guardian.guardianDetails?.linkedStudents || [];

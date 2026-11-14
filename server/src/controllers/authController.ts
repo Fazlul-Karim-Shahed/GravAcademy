@@ -22,7 +22,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  identifier: z.string().min(1, 'User ID or Email is required').optional(),
+  identifier: z.string().min(1, 'Grav ID or Email is required').optional(),
   email: z.string().optional(),
   password: z.string().min(1, 'Password is required'),
 });
@@ -44,7 +44,7 @@ const generateToken = (userId: string): string => {
 };
 
 /**
- * Generate unique User ID in format: YYMMDD### (e.g. 261024001)
+ * Generate unique Grav ID in format: YYMMDD### (e.g. 261024001)
  */
 export const generateUniqueUserId = async (): Promise<string> => {
   const now = new Date();
@@ -80,7 +80,7 @@ export const generateUniqueUserId = async (): Promise<string> => {
 };
 
 /**
- * Public Registration: MANDATORY Student Role with Unique User ID
+ * Public Registration: MANDATORY Student Role with Unique Grav ID
  */
 export const register = async (req: Request, res: Response) => {
   try {
@@ -93,7 +93,7 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    // Generate unique User ID (e.g. 261024001)
+    // Generate unique Grav ID (e.g. 261024001)
     const userId = await generateUniqueUserId();
 
     // Hash password
@@ -146,7 +146,7 @@ export const register = async (req: Request, res: Response) => {
 };
 
 /**
- * User Login: Supports either User ID or Email
+ * User Login: Supports either Grav ID or Email
  */
 export const login = async (req: Request, res: Response) => {
   try {
@@ -156,7 +156,7 @@ export const login = async (req: Request, res: Response) => {
     if (!loginQuery) {
       return res.status(400).json({
         success: false,
-        message: 'ইউজার আইডি অথবা ইমেইল এড্রেস লিখুন।',
+        message: 'Grav ID অথবা ইমেইল এড্রেস লিখুন।',
       });
     }
 
@@ -171,7 +171,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'সঠিক ইউজার আইডি/ইমেইল অথবা পাসওয়ার্ড দিন।',
+        message: 'সঠিক Grav ID/ইমেইল অথবা পাসওয়ার্ড দিন।',
       });
     }
 
@@ -186,7 +186,7 @@ export const login = async (req: Request, res: Response) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'সঠিক ইউজার আইডি/ইমেইল অথবা পাসওয়ার্ড দিন।',
+        message: 'সঠিক Grav ID/ইমেইল অথবা পাসওয়ার্ড দিন।',
       });
     }
 

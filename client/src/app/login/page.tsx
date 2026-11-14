@@ -15,7 +15,7 @@ function LoginForm() {
   const redirectUrl = searchParams.get('redirect');
   const { login } = useAuth();
 
-  // Mode: Default is User ID login. If useEmail is checked, user logs in with email.
+  // Mode: Default is Grav ID login. If useEmail is checked, user logs in with email.
   const [useEmail, setUseEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -59,7 +59,7 @@ function LoginForm() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'সঠিক ইউজার আইডি/ইমেইল অথবা পাসওয়ার্ড দিন।');
+      setError(err.response?.data?.message || 'সঠিক Grav ID/ইমেইল অথবা পাসওয়ার্ড দিন।');
     } finally {
       setLoading(false);
     }
@@ -106,7 +106,7 @@ function LoginForm() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                  {useEmail ? 'ইমেইল এড্রেস' : 'ইউজার আইডি (User ID)'}
+                  {useEmail ? 'ইমেইল এড্রেস' : 'Grav ID'}
                 </label>
               </div>
 

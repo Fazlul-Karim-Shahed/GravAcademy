@@ -528,7 +528,7 @@ export default function MarksheetPage({
               <span>{selectedStudentRow.student.name} - মার্কশিট ও বিশ্লেষণ</span>
             </h3>
             <p className="text-xs text-slate-500 mb-5">
-              আইডি: {selectedStudentRow.student.userId || selectedStudentRow.student.email} · সামগ্রিক সফলতা: {selectedStudentRow.summary.percentage}%
+              Grav ID: {selectedStudentRow.student.userId || selectedStudentRow.student.email} · সামগ্রিক সফলতা: {selectedStudentRow.summary.percentage}%
             </p>
 
             <div className="space-y-6">

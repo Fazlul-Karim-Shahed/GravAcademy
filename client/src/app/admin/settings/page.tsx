@@ -340,7 +340,7 @@ export default function AdminSettingsPage() {
                     <thead>
                       <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-400 font-semibold uppercase text-[11px]">
                         <th className="py-3 px-4">ইউজার</th>
-                        <th className="py-3 px-4">আইডি (User ID)</th>
+                        <th className="py-3 px-4">Grav ID</th>
                         <th className="py-3 px-3">রোল</th>
                         <th className="py-3 px-3">স্ট্যাটাস</th>
                         <th className="py-3 px-4 text-right">অ্যাকশন</th>
@@ -377,7 +377,7 @@ export default function AdminSettingsPage() {
                               </div>
                             </td>
 
-                            {/* User ID Column */}
+                            {/* Grav ID Column */}
                             <td className="py-3 px-4 whitespace-nowrap">
                               <span className="font-mono font-bold text-xs px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
                                 {u.userId || '—'}

@@ -415,7 +415,7 @@ export default function ProfileEditPage() {
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
-                  ইউজার আইডি (অপরিবর্তনযোগ্য)
+                  Grav ID (অপরিবর্তনযোগ্য)
                 </label>
                 <input
                   type="text"

@@ -1187,7 +1187,7 @@ export default function AdminAdmissionsPage() {
                       setSearchQuery(e.target.value);
                       fetchRecentAdmissions(e.target.value);
                     }}
-                    placeholder="নাম, ইউজার আইডি বা ফোন দিয়ে খুঁজুন..."
+                    placeholder="নাম, Grav ID বা ফোন দিয়ে খুঁজুন..."
                     className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                 </div>
@@ -1297,7 +1297,7 @@ export default function AdminAdmissionsPage() {
                   <span className="font-bold text-slate-900 dark:text-white">{admissionToCancel.studentId?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">আইডি:</span>
+                  <span className="text-slate-500">Grav ID:</span>
                   <span className="font-mono font-bold text-blue-600 dark:text-blue-400">#{admissionToCancel.studentId?.userId || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
@@ -1390,11 +1390,11 @@ export default function AdminAdmissionsPage() {
                   </div>
                 </div>
 
-                {/* User ID Field with Copy Button */}
+                {/* Grav ID Field with Copy Button */}
                 <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                      লগইন ইউজার আইডি (User ID)
+                      লগইন Grav ID
                     </span>
                     <button
                       onClick={() => copyToClipboard(successModalData.student.userId, 'id')}
@@ -1420,7 +1420,7 @@ export default function AdminAdmissionsPage() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                      ডিফল্ট পাসওয়ার্ড (Password = User ID)
+                      ডিফল্ট পাসওয়ার্ড (Password = Grav ID)
                     </span>
                     <button
                       onClick={() => copyToClipboard(successModalData.student.userId, 'pass')}
@@ -1441,7 +1441,7 @@ export default function AdminAdmissionsPage() {
                     {successModalData.student.userId}
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
-                    💡 শিক্ষার্থী এই ইউজার আইডি এবং পাসওয়ার্ড দিয়ে ওয়েবসাইটে সরাসরি লগইন করতে পারবে।
+                    💡 শিক্ষার্থী এই Grav ID এবং পাসওয়ার্ড দিয়ে ওয়েবসাইটে সরাসরি লগইন করতে পারবে।
                   </p>
                 </div>
 
