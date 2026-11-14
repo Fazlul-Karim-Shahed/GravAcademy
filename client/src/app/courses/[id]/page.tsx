@@ -356,7 +356,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <p className="mt-2 text-[10px] text-[#31558e]">* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *</p>
               </div>
               <div className="relative h-44 self-end overflow-hidden sm:h-48">
-                <img src="/images/course-support-student.png" alt="Grav Academy student support" className="absolute left-1/2 top-[-10%] h-[165%] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:h-[175%]" />
+                <img src="/images/course-support-student.png" alt="Grav Academy student support" className="absolute left-1/2 top-0 h-[190%] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:h-[205%]" />
               </div>
             </div>
           </section>
