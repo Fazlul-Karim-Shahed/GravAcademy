@@ -1166,7 +1166,6 @@ export default function AdminAdmissionsPage() {
                   <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <Clock className="w-4 h-4 text-blue-500" /> সম্প্রতি ভর্তি হওয়া শিক্ষার্থী
                   </h2>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">সর্বশেষ এডমিন অ্যাডমিশন তালিকা</p>
                 </div>
                 <button
                   onClick={() => fetchRecentAdmissions(searchQuery)}
@@ -1230,19 +1229,6 @@ export default function AdminAdmissionsPage() {
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          {adm.studentId?.phone && (
-                            <span>{adm.studentId.phone}</span>
-                          )}
-                          {adm.studentId?.phone && adm.batchId?.name && (
-                            <span>•</span>
-                          )}
-                          {adm.batchId?.name && (
-                            <span className="text-slate-600 dark:text-slate-300 font-medium">
-                              {adm.batchId.name}
-                            </span>
-                          )}
-                        </div>
                       </div>
 
                       {/* Right: Fee & Status & Actions */}
