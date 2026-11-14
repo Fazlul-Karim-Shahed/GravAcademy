@@ -273,16 +273,14 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                   'from-sky-100 via-cyan-50 to-white dark:from-sky-950/60 dark:via-cyan-950/30 dark:to-slate-900',
                   'from-emerald-100 via-teal-50 to-white dark:from-emerald-950/60 dark:via-teal-950/30 dark:to-slate-900',
                 ][index % 4];
-                return <article key={teacher._id} className="group min-w-0 overflow-hidden rounded-[24px] border border-slate-200/90 bg-white p-2 text-center shadow-[0_8px_24px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(30,65,100,0.14)] dark:border-slate-800 dark:bg-slate-900">
-                  <div className={"relative aspect-[4/5] overflow-hidden rounded-[18px] bg-gradient-to-br " + surface}>
-                    <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/50 blur-2xl dark:bg-white/10" />
-                    <div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-blue-300/20 blur-2xl dark:bg-blue-400/10" />
-                    <img src={teacherAvatar(teacher, index)} alt={teacher.name} className={"relative h-full w-full object-center drop-shadow-md transition-transform duration-500 group-hover:scale-[1.04] " + (teacher.avatarUrl ? 'object-cover' : 'object-contain')} />
+                return <article key={teacher._id} className="group min-w-0 text-center">
+                  <div className={"mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br p-1 ring-4 ring-white shadow-[0_8px_22px_rgba(30,65,100,0.14)] transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_12px_28px_rgba(30,65,100,0.2)] dark:ring-slate-950 sm:h-28 sm:w-28 " + surface}>
+                    <div className="h-full w-full overflow-hidden rounded-full bg-white dark:bg-slate-900">
+                      <img src={teacherAvatar(teacher, index)} alt={teacher.name} className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.05]" />
+                    </div>
                   </div>
-                  <div className="px-1 pb-1 pt-3">
-                    <h3 className="truncate text-xs font-black text-slate-900 dark:text-white sm:text-sm">{teacher.name}</h3>
-                    <span className="mt-2 inline-flex max-w-full truncate rounded-full bg-slate-100 px-2.5 py-1 text-[9px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">{teacherMeta[index % teacherMeta.length]}</span>
-                  </div>
+                  <h3 className="mt-4 truncate text-sm font-black text-slate-900 dark:text-white">{teacher.name}</h3>
+                  <p className="mt-1 truncate text-[11px] text-slate-500 dark:text-slate-400">{teacherMeta[index % teacherMeta.length]}</p>
                 </article>;
               })}
             </div>
@@ -348,8 +346,8 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
           </section>
 
           <section className="overflow-hidden rounded-[22px] bg-gradient-to-r from-[#dff7fb] via-[#f2f4de] to-[#ffe5b7] shadow-[0_10px_28px_rgba(30,65,100,0.1)]">
-            <div className="grid items-center sm:grid-cols-[1fr_220px]">
-              <div className="p-6 sm:p-8">
+            <div className="grid items-center sm:grid-cols-[1fr_190px]">
+              <div className="p-5 sm:p-6">
                 <p className="text-[11px] font-black uppercase tracking-[0.16em] text-blue-700">Grav Academy support</p>
                 <h2 className="mt-3 text-2xl font-black text-[#24478f]">যেকোনো প্রয়োজনে কল করো এখনই</h2>
                 <p className="mt-3 max-w-md text-sm leading-6 text-[#31558e]">শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।</p>
@@ -357,30 +355,32 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <a href="tel:16910" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5269f4] px-6 py-3 text-base font-black text-white shadow-md transition hover:bg-[#4056df]"><Phone className="h-5 w-5" /> ১৬৯১০</a>
                 <p className="mt-2 text-[10px] text-[#31558e]">* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *</p>
               </div>
-              <div className="relative h-52 self-end overflow-hidden sm:h-64">
-                <img src="/images/course-support-student.png" alt="Grav Academy student support" className="absolute bottom-0 right-0 h-full w-full object-contain object-bottom drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:w-[240px]" />
+              <div className="relative h-44 self-end overflow-hidden sm:h-48">
+                <img src="/images/course-support-student.png" alt="Grav Academy student support" className="absolute left-1/2 top-0 h-[135%] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:h-[145%]" />
               </div>
             </div>
           </section>
 
           <section className="grid gap-4 sm:grid-cols-2">
-            <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#ffc9c9] to-[#ffd8d8] p-6 shadow-[0_8px_22px_rgba(30,65,100,0.08)]">
+            <div className="relative min-h-[170px] overflow-hidden rounded-[20px] bg-gradient-to-br from-[#ffc9c9] to-[#ffd8d8] p-5 shadow-[0_8px_22px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,65,100,0.14)] sm:p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="max-w-[190px] text-xl font-black leading-8 text-[#17356e]">ফ্রি ভিডিও লাইব্রেরি</h2>
-                  <Link href="/free-classes" className="mt-6 inline-flex rounded-xl bg-white px-5 py-3 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">ভিডিও দেখুন</Link>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#8e4b65]">Learning</p>
+                  <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">ফ্রি ভিডিও লাইব্রেরি</h2>
+                  <Link href="/free-classes" className="mt-5 inline-flex rounded-lg bg-white px-5 py-2.5 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">ভিডিও দেখুন</Link>
                 </div>
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ef1717] text-white shadow-lg shadow-red-300/50"><Play className="h-9 w-9 fill-white" /></div>
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#ef1717] shadow-lg shadow-red-300/30 backdrop-blur"><Play className="h-7 w-7 fill-current" /></div>
               </div>
               <div className="absolute -bottom-8 right-24 h-16 w-16 rounded-full bg-white/25 blur-2xl" />
             </div>
-            <div className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#c6dcff] to-[#d6e5ff] p-6 shadow-[0_8px_22px_rgba(30,65,100,0.08)]">
+            <div className="relative min-h-[170px] overflow-hidden rounded-[20px] bg-gradient-to-br from-[#c6dcff] to-[#d6e5ff] p-5 shadow-[0_8px_22px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,65,100,0.14)] sm:p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="max-w-[190px] text-xl font-black leading-8 text-[#17356e]">Grav Academy ফেসবুক গ্রুপ</h2>
-                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="mt-6 inline-flex rounded-xl bg-white px-5 py-3 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">গ্রুপে যুক্ত হন</a>
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#4264a5]">Community</p>
+                  <h2 className="mt-1 max-w-[190px] text-xl font-black leading-8 text-[#17356e]">Grav Academy ফেসবুক গ্রুপ</h2>
+                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" className="mt-5 inline-flex rounded-lg bg-white px-5 py-2.5 text-xs font-black text-[#3555ee] shadow-sm transition hover:bg-blue-50">গ্রুপে যুক্ত হন</a>
                 </div>
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#3d5a9d] text-white shadow-lg shadow-blue-300/50"><UsersRound className="h-9 w-9" /></div>
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#3d5a9d] shadow-lg shadow-blue-300/30 backdrop-blur"><UsersRound className="h-7 w-7" /></div>
               </div>
               <div className="absolute -bottom-8 right-24 h-16 w-16 rounded-full bg-white/25 blur-2xl" />
             </div>
