@@ -149,7 +149,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
         @media print {
           @page {
             size: A4 portrait;
-            margin: 8mm 10mm;
+            margin: 6mm 8mm;
           }
           html, body {
             background: #ffffff !important;
@@ -168,18 +168,41 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           .receipt-print-root {
             position: static !important;
             display: block !important;
-            width: 138% !important;
+            width: 122% !important;
             min-height: 0 !important;
             background: #ffffff !important;
-            zoom: 0.72;
+            zoom: 0.82;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            page-break-inside: avoid !important;
           }
           .receipt-print-root > div {
             max-height: none !important;
             overflow: visible !important;
           }
           .receipt-print-root > div > div:last-child {
-            padding: 14px !important;
-            gap: 10px !important;
+            padding: 10px !important;
+          }
+          .receipt-print-root .space-y-6 > :not(:first-child) {
+            margin-top: 10px !important;
+          }
+          .receipt-print-root .pb-6 {
+            padding-bottom: 10px !important;
+          }
+          .receipt-print-root .pt-8 {
+            padding-top: 12px !important;
+          }
+          .receipt-print-root .p-4 {
+            padding: 8px !important;
+          }
+          .receipt-print-root .gap-4 {
+            gap: 8px !important;
+          }
+          .receipt-print-root .mt-6 {
+            margin-top: 10px !important;
+          }
+          .receipt-print-root .mt-8 {
+            margin-top: 12px !important;
           }
           .receipt-print-root table th,
           .receipt-print-root table td {
