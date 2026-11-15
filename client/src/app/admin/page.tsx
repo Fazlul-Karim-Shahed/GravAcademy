@@ -93,14 +93,6 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE) && (
-              <Link
-                href="/admin/attendance"
-                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors"
-              >
-                <CalendarCheck className="w-3.5 h-3.5" /> Attendance
-              </Link>
-            )}
             <Link
               href="/admin/classes"
               style={{ display: isFeatureEnabled('courses', user?.role === 'superadmin') ? undefined : 'none' }}
@@ -129,6 +121,24 @@ export default function AdminDashboardPage() {
         <div className="space-y-4 mb-10">
           {/* Row 1: 6 Core Modules */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+            {hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE) && (
+              <Link
+                href="/admin/attendance"
+                className="group relative flex min-h-[136px] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs transition-all duration-300 hover:border-emerald-400/80 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-5"
+              >
+                <CalendarCheck className="pointer-events-none absolute -bottom-3 -right-3 h-24 w-24 text-slate-100 transition-all duration-300 group-hover:scale-110 group-hover:text-emerald-500/10 dark:text-slate-800/40 dark:group-hover:text-emerald-500/15" />
+                <div className="relative z-10 mb-3 flex items-center justify-between">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:border-emerald-900/50 dark:bg-emerald-950/60 dark:text-emerald-400">
+                    <CalendarCheck className="h-4 w-4" />
+                  </div>
+                  <ArrowRight className="h-3.5 w-3.5 text-slate-400 transition-all group-hover:translate-x-0.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
+                </div>
+                <div className="relative z-10">
+                  <div className="text-base font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white">Attendance</div>
+                  <div className="mt-1 text-xs font-bold text-slate-600 dark:text-slate-300">শিক্ষক হাজিরা</div>
+                </div>
+              </Link>
+            )}
             <Link
               href="/admin/admission-requests"
               style={{ display: isFeatureEnabled('admissions', user?.role === 'superadmin') ? undefined : 'none' }}
@@ -265,33 +275,23 @@ export default function AdminDashboardPage() {
               </div>
             </Link>
 
-            {/* Card 5: অন্যান্য সেটিংস */}
+          </div>
+
+          {/* Row 2: Additional Management Modules (Starting with User Management) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+
+            {/* Settings shortcut */}
             <Link
               href="/admin/settings"
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between"
             >
               <Settings className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 pointer-events-none" />
-
               <div className="relative z-10 flex items-center justify-between mb-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                  <Settings className="w-4 h-4" />
-                </div>
+                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors"><Settings className="w-4 h-4" /></div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-
-              <div className="relative z-10">
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  3
-                </div>
-                <div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">
-                  অন্যান্য সেটিংস
-                </div>
-              </div>
+              <div className="relative z-10"><div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">3</div><div className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">অন্যান্য সেটিংস</div></div>
             </Link>
-          </div>
-
-          {/* Row 2: Additional Management Modules (Starting with User Management) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
             
             {/* Card 6: ইউজার ম্যানেজমেন্ট */}
             <Link
