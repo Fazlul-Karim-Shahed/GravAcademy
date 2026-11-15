@@ -9,6 +9,7 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 import {
   ArrowRight,
   CalendarCheck,
+  CalendarDays,
   Clock3,
   GraduationCap,
   LoaderCircle,
@@ -50,15 +51,20 @@ export default function AdminTeacherAttendancePage() {
   const [quickLoading, setQuickLoading] = useState(false);
   const [markingKey, setMarkingKey] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [teacherFilterLoading, setTeacherFilterLoading] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
 
-  const loadTeachers = useCallback(async () => {
+  const loadTeachers = useCallback(async (date = '') => {
+    setTeacherFilterLoading(true);
     try {
-      const response = await api.get('/teacher-attendance/teachers');
+      const response = await api.get('/teacher-attendance/teachers', { params: date ? { date } : undefined });
       setTeachers(response.data.data || []);
     } catch (e: any) {
       setError(e.response?.data?.message || 'শিক্ষক তালিকা লোড হয়নি।');
+    } finally {
+      setTeacherFilterLoading(false);
     }
   }, []);
 
@@ -122,7 +128,7 @@ export default function AdminTeacherAttendancePage() {
             <p className="mb-1 text-sm font-semibold text-emerald-700 dark:text-emerald-400">শিক্ষক ব্যবস্থাপনা</p>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">শিক্ষক হাজিরা</h1>
           </div>
-          <button onClick={() => { loadQuick(); loadTeachers(); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+          <button onClick={() => { loadQuick(); loadTeachers(selectedDate); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
             <RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ
           </button>
         </header>
@@ -178,18 +184,27 @@ export default function AdminTeacherAttendancePage() {
             <div>
               <h2 id="manual-attendance-title" className="flex items-center gap-2 text-lg font-bold sm:text-xl"><CalendarCheck className="h-5 w-5 text-blue-600" /> Manual Attendance</h2>
             </div>
-            <label className="relative block w-full sm:max-w-xs">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Teacher খুঁজুন" className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:focus:ring-blue-950" />
-            </label>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+              <div className="flex gap-2">
+                <label className="relative block min-w-0 flex-1 sm:w-44 sm:flex-none">
+                  <CalendarDays className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input type="date" aria-label="Class date filter" value={selectedDate} onChange={(event) => { const date = event.target.value; setSelectedDate(date); setError(''); void loadTeachers(date); }} className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-2 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:ring-blue-950" />
+                </label>
+                {selectedDate && <button type="button" onClick={() => { setSelectedDate(''); setError(''); void loadTeachers(''); }} className="shrink-0 rounded-xl border border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">সব দিন</button>}
+              </div>
+              <label className="relative block w-full sm:w-52">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Teacher খুঁজুন" className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-900 dark:focus:ring-blue-950" />
+              </label>
+            </div>
           </div>
 
-          {loading ? (
+          {loading || teacherFilterLoading ? (
             <div className="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-900"><LoaderCircle className="mr-2 h-5 w-5 animate-spin" /> লোড হচ্ছে</div>
           ) : filteredTeachers.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center dark:border-slate-700 dark:bg-slate-900">
               <Users className="mx-auto mb-2 h-7 w-7 text-slate-400" />
-              <p className="font-semibold">কোনো teacher পাওয়া যায়নি</p>
+              <p className="font-semibold">{selectedDate ? 'এই দিনে কোনো teacher-এর class নেই' : 'কোনো teacher পাওয়া যায়নি'}</p>
             </div>
           ) : (
             <div className="space-y-2.5">

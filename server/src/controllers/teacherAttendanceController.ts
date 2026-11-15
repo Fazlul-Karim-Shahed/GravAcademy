@@ -74,7 +74,13 @@ const assignedBatchesForTeacher = async (teacherId: mongoose.Types.ObjectId) => 
   return Batch.find({
     $or: [
       { assignedTeachers: teacherId },
-      ...(courseIds.length ? [{ courseId: { $in: courseIds } }] : []),
+      ...(courseIds.length ? [{
+        courseId: { $in: courseIds },
+        $or: [
+          { assignedTeachers: { $exists: false } },
+          { assignedTeachers: { $size: 0 } },
+        ],
+      }] : []),
     ],
   })
     .populate('courseId', 'title subject gradeLevel')
@@ -84,6 +90,7 @@ const assignedBatchesForTeacher = async (teacherId: mongoose.Types.ObjectId) => 
 
 const teacherIsAssigned = (batch: any, teacherId: mongoose.Types.ObjectId) => {
   const directlyAssigned = (batch.assignedTeachers || []).some((id: any) => id.toString() === teacherId.toString());
+  if ((batch.assignedTeachers || []).length > 0) return directlyAssigned;
   const courseInstructors = batch.courseId?.instructors || [];
   const assignedByCourse = courseInstructors.some((id: any) => id.toString() === teacherId.toString());
   return directlyAssigned || assignedByCourse;
@@ -155,19 +162,26 @@ export const getQuickAttendance = async (_req: AuthenticatedRequest, res: Respon
   }
 };
 
-export const getAttendanceTeachers = async (_req: AuthenticatedRequest, res: Response) => {
+export const getAttendanceTeachers = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const selectedDate = typeof req.query.date === 'string' ? req.query.date : '';
+    if (selectedDate && !validateDate(selectedDate)) {
+      return res.status(400).json({ success: false, message: 'তারিখটি সঠিক format-এ দিন।' });
+    }
     const teachers = await User.find({ role: 'teacher', status: { $nin: ['suspended', 'deactivated'] } })
       .select('name gravId email avatarUrl status')
       .sort({ name: 1 })
       .lean();
     const data = await Promise.all(teachers.map(async (teacher) => {
       const batches = await assignedBatchesForTeacher(teacher._id);
+      const scheduledBatches = selectedDate ? batches.filter((batch: any) => isScheduledForDate(batch, selectedDate)) : batches;
+      if (selectedDate && scheduledBatches.length === 0) return null;
       const historyCount = await TeacherAttendance.countDocuments({ teacherId: teacher._id });
-      const activeBatchCount = batches.filter((batch: any) => ['active', 'upcoming'].includes(batch.status)).length;
-      return { ...teacher, batchCount: batches.length, activeBatchCount, historyCount };
+      const activeBatchCount = scheduledBatches.filter((batch: any) => ['active', 'upcoming'].includes(batch.status)).length;
+      return { ...teacher, batchCount: selectedDate ? scheduledBatches.length : batches.length, activeBatchCount, historyCount };
     }));
-    return res.json({ success: true, count: data.length, data });
+    const filteredTeachers = data.filter(Boolean);
+    return res.json({ success: true, count: filteredTeachers.length, date: selectedDate || null, data: filteredTeachers });
   } catch (error: any) {
     console.error('getAttendanceTeachers error:', error);
     return res.status(500).json({ success: false, message: 'Teacher list load করা যায়নি।' });
