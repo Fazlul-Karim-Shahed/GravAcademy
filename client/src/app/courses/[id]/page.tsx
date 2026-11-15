@@ -50,6 +50,10 @@ interface Teacher {
   email: string;
   role: string;
   avatarUrl?: string;
+  teacherDetails?: {
+    experience?: string;
+    specialistSubjects?: string[];
+  };
 }
 
 interface SyllabusItem {
@@ -58,12 +62,6 @@ interface SyllabusItem {
   contentLines?: string[];
   demoTitle?: string;
   demoUrl?: string;
-}
-
-interface InstructorProfile {
-  instructorId: string | { _id: string };
-  subject?: string;
-  experience?: string;
 }
 
 interface RoutineContent {
@@ -110,7 +108,6 @@ interface CourseDetail {
   syllabus?: SyllabusItem[];
   heroEyebrow?: string;
   accessLabel?: string;
-  instructorProfiles?: InstructorProfile[];
   routine?: RoutineContent;
   supportSection?: SupportContent;
   promoCards?: PromoCardContent[];
@@ -231,13 +228,12 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const teachers = (course.instructors || []).filter((teacher) => teacher?._id && teacher?.name);
   const syllabus = course.syllabus || [];
   const visibleTeachers = showAllTeachers ? teachers.slice(0, 8) : teachers.slice(0, 4);
-  const instructorProfiles = course.instructorProfiles || [];
   const routine = course.routine;
   const support = course.supportSection;
   const promoCards = course.promoCards || [];
   const teacherMeta = (teacher: Teacher) => {
-    const profile = instructorProfiles.find((item) => String(typeof item.instructorId === 'object' ? item.instructorId._id : item.instructorId) === String(teacher._id));
-    return [profile?.subject, profile?.experience].filter(Boolean).join(' · ') || `${course.subject || 'Academic'} · Mentor`;
+    const subjects = teacher.teacherDetails?.specialistSubjects?.filter(Boolean).slice(0, 2).join(', ');
+    return [subjects, teacher.teacherDetails?.experience].filter(Boolean).join(' · ') || `${course.subject || 'Academic'} · Mentor`;
   };
   const syllabusIcons = [BookMarked, BookMarked, Languages, Languages, Monitor, Calculator, Atom, FlaskConical, Landmark, PenTool];
   const syllabusIconStyles = [

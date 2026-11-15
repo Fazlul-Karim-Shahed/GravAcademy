@@ -32,12 +32,6 @@ interface TeacherUser {
   phone?: string;
 }
 
-interface InstructorProfile {
-  instructorId: string;
-  subject: string;
-  experience: string;
-}
-
 interface SyllabusItem {
   title: string;
   details: string;
@@ -86,7 +80,6 @@ interface CourseFormData {
   accessLabel: string;
   isPublished: boolean;
   instructors: string[];
-  instructorProfiles: InstructorProfile[];
   curriculumHighlights: string[];
   syllabus: SyllabusItem[];
   routine: CourseRoutine;
@@ -157,7 +150,6 @@ function getDefaultForm(): CourseFormData {
     accessLabel: 'সীমাহীন সেশন',
     isPublished: true,
     instructors: [],
-    instructorProfiles: [],
     curriculumHighlights: defaultHighlights,
     syllabus: defaultSyllabus,
     routine: { ...defaultRoutine },
@@ -173,14 +165,6 @@ function asString(value: unknown, fallback = '') {
 function hydrateForm(course: any): CourseFormData {
   const base = getDefaultForm();
   const instructorIds = (course.instructors || []).map((item: any) => String(item?._id || item));
-  const profiles = Array.isArray(course.instructorProfiles)
-    ? course.instructorProfiles.map((item: any) => ({
-        instructorId: String(item.instructorId?._id || item.instructorId),
-        subject: asString(item.subject),
-        experience: asString(item.experience),
-      }))
-    : [];
-  const profileMap = new Map<string, InstructorProfile>(profiles.map((profile: InstructorProfile) => [profile.instructorId, profile]));
 
   return {
     ...base,
@@ -198,7 +182,6 @@ function hydrateForm(course: any): CourseFormData {
     accessLabel: asString(course.accessLabel, base.accessLabel),
     isPublished: course.isPublished ?? true,
     instructors: instructorIds,
-    instructorProfiles: instructorIds.map((id: string) => profileMap.get(id) || ({ instructorId: id, subject: '', experience: '' })),
     curriculumHighlights: Array.isArray(course.features) && course.features.length
       ? course.features
       : Array.isArray(course.curriculumHighlights) && course.curriculumHighlights.length
@@ -280,16 +263,12 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
   const update = <K extends keyof CourseFormData>(key: K, value: CourseFormData[K]) => setForm((current) => ({ ...current, [key]: value }));
 
   const toggleTeacher = (teacherId: string) => {
-    setForm((current) => {
-      const selected = current.instructors.includes(teacherId);
-      return {
-        ...current,
-        instructors: selected ? current.instructors.filter((id) => id !== teacherId) : [...current.instructors, teacherId],
-        instructorProfiles: selected
-          ? current.instructorProfiles.filter((profile) => profile.instructorId !== teacherId)
-          : [...current.instructorProfiles, { instructorId: teacherId, subject: '', experience: '' }],
-      };
-    });
+    setForm((current) => ({
+      ...current,
+      instructors: current.instructors.includes(teacherId)
+        ? current.instructors.filter((id) => id !== teacherId)
+        : [...current.instructors, teacherId],
+    }));
   };
 
   const updateNested = <K extends keyof CourseRoutine>(key: K, value: CourseRoutine[K]) => setForm((current) => ({ ...current, routine: { ...current.routine, [key]: value } }));
@@ -328,7 +307,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
       regularPrice: Number(form.regularPrice) || 0,
       discountPrice: Number(form.discountPrice) || 0,
       instructors: form.instructors,
-      instructorProfiles: form.instructorProfiles.filter((profile) => form.instructors.includes(profile.instructorId)),
+      instructorProfiles: [],
       features: [],
     };
     try {
@@ -368,9 +347,8 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
           <div className="mt-4 grid gap-4 sm:grid-cols-3"><Field label="Regular price"><input type="number" min="0" className={inputClass} value={form.regularPrice || ''} onChange={(event) => update('regularPrice', Number(event.target.value) || 0)} /></Field><Field label="Discount price"><input type="number" min="0" className={inputClass} value={form.discountPrice || ''} onChange={(event) => update('discountPrice', Number(event.target.value) || 0)} /></Field><Field label="Course fee" hint="Enrollment-এর default fee হিসেবে ব্যবহৃত হবে।"><input type="number" min="0" className={inputClass} value={form.courseFee || ''} onChange={(event) => update('courseFee', Number(event.target.value) || 0)} /></Field></div>
         </Section>
 
-        <Section icon={<Users className="h-4 w-4" />} title="Course teachers" description="Teacher select করুন এবং course page-এ দেখানোর subject/experience লিখুন।">
+        <Section icon={<Users className="h-4 w-4" />} title="Course teachers" description="Teacher select করুন। Subject ও experience teacher-এর profile থেকে দেখানো হবে।">
           {loadingTeachers ? <p className="text-xs text-slate-400">Teacher list load হচ্ছে...</p> : teachers.length === 0 ? <p className="text-xs text-slate-400">কোনো teacher পাওয়া যায়নি।</p> : <div className="grid gap-3 sm:grid-cols-2">{teachers.map((teacher) => { const selected = form.instructors.includes(teacher._id); return <label key={teacher._id} className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 transition ${selected ? 'border-blue-400 bg-blue-50 dark:border-blue-700 dark:bg-blue-950/30' : 'border-slate-200 bg-slate-50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950/50'}`}><span className="flex min-w-0 items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-600 text-xs font-black text-white">{teacher.avatarUrl ? <img src={teacher.avatarUrl} alt="" className="h-full w-full object-cover" /> : teacher.name.slice(0, 1)}</span><span className="min-w-0"><span className="block truncate text-xs font-black">{teacher.name}</span><span className="block truncate text-[11px] text-slate-500">{teacher.role} · {teacher.email}</span></span></span><input type="checkbox" checked={selected} onChange={() => toggleTeacher(teacher._id)} className="h-4 w-4 accent-blue-600" /></label>; })}</div>}
-          {form.instructorProfiles.length > 0 && <div className="mt-5 space-y-3">{form.instructorProfiles.map((profile, index) => { const teacher = teachers.find((item) => item._id === profile.instructorId); return <div key={profile.instructorId} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/50 sm:grid-cols-[1fr_1fr_1fr]"><div className="flex items-center gap-2 text-xs font-black"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{teacher?.name?.slice(0, 1) || 'T'}</span>{teacher?.name || 'Selected teacher'}</div><input className={inputClass} value={profile.subject} onChange={(event) => setForm((current) => ({ ...current, instructorProfiles: current.instructorProfiles.map((item, itemIndex) => itemIndex === index ? { ...item, subject: event.target.value } : item) }))} placeholder="Subject · e.g. Physics" /><input className={inputClass} value={profile.experience} onChange={(event) => setForm((current) => ({ ...current, instructorProfiles: current.instructorProfiles.map((item, itemIndex) => itemIndex === index ? { ...item, experience: event.target.value } : item) }))} placeholder="Experience · e.g. ৮+ বছর" /></div>; })}</div>}
         </Section>
 
         <Section icon={<BookOpen className="h-4 w-4" />} title="Program syllabus" description="প্রতিটি বিষয়ের একাধিক লাইন ও চাইলে free demo class যোগ করুন।">

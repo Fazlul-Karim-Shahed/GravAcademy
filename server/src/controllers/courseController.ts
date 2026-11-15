@@ -80,7 +80,7 @@ export const getCourses = async (req: Request, res: Response) => {
     }
 
     const courses = await Course.find(filter)
-      .populate('instructors', 'name email avatarUrl phone role')
+      .populate('instructors', 'name email avatarUrl phone role teacherDetails')
       .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role')
       .sort({ createdAt: -1 });
 
@@ -107,7 +107,7 @@ export const getCourseById = async (req: Request, res: Response) => {
       : { slug: id };
 
     const course = await Course.findOne(query)
-      .populate('instructors', 'name email avatarUrl phone role')
+      .populate('instructors', 'name email avatarUrl phone role teacherDetails')
       .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role');
 
     if (!course) {
