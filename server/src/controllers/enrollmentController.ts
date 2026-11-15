@@ -13,7 +13,13 @@ import { EnrollmentRequest } from '../models/EnrollmentRequest';
 import { generateUniquegravId } from './authController';
 import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
-import { sendEnrollmentApprovalEmail, sendEnrollmentRequestReceivedEmail } from '../services/emailService';
+import {
+  sendEnrollmentApprovalEmail,
+  sendEnrollmentRequestReceivedEmail,
+  sendWelcomeRegistrationEmail,
+  isDisposableEmail,
+  hasValidMxRecords,
+} from '../services/emailService';
 
 export const enrollBatchSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
@@ -202,7 +208,24 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
     if (isGuest) {
       const normalizedEmail = email?.trim().toLowerCase();
       if (!normalizedEmail) {
-        return res.status(400).json({ success: false, message: 'Guest request-à¦à¦° à¦œà¦¨à§à¦¯ à¦à¦•à¦Ÿà¦¿ valid email address à¦¦à¦¿à¦¨à¥¤' });
+        return res.status(400).json({ success: false, message: 'ভর্তি রিকোয়েস্টের জন্য একটি সক্রিয় ইমেইল ঠিকানা দিন।' });
+      }
+
+      // Check disposable
+      if (isDisposableEmail(normalizedEmail)) {
+        return res.status(400).json({
+          success: false,
+          message: 'অনুগ্রহ করে একটি স্থায়ী ও ভ্যালিড ব্যক্তিগত ইমেইল ব্যবহার করুন (টেম্পোরারি ইমেইল অনুমোদিত নয়)।',
+        });
+      }
+
+      // Check DNS MX
+      const hasMx = await hasValidMxRecords(normalizedEmail);
+      if (!hasMx) {
+        return res.status(400).json({
+          success: false,
+          message: 'ইমেইল ডোমেইনটি সক্রিয় বা সঠিক নয়। অনুগ্রহ করে আপনার সঠিক ইমেইল এড্রেস লিখুন।',
+        });
       }
 
       const emailSent = await sendEnrollmentRequestReceivedEmail({
@@ -211,7 +234,7 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
         batchName: batch.name,
       });
       if (!emailSent) {
-        return res.status(400).json({ success: false, message: 'à¦à¦‡ email address-à¦ confirmation email à¦ªà¦¾à¦ à¦¾à¦¨à§‹ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤ Email address à¦ à¦¿à¦• à¦†à¦›à§‡ à¦•à¦¿ à¦¨à¦¾ à¦¦à§‡à¦–à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤' });
+        return res.status(400).json({ success: false, message: 'এই ইমেইল ঠিকানায় কনফার্মেশন ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না দেখে আবার চেষ্টা করুন।' });
       }
     }
 
@@ -330,20 +353,59 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     let isNewUserCreated = false;
     let defaultPassword = '';
     if (!studentDoc) {
+      const normalizedEmail = request.email ? request.email.trim().toLowerCase() : '';
+      if (!normalizedEmail) {
+        return res.status(400).json({
+          success: false,
+          message: 'নতুন শিক্ষার্থী হিসেবে ভর্তি অনুমোদন করতে একটি ভ্যালিড ইমেইল প্রয়োজন।',
+        });
+      }
+
+      if (isDisposableEmail(normalizedEmail)) {
+        return res.status(400).json({
+          success: false,
+          message: 'শিক্ষার্থীর ইমেইলটি টেম্পোরারি/ডিসপোজেবল, স্থায়ী ইমেইল ছাড়া অ্যাকাউন্ট তৈরি সম্ভব নয়।',
+        });
+      }
+
+      const hasMx = await hasValidMxRecords(normalizedEmail);
+      if (!hasMx) {
+        return res.status(400).json({
+          success: false,
+          message: 'শিক্ষার্থীর ইমেইল ডোমেইনটি সক্রিয় বা সঠিক নয়।',
+        });
+      }
+
       const generatedgravId = await generateUniquegravId();
-      // New student accounts use the generated user ID as their initial password.
-      // The student can change it later through the password-reset flow.
       defaultPassword = generatedgravId;
+
+      // Send Welcome & Credential Email BEFORE saving student to DB
+      const emailSent = await sendWelcomeRegistrationEmail({
+        to: normalizedEmail,
+        name: request.name.trim(),
+        gravId: generatedgravId,
+        role: 'student',
+        password: defaultPassword,
+        batchName: batch.name,
+      });
+
+      if (!emailSent) {
+        return res.status(400).json({
+          success: false,
+          message: 'শিক্ষার্থীর ইমেইল ঠিকানায় ওয়েলকাম বা ক্রেডেনশিয়াল ইমেইল পাঠানো সম্ভব হয়নি। অনুগ্রহ করে ইমেইলটি যাচাই করুন।',
+        });
+      }
+
       const passwordHash = await bcrypt.hash(defaultPassword, 10);
       studentDoc = await User.create({
         gravId: generatedgravId,
         name: request.name.trim(),
-        email: request.email?.trim().toLowerCase() || undefined,
+        email: normalizedEmail,
         phone: request.phone?.trim() || undefined,
         passwordHash,
         role: ROLES.STUDENT,
         status: 'active',
-        emailVerified: Boolean(request.email),
+        emailVerified: true,
         studentDetails: {
           schoolOrCollege: request.schoolOrCollege || '',
           gradeLevel: request.gradeLevel || course?.gradeLevel || '',
@@ -575,43 +637,72 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
     if (existingGravId) {
       studentDoc = await User.findOne({ gravId: existingGravId, role: ROLES.STUDENT });
       if (!studentDoc) {
-        return res.status(404).json({ success: false, message: 'à¦¬à¦¿à¦¦à§à¦¯à¦®à¦¾à¦¨ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
-      }
-      generatedgravId = studentDoc.gravId;
-    } else {
-      // Check if student with email or phone already exists
-      if (email && email.trim() !== '') {
-        const found = await User.findOne({ email: email.trim().toLowerCase() });
-        if (found) {
-          studentDoc = found;
-          generatedgravId = found.gravId;
+        if (!email || !email.trim()) {
+          return res.status(400).json({
+            success: false,
+            message: 'নতুন শিক্ষার্থী নিবন্ধনের জন্য একটি সক্রিয় ও সঠিক ইমেইল এড্রেস আবশ্যক।',
+          });
         }
-      }
 
-      if (!studentDoc && phone && phone.trim() !== '') {
-        const found = await User.findOne({ phone: phone.trim() });
-        if (found) {
-          studentDoc = found;
-          generatedgravId = found.gravId;
+        const normalizedEmail = email.trim().toLowerCase();
+
+        // 1. Check duplicate email
+        const existingEmailUser = await User.findOne({ email: normalizedEmail });
+        if (existingEmailUser) {
+          return res.status(400).json({
+            success: false,
+            message: 'এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট তৈরি আছে। বিদ্যমান শিক্ষার্থী হিসেবে নির্বাচন করুন।',
+          });
         }
-      }
 
-      // If still not found, create new student account
-      if (!studentDoc) {
+        // 2. Check disposable
+        if (isDisposableEmail(normalizedEmail)) {
+          return res.status(400).json({
+            success: false,
+            message: 'অনুগ্রহ করে একটি স্থায়ী ও ভ্যালিড ব্যক্তিগত ইমেইল ব্যবহার করুন (টেম্পোরারি ইমেইল অনুমোদিত নয়)।',
+          });
+        }
+
+        // 3. Check DNS MX
+        const hasMx = await hasValidMxRecords(normalizedEmail);
+        if (!hasMx) {
+          return res.status(400).json({
+            success: false,
+            message: 'ইমেইল ডোমেইনটি সক্রিয় বা সঠিক নয়। অনুগ্রহ করে সঠিক ইমেইল এড্রেস লিখুন।',
+          });
+        }
+
         generatedgravId = await generateUniquegravId();
-        // The default password is EXACTLY the generated gravId
         defaultPassword = generatedgravId;
-        const passwordHash = await bcrypt.hash(defaultPassword, 10);
 
+        // 4. Send Welcome & Credential Email BEFORE saving to DB
+        const emailSent = await sendWelcomeRegistrationEmail({
+          to: normalizedEmail,
+          name: name.trim(),
+          gravId: generatedgravId,
+          role: 'student',
+          password: defaultPassword,
+          batchName: batch.name,
+        });
+
+        if (!emailSent) {
+          return res.status(400).json({
+            success: false,
+            message: 'শিক্ষার্থীর ইমেইল ঠিকানায় ওয়েলকাম বা ক্রেডেনশিয়াল ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না দেখে আবার চেষ্টা করুন।',
+          });
+        }
+
+        // 5. Save to DB ONLY after email is verified as successfully sent!
+        const passwordHash = await bcrypt.hash(defaultPassword, 10);
         studentDoc = await User.create({
           gravId: generatedgravId,
           name: name.trim(),
-          email: email && email.trim() !== '' ? email.trim().toLowerCase() : undefined,
+          email: normalizedEmail,
           phone: phone && phone.trim() !== '' ? phone.trim() : undefined,
           passwordHash,
           role: ROLES.STUDENT,
           status: 'active',
-          emailVerified: !!email,
+          emailVerified: true,
           studentDetails: {
             schoolOrCollege: schoolOrCollege || '',
             gradeLevel: gradeLevel || (batch.courseId as any)?.gradeLevel || '',
@@ -623,7 +714,6 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       }
     }
 
-    // Check if already enrolled in this batch
     const existingEnrollment = await Enrollment.findOne({
       gravId: studentDoc.gravId,
       batchId: batch._id,

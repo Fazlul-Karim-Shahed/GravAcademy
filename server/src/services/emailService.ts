@@ -297,35 +297,65 @@ export const sendClassroomEmailNotification = async ({
 };
 
 /**
- * 6. Send Welcome & Email Verification to newly registered students / users
+ * 6. Send Welcome & Email Verification to newly registered users / students / staff
  */
 export const sendWelcomeRegistrationEmail = async ({
   to,
   name,
   gravId,
+  role = 'student',
+  password,
+  batchName,
 }: {
   to: string;
   name: string;
   gravId: string;
+  role?: string;
+  password?: string;
+  batchName?: string;
 }): Promise<boolean> => {
   const loginUrl = `${getPublicAppUrl()}/login`;
-  const subject = `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম, ${name || 'শিক্ষার্থী'}!`;
-  const body = [
-    `প্রিয় ${name || 'শিক্ষার্থী'},`,
+
+  const roleTitleMap: Record<string, string> = {
+    teacher: 'শিক্ষক (Teacher)',
+    employee: 'কর্মকর্তা (Staff / Employee)',
+    guardian: 'অভিভাবক (Guardian)',
+    admin: 'অ্যাডমিনিস্ট্রেটর (Admin)',
+    student: 'শিক্ষার্থী (Student)',
+  };
+  const roleTitle = roleTitleMap[role] || 'শিক্ষার্থী (Student)';
+
+  const subject = batchName
+    ? `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! [${batchName}]`
+    : `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম, ${name || 'ব্যবহারকারী'}!`;
+
+  const bodyParts = [
+    `প্রিয় ${name || 'ব্যবহারকারী'},`,
     '',
-    'গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! আপনার অ্যাকাউন্ট সফলভাবে তৈরি ও ভেরিফাই হয়েছে।',
-    '',
+    `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! আপনার অ্যাকাউন্ট (${roleTitle}) সফলভাবে তৈরি ও ভেরিফাই হয়েছে।`,
+  ];
+  if (batchName) {
+    bodyParts.push(`কোর্স/ব্যাচ: ${batchName}`);
+  }
+  bodyParts.push(
     `আপনার নাম: ${name}`,
     `আপনার Grav ID: ${gravId}`,
-    `লগইন ইমেইল: ${to}`,
+    `লগইন ইমেইল: ${to}`
+  );
+  if (password) {
+    bodyParts.push(`পাসওয়ার্ড: ${password}`);
+  }
+  bodyParts.push(
     '',
     'নিচের লিঙ্কে ক্লিক করে এখনই লগইন করুন:',
     loginUrl,
     '',
-    'আপনার পড়াশোনার যেকোনো প্রয়োজনে আমরা সর্বদা সাথে আছি।',
+    'আপনার যেকোনো একাডেমিক প্রয়োজনে আমরা সর্বদা পাশে আছি।',
     '',
-    'গ্র্যাভ একাডেমি পরিবার',
-  ].join('\n');
+    'গ্র্যাভ একাডেমি পরিবার'
+  );
+
+  const body = bodyParts.join('\n');
 
   const html = `<!doctype html>
 <html lang="bn">
@@ -355,22 +385,26 @@ export const sendWelcomeRegistrationEmail = async ({
           <tr>
             <td style="padding:36px 32px;">
               <p style="margin:0 0 16px;font-size:16px;line-height:1.6;font-weight:700;color:#0f172a;">
-                প্রিয় ${escapeHtml(name || 'শিক্ষার্থী')},
+                প্রিয় ${escapeHtml(name || 'ব্যবহারকারী')},
               </p>
               <p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#475569;">
-                অভিনন্দন! <strong>গ্র্যাভ একাডেমি</strong>-তে আপনার রেজিস্ট্রেশন সম্পন্ন হয়েছে এবং আপনার ইমেইল ঠিকানাটি সফলভাবে ভেরিফাই করা হয়েছে। এখন থেকে আপনি আমাদের কোর্স, লাইভ ক্লাস, লেকচার শিট ও পরীক্ষায় সহজে অংশ নিতে পারবেন।
+                অভিনন্দন! <strong>গ্র্যাভ একাডেমি</strong>-তে আপনার রেজিস্ট্রেশন সম্পন্ন হয়েছে এবং আপনার ইমেইল ঠিকানাটি সফলভাবে ভেরিফাই করা হয়েছে।${batchName ? ` আপনি সফলভাবে <strong>${escapeHtml(batchName)}</strong> ব্যাচে যুক্ত হয়েছেন।` : ''}
               </p>
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:16px;margin:24px 0;padding:20px;">
                 <tr>
                   <td>
                     <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:12px;">
-                      আপনার অ্যাকাউন্ট তথ্য
+                      আপনার অ্যাকাউন্ট বিবরণী
                     </div>
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="6">
                       <tr>
-                        <td width="30%" style="font-size:13px;color:#64748b;font-weight:600;">নাম:</td>
+                        <td width="32%" style="font-size:13px;color:#64748b;font-weight:600;">নাম:</td>
                         <td style="font-size:14px;color:#0f172a;font-weight:700;">${escapeHtml(name)}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:13px;color:#64748b;font-weight:600;">পদবি / রোল:</td>
+                        <td style="font-size:13px;color:#0f172a;font-weight:700;">${escapeHtml(roleTitle)}</td>
                       </tr>
                       <tr>
                         <td style="font-size:13px;color:#64748b;font-weight:600;">ইমেইল:</td>
@@ -380,6 +414,10 @@ export const sendWelcomeRegistrationEmail = async ({
                         <td style="font-size:13px;color:#64748b;font-weight:600;">Grav ID:</td>
                         <td style="font-size:15px;color:#2563eb;font-weight:800;font-family:monospace;">${escapeHtml(gravId)}</td>
                       </tr>
+                      ${password ? `<tr>
+                        <td style="font-size:13px;color:#64748b;font-weight:600;">পাসওয়ার্ড:</td>
+                        <td style="font-size:14px;color:#0f172a;font-weight:700;font-family:monospace;">${escapeHtml(password)}</td>
+                      </tr>` : ''}
                     </table>
                   </td>
                 </tr>
@@ -387,7 +425,7 @@ export const sendWelcomeRegistrationEmail = async ({
 
               <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:12px 16px;border-radius:0 12px 12px 0;margin-bottom:28px;">
                 <p style="margin:0;font-size:12px;line-height:1.6;color:#1e40af;font-weight:500;">
-                  💡 <strong>লগইন টিপ:</strong> আপনি আপনার <strong>Grav ID</strong> অথবা <strong>Email</strong> দিয়ে যেকোনো সময় ওয়েবসাইটে লগইন করতে পারবেন।
+                  💡 <strong>লগইন টিপ:</strong> আপনি আপনার <strong>Grav ID</strong> অথবা রেজিস্টার্ড <strong>Email</strong> — যেকোনো একটি ব্যবহার করে যেকোনো সময় ওয়েবসাইটে লগইন করতে পারবেন।${password ? ' প্রথম লগইনের পর নিজের সুবিধামতো পাসওয়ার্ড পরিবর্তন করে নিন।' : ''}
                 </p>
               </div>
 

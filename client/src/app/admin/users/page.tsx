@@ -704,9 +704,12 @@ export default function AdminUsersPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">ইমেইল</label>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">
+                    ইমেইল <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="email"
+                    required
                     value={staffEmail}
                     onChange={(e) => setStaffEmail(e.target.value)}
                     placeholder="name@example.com"
@@ -714,7 +717,7 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল</label>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল (ঐচ্ছিক)</label>
                   <input
                     type="text"
                     value={staffPhone}
@@ -724,7 +727,9 @@ export default function AdminUsersPage() {
                   />
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400 -mt-2">ইমেইল অথবা মোবাইলের মধ্যে অন্তত একটি দিতে হবে</p>
+              <p className="text-[11px] text-slate-400 -mt-2">
+                * ভেরিফিকেশনের জন্য ইমেইল আবশ্যক। অ্যাকাউন্ট তৈরির সাথে সাথে স্বয়ংক্রিয়ভাবে আইডি ও পাসওয়ার্ডসহ ওয়েলকাম মেসেজ যাবে।
+              </p>
 
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">পাসওয়ার্ড *</label>

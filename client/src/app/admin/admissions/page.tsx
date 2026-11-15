@@ -844,12 +844,13 @@ export default function AdminAdmissionsPage() {
                     {/* Student Email */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        ইমেইল ঠিকানা (ঐচ্ছিক)
+                        ইমেইল ঠিকানা {admissionMode === 'new' ? <span className="text-rose-500">*</span> : '(ঐচ্ছিক)'}
                       </label>
                       <div className="relative">
                         <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                         <input
                           type="email"
+                          required={admissionMode === 'new'}
                           value={studentEmail}
                           onChange={(e) => setStudentEmail(e.target.value)}
                           placeholder="student@example.com"
@@ -861,6 +862,11 @@ export default function AdminAdmissionsPage() {
                           }`}
                         />
                       </div>
+                      {admissionMode === 'new' && (
+                        <p className="text-[11px] text-slate-400 mt-1">
+                          * নতুন শিক্ষার্থীর জন্য ইমেইল আবশ্যক। ভর্তির সাথে সাথে স্বয়ংক্রিয়ভাবে আইডি ও পাসওয়ার্ডসহ ওয়েলকাম মেসেজ যাবে।
+                        </p>
+                      )}
                     </div>
 
                     {/* School / College */}

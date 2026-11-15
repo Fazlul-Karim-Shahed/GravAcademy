@@ -20,6 +20,11 @@ import { Payment } from '../models/Payment';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { generateUniquegravId } from './authController';
 import {
+  sendWelcomeRegistrationEmail,
+  isDisposableEmail,
+  hasValidMxRecords,
+} from '../services/emailService';
+import {
   ROLES,
   UserRole,
   PermissionKey,
@@ -28,18 +33,13 @@ import {
   PERMISSIONS,
 } from '../types/roles';
 
-export const createStaffSchema = z
-  .object({
-    name: z.string().min(2, 'à¦¨à¦¾à¦® à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§¨ à¦…à¦•à§à¦·à¦°à§‡à¦° à¦¹à¦¤à§‡ à¦¹à¦¬à§‡').max(100),
-    email: z.string().email('à¦¸à¦ à¦¿à¦• à¦‡à¦®à§‡à¦‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾ à¦¦à¦¿à¦¨').optional().or(z.literal('')),
-    phone: z.string().optional().or(z.literal('')),
-    password: z.string().min(6, 'à¦ªà¦¾à¦¸à¦“à¦¯à¦¼à¦¾à¦°à§à¦¡ à¦•à¦®à¦ªà¦•à§à¦·à§‡ à§¬ à¦…à¦•à§à¦·à¦°à§‡à¦° à¦¹à¦¤à§‡ à¦¹à¦¬à§‡'),
-    role: z.enum(['teacher', 'guardian', 'employee']),
-  })
-  .refine((data) => (data.email && data.email.trim() !== '') || (data.phone && data.phone.trim() !== ''), {
-    message: 'à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦–à§‹à¦²à¦¾à¦° à¦œà¦¨à§à¦¯ à¦à¦•à¦Ÿà¦¿ à¦‡à¦®à§‡à¦‡à¦² à¦…à¦¥à¦¬à¦¾ à¦«à§‹à¦¨ à¦¨à¦®à§à¦¬à¦° à¦†à¦¬à¦¶à§à¦¯à¦•à¥¤',
-    path: ['email'],
-  });
+export const createStaffSchema = z.object({
+  name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষরের হতে হবে').max(100),
+  email: z.string().email('অনুগ্রহ করে একটি সঠিক ইমেইল ঠিকানা দিন'),
+  phone: z.string().optional().or(z.literal('')),
+  password: z.string().min(6, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'),
+  role: z.enum(['teacher', 'guardian', 'employee']),
+});
 
 /**
  * Get system permissions catalog & default mappings
@@ -225,26 +225,62 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
     }
 
     const body = createStaffSchema.parse(req.body);
+    const normalizedEmail = body.email.trim().toLowerCase();
 
-    if (body.email) {
-      const existing = await User.findOne({ email: body.email.trim().toLowerCase() });
-      if (existing) {
-        return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦‡à¦®à§‡à¦‡à¦² à¦¦à¦¿à¦¯à¦¼à§‡ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦•à¦Ÿà¦¿ à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦†à¦›à§‡' });
-      }
+    // 1. Check duplicate email
+    const existing = await User.findOne({ email: normalizedEmail });
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট আছে' });
+    }
+
+    // 2. Check disposable email domain
+    if (isDisposableEmail(normalizedEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'অনুগ্রহ করে একটি স্থায়ী ও ভ্যালিড ব্যক্তিগত ইমেইল ব্যবহার করুন (টেম্পোরারি ইমেইল অনুমোদিত নয়)।',
+      });
+    }
+
+    // 3. Check DNS MX records
+    const hasMx = await hasValidMxRecords(normalizedEmail);
+    if (!hasMx) {
+      return res.status(400).json({
+        success: false,
+        message: 'ইমেইল ডোমেইনটি সক্রিয় বা সঠিক নয়। অনুগ্রহ করে সঠিক ইমেইল এড্রেস লিখুন।',
+      });
     }
 
     const gravId = await generateUniquegravId();
+
+    // 4. Send Welcome & Credential Email BEFORE saving to DB
+    const emailSent = await sendWelcomeRegistrationEmail({
+      to: normalizedEmail,
+      name: body.name.trim(),
+      gravId,
+      role: body.role,
+      password: body.password,
+    });
+
+    if (!emailSent) {
+      return res.status(400).json({
+        success: false,
+        message: 'প্রদত্ত ইমেইল ঠিকানায় ওয়েলকাম বা ক্রেডেনশিয়াল ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না দেখে আবার চেষ্টা করুন।',
+      });
+    }
+
+    // 5. Save to DB ONLY after email is verified as successfully sent!
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(body.password, salt);
 
     const user = await User.create({
       gravId,
       name: body.name.trim(),
-      email: body.email && body.email.trim() ? body.email.trim().toLowerCase() : undefined,
+      email: normalizedEmail,
       phone: body.phone ? body.phone.trim() : undefined,
       passwordHash,
       role: body.role,
       status: 'active',
+      emailVerified: true,
     });
 
     await AuditLog.create({
@@ -260,26 +296,17 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
 
     return res.status(201).json({
       success: true,
-      message: 'à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡',
+      message: 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে এবং ইমেইলে ক্রেডেনশিয়াল পাঠানো হয়েছে।',
       data: { _id: user._id, gravId: user.gravId, name: user.name, role: user.role },
     });
   } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ success: false, message: error.errors[0]?.message || 'Invalid data' });
-    }
     console.error('createStaffAccount error:', error);
-    return res.status(500).json({ success: false, message: 'à¦…à§à¦¯à¦¾à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿' });
+    return res.status(500).json({ success: false, message: error?.message || 'অ্যাকাউন্ট তৈরি করা যায়নি' });
   }
 };
 
 /**
- * Permanently delete a user and the platform records owned by that user.
- *
- * This is intentionally stricter than the generic USERS_MANAGE permission:
- * only an admin/superadmin may delete, self-deletion is blocked, and the
- * superadmin account can never be removed. Financial payments are retained
- * when the deleted account was only the collector; their collector reference
- * is cleared so the financial history is not silently destroyed.
+ * Permanently delete a user
  */
 export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
