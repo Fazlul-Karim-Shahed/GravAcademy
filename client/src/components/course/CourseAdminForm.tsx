@@ -109,19 +109,29 @@ const defaultHighlights = [
   'Downloadable notes and formula sheets',
 ];
 
+const DEFAULT_DEMO_TITLE = 'এখনই ফ্রী ডেমো দেখুন';
+
 const defaultSyllabus: SyllabusItem[] = [
-  { title: 'বাংলা ১ম পত্র', details: 'গল্প, কবিতা, সৃজনশীল প্রশ্ন ও বোর্ডভিত্তিক অনুশীলন।' },
-  { title: 'বাংলা ২য় পত্র', details: 'ব্যাকরণ, নির্মিতি ও লিখিত অংশের নিয়মিত practice।' },
-  { title: 'ইংরেজি ১ম পত্র', details: 'Reading, comprehension, writing এবং পরীক্ষার প্রশ্ন অনুশীলন।' },
-  { title: 'ইংরেজি ২য় পত্র', details: 'Grammar, paragraph, composition ও model test practice।' },
-  { title: 'গণিত', details: 'অধ্যায়ভিত্তিক concept, shortcut এবং ধাপে ধাপে problem solving।' },
-  { title: 'বিজ্ঞান', details: 'মূল ধারণা, diagram, প্রয়োগ ও পরীক্ষাভিত্তিক প্রস্তুতি।' },
+  {
+    title: 'প্রথম বিষয়',
+    details: 'অধ্যায়ভিত্তিক ক্লাস ও concept clear\nনিয়মিত practice ও মূল্যায়ন',
+    contentLines: ['অধ্যায়ভিত্তিক ক্লাস ও concept clear', 'নিয়মিত practice ও মূল্যায়ন'],
+    demoTitle: DEFAULT_DEMO_TITLE,
+    demoUrl: '',
+  },
+  {
+    title: 'দ্বিতীয় বিষয়',
+    details: 'গুরুত্বপূর্ণ topic ও exam preparation\nপ্রশ্ন সমাধান ও revision',
+    contentLines: ['গুরুত্বপূর্ণ topic ও exam preparation', 'প্রশ্ন সমাধান ও revision'],
+    demoTitle: DEFAULT_DEMO_TITLE,
+    demoUrl: '',
+  },
 ];
 
 const defaultRoutine: CourseRoutine = {
   title: 'প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস',
   bannerText: 'রুটিন শীঘ্রই আসছে',
-  programLabel: '',
+  programLabel: 'Academic Program',
   routineUrl: '',
   prospectusUrl: '',
 };
@@ -208,7 +218,7 @@ function hydrateForm(course: any): CourseFormData {
           contentLines: Array.isArray(item.contentLines) && item.contentLines.length
             ? item.contentLines.map((line: unknown) => asString(line)).filter(Boolean)
             : asString(item.details).split(/\r?\n/).map((line) => line.trim()).filter(Boolean),
-          demoTitle: asString(item.demoTitle),
+          demoTitle: asString(item.demoTitle) || DEFAULT_DEMO_TITLE,
           demoUrl: asString(item.demoUrl),
         }))
       : base.syllabus,
@@ -247,7 +257,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
   const [newFeatureIcon, setNewFeatureIcon] = useState('play');
   const [newSyllabusTitle, setNewSyllabusTitle] = useState('');
   const [newSyllabusDetails, setNewSyllabusDetails] = useState('');
-  const [newSyllabusDemoTitle, setNewSyllabusDemoTitle] = useState('');
+  const [newSyllabusDemoTitle, setNewSyllabusDemoTitle] = useState(DEFAULT_DEMO_TITLE);
   const [newSyllabusDemoUrl, setNewSyllabusDemoUrl] = useState('');
 
   const gradeOptions = useMemo(() => {
@@ -316,7 +326,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
     }]);
     setNewSyllabusTitle('');
     setNewSyllabusDetails('');
-    setNewSyllabusDemoTitle('');
+    setNewSyllabusDemoTitle(DEFAULT_DEMO_TITLE);
     setNewSyllabusDemoUrl('');
   };
 

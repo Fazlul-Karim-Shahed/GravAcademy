@@ -36,7 +36,7 @@ export const createCourseSchema = z.object({
     title: z.string().min(1).max(200),
     details: z.string().max(1000).optional().or(z.literal('')),
     contentLines: z.array(z.string().max(500)).max(30).optional().default([]),
-    demoTitle: z.string().max(120).optional().or(z.literal('')),
+    demoTitle: z.string().max(120).optional().or(z.literal('')).default('এখনই ফ্রী ডেমো দেখুন'),
     demoUrl: courseLinkSchema.optional(),
   })).optional().default([]),
   routine: z.object({
