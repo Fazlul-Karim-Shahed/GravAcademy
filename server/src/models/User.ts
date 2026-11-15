@@ -11,6 +11,7 @@ export interface IUser extends Document {
   phone?: string;
   role: UserRole;
   customPermissions: PermissionKey[];
+  revokedPermissions: PermissionKey[];
   status: 'active' | 'pending_verification' | 'suspended' | 'deactivated';
   emailVerified: boolean;
   avatarUrl?: string;
@@ -80,6 +81,10 @@ const UserSchema = new Schema<IUser>(
       index: true,
     },
     customPermissions: {
+      type: [String],
+      default: [],
+    },
+    revokedPermissions: {
       type: [String],
       default: [],
     },

@@ -430,11 +430,13 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
  * Helper to check if a user possesses a specific permission
  */
 export function hasPermission(
-  user: { role?: string; customPermissions?: string[] } | null | undefined,
+  user: { role?: string; customPermissions?: string[]; revokedPermissions?: string[] } | null | undefined,
   requiredPermission: PermissionKey
 ): boolean {
   if (!user || !user.role) return false;
   if (user.role === ROLES.SUPERADMIN) return true;
+
+  if (user.revokedPermissions?.includes(requiredPermission)) return false;
 
   const defaultPerms = ROLE_DEFAULT_PERMISSIONS[user.role as UserRole] || [];
   if (defaultPerms.includes(requiredPermission)) return true;

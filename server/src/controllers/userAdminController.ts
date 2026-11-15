@@ -22,6 +22,7 @@ import { generateUniquegravId } from './authController';
 import {
   ROLES,
   UserRole,
+  PermissionKey,
   ALL_PERMISSIONS_METADATA,
   ROLE_DEFAULT_PERMISSIONS,
   PERMISSIONS,
@@ -123,7 +124,7 @@ export const getUserById = async (req: AuthenticatedRequest, res: Response) => {
 export const updateUserRole = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { role, customPermissions, status } = req.body;
+    const { role, customPermissions, revokedPermissions, status } = req.body;
 
     const caller = req.user;
     if (!caller) return res.status(401).json({ success: false, message: 'Unauthorized' });
@@ -161,7 +162,17 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
 
     const previousRole = user.role;
     if (role) user.role = role as UserRole;
-    if (customPermissions !== undefined) user.customPermissions = customPermissions;
+    const validPermissionKeys = new Set(Object.values(PERMISSIONS));
+    if (customPermissions !== undefined) {
+      user.customPermissions = Array.from(new Set(
+        (Array.isArray(customPermissions) ? customPermissions : []).filter((permission): permission is PermissionKey => validPermissionKeys.has(permission)),
+      ));
+    }
+    if (revokedPermissions !== undefined) {
+      user.revokedPermissions = Array.from(new Set(
+        (Array.isArray(revokedPermissions) ? revokedPermissions : []).filter((permission): permission is PermissionKey => validPermissionKeys.has(permission)),
+      ));
+    }
     if (status) user.status = status;
 
     await user.save();
@@ -177,6 +188,7 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
         newRole: user.role,
         targetEmail: user.email,
         customPermissions: user.customPermissions,
+        revokedPermissions: user.revokedPermissions,
       },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],

@@ -38,6 +38,7 @@ interface UserDetail {
   avatarUrl?: string;
   phone?: string;
   customPermissions: string[];
+  revokedPermissions: string[];
   createdAt: string;
 }
 
@@ -52,6 +53,7 @@ export default function UserPermissionsEditPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('student');
   const [customPermissions, setCustomPermissions] = useState<string[]>([]);
+  const [revokedPermissions, setRevokedPermissions] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -70,6 +72,7 @@ export default function UserPermissionsEditPage() {
         setTargetUser(u);
         setSelectedRole(u.role);
         setCustomPermissions(u.customPermissions || []);
+        setRevokedPermissions(u.revokedPermissions || []);
       }
     } catch (err: any) {
       console.error('Failed to load user:', err);
@@ -82,7 +85,14 @@ export default function UserPermissionsEditPage() {
     }
   };
 
-  const toggleCustomPermission = (permKey: string) => {
+  const toggleCustomPermission = (permKey: PermissionKey) => {
+    if (selectedRole === ROLES.SUPERADMIN) return;
+    if (roleDefaultPerms.has(permKey)) {
+      setRevokedPermissions((previous) => previous.includes(permKey)
+        ? previous.filter((permission) => permission !== permKey)
+        : [...previous, permKey]);
+      return;
+    }
     setCustomPermissions((prev) => {
       if (prev.includes(permKey)) {
         return prev.filter((p) => p !== permKey);
@@ -101,6 +111,7 @@ export default function UserPermissionsEditPage() {
       const res = await api.put(`/users/${gravId}/role`, {
         role: selectedRole,
         customPermissions: customPermissions,
+        revokedPermissions,
       });
 
       if (res.data?.success) {
@@ -138,19 +149,24 @@ export default function UserPermissionsEditPage() {
     return new Set(ROLE_DEFAULT_PERMISSIONS[selectedRole] || []);
   }, [selectedRole]);
 
-  const selectablePermissionKeys = useMemo(
-    () => ALL_PERMISSIONS_METADATA
-      .filter((permission) => !roleDefaultPerms.has(permission.key))
-      .map((permission) => permission.key),
-    [roleDefaultPerms],
+  const getPermissionGranted = (permissionKey: PermissionKey) => (
+    (roleDefaultPerms.has(permissionKey) && !revokedPermissions.includes(permissionKey))
+    || customPermissions.includes(permissionKey)
   );
 
-  const selectAllPermissions = () => {
-    setCustomPermissions((previous) => Array.from(new Set([...previous, ...selectablePermissionKeys])));
-  };
+  const allPermissionsSelected = ALL_PERMISSIONS_METADATA.every((permission) => getPermissionGranted(permission.key));
 
-  const deselectAllPermissions = () => {
+  const setAllPermissionsSelected = (checked: boolean) => {
+    if (selectedRole === ROLES.SUPERADMIN) return;
+    if (checked) {
+      setCustomPermissions(ALL_PERMISSIONS_METADATA
+        .filter((permission) => !roleDefaultPerms.has(permission.key))
+        .map((permission) => permission.key));
+      setRevokedPermissions([]);
+      return;
+    }
     setCustomPermissions([]);
+    setRevokedPermissions(Array.from(roleDefaultPerms));
   };
 
   if (loading) {
@@ -231,9 +247,9 @@ export default function UserPermissionsEditPage() {
           </div>
 
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 dark:text-slate-400">কাস্টম অতিরিক্ত পারমিশন:</span>
+            <span className="text-slate-500 dark:text-slate-400">মোট সক্রিয় পারমিশন:</span>
             <span className="font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-              {customPermissions.length} টি সক্রিয়
+              {ALL_PERMISSIONS_METADATA.filter((permission) => getPermissionGranted(permission.key)).length} টি সক্রিয়
             </span>
           </div>
         </div>
@@ -335,27 +351,21 @@ export default function UserPermissionsEditPage() {
               </div>
             </div>
 
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-3 dark:border-blue-900/60 dark:bg-blue-950/20">
-              <p className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                ডিফল্ট রোল পারমিশন সবসময় চালু থাকবে; নিচের বাটনগুলো অতিরিক্ত পারমিশন নিয়ন্ত্রণ করবে।
-              </p>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  onClick={selectAllPermissions}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2 text-[11px] font-bold text-white transition-colors hover:bg-blue-700"
-                >
-                  <Check className="h-3.5 w-3.5" /> সব নির্বাচন
-                </button>
-                <button
-                  type="button"
-                  onClick={deselectAllPermissions}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-bold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                >
-                  সব বাদ
-                </button>
-              </div>
-            </div>
+            <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-3 dark:border-blue-900/60 dark:bg-blue-950/20">
+              <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                সব permission একসাথে চালু বা বন্ধ করুন
+              </span>
+              <span className="flex shrink-0 items-center gap-2 text-[11px] font-bold text-blue-700 dark:text-blue-300">
+                <span>সব নির্বাচন</span>
+                <input
+                  type="checkbox"
+                  checked={allPermissionsSelected}
+                  disabled={selectedRole === ROLES.SUPERADMIN}
+                  onChange={(event) => setAllPermissionsSelected(event.target.checked)}
+                  className="h-4 w-4 rounded accent-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </span>
+            </label>
 
             {/* Category Filter Tabs */}
             <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
@@ -379,20 +389,18 @@ export default function UserPermissionsEditPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               {filteredPermissions.map((perm) => {
                 const isDefaultByRole = roleDefaultPerms.has(perm.key);
+                const isRevoked = revokedPermissions.includes(perm.key);
                 const isGrantedCustom = customPermissions.includes(perm.key);
+                const isGranted = getPermissionGranted(perm.key);
 
                 return (
                   <div
                     key={perm.key}
-                    onClick={() => {
-                      if (!isDefaultByRole) {
-                        toggleCustomPermission(perm.key);
-                      }
-                    }}
+                    onClick={() => toggleCustomPermission(perm.key)}
                     className={`p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
-                      isDefaultByRole
-                        ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/80 dark:border-emerald-800/60 cursor-default'
-                        : isGrantedCustom
+                      isRevoked
+                        ? 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-200/80 dark:border-rose-800/60 cursor-pointer'
+                        : isGranted
                         ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-400 dark:border-blue-600 cursor-pointer shadow-xs'
                         : 'bg-slate-50/50 dark:bg-slate-950/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer'
                     }`}
@@ -402,7 +410,11 @@ export default function UserPermissionsEditPage() {
                         <span className="font-bold text-xs text-slate-900 dark:text-white">
                           {perm.label}
                         </span>
-                        {isDefaultByRole ? (
+                        {isRevoked ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
+                            ডিফল্ট বন্ধ
+                          </span>
+                        ) : isDefaultByRole ? (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
                             ডিফল্ট রোল পারমিশন
                           </span>
@@ -418,18 +430,14 @@ export default function UserPermissionsEditPage() {
                     </div>
 
                     <div className="shrink-0 pt-0.5">
-                      {isDefaultByRole ? (
-                        <div className="w-5 h-5 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-xs">
-                          <Check className="w-3.5 h-3.5" />
-                        </div>
-                      ) : (
-                        <input
-                          type="checkbox"
-                          checked={isGrantedCustom}
-                          onChange={() => toggleCustomPermission(perm.key)}
-                          className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        />
-                      )}
+                      <input
+                        type="checkbox"
+                        checked={isGranted}
+                        disabled={selectedRole === ROLES.SUPERADMIN}
+                        onChange={() => toggleCustomPermission(perm.key)}
+                        onClick={(event) => event.stopPropagation()}
+                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                      />
                     </div>
                   </div>
                 );

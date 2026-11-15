@@ -123,6 +123,9 @@ export const requirePermission = (...permissions: PermissionKey[]) => {
       ...userDefaultPermissions,
       ...(req.user.customPermissions || []),
     ]);
+    for (const revokedPermission of req.user.revokedPermissions || []) {
+      userAllPermissions.delete(revokedPermission);
+    }
 
     const hasAllRequired = permissions.every((p) => userAllPermissions.has(p));
 

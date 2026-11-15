@@ -433,11 +433,17 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
  */
 export function getEffectivePermissions(
   role: UserRole,
-  customPermissions?: PermissionKey[]
+  customPermissions?: PermissionKey[],
+  revokedPermissions?: PermissionKey[],
 ): PermissionKey[] {
   if (role === ROLES.SUPERADMIN) {
     return Object.values(PERMISSIONS);
   }
-  const roleDefaults = ROLE_DEFAULT_PERMISSIONS[role] || [];
-  return Array.from(new Set([...roleDefaults, ...(customPermissions || [])]));
+  const revoked = new Set(revokedPermissions || []);
+  const permissions = new Set([
+    ...(ROLE_DEFAULT_PERMISSIONS[role] || []),
+    ...(customPermissions || []),
+  ]);
+  revoked.forEach((permission) => permissions.delete(permission));
+  return Array.from(permissions);
 }
