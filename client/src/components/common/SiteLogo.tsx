@@ -40,7 +40,11 @@ export const SiteLogo: React.FC<SiteLogoProps> = ({
     xl: 'w-8 h-8',
   };
 
-  const boxClasses = `${sizeBoxMap[size]} bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20 overflow-hidden shrink-0 ${className}`;
+  const boxClasses = `${sizeBoxMap[size]} flex items-center justify-center overflow-hidden shrink-0 ${
+    logoUrl
+      ? 'bg-transparent shadow-none'
+      : 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+  } ${className}`;
 
   return (
     <div className="flex items-center gap-2.5">

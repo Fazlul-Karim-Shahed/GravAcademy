@@ -551,7 +551,11 @@ export default function AdminSettingsPage() {
                     </div>
 
                     <div className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-                      <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold overflow-hidden shadow-md shadow-blue-500/20 shrink-0">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 ${
+                        (logoPreviewUrl || formatDriveImageUrl(logoUrl))
+                          ? 'bg-transparent shadow-none'
+                          : 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+                      }`}>
                         {(logoPreviewUrl || formatDriveImageUrl(logoUrl)) ? (
                           <img
                             src={logoPreviewUrl || formatDriveImageUrl(logoUrl)}
