@@ -197,8 +197,8 @@ function hydrateForm(course: any): CourseFormData {
     instructors: instructorIds,
     instructorProfiles: instructorIds.map((id: string) => profileMap.get(id) || ({ instructorId: id, subject: '', experience: '' })),
     curriculumHighlights: Array.isArray(course.curriculumHighlights) ? course.curriculumHighlights : base.curriculumHighlights,
-    features: Array.isArray(course.features) && course.features.length > 0 ? course.features : base.features,
-    syllabus: Array.isArray(course.syllabus) && course.syllabus.length > 0
+    features: Array.isArray(course.features) ? course.features : base.features,
+    syllabus: Array.isArray(course.syllabus)
       ? course.syllabus.map((item: any) => ({ title: asString(item.title), details: asString(item.details) }))
       : base.syllabus,
     routine: { ...base.routine, ...(course.routine || {}) },
