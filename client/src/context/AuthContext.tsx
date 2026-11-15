@@ -31,6 +31,7 @@ export interface User {
     guardianPhone?: string;
   };
   customPermissions?: string[];
+  revokedPermissions?: string[];
   effectivePermissions?: string[];
 }
 

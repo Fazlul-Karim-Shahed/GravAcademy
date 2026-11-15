@@ -226,15 +226,15 @@ export const ALL_PERMISSIONS_METADATA: PermissionDefinition[] = [
   },
   {
     key: PERMISSIONS.ATTENDANCE_MANAGE,
-    label: 'হাজিরা নেওয়া (Manage Attendance)',
-    category: 'Live Classes',
-    description: 'শিক্ষার্থীদের উপস্থিতি রেকর্ড ও পরিবর্তন করা',
+    label: 'শিক্ষক হাজিরা নেওয়া (Manage Teacher Attendance)',
+    category: 'Administration',
+    description: 'শিক্ষকদের batch schedule অনুযায়ী attendance mark করা',
   },
   {
     key: PERMISSIONS.ATTENDANCE_VIEW,
-    label: 'হাজিরা রিপোর্ট দেখা (View Attendance)',
-    category: 'Live Classes',
-    description: 'শিক্ষার্থীদের উপস্থিতির হিসেব ও রিপোর্ট দেখা',
+    label: 'শিক্ষক হাজিরা দেখা (View Teacher Attendance)',
+    category: 'Administration',
+    description: 'শিক্ষকদের attendance history দেখা',
   },
 
   // Exams & Homework
@@ -392,8 +392,6 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
     PERMISSIONS.ASSIGNMENTS_MANAGE,
     PERMISSIONS.LIVE_CLASSES_MANAGE,
     PERMISSIONS.LIVE_CLASSES_JOIN,
-    PERMISSIONS.ATTENDANCE_MANAGE,
-    PERMISSIONS.ATTENDANCE_VIEW,
     PERMISSIONS.ADMISSIONS_VIEW,
   ],
   [ROLES.STUDENT]: [
@@ -405,19 +403,15 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
     PERMISSIONS.RESULTS_VIEW_SELF,
     PERMISSIONS.ASSIGNMENTS_SUBMIT,
     PERMISSIONS.LIVE_CLASSES_JOIN,
-    PERMISSIONS.ATTENDANCE_VIEW,
   ],
   [ROLES.GUARDIAN]: [
     PERMISSIONS.COURSES_VIEW,
     PERMISSIONS.BATCHES_VIEW,
     PERMISSIONS.RESULTS_VIEW_SELF,
-    PERMISSIONS.ATTENDANCE_VIEW,
   ],
   [ROLES.EMPLOYEE]: [
     PERMISSIONS.COURSES_VIEW,
     PERMISSIONS.BATCHES_VIEW,
-    PERMISSIONS.ATTENDANCE_MANAGE,
-    PERMISSIONS.ATTENDANCE_VIEW,
     PERMISSIONS.DOCUMENTS_VIEW,
     PERMISSIONS.ADMISSIONS_VIEW,
     PERMISSIONS.ADMISSIONS_CREATE,

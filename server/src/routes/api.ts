@@ -24,12 +24,19 @@ import * as settingCtrl from '../controllers/settingController';
 import * as guardianCtrl from '../controllers/guardianController';
 import * as assignmentCtrl from '../controllers/assignmentController';
 import * as marksheetCtrl from '../controllers/marksheetController';
+import * as teacherAttendanceCtrl from '../controllers/teacherAttendanceController';
 
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB max
 });
+
+// --- TEACHER ATTENDANCE (admin-managed) ---
+router.get('/teacher-attendance/quick', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getQuickAttendance);
+router.get('/teacher-attendance/teachers', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getAttendanceTeachers);
+router.get('/teacher-attendance/teachers/:teacherId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherAttendance);
+router.post('/teacher-attendance/mark', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherPresent);
 
 // --- AUTH & PROFILE ROUTES ---
 router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl.register);

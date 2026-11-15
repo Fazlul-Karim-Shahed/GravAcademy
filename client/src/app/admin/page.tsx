@@ -24,9 +24,11 @@ import {
   Briefcase,
   DollarSign,
   Inbox,
+  CalendarCheck,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
@@ -91,6 +93,14 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE) && (
+              <Link
+                href="/admin/attendance"
+                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors"
+              >
+                <CalendarCheck className="w-3.5 h-3.5" /> Attendance
+              </Link>
+            )}
             <Link
               href="/admin/classes"
               style={{ display: isFeatureEnabled('courses', user?.role === 'superadmin') ? undefined : 'none' }}
