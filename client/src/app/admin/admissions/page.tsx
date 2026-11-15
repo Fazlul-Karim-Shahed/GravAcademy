@@ -511,6 +511,10 @@ export default function AdminAdmissionsPage() {
       setErrorMsg('অনুগ্রহ করে ভর্তির জন্য একটি ব্যাচ নির্বাচন করুন।');
       return;
     }
+    if (admissionMode === 'new' && !studentEmail.trim()) {
+      setErrorMsg('নতুন শিক্ষার্থী নিবন্ধনের জন্য একটি সক্রিয় ও সঠিক ইমেইল এড্রেস আবশ্যক (লগইন তথ্য ও ওয়েলকাম বার্তা পাঠানো হবে)।');
+      return;
+    }
     if (!studentPhone.trim() && !studentEmail.trim()) {
       setErrorMsg('যোগাযোগের জন্য শিক্ষার্থীর ফোন নম্বর অথবা ইমেইল যেকোনো একটি অবশ্যই দেওয়া প্রয়োজন।');
       return;
