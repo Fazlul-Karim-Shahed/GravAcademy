@@ -93,9 +93,9 @@ export default function StudentDashboard() {
 
               {/* Unique Grav ID Display (Visible on mobile/small screens below greeting) */}
               {user?.gravId && (
-                <div className="inline-flex md:hidden items-center gap-1.5 mt-2 text-white">
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Grav ID:</span>
-                  <span className="text-xs font-black tracking-wider text-indigo-600 dark:text-indigo-300 select-all font-mono">
+                <div className="inline-flex md:hidden items-center gap-1.5 mt-2 rounded-lg bg-white/10 px-2.5 py-1 text-white">
+                  <span className="text-xs text-white/80 font-semibold">Grav ID:</span>
+                  <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono drop-shadow-sm">
                     {user.gravId}
                   </span>
                 </div>
@@ -107,9 +107,9 @@ export default function StudentDashboard() {
             <div className="flex flex-col md:items-end gap-3 self-start md:self-auto w-full md:w-auto min-w-0">
               {/* Unique Grav ID Display (Visible on md/lg screens on the right) */}
               {user?.gravId && (
-                <div className="hidden md:inline-flex items-center gap-1.5 text-white">
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Grav ID:</span>
-                  <span className="text-xs font-black tracking-wider text-indigo-600 dark:text-indigo-300 select-all font-mono">
+                <div className="hidden md:inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-white">
+                  <span className="text-xs text-white/80 font-semibold">Grav ID:</span>
+                  <span className="text-xs font-black tracking-wider text-amber-300 select-all font-mono drop-shadow-sm">
                     {user.gravId}
                   </span>
                 </div>
