@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 import { z } from 'zod';
 import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
@@ -10,6 +11,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { Payment } from '../models/Payment';
 import { EnrollmentRequest } from '../models/EnrollmentRequest';
+import { EmailVerificationToken } from '../models/EmailVerificationToken';
 import { generateUniquegravId } from './authController';
 import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
@@ -20,6 +22,7 @@ import {
   isDisposableEmail,
   hasValidMxRecords,
 } from '../services/emailService';
+import { createEmailVerification } from '../services/emailVerification';
 
 export const enrollBatchSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
@@ -199,7 +202,7 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
     }
 
     const existingRequest = isGuest
-      ? await EnrollmentRequest.findOne({ batchId: batch._id, status: 'pending', $or: contactFilters })
+      ? await EnrollmentRequest.findOne({ batchId: batch._id, status: { $in: ['pending', 'verification_pending'] }, $or: contactFilters })
       : await EnrollmentRequest.findOne({ applicantGravId, batchId: batch._id, status: 'pending' });
     if (existingRequest) {
       return res.status(409).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦à¦•à¦Ÿà¦¿ request à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ pending à¦†à¦›à§‡à¥¤', data: existingRequest });
@@ -228,14 +231,6 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
         });
       }
 
-      const emailSent = await sendEnrollmentRequestReceivedEmail({
-        to: normalizedEmail,
-        name: name.trim(),
-        batchName: batch.name,
-      });
-      if (!emailSent) {
-        return res.status(400).json({ success: false, message: 'এই ইমেইল ঠিকানায় কনফার্মেশন ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না দেখে আবার চেষ্টা করুন।' });
-      }
     }
 
     const request = await EnrollmentRequest.create({
@@ -251,9 +246,35 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       guardianName: guardianName?.trim() || undefined,
       guardianPhone: guardianPhone?.trim() || undefined,
       message: message?.trim() || undefined,
+      status: isGuest ? 'verification_pending' : 'pending',
     });
 
-    return res.status(201).json({ success: true, message: 'à¦­à¦°à§à¦¤à¦¿ request à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà¦¾à¦ à¦¾à¦¨à§‹ à¦¹à§Ÿà§‡à¦›à§‡à¥¤', data: request });
+    if (isGuest) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const { rawToken, verificationUrl } = await createEmailVerification({ enrollmentRequestId: request._id });
+      const emailSent = await sendEnrollmentRequestReceivedEmail({
+        to: normalizedEmail,
+        name: name.trim(),
+        batchName: batch.name,
+        verificationUrl,
+      });
+      if (!emailSent) {
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+        await Promise.all([
+          EnrollmentRequest.deleteOne({ _id: request._id }),
+          EmailVerificationToken.deleteOne({ tokenHash }),
+        ]);
+        return res.status(400).json({ success: false, message: 'এই ইমেইলে verification link পাঠানো যায়নি। ইমেইলটি যাচাই করে আবার চেষ্টা করুন।' });
+      }
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: isGuest
+        ? 'ইমেইলে পাঠানো link verify করলে আপনার request admission team-এর কাছে যাবে।'
+        : 'ভর্তি request সফলভাবে পাঠানো হয়েছে।',
+      data: request,
+    });
   } catch (error: any) {
     console.error('createEnrollmentRequest error:', error);
     if (error?.code === 11000) return res.status(409).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦à¦•à¦Ÿà¦¿ request à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡à¥¤' });
@@ -657,6 +678,9 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
       // 1. Check if student with email already exists
       const existingEmailUser = await User.findOne({ email: normalizedEmail });
       if (existingEmailUser) {
+        if (existingEmailUser.role !== ROLES.STUDENT) {
+          return res.status(409).json({ success: false, message: 'এই ইমেইলটি অন্য একটি role-এর account-এ ব্যবহৃত। নতুন শিক্ষার্থীর জন্য আলাদা email দিন।' });
+        }
         studentDoc = existingEmailUser;
         generatedgravId = existingEmailUser.gravId;
       } else {
@@ -664,6 +688,9 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         if (phone && phone.trim() !== '') {
           const existingPhoneUser = await User.findOne({ phone: phone.trim() });
           if (existingPhoneUser) {
+            if (existingPhoneUser.role !== ROLES.STUDENT) {
+              return res.status(409).json({ success: false, message: 'এই phone number অন্য একটি role-এর account-এ ব্যবহৃত।' });
+            }
             studentDoc = existingPhoneUser;
             generatedgravId = existingPhoneUser.gravId;
           }
@@ -690,24 +717,6 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
           generatedgravId = await generateUniquegravId();
           defaultPassword = generatedgravId;
 
-          // Send Welcome & Credential Email BEFORE saving to DB
-          const emailSent = await sendWelcomeRegistrationEmail({
-            to: normalizedEmail,
-            name: name.trim(),
-            gravId: generatedgravId,
-            role: 'student',
-            password: defaultPassword,
-            batchName: batch.name,
-          });
-
-          if (!emailSent) {
-            return res.status(400).json({
-              success: false,
-              message: 'শিক্ষার্থীর ইমেইল ঠিকানায় ওয়েলকাম বা ক্রেডেনশিয়াল ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না দেখে আবার চেষ্টা করুন।',
-            });
-          }
-
-          // Save to DB ONLY after email is verified as successfully sent!
           const passwordHash = await bcrypt.hash(defaultPassword, 10);
           studentDoc = await User.create({
             gravId: generatedgravId,
@@ -716,8 +725,8 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
             phone: phone && phone.trim() !== '' ? phone.trim() : undefined,
             passwordHash,
             role: ROLES.STUDENT,
-            status: 'active',
-            emailVerified: true,
+            status: 'pending_verification',
+            emailVerified: false,
             studentDetails: {
               schoolOrCollege: schoolOrCollege || '',
               gradeLevel: gradeLevel || (batch.courseId as any)?.gradeLevel || '',
@@ -726,6 +735,28 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
             },
           });
           isNewUserCreated = true;
+
+          const { rawToken, verificationUrl } = await createEmailVerification({ accountId: studentDoc._id });
+          const emailSent = await sendWelcomeRegistrationEmail({
+            to: normalizedEmail,
+            name: name.trim(),
+            gravId: generatedgravId,
+            role: 'student',
+            password: defaultPassword,
+            batchName: batch.name,
+            verificationUrl,
+          });
+          if (!emailSent) {
+            const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+            await Promise.all([
+              User.deleteOne({ _id: studentDoc._id }),
+              EmailVerificationToken.deleteOne({ tokenHash }),
+            ]);
+            return res.status(400).json({
+              success: false,
+              message: 'শিক্ষার্থীর ইমেইলে verification link ও credential পাঠানো যায়নি। ইমেইলটি যাচাই করে আবার চেষ্টা করুন।',
+            });
+          }
         }
       }
     }
@@ -735,6 +766,10 @@ export const adminAdmitStudent = async (req: AuthenticatedRequest, res: Response
         success: false,
         message: 'শিক্ষার্থীর তথ্য তৈরি বা সনাক্ত করা সম্ভব হয়নি। অনুগ্রহ করে সঠিক তথ্য প্রদান করুন।',
       });
+    }
+
+    if (studentDoc.status === 'pending_verification') {
+      return res.status(409).json({ success: false, message: 'এই শিক্ষার্থীর account এখনো email verification-এর অপেক্ষায়। আগে email verify করুন।' });
     }
 
     const existingEnrollment = await Enrollment.findOne({

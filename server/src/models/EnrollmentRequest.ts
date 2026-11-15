@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type EnrollmentRequestStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
+export type EnrollmentRequestStatus = 'verification_pending' | 'pending' | 'approved' | 'rejected' | 'cancelled';
 
 export interface IEnrollmentRequest extends Document {
   _id: mongoose.Types.ObjectId;
@@ -41,7 +41,7 @@ const EnrollmentRequestSchema = new Schema<IEnrollmentRequest>(
     message: { type: String, trim: true, maxlength: 500 },
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected', 'cancelled'],
+      enum: ['verification_pending', 'pending', 'approved', 'rejected', 'cancelled'],
       default: 'pending',
       index: true,
     },

@@ -1375,7 +1375,9 @@ export default function AdminAdmissionsPage() {
                     ভর্তি সফলভাবে সম্পন্ন হয়েছে!
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    শিক্ষার্থীকে ব্যাচে যুক্ত করা হয়েছে এবং লগইন তথ্য তৈরি করা হয়েছে।
+                    {successModalData.isNewUserCreated
+                      ? 'শিক্ষার্থী ব্যাচে যুক্ত হয়েছে। login চালু করতে তার email verification প্রয়োজন।'
+                      : 'শিক্ষার্থীকে ব্যাচে যুক্ত করা হয়েছে।'}
                   </p>
                 </div>
               </div>

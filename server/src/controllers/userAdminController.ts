@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
@@ -15,6 +16,8 @@ import { Announcement } from '../models/Announcement';
 import { DiscussionMessage } from '../models/DiscussionMessage';
 import { FileAsset } from '../models/FileAsset';
 import { PasswordResetToken } from '../models/PasswordResetToken';
+import { EmailVerificationToken } from '../models/EmailVerificationToken';
+import { createEmailVerification } from '../services/emailVerification';
 import { JobPost } from '../models/JobPost';
 import { Payment } from '../models/Payment';
 import { AuthenticatedRequest } from '../middleware/auth';
@@ -252,23 +255,6 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
 
     const gravId = await generateUniquegravId();
 
-    // 4. Send Welcome & Credential Email BEFORE saving to DB
-    const emailSent = await sendWelcomeRegistrationEmail({
-      to: normalizedEmail,
-      name: body.name.trim(),
-      gravId,
-      role: body.role,
-      password: body.password,
-    });
-
-    if (!emailSent) {
-      return res.status(400).json({
-        success: false,
-        message: 'প্রদত্ত ইমেইল ঠিকানায় ওয়েলকাম বা ক্রেডেনশিয়াল ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না দেখে আবার চেষ্টা করুন।',
-      });
-    }
-
-    // 5. Save to DB ONLY after email is verified as successfully sent!
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(body.password, salt);
 
@@ -279,9 +265,30 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
       phone: body.phone ? body.phone.trim() : undefined,
       passwordHash,
       role: body.role,
-      status: 'active',
-      emailVerified: true,
+      status: 'pending_verification',
+      emailVerified: false,
     });
+
+    const { rawToken, verificationUrl } = await createEmailVerification({ accountId: user._id });
+    const emailSent = await sendWelcomeRegistrationEmail({
+      to: normalizedEmail,
+      name: body.name.trim(),
+      gravId,
+      role: body.role,
+      password: body.password,
+      verificationUrl,
+    });
+
+    if (!emailSent) {
+      await Promise.all([
+        User.deleteOne({ _id: user._id }),
+        EmailVerificationToken.deleteOne({ tokenHash: crypto.createHash('sha256').update(rawToken).digest('hex') }),
+      ]);
+      return res.status(400).json({
+        success: false,
+        message: 'প্রদত্ত ইমেইল ঠিকানায় verification ও credential email পাঠানো যায়নি। আবার চেষ্টা করুন।',
+      });
+    }
 
     await AuditLog.create({
       actorId: caller._id,
@@ -296,7 +303,7 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
 
     return res.status(201).json({
       success: true,
-      message: 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে এবং ইমেইলে ক্রেডেনশিয়াল পাঠানো হয়েছে।',
+      message: 'অ্যাকাউন্ট তৈরি হয়েছে। login চালু করতে ইমেইলের verification link-এ click করতে হবে।',
       data: { _id: user._id, gravId: user.gravId, name: user.name, role: user.role },
     });
   } catch (error: any) {

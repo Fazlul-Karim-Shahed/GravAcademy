@@ -34,6 +34,10 @@ export const authenticate = async (req: AuthenticatedRequest, res: Response, nex
       });
     }
 
+    if (user.status === 'pending_verification') {
+      return res.status(403).json({ success: false, message: 'Email verification required before using this account.' });
+    }
+
     if (user.status === 'suspended' || user.status === 'deactivated') {
       return res.status(403).json({
         success: false,
@@ -69,7 +73,7 @@ export const optionalAuthenticate = async (req: AuthenticatedRequest, res: Respo
     const decoded = jwt.verify(token, secret) as { accountId: string };
 
     const user = await User.findById(decoded.accountId);
-    if (user && user.status !== 'suspended' && user.status !== 'deactivated') {
+    if (user && user.status !== 'suspended' && user.status !== 'deactivated' && user.status !== 'pending_verification') {
       req.user = user;
     }
     return next();

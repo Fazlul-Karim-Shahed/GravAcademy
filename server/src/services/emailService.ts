@@ -58,11 +58,13 @@ const sendGmailEmail = async ({
   subject,
   body,
   html,
+  linkLabel,
 }: {
   to: string;
   subject: string;
   body: string;
   html?: string;
+  linkLabel?: string;
 }): Promise<boolean> => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -82,7 +84,7 @@ const sendGmailEmail = async ({
     const link = body.match(/https?:\/\/[^\s]+/)?.[0];
     const htmlBody =
       html ||
-      `<!doctype html><html><body style="margin:0;background:#f1f5f9;font-family:Arial,sans-serif;color:#172033"><div style="width:100%;max-width:760px;box-sizing:border-box;margin:20px auto;padding:0 12px"><div style="width:100%;overflow:hidden;border-radius:24px;background:#ffffff;box-shadow:0 12px 35px rgba(15,23,42,.12)"><div style="padding:28px 30px;background:linear-gradient(135deg,#0f62fe,#5936d9);color:#ffffff"><div style="font-size:13px;letter-spacing:.08em;font-weight:700;opacity:.85">GRAV ACADEMY</div><div style="margin-top:8px;font-size:24px;font-weight:800">Your Academic Care</div></div><div style="padding:30px"><div style="font-size:16px;line-height:1.7">${escapeHtml(body).replace(/\r?\n/g, '<br>')}</div>${link ? `<a href="${escapeHtml(link)}" style="display:inline-block;margin-top:24px;padding:13px 22px;border-radius:12px;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:700">Reset password</a>` : ''}<div style="margin-top:24px;padding-top:18px;border-top:1px solid #e2e8f0;color:#64748b;font-size:12px;line-height:1.6">This is an automated email from Grav Academy. If you did not request this, you can safely ignore it.</div></div></div><div style="padding:18px;text-align:center;color:#94a3b8;font-size:12px">Grav Academy · Learn with confidence</div></div></body></html>`;
+      `<!doctype html><html><body style="margin:0;background:#f1f5f9;font-family:Arial,sans-serif;color:#172033"><div style="width:100%;max-width:760px;box-sizing:border-box;margin:20px auto;padding:0 12px"><div style="width:100%;overflow:hidden;border-radius:24px;background:#ffffff;box-shadow:0 12px 35px rgba(15,23,42,.12)"><div style="padding:28px 30px;background:linear-gradient(135deg,#0f62fe,#5936d9);color:#ffffff"><div style="font-size:13px;letter-spacing:.08em;font-weight:700;opacity:.85">GRAV ACADEMY</div><div style="margin-top:8px;font-size:24px;font-weight:800">Your Academic Care</div></div><div style="padding:30px"><div style="font-size:16px;line-height:1.7">${escapeHtml(body).replace(/\r?\n/g, '<br>')}</div>${link ? `<a href="${escapeHtml(link)}" style="display:inline-block;margin-top:24px;padding:13px 22px;border-radius:12px;background:#2563eb;color:#ffffff;text-decoration:none;font-weight:700">${escapeHtml(linkLabel || 'Open link')}</a>` : ''}<div style="margin-top:24px;padding-top:18px;border-top:1px solid #e2e8f0;color:#64748b;font-size:12px;line-height:1.6">This is an automated email from Grav Academy. If you did not request this, you can safely ignore it.</div></div></div><div style="padding:18px;text-align:center;color:#94a3b8;font-size:12px">Grav Academy · Learn with confidence</div></div></body></html>`;
     const rawMessage = Buffer.from(
       [
         'To: ' + to,
@@ -121,6 +123,27 @@ const sendGmailEmail = async ({
 
 const sendGmailTextEmail = sendGmailEmail;
 
+export const sendEmailVerificationLinkEmail = async ({
+  to,
+  name,
+  verificationUrl,
+}: {
+  to: string;
+  name: string;
+  verificationUrl: string;
+}): Promise<boolean> => sendGmailEmail({
+  to,
+  subject: 'Verify your Grav Academy email address',
+  linkLabel: 'ইমেইল verify করুন',
+  body: [
+    'প্রিয় ' + (name || 'ব্যবহারকারী') + ',',
+    '',
+    'আপনার Grav Academy account চালু করতে email address verify করুন:',
+    verificationUrl,
+    'এই link ২৪ ঘণ্টা কার্যকর থাকবে।',
+  ].join('\n'),
+});
+
 export const sendPasswordResetEmail = async ({
   to,
   name,
@@ -152,21 +175,25 @@ export const sendEnrollmentRequestReceivedEmail = async ({
   to,
   name,
   batchName,
+  verificationUrl,
 }: {
   to: string;
   name: string;
   batchName: string;
+  verificationUrl?: string;
 }): Promise<boolean> => {
   return sendGmailTextEmail({
     to,
-    subject: 'We received your enrollment request | Grav Academy',
+    subject: 'Confirm your email for Grav Academy enrollment | Grav Academy',
+    linkLabel: 'ইমেইল verify করুন',
     body: [
       'Hi ' + (name || 'there') + ',',
       '',
-      'We received your request to join the batch "' + batchName + '".',
-      'Our admission team will review your request and contact you soon.',
+      'Confirm this email address to submit your request to join the batch "' + batchName + '":',
+      verificationUrl || '',
+      'This link expires in 24 hours.',
       '',
-      'If you did not submit this request, you can ignore this email.',
+      'Your request will reach our admission team only after email confirmation.',
       '',
       'Grav Academy',
     ].join('\n'),
@@ -306,6 +333,7 @@ export const sendWelcomeRegistrationEmail = async ({
   role = 'student',
   password,
   batchName,
+  verificationUrl,
 }: {
   to: string;
   name: string;
@@ -313,6 +341,7 @@ export const sendWelcomeRegistrationEmail = async ({
   role?: string;
   password?: string;
   batchName?: string;
+  verificationUrl?: string;
 }): Promise<boolean> => {
   const loginUrl = `${getPublicAppUrl()}/login`;
 
@@ -332,7 +361,9 @@ export const sendWelcomeRegistrationEmail = async ({
   const bodyParts = [
     `প্রিয় ${name || 'ব্যবহারকারী'},`,
     '',
-    `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! আপনার অ্যাকাউন্ট (${roleTitle}) সফলভাবে তৈরি ও ভেরিফাই হয়েছে।`,
+    verificationUrl
+      ? `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! আপনার (${roleTitle}) account-এর email verify করতে নিচের link-এ click করুন।`
+      : `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! আপনার (${roleTitle}) account তৈরি হয়েছে।`,
   ];
   if (batchName) {
     bodyParts.push(`কোর্স/ব্যাচ: ${batchName}`);
@@ -347,8 +378,9 @@ export const sendWelcomeRegistrationEmail = async ({
   }
   bodyParts.push(
     '',
-    'নিচের লিঙ্কে ক্লিক করে এখনই লগইন করুন:',
-    loginUrl,
+    ...(verificationUrl
+      ? ['ইমেইল ভেরিফাই করার লিঙ্ক:', verificationUrl, 'এই link ২৪ ঘণ্টা কার্যকর থাকবে। verify হওয়ার পর login করুন: ' + loginUrl]
+      : ['লগইন করতে এই লিঙ্কে যান:', loginUrl]),
     '',
     'আপনার যেকোনো একাডেমিক প্রয়োজনে আমরা সর্বদা পাশে আছি।',
     '',
@@ -378,7 +410,7 @@ export const sendWelcomeRegistrationEmail = async ({
                 স্বাগতম আমাদের পরিবারে!
               </h1>
               <p style="margin:10px 0 0;font-size:14px;color:#e0e7ff;font-weight:500;">
-                আপনার অ্যাকাউন্ট সফলভাবে তৈরি ও ভেরিফাই হয়েছে
+                ${verificationUrl ? 'ইমেইল address verify করুন' : 'আপনার account প্রস্তুত'}
               </p>
             </td>
           </tr>
@@ -388,7 +420,7 @@ export const sendWelcomeRegistrationEmail = async ({
                 প্রিয় ${escapeHtml(name || 'ব্যবহারকারী')},
               </p>
               <p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#475569;">
-                অভিনন্দন! <strong>গ্র্যাভ একাডেমি</strong>-তে আপনার রেজিস্ট্রেশন সম্পন্ন হয়েছে এবং আপনার ইমেইল ঠিকানাটি সফলভাবে ভেরিফাই করা হয়েছে।${batchName ? ` আপনি সফলভাবে <strong>${escapeHtml(batchName)}</strong> ব্যাচে যুক্ত হয়েছেন।` : ''}
+                ${verificationUrl ? '<strong>গ্র্যাভ একাডেমি</strong>-তে আপনার account প্রস্তুত। email address verify করতে নিচের button-এ click করুন।' : '<strong>গ্র্যাভ একাডেমি</strong>-তে আপনার account তৈরি হয়েছে। নিচের button দিয়ে login করুন।'}${batchName ? ` আপনার ব্যাচ: <strong>${escapeHtml(batchName)}</strong>।` : ''}
               </p>
 
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:16px;margin:24px 0;padding:20px;">
@@ -432,8 +464,8 @@ export const sendWelcomeRegistrationEmail = async ({
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="center">
-                    <a href="${escapeHtml(loginUrl)}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg, #2563eb, #1d4ed8);color:#ffffff;text-decoration:none;font-size:14px;font-weight:800;border-radius:12px;box-shadow:0 4px 14px rgba(37,99,235,0.35);">
-                      লগইন করুন ও ক্লাস শুরু করুন →
+                    <a href="${escapeHtml(verificationUrl || loginUrl)}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg, #2563eb, #1d4ed8);color:#ffffff;text-decoration:none;font-size:14px;font-weight:800;border-radius:12px;box-shadow:0 4px 14px rgba(37,99,235,0.35);">
+                      ${verificationUrl ? 'ইমেইল ভেরিফাই করুন →' : 'লগইন করুন →'}
                     </a>
                   </td>
                 </tr>
@@ -466,5 +498,6 @@ export const sendWelcomeRegistrationEmail = async ({
     subject,
     body,
     html,
+    linkLabel: verificationUrl ? 'ইমেইল verify করুন' : 'Login করুন',
   });
 };

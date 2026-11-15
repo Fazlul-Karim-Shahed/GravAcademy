@@ -2,18 +2,15 @@
 
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
 import { GraduationCap, Mail, Lock, User, AlertCircle, Phone, Loader2 } from 'lucide-react';
 import { SiteLogo } from '@/components/common/SiteLogo';
 
 function RegisterForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect');
-  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,22 +18,20 @@ function RegisterForm() {
     phone: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
       const res = await api.post('/auth/register', formData);
       if (res.data.success) {
-        login(res.data.data.token, res.data.data.user);
-        if (redirectUrl && redirectUrl.startsWith('/')) {
-          router.push(redirectUrl);
-        } else {
-          router.push('/dashboard');
-        }
+        setSuccess(res.data.message || 'ইমেইলে verification link পাঠানো হয়েছে।');
+        setFormData({ name: '', email: '', password: '', phone: '' });
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please check your details.');
@@ -79,6 +74,12 @@ function RegisterForm() {
             <div className="mb-6 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200" role="status">
+              {success}
             </div>
           )}
 

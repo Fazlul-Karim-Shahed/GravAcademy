@@ -207,7 +207,7 @@ export default function AdminUsersPage() {
         role: staffRole,
       });
       if (res.data?.success) {
-                        setCreateStaffSuccess(`"${staffName}" সফলভাবে তৈরি হয়েছে (Grav ID: ${res.data.data?.gravId})`);
+        setCreateStaffSuccess(`"${staffName}" account তৈরি হয়েছে (Grav ID: ${res.data.data?.gravId})। চালু করতে email verification প্রয়োজন।`);
         resetStaffForm();
         fetchUsers(1);
         setPage(1);

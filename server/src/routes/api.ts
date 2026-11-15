@@ -36,6 +36,8 @@ router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl
 router.post('/auth/login', validateRequest(authCtrl.loginSchema), authCtrl.login);
 router.post('/auth/forgot-password', validateRequest(authCtrl.forgotPasswordSchema), authCtrl.forgotPassword);
 router.post('/auth/reset-password', validateRequest(authCtrl.resetPasswordSchema), authCtrl.resetPassword);
+router.post('/auth/verify-email', validateRequest(authCtrl.verifyEmailSchema), authCtrl.verifyEmail);
+router.post('/auth/resend-verification', validateRequest(authCtrl.resendEmailVerificationSchema), authCtrl.resendEmailVerification);
 router.get('/auth/me', authenticate, authCtrl.getMe);
 router.put('/auth/profile', authenticate, authCtrl.updateProfile);
 router.post('/auth/avatar', authenticate, upload.single('avatar'), authCtrl.uploadAvatar);

@@ -6,9 +6,14 @@ import { z } from 'zod';
 import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
 import { PasswordResetToken } from '../models/PasswordResetToken';
+import { EmailVerificationToken } from '../models/EmailVerificationToken';
+import { EnrollmentRequest } from '../models/EnrollmentRequest';
+import { createEmailVerification } from '../services/emailVerification';
 import {
   sendPasswordResetEmail,
   sendWelcomeRegistrationEmail,
+  sendEmailVerificationLinkEmail,
+  sendEnrollmentRequestReceivedEmail,
   isDisposableEmail,
   hasValidMxRecords,
 } from '../services/emailService';
@@ -37,6 +42,9 @@ export const resetPasswordSchema = z.object({
   token: z.string().min(32, 'Invalid reset token'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
+
+export const verifyEmailSchema = z.object({ token: z.string().min(32) });
+export const resendEmailVerificationSchema = z.object({ email: z.string().email() });
 
 const generateToken = (accountId: string): string => {
   const secret = process.env.JWT_SECRET || 'grav_academy_jwt_secret_dev';
@@ -125,27 +133,11 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate unique Grav ID (e.g. 261024001)
     const gravId = await generateUniquegravId();
-
-    // Send Welcome & Verification Email BEFORE saving to DB
-    const emailSent = await sendWelcomeRegistrationEmail({
-      to: normalizedEmail,
-      name: name.trim(),
-      gravId,
-    });
-
-    if (!emailSent) {
-      return res.status(400).json({
-        success: false,
-        message: 'এই ইমেইল ঠিকানায় ওয়েলকাম বা ভেরিফিকেশন ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না নিশ্চিত হয়ে আবার চেষ্টা করুন।',
-      });
-    }
-
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // SECURITY PRINCIPLE: All public signups are assigned the STUDENT role by default.
-    // Insert into DB ONLY after email is verified as successfully sent!
+    // Public signups remain unusable until the owner confirms the email link.
     const user = await User.create({
       gravId,
       name: name.trim(),
@@ -153,11 +145,27 @@ export const register = async (req: Request, res: Response) => {
       passwordHash,
       phone: phone && phone.trim() ? phone.trim() : undefined,
       role: ROLES.STUDENT,
-      status: 'active',
-      emailVerified: true,
+      status: 'pending_verification',
+      emailVerified: false,
     });
 
-    const token = generateToken(user._id.toString());
+    const { rawToken, verificationUrl } = await createEmailVerification({ accountId: user._id });
+    const emailSent = await sendWelcomeRegistrationEmail({
+      to: normalizedEmail,
+      name: name.trim(),
+      gravId,
+      verificationUrl,
+    });
+    if (!emailSent) {
+      await Promise.all([
+        User.deleteOne({ _id: user._id }),
+        EmailVerificationToken.deleteOne({ tokenHash: crypto.createHash('sha256').update(rawToken).digest('hex') }),
+      ]);
+      return res.status(400).json({
+        success: false,
+        message: 'এই ইমেইল ঠিকানায় verification link পাঠানো যায়নি। ইমেইলটি যাচাই করে আবার চেষ্টা করুন।',
+      });
+    }
 
     await AuditLog.create({
       actorId: user._id,
@@ -171,18 +179,8 @@ export const register = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      message: 'রেজিস্ট্রেশন সফল হয়েছে! আপনার ইমেইলে একটি কনফার্মেশন পাঠানো হয়েছে।',
-      data: {
-        token,
-        user: {
-          id: user._id,
-          gravId: user.gravId,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-        },
-      },
+      message: 'রেজিস্ট্রেশন অনুরোধ তৈরি হয়েছে। account চালু করতে ইমেইলের verification link-এ click করুন।',
+      data: { email: user.email },
     });
   } catch (error: any) {
     console.error('Registration error:', error);
@@ -224,6 +222,13 @@ export const login = async (req: Request, res: Response) => {
       return res.status(403).json({
         success: false,
         message: 'Your account is suspended or deactivated.',
+      });
+    }
+
+    if (user.status === 'pending_verification') {
+      return res.status(403).json({
+        success: false,
+        message: 'আপনার email এখনো verify হয়নি। inbox থেকে verification link-এ click করে আবার login করুন।',
       });
     }
 
@@ -364,6 +369,107 @@ export const resetPassword = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('resetPassword error:', error);
     return res.status(500).json({ success: false, message: 'Password পরিবর্তন করা যায়নি।' });
+  }
+};
+
+/** Consume a one-time email ownership token for a pending account or guest enrollment request. */
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const tokenHash = crypto.createHash('sha256').update(req.body.token).digest('hex');
+    const verification = await EmailVerificationToken.findOne({
+      tokenHash,
+      usedAt: { $exists: false },
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!verification) {
+      return res.status(400).json({
+        success: false,
+        message: 'এই verification linkটি invalid বা expired। নতুন link চেয়ে আবার চেষ্টা করুন।',
+      });
+    }
+
+    const claimedVerification = await EmailVerificationToken.findOneAndUpdate(
+      { _id: verification._id, usedAt: { $exists: false }, expiresAt: { $gt: new Date() } },
+      { $set: { usedAt: new Date() } },
+      { new: true }
+    );
+    if (!claimedVerification) {
+      return res.status(400).json({ success: false, message: 'এই verification link ইতিমধ্যে ব্যবহার করা হয়েছে।' });
+    }
+
+    if (claimedVerification.accountId) {
+      const user = await User.findById(claimedVerification.accountId);
+      if (!user) return res.status(400).json({ success: false, message: 'এই account আর পাওয়া যাচ্ছে না।' });
+      if (user.status === 'suspended' || user.status === 'deactivated') {
+        return res.status(403).json({ success: false, message: 'এই account বর্তমানে বন্ধ আছে। Admin-এর সঙ্গে যোগাযোগ করুন।' });
+      }
+      user.emailVerified = true;
+      user.status = 'active';
+      await user.save();
+    } else if (claimedVerification.enrollmentRequestId) {
+      const request = await EnrollmentRequest.findOne({
+        _id: claimedVerification.enrollmentRequestId,
+        status: 'verification_pending',
+      });
+      if (!request) {
+        return res.status(400).json({ success: false, message: 'এই enrollment request আর verify করা যাচ্ছে না।' });
+      }
+      request.status = 'pending';
+      await request.save();
+    }
+
+    return res.json({
+      success: true,
+      message: claimedVerification.accountId
+        ? 'ইমেইল verify হয়েছে। এখন account-এ login করতে পারবেন।'
+        : 'ইমেইল verify হয়েছে। আপনার enrollment request admission team-এর কাছে পাঠানো হয়েছে।',
+      data: { purpose: claimedVerification.accountId ? 'account' : 'enrollment_request' },
+    });
+  } catch (error) {
+    console.error('verifyEmail error:', error);
+    return res.status(500).json({ success: false, message: 'ইমেইল verify করা যায়নি। আবার চেষ্টা করুন।' });
+  }
+};
+
+export const resendEmailVerification = async (req: Request, res: Response) => {
+  const genericMessage = 'যদি verification বাকি থাকে, নতুন link email-এ পাঠানো হয়েছে। Inbox ও spam folder দেখুন।';
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const user = await User.findOne({ email, status: 'pending_verification' });
+    if (user) {
+      const { rawToken, verificationUrl } = await createEmailVerification({ accountId: user._id });
+      const sent = await sendEmailVerificationLinkEmail({ to: email, name: user.name, verificationUrl });
+      if (!sent) {
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+        await EmailVerificationToken.deleteOne({ tokenHash });
+        return res.status(400).json({ success: false, message: 'এখন verification email পাঠানো যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।' });
+      }
+      return res.json({ success: true, message: genericMessage });
+    }
+
+    const request = await EnrollmentRequest.findOne({ email, isGuest: true, status: 'verification_pending' })
+      .sort({ createdAt: -1 })
+      .populate('batchId', 'name');
+    if (request) {
+      const { rawToken, verificationUrl } = await createEmailVerification({ enrollmentRequestId: request._id });
+      const sent = await sendEnrollmentRequestReceivedEmail({
+        to: email,
+        name: request.name,
+        batchName: (request.batchId as any)?.name || 'আপনার নির্বাচিত',
+        verificationUrl,
+      });
+      if (!sent) {
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+        await EmailVerificationToken.deleteOne({ tokenHash });
+        return res.status(400).json({ success: false, message: 'এখন verification email পাঠানো যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।' });
+      }
+    }
+
+    return res.json({ success: true, message: genericMessage });
+  } catch (error) {
+    console.error('resendEmailVerification error:', error);
+    return res.status(500).json({ success: false, message: 'Verification email পাঠানো যায়নি। পরে আবার চেষ্টা করুন।' });
   }
 };
 
