@@ -21,8 +21,12 @@ api.interceptors.request.use((config) => {
   // instance has a JSON default header, which breaks FormData requests if it
   // is left in place.
   if (typeof FormData !== 'undefined' && config.data instanceof FormData && config.headers) {
-    delete config.headers['Content-Type'];
-    delete config.headers['content-type'];
+    if (typeof config.headers.delete === 'function') {
+      config.headers.delete('Content-Type');
+    } else {
+      delete config.headers['Content-Type'];
+      delete config.headers['content-type'];
+    }
   }
   return config;
 });
