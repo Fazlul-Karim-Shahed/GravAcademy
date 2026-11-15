@@ -20,6 +20,7 @@ import {
   X,
   Trash2,
   AlertTriangle,
+  Eye,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
@@ -361,9 +362,9 @@ export default function AdminUsersPage() {
                         size="md"
                       />
                       <div className="min-w-0">
-                        <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                        <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 truncate transition-colors">
                           {u.name}
-                        </div>
+                        </Link>
                         <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                           {u.email || u.phone || 'কোনো ইমেইল বা ফোন নেই'}
                         </div>
@@ -414,6 +415,11 @@ export default function AdminUsersPage() {
                       <span>শিক্ষার্থী লিংক করুন</span>
                     </button>
                   )}
+
+                  <Link href={`/admin/users/${u._id}`} className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-bold text-xs transition-colors border border-blue-200/70 dark:border-blue-800">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>প্রোফাইল</span>
+                  </Link>
 
                   <Link
                     href={`/admin/users/${u._id}/permissions`}
@@ -482,9 +488,9 @@ export default function AdminUsersPage() {
                             size="md"
                           />
                           <div className="min-w-0">
-                            <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                            <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 truncate transition-colors">
                               {u.name}
-                            </div>
+                            </Link>
                           </div>
                         </div>
                       </td>
@@ -548,6 +554,14 @@ export default function AdminUsersPage() {
                       {/* Action */}
                       <td className="py-3.5 px-4 sm:px-6 text-right">
                         <div className="inline-flex items-center gap-2">
+                          <Link
+                            href={`/admin/users/${u._id}`}
+                            title="প্রোফাইল দেখুন"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-bold text-xs transition-colors"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>প্রোফাইল</span>
+                          </Link>
                           {u.role === 'guardian' && (
                             <button
                               type="button"
