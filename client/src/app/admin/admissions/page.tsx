@@ -172,6 +172,7 @@ export default function AdminAdmissionsPage() {
   // Submitting state & Response Modal
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
   const [successModalData, setSuccessModalData] = useState<AdmissionResult | null>(null);
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
   const [copiedId, setCopiedId] = useState(false);
@@ -497,6 +498,7 @@ export default function AdminAdmissionsPage() {
   const handleSubmitAdmission = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+    setInfoMsg('');
 
     if (admissionMode === 'existing' && !selectedExistingStudent) {
       setErrorMsg('অনুগ্রহ করে তালিকা থেকে বিদ্যমান শিক্ষার্থী নির্বাচন করুন অথবা নতুন শিক্ষার্থী অপশনটি বেছে নিন।');
@@ -572,7 +574,12 @@ export default function AdminAdmissionsPage() {
         setErrorMsg(res.data.message || 'ভর্তি প্রক্রিয়া সম্পন্ন করা সম্ভব হয়নি।');
       }
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || err.message || 'ভর্তি সম্পন্ন করার সময় ত্রুটি ঘটেছে।');
+      const message = err.response?.data?.message || err.message || 'ভর্তি সম্পন্ন করার সময় ত্রুটি ঘটেছে।';
+      if (err.response?.status === 409 && message.includes('email verification-এর অপেক্ষায়')) {
+        setInfoMsg('অ্যাকাউন্ট তৈরি হয়েছে, তবে শিক্ষার্থীর email এখনো verify হয়নি। শিক্ষার্থী inbox থেকে verification link-এ click করলে এখানে আবার ভর্তি সম্পন্ন করতে পারবেন।');
+      } else {
+        setErrorMsg(message);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -1162,6 +1169,14 @@ export default function AdminAdmissionsPage() {
                   <p className="text-[11px] text-center text-slate-500 dark:text-slate-400 mt-2">
                     * সাবমিট করার সাথে সাথে নতুন শিক্ষার্থীর জন্য একটি ইউনিক Grav ID তৈরি হবে এবং স্বয়ংক্রিয়ভাবে পাসওয়ার্ড হিসেবে Grav ID সেট হবে।
                   </p>
+                  {infoMsg && (
+                    <div role="status" className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/35 dark:text-emerald-200">
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <p>{infoMsg}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
               </form>
