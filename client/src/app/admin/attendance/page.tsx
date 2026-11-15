@@ -134,9 +134,7 @@ export default function AdminTeacherAttendancePage() {
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
               <h2 id="quick-attendance-title" className="flex items-center gap-2 text-lg font-bold sm:text-xl"><Clock3 className="h-5 w-5 text-emerald-600" /> Quick Attendance</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">এই মুহূর্তে চলমান batch-এর teacher</p>
             </div>
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">প্রতি ৩০ সেকেন্ডে আপডেট</span>
           </div>
           {quickLoading && running.length === 0 ? (
             <div className="flex min-h-28 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-900"><LoaderCircle className="mr-2 h-5 w-5 animate-spin" /> লোড হচ্ছে</div>
@@ -144,7 +142,6 @@ export default function AdminTeacherAttendancePage() {
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-9 text-center dark:border-slate-700 dark:bg-slate-900">
               <Clock3 className="mx-auto mb-2 h-7 w-7 text-slate-400" />
               <p className="font-semibold text-slate-700 dark:text-slate-200">এখন কোনো scheduled class চলছে না</p>
-              <p className="mt-1 text-sm text-slate-500">Class time হলে এখানে teacher-দের তালিকা আসবে।</p>
             </div>
           ) : (
             <div className="space-y-2.5">
@@ -180,7 +177,6 @@ export default function AdminTeacherAttendancePage() {
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 id="manual-attendance-title" className="flex items-center gap-2 text-lg font-bold sm:text-xl"><CalendarCheck className="h-5 w-5 text-blue-600" /> Manual Attendance</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Teacher বেছে নিয়ে date ও batch অনুযায়ী attendance দেখুন</p>
             </div>
             <label className="relative block w-full sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
