@@ -571,6 +571,14 @@ export default function AdminSettingsPage() {
                     <DriveFileUpload
                       value={logoUrl}
                       onChange={(url) => setLogoUrl(url)}
+                      onUploadComplete={async (url) => {
+                        const ok = await updateSettings({ logoUrl: url });
+                        if (ok) {
+                          setSaveSuccess(true);
+                          setTimeout(() => setSaveSuccess(false), 3500);
+                        }
+                        return ok;
+                      }}
                       onPreviewChange={setLogoPreviewUrl}
                       label="লোগো ফাইল আপলোড করুন"
                       placeholder="https://drive.google.com/... অথবা আপনার কম্পিউটার থেকে লোগো নির্বাচন করুন"

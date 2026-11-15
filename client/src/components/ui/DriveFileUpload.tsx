@@ -14,6 +14,7 @@ interface DriveFileUploadProps {
   helperText?: string;
   accept?: string;
   onPreviewChange?: (url: string) => void;
+  onUploadComplete?: (url: string) => Promise<boolean> | boolean;
 }
 
 export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
@@ -24,6 +25,7 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
   helperText = 'Select a file, then press Upload to save it to Drive.',
   accept = 'image/jpeg,image/png,image/webp,image/gif,application/pdf',
   onPreviewChange,
+  onUploadComplete,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -55,6 +57,10 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       let uploadedUrl = res.data.data.url || res.data.data.fileUrl || `/api/documents/${res.data.data._id}/stream`;
       if (selectedFile.type.startsWith('image/')) uploadedUrl = formatDriveImageUrl(uploadedUrl);
       onChange(uploadedUrl);
+      if (onUploadComplete) {
+        const persisted = await onUploadComplete(uploadedUrl);
+        if (!persisted) throw new Error('ফাইল আপলোড হয়েছে, কিন্তু লোগো সেটিংস সংরক্ষণ করা যায়নি।');
+      }
       setLocalPreviewUrl('');
       setSelectedFile(null);
     } catch (err: any) {
