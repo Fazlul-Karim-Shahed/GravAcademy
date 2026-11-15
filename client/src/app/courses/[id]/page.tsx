@@ -333,9 +333,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                     {hasContent && <ChevronDown className={open ? 'h-4 w-4 shrink-0 rotate-180 text-blue-600 transition-transform' : 'h-4 w-4 shrink-0 text-slate-400 transition-transform'} />}
                   </button>
                   {open && <div className="border-t border-slate-100 px-5 pb-5 pt-4 dark:border-slate-800 sm:px-6">
-                    {contentLines.length > 0 && <div className="grid gap-2.5 sm:grid-cols-2">
+                    {contentLines.length > 0 && <div className="space-y-2.5">
                       {contentLines.map((line, lineIndex) => <div key={`${line}-${lineIndex}`} className="flex min-w-0 items-start gap-3 rounded-xl bg-slate-50 px-3.5 py-3 dark:bg-slate-800/60">
-                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"><Check className="h-3 w-3" /></span>
+                        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"><BookOpen className="h-3.5 w-3.5" /></span>
                         <span className="text-xs font-semibold leading-5 text-slate-700 dark:text-slate-200">{line}</span>
                       </div>)}
                     </div>}
