@@ -113,19 +113,6 @@ interface CourseDetail {
   promoCards?: PromoCardContent[];
 }
 
-const fallbackSyllabus: SyllabusItem[] = [
-  { title: 'বাংলা ১ম পত্র', details: 'গল্প, কবিতা, সৃজনশীল প্রশ্ন ও বোর্ডভিত্তিক অনুশীলন।' },
-  { title: 'বাংলা ২য় পত্র', details: 'ব্যাকরণ, নির্মিতি ও লিখিত অংশের নিয়মিত practice।' },
-  { title: 'ইংরেজি ১ম পত্র', details: 'Reading, comprehension, writing এবং পরীক্ষার প্রশ্ন অনুশীলন।' },
-  { title: 'ইংরেজি ২য় পত্র', details: 'Grammar, paragraph, composition ও model test practice।' },
-  { title: 'গণিত', details: 'অধ্যায়ভিত্তিক concept, shortcut এবং ধাপে ধাপে problem solving।' },
-  { title: 'বিজ্ঞান', details: 'মূল ধারণা, diagram, প্রয়োগ ও পরীক্ষাভিত্তিক প্রস্তুতি।' },
-  { title: 'বাংলাদেশ ও বিশ্বপরিচয়', details: 'গুরুত্বপূর্ণ অধ্যায়, short note ও CQ/MCQ প্রস্তুতি।' },
-  { title: 'তথ্য ও যোগাযোগ প্রযুক্তি', details: 'ধারণা পরিষ্কার, practical topic এবং নির্বাচিত প্রশ্ন সমাধান।' },
-  { title: 'মডেল টেস্ট', details: 'সময় ধরে পরীক্ষা, ফলাফল বিশ্লেষণ ও revision plan।' },
-  { title: 'রিভিশন ও ডাউট সলভিং', details: 'দুর্বল অধ্যায় চিহ্নিত করে focused revision support।' },
-];
-
 function cleanBenefit(value: string) {
   return value.replace(/^icon:[^|]+\|/, '').trim();
 }
@@ -216,43 +203,17 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
   const hasDiscount = Boolean(course.discountPrice && course.regularPrice && course.regularPrice > course.discountPrice);
   const price = hasDiscount ? course.discountPrice : course.regularPrice || course.courseFee;
-  const benefits = (course.features?.length ? course.features : course.curriculumHighlights?.length ? course.curriculumHighlights : [
-    'অভিজ্ঞ শিক্ষক ও মেন্টরদের সাথে গোছানো প্রস্তুতি',
-    'লাইভ ক্লাস, রেকর্ডেড ক্লাস ও স্মার্ট নোটস',
-    'অধ্যায়ভিত্তিক MCQ, CQ ও মডেল টেস্ট',
-    'ফলাফল বিশ্লেষণ ও নিয়মিত progress tracking',
-    'ডাউট সলভিং ও revision support',
-  ]).map(cleanBenefit).slice(0, 6);
-  const teachers = course.instructors?.length ? course.instructors : [
-    { _id: 'dummy-1', name: 'প্রধান মেন্টর', email: '', role: 'teacher' },
-    { _id: 'dummy-2', name: 'বিষয়ভিত্তিক শিক্ষক', email: '', role: 'teacher' },
-    { _id: 'dummy-3', name: 'একাডেমিক মেন্টর', email: '', role: 'teacher' },
-    { _id: 'dummy-4', name: 'সাপোর্ট মেন্টর', email: '', role: 'teacher' },
-  ] as Teacher[];
-  const syllabus = course.syllabus?.length ? course.syllabus : fallbackSyllabus;
+  const benefits = (course.features?.length ? course.features : course.curriculumHighlights || [])
+    .map(cleanBenefit)
+    .filter(Boolean)
+    .slice(0, 6);
+  const teachers = (course.instructors || []).filter((teacher) => teacher?._id && teacher?.name);
+  const syllabus = course.syllabus || [];
   const visibleTeachers = showAllTeachers ? teachers.slice(0, 8) : teachers.slice(0, 4);
   const instructorProfiles = course.instructorProfiles || [];
-  const routine = {
-    title: 'প্রোগ্রামের ক্লাস রুটিন ও প্রসপেক্টাস',
-    bannerText: 'রুটিন শীঘ্রই আসছে',
-    programLabel: `${course.gradeLevel} - ${course.subject || 'Academic'}`,
-    routineUrl: '',
-    prospectusUrl: '',
-    ...(course.routine || {}),
-  };
-  const support = {
-    title: 'যেকোনো প্রয়োজনে কল করো এখনই',
-    description: 'শিক্ষার কোর্স, পড়াশোনা, ভর্তি অথবা যেকোনো জিজ্ঞাসায় কথা বলো।',
-    hours: 'সকাল ৮টা - রাত ১০টা',
-    phone: '16910',
-    note: '* যেকোনো নম্বর থেকে সাধারণ কল রেট প্রযোজ্য *',
-    imageUrl: '',
-    ...(course.supportSection || {}),
-  };
-  const promoCards = course.promoCards?.length ? course.promoCards : [
-    { key: 'video' as const, eyebrow: 'Learning', title: 'ফ্রি ভিডিও লাইব্রেরি', buttonLabel: 'ভিডিও দেখুন', buttonUrl: '/free-classes' },
-    { key: 'facebook' as const, eyebrow: 'Community', title: 'Grav Academy ফেসবুক গ্রুপ', buttonLabel: 'গ্রুপে যুক্ত হন', buttonUrl: 'https://www.facebook.com/' },
-  ];
+  const routine = course.routine;
+  const support = course.supportSection;
+  const promoCards = course.promoCards || [];
   const teacherMeta = (teacher: Teacher) => {
     const profile = instructorProfiles.find((item) => String(typeof item.instructorId === 'object' ? item.instructorId._id : item.instructorId) === String(teacher._id));
     return [profile?.subject, profile?.experience].filter(Boolean).join(' · ') || `${course.subject || 'Academic'} · Mentor`;
@@ -313,7 +274,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
       <section className="relative z-10 mx-auto -mt-7 max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
-          <Stat icon={<Users className="h-5 w-5 text-violet-600" />} label="কোর্সের শিক্ষক" value={`${teachers.length} জন`} />
+          {teachers.length > 0 && <Stat icon={<Users className="h-5 w-5 text-violet-600" />} label="কোর্সের শিক্ষক" value={`${teachers.length} জন`} />}
           <Stat icon={<Clock3 className="h-5 w-5 text-emerald-600" />} label="ক্লাস চলবে" value={course.duration || 'পূর্ণাঙ্গ সেশন'} />
           <Stat icon={<CalendarDays className="h-5 w-5 text-orange-500" />} label="কোর্স এক্সেস" value={course.accessLabel || 'সম্পূর্ণ সেশন'} />
         </div>
@@ -321,7 +282,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
       <section className="mx-auto grid max-w-6xl gap-7 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
         <div className="space-y-7">
-          <section className="rounded-[28px] bg-transparent p-0">
+          {teachers.length > 0 && <section className="rounded-[28px] bg-transparent p-0">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white">কোর্সের শিক্ষকবৃন্দ</h2>
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {visibleTeachers.map((teacher, index) => {
@@ -343,9 +304,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
               })}
             </div>
             {teachers.length > 4 && <button type="button" onClick={() => setShowAllTeachers((value) => !value)} className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-blue-200 px-4 py-2 text-xs font-black text-blue-700 transition-colors hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950/40">{showAllTeachers ? 'সংক্ষেপে' : 'আরো দেখুন'} <ChevronDown className={showAllTeachers ? 'h-3.5 w-3.5 rotate-180 transition-transform' : 'h-3.5 w-3.5 transition-transform'} /></button>}
-          </section>
+          </section>}
 
-          <section className="rounded-[28px] bg-transparent p-0">
+          {syllabus.length > 0 && <section className="rounded-[28px] bg-transparent p-0">
             <div className="flex items-end justify-between gap-3">
               <div>
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white">প্রোগ্রামের সিলেবাস</h2>
@@ -366,9 +327,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 </div>;
               })}
             </div>
-          </section>
+          </section>}
 
-          <section className="rounded-[22px]">
+          {routine && <section className="rounded-[22px]">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white">{routine.title}</h2>
             <div className="mt-5 overflow-hidden rounded-[22px] shadow-[0_10px_28px_rgba(30,65,100,0.12)]">
               <div className="relative flex min-h-[220px] items-center justify-center overflow-hidden bg-[#020b2b] bg-gradient-to-br from-[#06103f] via-[#073b9e] to-[#020817] px-6 text-center sm:min-h-[260px]">
@@ -389,7 +350,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
             </div>
-          </section>
+          </section>}
 
           <section className="hidden overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="grid items-center gap-5 bg-gradient-to-br from-[#eef7ff] via-white to-[#f2edff] p-5 sm:grid-cols-[1fr_210px] sm:p-7 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/40">
@@ -403,7 +364,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-[22px] bg-gradient-to-r from-[#dff7fb] via-[#f2f4de] to-[#ffe5b7] shadow-[0_10px_28px_rgba(30,65,100,0.1)]">
+          {support && <section className="overflow-hidden rounded-[22px] bg-gradient-to-r from-[#dff7fb] via-[#f2f4de] to-[#ffe5b7] shadow-[0_10px_28px_rgba(30,65,100,0.1)]">
             <div className="grid grid-cols-[minmax(0,1fr)_120px] items-center sm:grid-cols-[1fr_190px]">
               <div className="p-4 sm:p-6">
                 <h2 className="mt-3 text-xl font-black leading-7 text-[#24478f] sm:text-2xl">{support.title}</h2>
@@ -416,9 +377,9 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 <img src={support.imageUrl ? formatDriveImageUrl(support.imageUrl) : '/images/course-support-student.png'} alt="Grav Academy student support" className="absolute left-1/2 top-0 h-[190%] w-auto max-w-none -translate-x-1/2 drop-shadow-[0_10px_12px_rgba(30,65,100,0.12)] sm:h-[205%]" />
               </div>
             </div>
-          </section>
+          </section>}
 
-          <section className="grid gap-4 sm:grid-cols-2">
+          {promoCards.length > 0 && <section className="grid gap-4 sm:grid-cols-2">
             <div className="relative min-h-[170px] overflow-hidden rounded-[20px] bg-gradient-to-br from-[#ffc9c9] to-[#ffd8d8] p-5 shadow-[0_8px_22px_rgba(30,65,100,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,65,100,0.14)] sm:p-6">
               <div className="flex h-full min-h-[138px] items-start justify-between gap-3">
                 <div className="flex h-full flex-col">
@@ -441,7 +402,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
               </div>
               <div className="absolute -bottom-8 right-24 h-16 w-16 rounded-full bg-white/25 blur-2xl" />
             </div>
-          </section>
+          </section>}
 
           <section className="hidden grid gap-4 sm:grid-cols-2">
             <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-[#122b63] via-[#173e88] to-[#4169d8] p-6 text-white shadow-sm">
