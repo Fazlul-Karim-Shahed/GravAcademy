@@ -45,6 +45,7 @@ export default function AdminSettingsPage() {
 
   // Site Settings state
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl || '');
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState('');
   const [siteName, setSiteName] = useState(settings.siteName || '');
   const [siteTagline, setSiteTagline] = useState(settings.siteTagline || '');
   const [savingSettings, setSavingSettings] = useState(false);
@@ -541,9 +542,9 @@ export default function AdminSettingsPage() {
 
                     <div className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
                       <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold overflow-hidden shadow-md shadow-blue-500/20 shrink-0">
-                        {logoUrl ? (
+                        {(logoPreviewUrl || formatDriveImageUrl(logoUrl)) ? (
                           <img
-                            src={formatDriveImageUrl(logoUrl)}
+                            src={logoPreviewUrl || formatDriveImageUrl(logoUrl)}
                             alt="Logo Preview"
                             className="w-full h-full object-cover"
                           />
@@ -570,6 +571,7 @@ export default function AdminSettingsPage() {
                     <DriveFileUpload
                       value={logoUrl}
                       onChange={(url) => setLogoUrl(url)}
+                      onPreviewChange={setLogoPreviewUrl}
                       label="লোগো ফাইল আপলোড করুন"
                       placeholder="https://drive.google.com/... অথবা আপনার কম্পিউটার থেকে লোগো নির্বাচন করুন"
                       helperText="স্বচ্ছ ব্যাকগ্রাউন্ডসহ PNG বা স্কয়ার সাইজের লোগো (যেমন: 512x512) সবচেয়ে সুন্দর দেখাবে।"

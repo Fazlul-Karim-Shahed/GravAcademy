@@ -13,6 +13,7 @@ interface DriveFileUploadProps {
   placeholder?: string;
   helperText?: string;
   accept?: string;
+  onPreviewChange?: (url: string) => void;
 }
 
 export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
@@ -22,11 +23,20 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
   placeholder = 'https://drive.google.com/...',
   helperText = 'Select a file, then press Upload to save it to Drive.',
   accept = 'image/jpeg,image/png,image/webp,image/gif,application/pdf',
+  onPreviewChange,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
+  const [localPreviewUrl, setLocalPreviewUrl] = useState('');
+
+  React.useEffect(() => {
+    onPreviewChange?.(localPreviewUrl);
+    return () => {
+      if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
+    };
+  }, [localPreviewUrl, onPreviewChange]);
 
   const uploadSelectedFile = async () => {
     if (!selectedFile) return;
@@ -46,6 +56,7 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       let uploadedUrl = res.data.data.url || res.data.data.fileUrl || `/api/documents/${res.data.data._id}/stream`;
       if (selectedFile.type.startsWith('image/')) uploadedUrl = formatDriveImageUrl(uploadedUrl);
       onChange(uploadedUrl);
+      setLocalPreviewUrl('');
       setSelectedFile(null);
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'File upload failed.');
@@ -60,7 +71,11 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       <FileUploadField
         label={label}
         selectedFile={selectedFile}
-        onFileChange={(file) => { setError(''); setSelectedFile(file); }}
+        onFileChange={(file) => {
+          setError('');
+          setSelectedFile(file);
+          setLocalPreviewUrl(file?.type.startsWith('image/') ? URL.createObjectURL(file) : '');
+        }}
         urlValue={value}
         onUrlChange={onChange}
         urlPlaceholder={placeholder}
