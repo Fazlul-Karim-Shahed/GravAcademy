@@ -21,7 +21,7 @@ import {
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
 import { useSiteSettings, FEATURE_FLAG_LABELS, DEFAULT_FEATURE_FLAGS } from '@/context/SiteSettingsContext';
-import { DriveFileUpload } from '@/components/ui/DriveFileUpload';
+import { DriveFileUpload, DriveFileUploadHandle } from '@/components/ui/DriveFileUpload';
 import { formatDriveImageUrl } from '@/lib/drive';
 import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 
@@ -51,6 +51,7 @@ export default function AdminSettingsPage() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const logoUploadRef = React.useRef<DriveFileUploadHandle>(null);
   const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>(DEFAULT_FEATURE_FLAGS);
   const [savingFeatures, setSavingFeatures] = useState(false);
   const [featureSaveSuccess, setFeatureSaveSuccess] = useState(false);
@@ -70,8 +71,17 @@ export default function AdminSettingsPage() {
     setSaveSuccess(false);
     setSaveError('');
     try {
+      let nextLogoUrl = logoUrl;
+      if (logoUploadRef.current?.hasPendingFile()) {
+        const uploadedUrl = await logoUploadRef.current.uploadSelectedFile();
+        if (!uploadedUrl) {
+          setSaveError('লোগো আপলোড করা যায়নি। আবার চেষ্টা করুন।');
+          return;
+        }
+        nextLogoUrl = uploadedUrl;
+      }
       const ok = await updateSettings({
-        logoUrl,
+        logoUrl: nextLogoUrl,
         siteName,
         siteTagline,
       });
@@ -569,17 +579,11 @@ export default function AdminSettingsPage() {
                       ওয়েবসাইট লোগো (Google Drive / ডিরেক্ট ইমেজ আপলোড)
                     </label>
                     <DriveFileUpload
+                      ref={logoUploadRef}
                       value={logoUrl}
                       onChange={(url) => setLogoUrl(url)}
-                      onUploadComplete={async (url) => {
-                        const ok = await updateSettings({ logoUrl: url });
-                        if (ok) {
-                          setSaveSuccess(true);
-                          setTimeout(() => setSaveSuccess(false), 3500);
-                        }
-                        return ok;
-                      }}
                       onPreviewChange={setLogoPreviewUrl}
+                      hideUploadButton
                       label="লোগো ফাইল আপলোড করুন"
                       placeholder="https://drive.google.com/... অথবা আপনার কম্পিউটার থেকে লোগো নির্বাচন করুন"
                       helperText="স্বচ্ছ ব্যাকগ্রাউন্ডসহ PNG বা স্কয়ার সাইজের লোগো (যেমন: 512x512) সবচেয়ে সুন্দর দেখাবে।"

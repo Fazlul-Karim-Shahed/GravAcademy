@@ -15,9 +15,15 @@ interface DriveFileUploadProps {
   accept?: string;
   onPreviewChange?: (url: string) => void;
   onUploadComplete?: (url: string) => Promise<boolean> | boolean;
+  hideUploadButton?: boolean;
 }
 
-export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
+export interface DriveFileUploadHandle {
+  hasPendingFile: () => boolean;
+  uploadSelectedFile: () => Promise<string | null>;
+}
+
+export const DriveFileUpload = React.forwardRef<DriveFileUploadHandle, DriveFileUploadProps>(({
   label = 'File upload',
   value,
   onChange,
@@ -26,7 +32,8 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
   accept = 'image/jpeg,image/png,image/webp,image/gif,application/pdf',
   onPreviewChange,
   onUploadComplete,
-}) => {
+  hideUploadButton = false,
+}, ref) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -40,8 +47,8 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
     };
   }, [localPreviewUrl, onPreviewChange]);
 
-  const uploadSelectedFile = async () => {
-    if (!selectedFile) return;
+  const uploadSelectedFile = async (): Promise<string | null> => {
+    if (!selectedFile) return null;
     setUploading(true);
     setProgress(0);
     setError('');
@@ -63,13 +70,20 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       }
       setLocalPreviewUrl('');
       setSelectedFile(null);
+      return uploadedUrl;
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'File upload failed.');
+      return null;
     } finally {
       setUploading(false);
       setProgress(0);
     }
   };
+
+  React.useImperativeHandle(ref, () => ({
+    hasPendingFile: () => Boolean(selectedFile),
+    uploadSelectedFile,
+  }), [selectedFile]);
 
   return (
     <div className="space-y-2">
@@ -88,17 +102,21 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
         disabled={uploading}
         maxSizeMb={25}
       />
-      <button
-        type="button"
-        onClick={uploadSelectedFile}
-        disabled={!selectedFile || uploading}
-        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-        <span>{uploading ? `Uploading${progress ? ` ${progress}%` : '...'}` : 'Upload selected file'}</span>
-      </button>
+      {!hideUploadButton && (
+        <button
+          type="button"
+          onClick={uploadSelectedFile}
+          disabled={!selectedFile || uploading}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+          <span>{uploading ? `Uploading${progress ? ` ${progress}%` : '...'}` : 'Upload selected file'}</span>
+        </button>
+      )}
       {error && <p className="text-xs text-rose-600 font-semibold">{error}</p>}
       {!error && helperText && <p className="text-[11px] text-slate-400">{helperText}</p>}
     </div>
   );
-};
+});
+
+DriveFileUpload.displayName = 'DriveFileUpload';
