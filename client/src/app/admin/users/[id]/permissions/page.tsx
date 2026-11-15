@@ -328,7 +328,7 @@ export default function UserPermissionsEditPage() {
 
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-4 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-              নির্বাচিত রোলের ডিফল্ট পারমিশনগুলো অটোমেটিক চালু থাকবে। আপনি চাইলে নিচের তালিকা থেকে আরও যেকোনো ফিচারের বিশেষ অধিকার প্রদান করতে পারেন।
+              নির্বাচিত রোলের ডিফল্ট পারমিশনগুলো তালিকা থেকে চালু বা বন্ধ করতে পারবেন। প্রয়োজন হলে অতিরিক্ত ফিচারও সক্রিয় করতে পারবেন।
             </p>
           </div>
 
