@@ -118,9 +118,9 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Sleek Boxy Metric Cards with Watermark Background Icons */}
-        <div className="space-y-4 mb-10">
+        <div className="mb-10 grid grid-cols-2 gap-3.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
           {/* Row 1: 6 Core Modules */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+          <div className="contents">
             {hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE) && (
               <Link
                 href="/admin/attendance"
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Row 2: Additional Management Modules (Starting with User Management) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+          <div className="contents">
 
             {/* Settings shortcut */}
             <Link
