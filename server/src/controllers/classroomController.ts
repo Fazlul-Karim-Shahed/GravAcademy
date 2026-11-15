@@ -125,10 +125,14 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
     const combinedTeachers = Array.from(teacherMap.values());
     batch.assignedTeachers = combinedTeachers as any;
 
-    const studentCount = await Enrollment.countDocuments({
-      batchId,
-      status: { $in: ['enrolled', 'completed'] },
-    });
+    const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole);
+
+    const studentCount = canViewAllMembers
+      ? await Enrollment.countDocuments({
+          batchId,
+          status: { $in: ['enrolled', 'completed'] },
+        })
+      : 0;
 
     const announcementCount = await Announcement.countDocuments({ batchId });
 
@@ -139,8 +143,9 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
         memberCounts: {
           teachersCount: combinedTeachers.length,
           studentsCount: studentCount,
-          totalMembers: combinedTeachers.length + studentCount,
+          totalMembers: canViewAllMembers ? combinedTeachers.length + studentCount : combinedTeachers.length,
         },
+        canViewStudentMembers: canViewAllMembers,
         announcementCount,
       },
     });
@@ -196,23 +201,28 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
     }
     const combinedTeachers = Array.from(teacherMap.values());
 
-    const enrollments = await Enrollment.find({
-      batchId,
-      status: { $in: ['enrolled', 'completed'] },
-    })
-      .sort({ createdAt: -1 });
+    const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole);
 
-    const enrolledGravIds = enrollments.map((e) => e.gravId).filter(Boolean);
-    const students = await User.find({ gravId: { $in: enrolledGravIds }, role: 'student' })
-      .select('name email phone avatarUrl gravId role createdAt')
-      .lean();
+    let students: any[] = [];
+    if (canViewAllMembers) {
+      const enrollments = await Enrollment.find({
+        batchId,
+        status: { $in: ['enrolled', 'completed'] },
+      }).sort({ createdAt: -1 });
+
+      const enrolledGravIds = enrollments.map((e) => e.gravId).filter(Boolean);
+      students = await User.find({ gravId: { $in: enrolledGravIds }, role: 'student' })
+        .select('name email phone avatarUrl gravId role createdAt')
+        .lean();
+    }
 
     return res.status(200).json({
       success: true,
       data: {
         teachers: combinedTeachers,
-        students,
-        totalCount: combinedTeachers.length + students.length,
+        students: canViewAllMembers ? students : [],
+        totalCount: combinedTeachers.length + (canViewAllMembers ? students.length : 0),
+        canViewStudentMembers: canViewAllMembers,
       },
     });
   } catch (error: any) {

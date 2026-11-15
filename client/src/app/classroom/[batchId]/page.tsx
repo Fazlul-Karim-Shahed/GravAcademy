@@ -133,6 +133,7 @@ export default function BatchClassroomPage({
     students: [],
   });
   const [loadingMembers, setLoadingMembers] = useState(false);
+  const [membersLoaded, setMembersLoaded] = useState(false);
   const [studentToRemove, setStudentToRemove] = useState<MemberUser | null>(null);
   const [removingStudent, setRemovingStudent] = useState(false);
   const [removeNotice, setRemoveNotice] = useState('');
@@ -146,6 +147,8 @@ export default function BatchClassroomPage({
   const [isJitsiOpen, setIsJitsiOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+  const isTeacher = user?.role === 'teacher';
+  const canViewStudentMembers = isAdmin || isTeacher;
 
   const loadOverview = async () => {
     setLoading(true);
@@ -200,6 +203,7 @@ export default function BatchClassroomPage({
       console.error('Failed to load members:', err);
     } finally {
       setLoadingMembers(false);
+      setMembersLoaded(true);
     }
   };
 
@@ -209,6 +213,7 @@ export default function BatchClassroomPage({
       return;
     }
     if (user && batchId) {
+      setMembersLoaded(false);
       loadOverview();
       loadDiscussions();
       loadAnnouncements();
@@ -216,10 +221,10 @@ export default function BatchClassroomPage({
   }, [batchId, user, authLoading]);
 
   useEffect(() => {
-    if (activeTab === 'members' && members.students.length === 0) {
+    if (activeTab === 'members' && !membersLoaded) {
       loadMembers();
     }
-  }, [activeTab]);
+  }, [activeTab, membersLoaded]);
 
   const fetchBatchesForShift = async () => {
     setLoadingBatchesForShift(true);
@@ -491,7 +496,12 @@ export default function BatchClassroomPage({
             { key: 'home' as const, label: 'হোম', icon: BookOpen, count: null },
             { key: 'discussion' as const, label: 'ডিসকাশন', icon: MessageSquare, count: messages.length },
             { key: 'announcements' as const, label: 'নোটিশ', icon: Megaphone, count: announcements.length },
-            { key: 'members' as const, label: 'সদস্য', icon: Users, count: memberCounts.totalMembers },
+            {
+              key: 'members' as const,
+              label: canViewStudentMembers ? 'সদস্য' : 'শিক্ষকবৃন্দ',
+              icon: Users,
+              count: canViewStudentMembers ? memberCounts.totalMembers : (members.teachers.length || memberCounts.teachersCount),
+            },
           ].map((tab) => {
             const Icon = tab.icon;
             return (
@@ -565,7 +575,7 @@ export default function BatchClassroomPage({
                 <Megaphone className="w-4 h-4" /> নোটিশ
               </button>
               <button onClick={() => setActiveTab('members')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-4 text-xs font-bold transition-colors">
-                <Users className="w-4 h-4" /> সদস্য
+                <Users className="w-4 h-4" /> {canViewStudentMembers ? 'সদস্য' : 'শিক্ষকবৃন্দ'}
               </button>
             </div>
           </div>
@@ -714,17 +724,19 @@ export default function BatchClassroomPage({
               <div className="group rounded-2xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200/90 md:dark:border-slate-800 p-4 shadow-xs hover:shadow-lg hover:border-emerald-400/70 transition-all flex items-center justify-between">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                    মোট সদস্য
+                    {canViewStudentMembers ? 'মোট সদস্য' : 'কোর্স শিক্ষক'}
                   </span>
                   <span className="text-xl font-black text-slate-900 dark:text-white mt-0.5 block">
-                    {memberCounts.totalMembers} জন
+                    {canViewStudentMembers
+                      ? `${memberCounts.totalMembers} জন`
+                      : `${members.teachers.length || memberCounts.teachersCount} জন`}
                   </span>
                 </div>
                 <button
                   onClick={() => setActiveTab('members')}
                   className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-blue-600 dark:text-blue-400 transition-colors"
                 >
-                  সদস্য দেখুন
+                  {canViewStudentMembers ? 'সদস্য দেখুন' : 'শিক্ষক দেখুন'}
                 </button>
               </div>
 
@@ -841,7 +853,11 @@ export default function BatchClassroomPage({
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                  <span>ক্লাসরুম মেম্বার তালিকা ({memberCounts.totalMembers} জন)</span>
+                  <span>
+                    {canViewStudentMembers
+                      ? `ক্লাসরুম মেম্বার তালিকা (${memberCounts.totalMembers} জন)`
+                      : `কোর্স শিক্ষক ও নির্দেশকবৃন্দ (${members.teachers.length || memberCounts.teachersCount} জন)`}
+                  </span>
                 </h3>
               </div>
 
@@ -849,9 +865,11 @@ export default function BatchClassroomPage({
                 <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
                   {members.teachers.length || memberCounts.teachersCount} জন শিক্ষক
                 </span>
-                <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
-                  {members.students.length || memberCounts.studentsCount} জন শিক্ষার্থী
-                </span>
+                {canViewStudentMembers && (
+                  <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60">
+                    {members.students.length || memberCounts.studentsCount} জন শিক্ষার্থী
+                  </span>
+                )}
               </div>
             </div>
 
@@ -868,85 +886,128 @@ export default function BatchClassroomPage({
                 মেম্বার তালিকা লোড হচ্ছে...
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-6">
                 
-                {/* Teachers Section First */}
-                {members.teachers.map((t: any) => (
-                  <div
-                    key={t._id}
-                    className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 shadow-xs hover:shadow-lg hover:border-blue-400 transition-all flex items-center gap-3.5"
-                  >
-                    <UserAvatar
-                      name={t.name}
-                      avatarUrl={t.avatarUrl}
-                      role="teacher"
-                      size="lg"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
-                          {t.name}
-                        </span>
-                        {roleBadge('teacher')}
-                      </div>
-                      <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 block truncate">
-                        {t.gravId ? `Grav ID: ${t.gravId}` : 'শিক্ষক'}
-                      </span>
+                {/* Teachers Section */}
+                <div>
+                  {canViewStudentMembers && (
+                    <div className="mb-3 flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        শিক্ষক ও ইনস্ট্রাক্টর ({members.teachers.length} জন)
+                      </h4>
                     </div>
-                  </div>
-                ))}
+                  )}
 
-                {/* Students Next */}
-                {members.students.map((s) => (
-                  <div
-                    key={s._id}
-                    className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all flex items-center justify-between gap-3"
-                  >
-                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                      <UserAvatar
-                        name={s.name}
-                        avatarUrl={s.avatarUrl}
-                        role="student"
-                        size="lg"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
-                            {s.name}
-                          </span>
-                          {roleBadge('student')}
+                  {members.teachers.length === 0 ? (
+                    <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-8 text-center text-xs text-slate-400 font-medium">
+                      বর্তমানে এই ক্লাসরুমে কোনো শিক্ষক নির্ধারিত নেই।
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {members.teachers.map((t: any) => (
+                        <div
+                          key={t._id}
+                          className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 shadow-xs hover:shadow-lg hover:border-blue-400 transition-all flex items-center gap-3.5"
+                        >
+                          <UserAvatar
+                            name={t.name}
+                            avatarUrl={t.avatarUrl}
+                            role="teacher"
+                            size="lg"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
+                                {t.name}
+                              </span>
+                              {roleBadge('teacher')}
+                            </div>
+                            <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 block truncate">
+                              {t.gravId ? `Grav ID: ${t.gravId}` : 'শিক্ষক'}
+                            </span>
+                            {t.email && (
+                              <span className="text-[11px] text-slate-400 block truncate mt-0.5">
+                                {t.email}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
-                          {s.gravId ? `Grav ID: ${s.gravId}` : 'শিক্ষার্থী'}
-                        </span>
-                      </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Students Section (Only visible to Admins and Teachers) */}
+                {canViewStudentMembers && (
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <div className="mb-3 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        ভর্তিকৃত শিক্ষার্থী ({members.students.length} জন)
+                      </h4>
                     </div>
 
-                    {/* Admin Actions: Shift Batch & Remove Student */}
-                    {isAdmin && (
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenShiftModal(s)}
-                          title="ব্যাচ বা কোর্স পরিবর্তন করুন (শিফট)"
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200/80 dark:border-blue-800/60 text-xs font-bold transition-all cursor-pointer shadow-2xs"
-                        >
-                          <ArrowRightLeft className="w-3.5 h-3.5" />
-                          <span>শিফট</span>
-                        </button>
+                    {members.students.length === 0 ? (
+                      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-8 text-center text-xs text-slate-400 font-medium">
+                        এই ব্যাচে এখনো কোনো শিক্ষার্থী নেই।
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {members.students.map((s) => (
+                          <div
+                            key={s._id}
+                            className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all flex items-center justify-between gap-3"
+                          >
+                            <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                              <UserAvatar
+                                name={s.name}
+                                avatarUrl={s.avatarUrl}
+                                role="student"
+                                size="lg"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate block">
+                                    {s.name}
+                                  </span>
+                                  {roleBadge('student')}
+                                </div>
+                                <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
+                                  {s.gravId ? `Grav ID: ${s.gravId}` : 'শিক্ষার্থী'}
+                                </span>
+                              </div>
+                            </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setStudentToRemove(s)}
-                          title="এই ব্যাচ/কোর্স থেকে রিমুভ করুন"
-                          className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50 transition-all shrink-0 cursor-pointer"
-                        >
-                          <UserMinus className="w-4 h-4" />
-                        </button>
+                            {/* Admin Actions: Shift Batch & Remove Student */}
+                            {isAdmin && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenShiftModal(s)}
+                                  title="ব্যাচ বা কোর্স পরিবর্তন করুন (শিফট)"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200/80 dark:border-blue-800/60 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                                >
+                                  <ArrowRightLeft className="w-3.5 h-3.5" />
+                                  <span>শিফট</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setStudentToRemove(s)}
+                                  title="এই ব্যাচ/কোর্স থেকে রিমুভ করুন"
+                                  className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50 transition-all shrink-0 cursor-pointer"
+                                >
+                                  <UserMinus className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-                ))}
+                )}
 
               </div>
             )}
