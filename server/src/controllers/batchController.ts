@@ -24,8 +24,6 @@ export const createBatchSchema = z.object({
   status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).default('draft'),
   startDate: z.string().date(),
   durationMonths: z.number().int().min(1).max(120),
-  studentAccessMode: z.enum(['manual', 'lifetime']).default('manual'),
-  studentAccessMonths: z.number().int().min(1).max(120).optional(),
   enrollmentOpenDate: z.string().datetime().optional(),
   enrollmentCloseDate: z.string().datetime().optional(),
   capacity: z.number().min(0).optional(),
@@ -137,7 +135,7 @@ export const getBatchHierarchy = async (req: Request, res: Response) => {
   try {
     const { batchId } = req.params;
 
-    const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject');
+    const batch = await Batch.findById(batchId).populate('courseId', 'title slug gradeLevel subject studentAccessMode studentAccessMonths');
     if (!batch) {
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
@@ -150,7 +148,8 @@ export const getBatchHierarchy = async (req: Request, res: Response) => {
         batchId,
         status: { $in: ['enrolled', 'completed'] },
       });
-      if (!enrollment || !hasActiveStudentBatchAccess(batch, enrollment)) {
+      const courseAccess = batch.courseId as any;
+      if (!enrollment || !courseAccess || !hasActiveStudentBatchAccess(batch, enrollment, courseAccess)) {
         return res.status(403).json({ success: false, message: 'এই batch-এর access period শেষ হয়েছে।' });
       }
     }
@@ -205,8 +204,6 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       status,
       startDate,
       durationMonths,
-      studentAccessMode = 'manual',
-      studentAccessMonths,
       enrollmentOpenDate,
       enrollmentCloseDate,
       capacity,
@@ -229,8 +226,6 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       startDate: normalizedStartDate,
       durationMonths,
       endDate: calculatedEndDate,
-      studentAccessMode,
-      studentAccessMonths: studentAccessMode === 'manual' ? studentAccessMonths : undefined,
       enrollmentOpenDate,
       enrollmentCloseDate,
       capacity,
@@ -389,20 +384,6 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
       batch.durationMonths = durationMonths;
       batch.endDate = addCalendarMonths(batch.startDate, durationMonths);
     }
-    if (req.body.studentAccessMode !== undefined) {
-      if (!['manual', 'lifetime'].includes(req.body.studentAccessMode)) {
-        return res.status(400).json({ success: false, message: 'Invalid student access mode' });
-      }
-      batch.studentAccessMode = req.body.studentAccessMode;
-    }
-    if (req.body.studentAccessMonths !== undefined) {
-      const months = req.body.studentAccessMonths;
-      if (months !== null && (!Number.isInteger(months) || months < 1 || months > 120)) {
-        return res.status(400).json({ success: false, message: 'Student access duration must be between 1 and 120 months' });
-      }
-      batch.studentAccessMonths = months == null ? undefined : months;
-    }
-
     await batch.save();
 
     return res.status(200).json({
@@ -468,12 +449,12 @@ export const getScheduleOverview = async (req: AuthenticatedRequest, res: Respon
           gravId: currentUser.gravId,
           status: { $in: ['enrolled', 'completed'] },
         }).select('batchId enrolledAt');
-        const batchesForAccess = await Batch.find({ _id: { $in: studentEnrollments.map((e) => e.batchId) } }).select('_id endDate studentAccessMode studentAccessMonths').lean();
+        const batchesForAccess = await Batch.find({ _id: { $in: studentEnrollments.map((e) => e.batchId) } }).select('_id endDate courseId').populate('courseId', 'studentAccessMode studentAccessMonths').lean();
         const batchById = new Map(batchesForAccess.map((batch) => [batch._id.toString(), batch]));
         const enrolledBatchIds = studentEnrollments
           .filter((enrollment) => {
             const batch = batchById.get(enrollment.batchId.toString());
-            return !!batch && hasActiveStudentBatchAccess(batch as any, enrollment);
+            return !!batch && !!batch.courseId && hasActiveStudentBatchAccess(batch as any, enrollment, batch.courseId as any);
           })
           .map((enrollment) => enrollment.batchId);
         filter._id = { $in: enrolledBatchIds };

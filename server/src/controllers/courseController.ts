@@ -20,6 +20,8 @@ export const createCourseSchema = z.object({
   regularPrice: z.number().min(0).optional(),
   discountPrice: z.number().min(0).optional(),
   duration: z.string().optional(),
+  studentAccessMode: z.enum(['manual', 'lifetime']).default('manual'),
+  studentAccessMonths: z.number().int().min(1).max(120).nullable().optional(),
   isPublished: z.boolean().default(false),
   targetAudience: z.string().max(300).optional(),
   heroEyebrow: z.string().max(100).optional(),

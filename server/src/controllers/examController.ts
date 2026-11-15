@@ -7,6 +7,7 @@ import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
 import { ROLES } from '../types/roles';
 import { User } from '../models/User';
+import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 // Schema for Question Option
@@ -297,7 +298,8 @@ export const getBatchExams = async (req: AuthenticatedRequest, res: Response) =>
         Enrollment.findOne({ gravId: user.gravId, batchId, status: { $in: ['enrolled', 'completed'] } }),
         Batch.findById(batchId),
       ]);
-      if (!enrollment || !batch || !hasActiveStudentBatchAccess(batch, enrollment)) {
+      const courseAccess = batch ? await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths') : null;
+      if (!enrollment || !batch || !courseAccess || !hasActiveStudentBatchAccess(batch, enrollment, courseAccess)) {
         return res.status(403).json({ success: false, message: 'এই batch-এর access period শেষ হয়েছে।' });
       }
     }
@@ -391,7 +393,8 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
       status: 'enrolled',
     });
     const batch = await Batch.findById(exam.batchId);
-    const isEnrolled = !!enrollment && !!batch && hasActiveStudentBatchAccess(batch, enrollment);
+    const courseAccess = batch ? await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths') : null;
+    const isEnrolled = !!enrollment && !!batch && !!courseAccess && hasActiveStudentBatchAccess(batch, enrollment, courseAccess);
 
     const isTeacherOrAdmin =
       user?.role === ROLES.SUPERADMIN ||
@@ -490,7 +493,8 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
         status: 'enrolled',
       });
       const batch = await Batch.findById(exam.batchId);
-      if (!enrollment || !batch || !hasActiveStudentBatchAccess(batch, enrollment)) {
+      const courseAccess = batch ? await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths') : null;
+      if (!enrollment || !batch || !courseAccess || !hasActiveStudentBatchAccess(batch, enrollment, courseAccess)) {
         return res.status(403).json({ success: false, message: 'Not enrolled in this batch' });
       }
 

@@ -7,6 +7,7 @@ import { ROLES, UserRole } from '../types/roles';
 import { uploadFileToDrive, getDriveFileStream } from '../services/googleDriveService';
 import { AuditLog } from '../models/AuditLog';
 import { Batch } from '../models/Batch';
+import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 /**
@@ -139,8 +140,9 @@ export const streamProtectedDocument = async (req: AuthenticatedRequest, res: Re
         status: 'enrolled',
       });
       const batch = await Batch.findById(lessonWithFile.batchId);
+      const courseAccess = batch ? await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths') : null;
 
-      if (!isEnrolled || !batch || !hasActiveStudentBatchAccess(batch, isEnrolled)) {
+      if (!isEnrolled || !batch || !courseAccess || !hasActiveStudentBatchAccess(batch, isEnrolled, courseAccess)) {
         return res.status(403).json({
           success: false,
           message: 'Access denied. You are not enrolled in the batch that owns this document.',

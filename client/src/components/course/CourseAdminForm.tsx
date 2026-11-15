@@ -74,10 +74,9 @@ interface CourseFormData {
   courseFee: number;
   regularPrice: number;
   discountPrice: number;
-  duration: string;
   targetAudience: string;
-  heroEyebrow: string;
-  accessLabel: string;
+  studentAccessMode: 'manual' | 'lifetime';
+  studentAccessMonths: number | '';
   isPublished: boolean;
   instructors: string[];
   curriculumHighlights: string[];
@@ -144,10 +143,9 @@ function getDefaultForm(): CourseFormData {
     courseFee: 2500,
     regularPrice: 3500,
     discountPrice: 2500,
-    duration: '1 Year',
     targetAudience: '',
-    heroEyebrow: 'ACADEMIC PROGRAM',
-    accessLabel: 'সীমাহীন সেশন',
+    studentAccessMode: 'manual',
+    studentAccessMonths: '',
     isPublished: true,
     instructors: [],
     curriculumHighlights: defaultHighlights,
@@ -176,10 +174,9 @@ function hydrateForm(course: any): CourseFormData {
     courseFee: Number(course.courseFee) || 0,
     regularPrice: course.regularPrice !== undefined ? Number(course.regularPrice) || 0 : Number(course.courseFee) || 0,
     discountPrice: course.discountPrice !== undefined ? Number(course.discountPrice) || 0 : Number(course.courseFee) || 0,
-    duration: asString(course.duration, base.duration),
     targetAudience: asString(course.targetAudience),
-    heroEyebrow: asString(course.heroEyebrow, base.heroEyebrow),
-    accessLabel: asString(course.accessLabel, base.accessLabel),
+    studentAccessMode: course.studentAccessMode === 'lifetime' ? 'lifetime' : 'manual',
+    studentAccessMonths: Number(course.studentAccessMonths) > 0 ? Number(course.studentAccessMonths) : '',
     isPublished: course.isPublished ?? true,
     instructors: instructorIds,
     curriculumHighlights: Array.isArray(course.features) && course.features.length
@@ -306,6 +303,8 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
       courseFee: Number(form.courseFee) || 0,
       regularPrice: Number(form.regularPrice) || 0,
       discountPrice: Number(form.discountPrice) || 0,
+      studentAccessMode: form.studentAccessMode,
+      studentAccessMonths: form.studentAccessMode === 'manual' && form.studentAccessMonths !== '' ? Number(form.studentAccessMonths) : null,
       instructors: form.instructors,
       instructorProfiles: [],
       features: [],
@@ -338,9 +337,14 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
             <Field label="Course title *"><input required className={inputClass} value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="Class 10 Physics Masterclass" /></Field>
             <Field label="Class / grade *"><select required className={inputClass} value={form.gradeLevel} onChange={(event) => update('gradeLevel', event.target.value)}>{(gradeOptions.length ? gradeOptions : [form.gradeLevel]).map((item) => <option key={item}>{item}</option>)}</select></Field>
             <Field label="Subject"><input className={inputClass} value={form.subject} onChange={(event) => update('subject', event.target.value)} placeholder="Physics" /></Field>
-            <Field label="Duration"><input className={inputClass} value={form.duration} onChange={(event) => update('duration', event.target.value)} placeholder="1 Year" /></Field>
-            <Field label="Hero eyebrow"><input className={inputClass} value={form.heroEyebrow} onChange={(event) => update('heroEyebrow', event.target.value)} placeholder="ACADEMIC PROGRAM" /></Field>
-            <Field label="Access label"><input className={inputClass} value={form.accessLabel} onChange={(event) => update('accessLabel', event.target.value)} placeholder="সীমাহীন সেশন" /></Field>
+          </div>
+          <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40">
+            <h3 className="text-xs font-black text-slate-800 dark:text-slate-200">Student access</h3>
+            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">মেয়াদ প্রতিটি batch-এ enrollment হওয়ার দিন থেকে গণনা হবে।</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <Field label="Access type"><select className={inputClass} value={form.studentAccessMode} onChange={(event) => update('studentAccessMode', event.target.value as 'manual' | 'lifetime')}><option value="manual">নির্দিষ্ট মেয়াদ</option><option value="lifetime">Lifetime</option></select></Field>
+              {form.studentAccessMode === 'manual' && <Field label="Enrollment-এর পর access (মাস)" hint="খালি রাখলে batch-এর end date পর্যন্ত access থাকবে।"><input type="number" min="1" max="120" className={inputClass} value={form.studentAccessMonths} onChange={(event) => update('studentAccessMonths', event.target.value ? Number(event.target.value) : '')} placeholder="যেমন ৬" /></Field>}
+            </div>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2"><Field label="Course description"><textarea rows={4} className={inputClass} value={form.description} onChange={(event) => update('description', event.target.value)} placeholder="Course overview..." /></Field><Field label="Target audience"><textarea rows={4} className={inputClass} value={form.targetAudience} onChange={(event) => update('targetAudience', event.target.value)} placeholder="কারা এই course-এর জন্য উপযুক্ত..." /></Field></div>
           <div className="mt-4"><DriveFileUpload label="Course thumbnail" value={form.thumbnailUrl} onChange={(url) => update('thumbnailUrl', url)} placeholder="Drive link বা file upload করুন" helperText="খালি রাখলে class-based default thumbnail দেখাবে।" /></div>

@@ -53,7 +53,8 @@ async function verifyClassroomAccess(gravId: string, userRole: string, batchId: 
       gravId: gravId,
       status: { $in: ['enrolled', 'completed'] },
     });
-    return !!enrollment && hasActiveStudentBatchAccess(batch, enrollment);
+    const courseAccess = await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths');
+    return !!enrollment && !!courseAccess && hasActiveStudentBatchAccess(batch, enrollment, courseAccess);
   }
 
   if (userRole === 'guardian') {
@@ -66,7 +67,8 @@ async function verifyClassroomAccess(gravId: string, userRole: string, batchId: 
       gravId: { $in: gravIds },
       status: { $in: ['enrolled', 'completed'] },
     });
-    return !!enrollment && hasActiveStudentBatchAccess(batch, enrollment);
+    const courseAccess = await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths');
+    return !!enrollment && !!courseAccess && hasActiveStudentBatchAccess(batch, enrollment, courseAccess);
   }
 
   return false;

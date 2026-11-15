@@ -1,5 +1,8 @@
 import { IBatch } from '../models/Batch';
 import { IEnrollment } from '../models/Enrollment';
+import { ICourse } from '../models/Course';
+
+type CourseAccess = Pick<ICourse, 'studentAccessMode' | 'studentAccessMonths'>;
 
 export function addCalendarMonths(date: Date, months: number): Date {
   const result = new Date(date);
@@ -12,12 +15,13 @@ export function addCalendarMonths(date: Date, months: number): Date {
 }
 
 export function getStudentAccessExpiresAt(
-  batch: Pick<IBatch, 'studentAccessMode' | 'studentAccessMonths' | 'endDate'>,
-  enrollment: Pick<IEnrollment, 'enrolledAt'>
+  batch: Pick<IBatch, 'endDate'>,
+  enrollment: Pick<IEnrollment, 'enrolledAt'>,
+  course: CourseAccess
 ): Date | null {
-  if (batch.studentAccessMode === 'lifetime') return null;
-  if (batch.studentAccessMonths && batch.studentAccessMonths > 0) {
-    return addCalendarMonths(new Date(enrollment.enrolledAt), batch.studentAccessMonths);
+  if (course.studentAccessMode === 'lifetime') return null;
+  if (course.studentAccessMonths && course.studentAccessMonths > 0) {
+    return addCalendarMonths(new Date(enrollment.enrolledAt), course.studentAccessMonths);
   }
   if (!batch.endDate) return null;
   const expiresAt = new Date(batch.endDate);
@@ -26,10 +30,11 @@ export function getStudentAccessExpiresAt(
 }
 
 export function hasActiveStudentBatchAccess(
-  batch: Pick<IBatch, 'studentAccessMode' | 'studentAccessMonths' | 'endDate'>,
+  batch: Pick<IBatch, 'endDate'>,
   enrollment: Pick<IEnrollment, 'enrolledAt'>,
+  course: CourseAccess,
   now = new Date()
 ): boolean {
-  const expiresAt = getStudentAccessExpiresAt(batch, enrollment);
+  const expiresAt = getStudentAccessExpiresAt(batch, enrollment, course);
   return !expiresAt || now <= expiresAt;
 }

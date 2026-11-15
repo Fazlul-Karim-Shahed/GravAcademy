@@ -96,11 +96,11 @@ export const getStudentLiveClasses = async (req: AuthenticatedRequest, res: Resp
 
     // Get batches student is enrolled in
     const enrollments = await Enrollment.find({ gravId, status: 'enrolled' }).select('batchId enrolledAt');
-    const batches = await Batch.find({ _id: { $in: enrollments.map((e) => e.batchId) } }).select('_id endDate studentAccessMode studentAccessMonths').lean();
+    const batches = await Batch.find({ _id: { $in: enrollments.map((e) => e.batchId) } }).select('_id endDate courseId').populate('courseId', 'studentAccessMode studentAccessMonths').lean();
     const batchById = new Map(batches.map((batch) => [batch._id.toString(), batch]));
     const batchIds = enrollments.filter((enrollment) => {
       const batch = batchById.get(enrollment.batchId.toString());
-      return !!batch && hasActiveStudentBatchAccess(batch as any, enrollment);
+      return !!batch && !!batch.courseId && hasActiveStudentBatchAccess(batch as any, enrollment, batch.courseId as any);
     }).map((enrollment) => enrollment.batchId);
 
     const liveClasses = await LiveClass.find({

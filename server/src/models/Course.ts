@@ -10,6 +10,8 @@ export interface ICourse extends Document {
   subject?: string;
   isPublished: boolean;
   duration?: string;
+  studentAccessMode?: 'manual' | 'lifetime';
+  studentAccessMonths?: number;
   courseFee: number;
   regularPrice?: number;
   discountPrice?: number;
@@ -111,6 +113,8 @@ const CourseSchema = new Schema<ICourse>(
     duration: {
       type: String,
     },
+    studentAccessMode: { type: String, enum: ['manual', 'lifetime'], default: 'manual' },
+    studentAccessMonths: { type: Number, min: 1, max: 120 },
     courseFee: {
       type: Number,
       default: 0,

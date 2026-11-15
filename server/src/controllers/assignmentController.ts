@@ -93,7 +93,8 @@ async function verifyAssignmentBatchAccess(
       gravId: gravId,
       status: { $in: ['enrolled', 'completed'] },
     });
-    return !!enrollment && hasActiveStudentBatchAccess(batch, enrollment);
+    const courseAccess = await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths');
+    return !!enrollment && !!courseAccess && hasActiveStudentBatchAccess(batch, enrollment, courseAccess);
   }
 
   return false;
