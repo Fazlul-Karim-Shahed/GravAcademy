@@ -47,7 +47,6 @@ export const DriveFileUpload: React.FC<DriveFileUploadProps> = ({
       const formData = new FormData();
       formData.append('file', selectedFile);
       const res = await api.post('/documents/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (event) => {
           if (event.total) setProgress(Math.round((event.loaded * 100) / event.total));
         },
