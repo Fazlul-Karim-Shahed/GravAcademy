@@ -734,7 +734,7 @@ export default function AdminAdmissionsPage() {
                         type="text"
                         value={existingStudentSearch}
                         onChange={(e) => setExistingStudentSearch(e.target.value)}
-                        placeholder="নাম, আইডি (gravId), ফোন নম্বর বা ইমেইল লিখুন..."
+                        placeholder="নাম, Grav ID, ফোন নম্বর বা ইমেইল লিখুন..."
                         className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       {/* Suggestion dropdown: Only appears when user types something */}
@@ -1145,12 +1145,12 @@ export default function AdminAdmissionsPage() {
                     ) : (
                       <>
                         <UserPlus className="w-5 h-5" />
-                        শিক্ষার্থী ভর্তি সম্পন্ন করুন এবং আইডি তৈরি করুন
+                        শিক্ষার্থী ভর্তি সম্পন্ন করুন এবং Grav ID তৈরি করুন
                       </>
                     )}
                   </button>
                   <p className="text-[11px] text-center text-slate-500 dark:text-slate-400 mt-2">
-                    * সাবমিট করার সাথে সাথে নতুন শিক্ষার্থীর জন্য একটি ইউনিক আইডি জেনারেট হবে এবং স্বয়ংক্রিয়ভাবে পাসওয়ার্ড হিসেবে আইডি সেট হবে।
+                    * সাবমিট করার সাথে সাথে নতুন শিক্ষার্থীর জন্য একটি ইউনিক Grav ID তৈরি হবে এবং স্বয়ংক্রিয়ভাবে পাসওয়ার্ড হিসেবে Grav ID সেট হবে।
                   </p>
                 </div>
 

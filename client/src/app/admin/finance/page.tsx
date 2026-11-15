@@ -98,6 +98,13 @@ export default function AdminFinancePage() {
   const [activeDetailsGroup, setActiveDetailsGroup] = useState<GroupedStudentBatchPayment | null>(null);
   const [loadingHistoryKey, setLoadingHistoryKey] = useState<string | null>(null);
 
+  const normalizePayment = (payment: any): PaymentReceiptData => ({
+    ...payment,
+    gravId: typeof payment.gravId === 'object' && payment.gravId
+      ? payment.gravId
+      : payment.student || { name: 'অজ্ঞাত শিক্ষার্থী', gravId: String(payment.gravId || '') },
+  });
+
   // Helper to fetch complete payment history for a student and batch
   const handleOpenReceiptWithHistory = async (group: GroupedStudentBatchPayment) => {
     const gravId = group.gravId?._id || (group.gravId as any);
@@ -494,7 +501,7 @@ export default function AdminFinancePage() {
 
       const res = await api.get(`/finance/admin-payments?${params.toString()}`);
       if (res.data?.success) {
-        setPayments(res.data.data || []);
+        setPayments((res.data.data || []).map(normalizePayment));
         setStats(res.data.summary || null);
         if (res.data.meta) {
           setTotalPages(res.data.meta.totalPages || 1);
@@ -1102,7 +1109,7 @@ export default function AdminFinancePage() {
                     <div className="bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl text-xs space-y-1">
                       <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between">
                         <span>{group.gravId?.name || 'অজ্ঞাত'}</span>
-                        <span className="font-mono text-[10px] text-slate-400">ID: #{group.gravId?.gravId || '—'}</span>
+                        <span className="font-mono text-[10px] text-slate-400">Grav ID: #{group.gravId?.gravId || '—'}</span>
                       </div>
                       <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
                         <span>{group.batchId?.name || '—'}</span>
@@ -1464,7 +1471,7 @@ export default function AdminFinancePage() {
                   <div>
                     <input
                       type="text"
-                      placeholder="নাম, ফোন বা আইডি লিখে খুঁজুন..."
+                  placeholder="নাম, ফোন বা Grav ID লিখে খুঁজুন..."
                       value={studentSearch}
                       onChange={(e) => setStudentSearch(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"

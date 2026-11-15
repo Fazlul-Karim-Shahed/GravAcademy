@@ -207,7 +207,7 @@ export default function AdminUsersPage() {
         role: staffRole,
       });
       if (res.data?.success) {
-        setCreateStaffSuccess(`"${staffName}" সফলভাবে তৈরি হয়েছে (ID: ${res.data.data?.gravId})`);
+                        setCreateStaffSuccess(`"${staffName}" সফলভাবে তৈরি হয়েছে (Grav ID: ${res.data.data?.gravId})`);
         resetStaffForm();
         fetchUsers(1);
         setPage(1);
@@ -232,7 +232,7 @@ export default function AdminUsersPage() {
 
   const rolePills = [
     { id: 'all', label: 'সকল ইউজার' },
-    { id: 'student', label: 'শিক্ষার্থী (Student)' },
+                { id: 'student', label: 'শিক্ষার্থী (Student)' },
     { id: 'teacher', label: 'শিক্ষক (Teacher)' },
     { id: 'admin', label: 'এডমিন (Admin)' },
     { id: 'guardian', label: 'অভিভাবক (Guardian)' },
@@ -396,7 +396,7 @@ export default function AdminUsersPage() {
 
                   <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/60">
                     <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold">
-                      ID: {u.gravId || '—'}
+                      Grav ID: {u.gravId || '—'}
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

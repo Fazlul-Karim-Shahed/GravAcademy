@@ -469,6 +469,15 @@ export const getAssignmentSubmissions = async (req: AuthenticatedRequest, res: R
       .populate('evaluatedBy', 'name email')
       .sort({ submittedAt: -1 })
       .lean();
+    const submissionGravIds = submissions.map((submission) => submission.gravId).filter(Boolean);
+    const students = await User.find({ gravId: { $in: submissionGravIds }, role: ROLES.STUDENT })
+      .select('name email phone avatarUrl gravId')
+      .lean();
+    const studentMap = new Map(students.map((student) => [student.gravId, student]));
+    const enrichedSubmissions = submissions.map((submission) => ({
+      ...submission,
+      gravId: studentMap.get(submission.gravId) || { gravId: submission.gravId },
+    }));
 
     return res.json({
       success: true,
@@ -480,7 +489,7 @@ export const getAssignmentSubmissions = async (req: AuthenticatedRequest, res: R
         dueDate: assignment.dueDate,
       },
       count: submissions.length,
-      data: submissions,
+      data: enrichedSubmissions,
     });
   } catch (error: any) {
     console.error('getAssignmentSubmissions error:', error);

@@ -298,7 +298,7 @@ export default function AdminSettingsPage() {
                                 {u.name}
                               </div>
                               <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold block">
-                                ID: {u.gravId || '—'}
+                                Grav ID: {u.gravId || '—'}
                               </span>
                             </div>
                           </div>

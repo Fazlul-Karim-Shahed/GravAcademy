@@ -337,7 +337,7 @@ export default function AssignmentSubmissionsPage({
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="স্টুডেন্টের নাম বা আইডি দিয়ে সার্চ করুন..."
+                  placeholder="স্টুডেন্টের নাম বা Grav ID দিয়ে সার্চ করুন..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-purple-500 transition-colors"

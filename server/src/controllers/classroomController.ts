@@ -202,9 +202,10 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
     })
       .sort({ createdAt: -1 });
 
-    const students = enrollments
-      .map((e) => e.gravId)
-      .filter(Boolean);
+    const enrolledGravIds = enrollments.map((e) => e.gravId).filter(Boolean);
+    const students = await User.find({ gravId: { $in: enrolledGravIds }, role: 'student' })
+      .select('name email phone avatarUrl gravId role createdAt')
+      .lean();
 
     return res.status(200).json({
       success: true,

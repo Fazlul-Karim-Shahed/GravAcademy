@@ -83,7 +83,7 @@ export default function GuardianPortalPage() {
     setPaymentModalStudent(student);
     setLoadingPayments(true);
     try {
-      const res = await api.get('/finance/my-payments', { params: { gravId: student._id } });
+      const res = await api.get('/finance/my-payments', { params: { gravId: student.gravId } });
       if (res.data?.success) {
         setPayments(res.data.data || []);
         setPaymentSummary(res.data.summary || null);

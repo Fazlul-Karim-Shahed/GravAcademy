@@ -329,6 +329,12 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
         enrollmentMap.set(key, enr);
       }
 
+      const paymentGravIds = paymentDocs.map((payment) => payment.gravId).filter(Boolean);
+      const paymentStudents = await User.find({ gravId: { $in: paymentGravIds }, role: 'student' })
+        .select('name gravId phone email studentDetails avatarUrl')
+        .lean();
+      const paymentStudentMap = new Map(paymentStudents.map((student) => [student.gravId, student]));
+
       return paymentDocs.map((p) => {
         const gravIdStr = p.gravId?.toString() || '';
         const batchIdStr = p.batchId?._id?.toString() || p.batchId?.toString() || 'no_batch';
@@ -357,6 +363,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
 
         return {
           ...p,
+          student: p.gravId ? paymentStudentMap.get(p.gravId.toString()) || null : null,
           totalFee: effectiveBatchFee,
           dueAmount: dynamicDue,
           totalPaid: totalPaidForThisBatch,

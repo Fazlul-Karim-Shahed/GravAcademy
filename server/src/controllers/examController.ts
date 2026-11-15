@@ -6,6 +6,7 @@ import { Examination, Question, ExamAttempt } from '../models/Examination';
 import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
 import { ROLES } from '../types/roles';
+import { User } from '../models/User';
 
 // Schema for Question Option
 const optionSchema = z.object({
@@ -599,12 +600,21 @@ export const getExamSubmissions = async (req: AuthenticatedRequest, res: Respons
 
     const attempts = await ExamAttempt.find({ examId })
       .sort({ submittedAt: -1 });
+    const attemptGravIds = attempts.map((attempt) => attempt.gravId).filter(Boolean);
+    const students = await User.find({ gravId: { $in: attemptGravIds }, role: ROLES.STUDENT })
+      .select('name email phone avatarUrl gravId')
+      .lean();
+    const studentMap = new Map(students.map((student) => [student.gravId, student]));
+    const enrichedAttempts = attempts.map((attempt) => ({
+      ...attempt.toObject(),
+      gravId: studentMap.get(attempt.gravId) || { gravId: attempt.gravId },
+    }));
 
     return res.status(200).json({
       success: true,
       exam,
       count: attempts.length,
-      data: attempts,
+      data: enrichedAttempts,
     });
   } catch (error) {
     console.error('getExamSubmissions error:', error);

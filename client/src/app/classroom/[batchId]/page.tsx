@@ -890,7 +890,7 @@ export default function BatchClassroomPage({
                         {roleBadge('teacher')}
                       </div>
                       <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 block truncate">
-                        {t.gravId ? `ID: ${t.gravId}` : 'শিক্ষক'}
+                        {t.gravId ? `Grav ID: ${t.gravId}` : 'শিক্ষক'}
                       </span>
                     </div>
                   </div>
@@ -917,7 +917,7 @@ export default function BatchClassroomPage({
                           {roleBadge('student')}
                         </div>
                         <span className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 block truncate">
-                          {s.gravId ? `ID: ${s.gravId}` : 'শিক্ষার্থী'}
+                          {s.gravId ? `Grav ID: ${s.gravId}` : 'শিক্ষার্থী'}
                         </span>
                       </div>
                     </div>
