@@ -24,6 +24,9 @@ export const uploadDocument = async (req: AuthenticatedRequest, res: Response) =
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'image/jpeg',
       'image/png',
+      'image/webp',
+      'image/svg+xml',
+      'image/gif',
     ];
 
     if (!allowedMimeTypes.includes(file.mimetype)) {
