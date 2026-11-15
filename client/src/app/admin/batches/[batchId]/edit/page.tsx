@@ -50,6 +50,10 @@ export default function EditBatchPage() {
     weeklySchedule: [] as ScheduleSlot[],
     capacity: 40,
     meetingUrl: '',
+    startDate: '',
+    durationMonths: 1,
+    studentAccessMode: 'manual',
+    studentAccessMonths: '' as number | '',
   });
 
   useEffect(() => {
@@ -94,6 +98,10 @@ export default function EditBatchPage() {
             : [],
           capacity: b.capacity || 40,
           meetingUrl: b.meetingUrl || '',
+          startDate: b.startDate ? new Date(b.startDate).toISOString().slice(0, 10) : '',
+          durationMonths: b.durationMonths || 1,
+          studentAccessMode: b.studentAccessMode || 'manual',
+          studentAccessMonths: b.studentAccessMonths || '',
         });
       }
     } catch (err: any) {
@@ -138,6 +146,11 @@ export default function EditBatchPage() {
         })),
         capacity: Number(form.capacity),
         meetingUrl: form.meetingUrl.trim(),
+        ...(form.startDate ? { startDate: form.startDate, durationMonths: Number(form.durationMonths) } : {}),
+        studentAccessMode: form.studentAccessMode,
+        ...(form.studentAccessMode === 'manual' && form.studentAccessMonths !== ''
+          ? { studentAccessMonths: Number(form.studentAccessMonths) }
+          : { studentAccessMonths: null }),
       };
 
       const res = await api.put(`/batches/${batchId}`, payload);
@@ -279,6 +292,33 @@ export default function EditBatchPage() {
                 </div>
               </div>
             </div>
+
+            {/* Status Selection */}
+            <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40 sm:p-5">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">ব্যাচের সময়কাল</h2>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শুরুর তারিখ ও মাস দিলে শেষের তারিখ backend হিসাব করবে।</p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ
+                  <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                </label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">ব্যাচ চলবে (মাস)
+                  <input type="number" min="1" max="120" value={form.durationMonths} onChange={(e) => setForm({ ...form, durationMonths: Number(e.target.value) })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                </label>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শিক্ষার্থীর access
+                  <select value={form.studentAccessMode} onChange={(e) => setForm({ ...form, studentAccessMode: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900">
+                    <option value="manual">নির্দিষ্ট মেয়াদ</option><option value="lifetime">Lifetime</option>
+                  </select>
+                </label>
+                {form.studentAccessMode === 'manual' && <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">ভর্তির পর access (মাস)
+                  <input type="number" min="1" max="120" placeholder="খালি রাখলে batch end date" value={form.studentAccessMonths} onChange={(e) => setForm({ ...form, studentAccessMonths: e.target.value ? Number(e.target.value) : '' })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                </label>}
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">নির্দিষ্ট access মাস ভর্তির দিন থেকে গণনা হবে। খালি রাখলে batch-এর শেষ তারিখ পর্যন্ত access থাকবে।</p>
+            </section>
 
             {/* Status Selection */}
             <div>

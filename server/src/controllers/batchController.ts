@@ -9,6 +9,7 @@ import { AuditLog } from '../models/AuditLog';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 import { Enrollment } from '../models/Enrollment';
+import { addCalendarMonths, hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 export const scheduleSlotSchema = z.object({
   day: z.enum(['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']),
@@ -21,8 +22,10 @@ export const createBatchSchema = z.object({
   name: z.string().min(2).max(120),
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Course ID'),
   status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).default('draft'),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  startDate: z.string().date(),
+  durationMonths: z.number().int().min(1).max(120),
+  studentAccessMode: z.enum(['manual', 'lifetime']).default('manual'),
+  studentAccessMonths: z.number().int().min(1).max(120).optional(),
   enrollmentOpenDate: z.string().datetime().optional(),
   enrollmentCloseDate: z.string().datetime().optional(),
   capacity: z.number().min(0).optional(),
@@ -139,6 +142,19 @@ export const getBatchHierarchy = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: 'Batch not found' });
     }
 
+    // Keep public curriculum previews available, but enforce expiry for logged-in students.
+    const student = (req as AuthenticatedRequest).user;
+    if (student?.role === 'student') {
+      const enrollment = await Enrollment.findOne({
+        gravId: student.gravId,
+        batchId,
+        status: { $in: ['enrolled', 'completed'] },
+      });
+      if (!enrollment || !hasActiveStudentBatchAccess(batch, enrollment)) {
+        return res.status(403).json({ success: false, message: 'এই batch-এর access period শেষ হয়েছে।' });
+      }
+    }
+
     // Fetch all Modules, Sections, and Lessons for this batch, sorted by order
     const modules = await Module.find({ batchId }).sort({ order: 1 }).lean();
     const sections = await Section.find({ batchId }).sort({ order: 1 }).lean();
@@ -188,7 +204,9 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       courseId,
       status,
       startDate,
-      endDate,
+      durationMonths,
+      studentAccessMode = 'manual',
+      studentAccessMonths,
       enrollmentOpenDate,
       enrollmentCloseDate,
       capacity,
@@ -201,12 +219,18 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
     const finalMeetingUrl = meetingUrl && meetingUrl.trim().length > 0 ? meetingUrl.trim() : '';
 
     // 1. Create the new destination Batch record
+    const normalizedStartDate = new Date(`${startDate}T00:00:00.000Z`);
+    const calculatedEndDate = addCalendarMonths(normalizedStartDate, durationMonths);
+
     const newBatch = await Batch.create({
       name,
       courseId,
       status: status || 'draft',
-      startDate,
-      endDate,
+      startDate: normalizedStartDate,
+      durationMonths,
+      endDate: calculatedEndDate,
+      studentAccessMode,
+      studentAccessMonths: studentAccessMode === 'manual' ? studentAccessMonths : undefined,
       enrollmentOpenDate,
       enrollmentCloseDate,
       capacity,
@@ -352,6 +376,33 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
     }
     if (capacity !== undefined) batch.capacity = Number(capacity);
 
+    const startDate = req.body.startDate;
+    const durationMonths = req.body.durationMonths;
+    if (startDate !== undefined || durationMonths !== undefined) {
+      if (typeof startDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(startDate) || new Date(`${startDate}T00:00:00.000Z`).toISOString().slice(0, 10) !== startDate) {
+        return res.status(400).json({ success: false, message: 'A valid batch start date is required' });
+      }
+      if (!Number.isInteger(durationMonths) || durationMonths < 1 || durationMonths > 120) {
+        return res.status(400).json({ success: false, message: 'Batch duration must be between 1 and 120 months' });
+      }
+      batch.startDate = new Date(`${startDate}T00:00:00.000Z`);
+      batch.durationMonths = durationMonths;
+      batch.endDate = addCalendarMonths(batch.startDate, durationMonths);
+    }
+    if (req.body.studentAccessMode !== undefined) {
+      if (!['manual', 'lifetime'].includes(req.body.studentAccessMode)) {
+        return res.status(400).json({ success: false, message: 'Invalid student access mode' });
+      }
+      batch.studentAccessMode = req.body.studentAccessMode;
+    }
+    if (req.body.studentAccessMonths !== undefined) {
+      const months = req.body.studentAccessMonths;
+      if (months !== null && (!Number.isInteger(months) || months < 1 || months > 120)) {
+        return res.status(400).json({ success: false, message: 'Student access duration must be between 1 and 120 months' });
+      }
+      batch.studentAccessMonths = months == null ? undefined : months;
+    }
+
     await batch.save();
 
     return res.status(200).json({
@@ -416,9 +467,15 @@ export const getScheduleOverview = async (req: AuthenticatedRequest, res: Respon
         const studentEnrollments = await Enrollment.find({
           gravId: currentUser.gravId,
           status: { $in: ['enrolled', 'completed'] },
-        }).select('batchId');
-
-        const enrolledBatchIds = studentEnrollments.map((e) => e.batchId);
+        }).select('batchId enrolledAt');
+        const batchesForAccess = await Batch.find({ _id: { $in: studentEnrollments.map((e) => e.batchId) } }).select('_id endDate studentAccessMode studentAccessMonths').lean();
+        const batchById = new Map(batchesForAccess.map((batch) => [batch._id.toString(), batch]));
+        const enrolledBatchIds = studentEnrollments
+          .filter((enrollment) => {
+            const batch = batchById.get(enrollment.batchId.toString());
+            return !!batch && hasActiveStudentBatchAccess(batch as any, enrollment);
+          })
+          .map((enrollment) => enrollment.batchId);
         filter._id = { $in: enrolledBatchIds };
       } else if (currentUser.role === 'teacher') {
         // Find batches where this teacher is assigned directly or via course instructors

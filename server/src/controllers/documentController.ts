@@ -6,6 +6,8 @@ import { Lesson } from '../models/ContentHierarchy';
 import { ROLES, UserRole } from '../types/roles';
 import { uploadFileToDrive, getDriveFileStream } from '../services/googleDriveService';
 import { AuditLog } from '../models/AuditLog';
+import { Batch } from '../models/Batch';
+import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 /**
  * Upload Document: Receives file -> Uploads to Google Drive -> Stores FileAsset in MongoDB
@@ -136,8 +138,9 @@ export const streamProtectedDocument = async (req: AuthenticatedRequest, res: Re
         batchId: lessonWithFile.batchId,
         status: 'enrolled',
       });
+      const batch = await Batch.findById(lessonWithFile.batchId);
 
-      if (!isEnrolled) {
+      if (!isEnrolled || !batch || !hasActiveStudentBatchAccess(batch, isEnrolled)) {
         return res.status(403).json({
           success: false,
           message: 'Access denied. You are not enrolled in the batch that owns this document.',

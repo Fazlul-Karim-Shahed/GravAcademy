@@ -23,6 +23,7 @@ import {
   hasValidMxRecords,
 } from '../services/emailService';
 import { createEmailVerification } from '../services/emailVerification';
+import { getStudentAccessExpiresAt, hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 const findActiveEnrollmentInAnotherBatchOfCourse = (
   gravId: string,
@@ -608,7 +609,13 @@ export const getMyEnrollmentStatus = async (req: AuthenticatedRequest, res: Resp
       }
     }
 
-    const enrollments = await Enrollment.find(filter).select('batchId courseId status enrolledAt');
+    const candidateEnrollments = await Enrollment.find(filter).select('batchId courseId status enrolledAt');
+    const enrolledBatches = await Batch.find({ _id: { $in: candidateEnrollments.map((item) => item.batchId) } }).select('_id endDate studentAccessMode studentAccessMonths').lean();
+    const batchById = new Map(enrolledBatches.map((batch) => [batch._id.toString(), batch]));
+    const enrollments = candidateEnrollments.filter((enrollment) => {
+      const batch = batchById.get(enrollment.batchId.toString());
+      return !!batch && hasActiveStudentBatchAccess(batch as any, enrollment);
+    });
     const enrolledBatchIds = enrollments.map((e) => e.batchId.toString());
 
     return res.status(200).json({
@@ -635,9 +642,16 @@ export const getMyBatches = async (req: AuthenticatedRequest, res: Response) => 
     const enrollments = await Enrollment.find({
       gravId,
       status: { $in: ['enrolled', 'completed'] },
-    }).select('batchId');
+    }).select('batchId enrolledAt');
 
-    const enrolledBatchIds = enrollments.map((e) => e.batchId);
+    const enrolledBatches = await Batch.find({ _id: { $in: enrollments.map((item) => item.batchId) } }).select('_id endDate studentAccessMode studentAccessMonths').lean();
+    const batchById = new Map(enrolledBatches.map((batch) => [batch._id.toString(), batch]));
+    const activeEnrollments = enrollments.filter((enrollment) => {
+      const batch = batchById.get(enrollment.batchId.toString());
+      return !!batch && hasActiveStudentBatchAccess(batch as any, enrollment);
+    });
+
+    const enrolledBatchIds = activeEnrollments.map((e) => e.batchId);
 
     if (enrolledBatchIds.length === 0) {
       return res.status(200).json({ success: true, count: 0, data: [] });
@@ -649,10 +663,19 @@ export const getMyBatches = async (req: AuthenticatedRequest, res: Response) => 
       .sort({ createdAt: -1 })
       .lean();
 
+    const expiryByBatchId = new Map(activeEnrollments.map((enrollment) => {
+      const batch = batchById.get(enrollment.batchId.toString());
+      return [enrollment.batchId.toString(), batch ? getStudentAccessExpiresAt(batch as any, enrollment) : null] as const;
+    }));
+    const batchesWithAccess = batches.map((batch) => ({
+      ...batch,
+      studentAccessExpiresAt: expiryByBatchId.get(batch._id.toString()) || null,
+    }));
+
     return res.status(200).json({
       success: true,
-      count: batches.length,
-      data: batches,
+      count: batchesWithAccess.length,
+      data: batchesWithAccess,
     });
   } catch (error) {
     console.error('getMyBatches error:', error);

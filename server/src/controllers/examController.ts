@@ -7,6 +7,7 @@ import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
 import { ROLES } from '../types/roles';
 import { User } from '../models/User';
+import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 // Schema for Question Option
 const optionSchema = z.object({
@@ -291,6 +292,16 @@ export const getBatchExams = async (req: AuthenticatedRequest, res: Response) =>
     const { batchId } = req.params;
     const user = req.user;
 
+    if (user?.role === ROLES.STUDENT) {
+      const [enrollment, batch] = await Promise.all([
+        Enrollment.findOne({ gravId: user.gravId, batchId, status: { $in: ['enrolled', 'completed'] } }),
+        Batch.findById(batchId),
+      ]);
+      if (!enrollment || !batch || !hasActiveStudentBatchAccess(batch, enrollment)) {
+        return res.status(403).json({ success: false, message: 'এই batch-এর access period শেষ হয়েছে।' });
+      }
+    }
+
     const exams = await Examination.find({ batchId }).sort({ startWindow: 1 });
 
     // If user is a student, check their submission status for each exam
@@ -374,11 +385,13 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
     }
 
     // Verify enrollment
-    const isEnrolled = await Enrollment.findOne({
+    const enrollment = await Enrollment.findOne({
       gravId: user?.gravId,
       batchId: exam.batchId,
       status: 'enrolled',
     });
+    const batch = await Batch.findById(exam.batchId);
+    const isEnrolled = !!enrollment && !!batch && hasActiveStudentBatchAccess(batch, enrollment);
 
     const isTeacherOrAdmin =
       user?.role === ROLES.SUPERADMIN ||
@@ -471,12 +484,13 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
         return res.status(404).json({ success: false, message: 'Exam not found or unpublished' });
       }
 
-      const isEnrolled = await Enrollment.findOne({
+      const enrollment = await Enrollment.findOne({
         gravId: user?.gravId,
         batchId: exam.batchId,
         status: 'enrolled',
       });
-      if (!isEnrolled) {
+      const batch = await Batch.findById(exam.batchId);
+      if (!enrollment || !batch || !hasActiveStudentBatchAccess(batch, enrollment)) {
         return res.status(403).json({ success: false, message: 'Not enrolled in this batch' });
       }
 

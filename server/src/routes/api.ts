@@ -107,7 +107,7 @@ router.delete(
 router.get('/batches', requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatches);
 router.get('/batches/schedule/overview', optionalAuthenticate, requireFeature(FEATURE_FLAGS.batches), batchCtrl.getScheduleOverview);
 router.get('/batches/:id', requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatchById);
-router.get('/batches/:batchId/hierarchy', requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatchHierarchy);
+router.get('/batches/:batchId/hierarchy', optionalAuthenticate, requireFeature(FEATURE_FLAGS.batches), batchCtrl.getBatchHierarchy);
 router.post(
   '/batches',
   authenticate,

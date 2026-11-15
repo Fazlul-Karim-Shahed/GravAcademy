@@ -8,6 +8,7 @@ import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ROLES } from '../types/roles';
+import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 // ==========================================
 // Validation Schemas
@@ -92,7 +93,7 @@ async function verifyAssignmentBatchAccess(
       gravId: gravId,
       status: { $in: ['enrolled', 'completed'] },
     });
-    return !!enrollment;
+    return !!enrollment && hasActiveStudentBatchAccess(batch, enrollment);
   }
 
   return false;

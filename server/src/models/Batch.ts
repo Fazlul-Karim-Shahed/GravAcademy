@@ -18,6 +18,9 @@ export interface IBatch extends Document {
   status: BatchStatus;
   startDate?: Date;
   endDate?: Date;
+  durationMonths?: number;
+  studentAccessMode: 'manual' | 'lifetime';
+  studentAccessMonths?: number;
   enrollmentOpenDate?: Date;
   enrollmentCloseDate?: Date;
   capacity?: number;
@@ -52,6 +55,9 @@ const BatchSchema = new Schema<IBatch>(
     },
     startDate: { type: Date },
     endDate: { type: Date },
+    durationMonths: { type: Number, min: 1, max: 120 },
+    studentAccessMode: { type: String, enum: ['manual', 'lifetime'], default: 'manual' },
+    studentAccessMonths: { type: Number, min: 1, max: 120 },
     enrollmentOpenDate: { type: Date },
     enrollmentCloseDate: { type: Date },
     capacity: { type: Number, min: 0 },

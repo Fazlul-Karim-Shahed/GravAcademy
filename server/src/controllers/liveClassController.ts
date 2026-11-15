@@ -4,6 +4,8 @@ import { LiveClass } from '../models/LiveClass';
 import { Enrollment } from '../models/Enrollment';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ROLES } from '../types/roles';
+import { Batch } from '../models/Batch';
+import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 export const createLiveClassSchema = z.object({
   title: z.string().min(3),
@@ -93,8 +95,13 @@ export const getStudentLiveClasses = async (req: AuthenticatedRequest, res: Resp
     const gravId = req.user?.gravId;
 
     // Get batches student is enrolled in
-    const enrollments = await Enrollment.find({ gravId, status: 'enrolled' }).select('batchId');
-    const batchIds = enrollments.map((e) => e.batchId);
+    const enrollments = await Enrollment.find({ gravId, status: 'enrolled' }).select('batchId enrolledAt');
+    const batches = await Batch.find({ _id: { $in: enrollments.map((e) => e.batchId) } }).select('_id endDate studentAccessMode studentAccessMonths').lean();
+    const batchById = new Map(batches.map((batch) => [batch._id.toString(), batch]));
+    const batchIds = enrollments.filter((enrollment) => {
+      const batch = batchById.get(enrollment.batchId.toString());
+      return !!batch && hasActiveStudentBatchAccess(batch as any, enrollment);
+    }).map((enrollment) => enrollment.batchId);
 
     const liveClasses = await LiveClass.find({
       batchId: { $in: batchIds },

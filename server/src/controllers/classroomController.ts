@@ -9,6 +9,7 @@ import { Announcement } from '../models/Announcement';
 import { DiscussionMessage } from '../models/DiscussionMessage';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { sendClassroomEmailNotification } from '../services/emailService';
+import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 
 export const createAnnouncementSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters').max(200),
@@ -52,7 +53,7 @@ async function verifyClassroomAccess(gravId: string, userRole: string, batchId: 
       gravId: gravId,
       status: { $in: ['enrolled', 'completed'] },
     });
-    return !!enrollment;
+    return !!enrollment && hasActiveStudentBatchAccess(batch, enrollment);
   }
 
   if (userRole === 'guardian') {
@@ -65,7 +66,7 @@ async function verifyClassroomAccess(gravId: string, userRole: string, batchId: 
       gravId: { $in: gravIds },
       status: { $in: ['enrolled', 'completed'] },
     });
-    return !!enrollment;
+    return !!enrollment && hasActiveStudentBatchAccess(batch, enrollment);
   }
 
   return false;
