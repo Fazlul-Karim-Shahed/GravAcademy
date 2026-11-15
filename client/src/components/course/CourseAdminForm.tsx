@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   BookOpen,
   CalendarDays,
-  Check,
   CheckCircle2,
   ClipboardList,
   Image as ImageIcon,
@@ -89,24 +88,16 @@ interface CourseFormData {
   instructors: string[];
   instructorProfiles: InstructorProfile[];
   curriculumHighlights: string[];
-  features: string[];
   syllabus: SyllabusItem[];
   routine: CourseRoutine;
   supportSection: SupportSection;
   promoCards: PromoCard[];
 }
 
-const defaultFeatures = [
+const defaultHighlights = [
   'icon:play|লাইভ ক্লাস ও সার্বক্ষণিক ডাউট সলভ',
   'icon:sheet|অধ্যায়ভিত্তিক লেকচার শিট ও নোট',
   'icon:exam|অনলাইন উইকলি টেস্ট ও এনালাইসিস',
-];
-
-const defaultHighlights = [
-  'Complete chapter breakdown with concept support',
-  'Board question analysis and test papers',
-  'Weekly live problem-solving sessions',
-  'Downloadable notes and formula sheets',
 ];
 
 const DEFAULT_DEMO_TITLE = 'এখনই ফ্রী ডেমো দেখুন';
@@ -168,7 +159,6 @@ function getDefaultForm(): CourseFormData {
     instructors: [],
     instructorProfiles: [],
     curriculumHighlights: defaultHighlights,
-    features: defaultFeatures,
     syllabus: defaultSyllabus,
     routine: { ...defaultRoutine },
     supportSection: { ...defaultSupport },
@@ -209,8 +199,11 @@ function hydrateForm(course: any): CourseFormData {
     isPublished: course.isPublished ?? true,
     instructors: instructorIds,
     instructorProfiles: instructorIds.map((id: string) => profileMap.get(id) || ({ instructorId: id, subject: '', experience: '' })),
-    curriculumHighlights: Array.isArray(course.curriculumHighlights) ? course.curriculumHighlights : base.curriculumHighlights,
-    features: Array.isArray(course.features) ? course.features : base.features,
+    curriculumHighlights: Array.isArray(course.features) && course.features.length
+      ? course.features
+      : Array.isArray(course.curriculumHighlights) && course.curriculumHighlights.length
+        ? course.curriculumHighlights
+        : base.curriculumHighlights,
     syllabus: Array.isArray(course.syllabus)
       ? course.syllabus.map((item: any) => ({
           title: asString(item.title),
@@ -253,8 +246,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [newHighlight, setNewHighlight] = useState('');
-  const [newFeature, setNewFeature] = useState('');
-  const [newFeatureIcon, setNewFeatureIcon] = useState('play');
+  const [newHighlightIcon, setNewHighlightIcon] = useState('play');
   const [newSyllabusTitle, setNewSyllabusTitle] = useState('');
   const [newSyllabusDetails, setNewSyllabusDetails] = useState('');
   const [newSyllabusDemoTitle, setNewSyllabusDemoTitle] = useState(DEFAULT_DEMO_TITLE);
@@ -306,13 +298,8 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
 
   const addHighlight = () => {
     if (!newHighlight.trim()) return;
-    update('curriculumHighlights', [...form.curriculumHighlights, newHighlight.trim()]);
+    update('curriculumHighlights', [...form.curriculumHighlights, `icon:${newHighlightIcon}|${newHighlight.trim()}`]);
     setNewHighlight('');
-  };
-  const addFeature = () => {
-    if (!newFeature.trim()) return;
-    update('features', [...form.features, `icon:${newFeatureIcon}|${newFeature.trim()}`]);
-    setNewFeature('');
   };
   const addSyllabus = () => {
     if (!newSyllabusTitle.trim()) return;
@@ -342,6 +329,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
       discountPrice: Number(form.discountPrice) || 0,
       instructors: form.instructors,
       instructorProfiles: form.instructorProfiles.filter((profile) => form.instructors.includes(profile.instructorId)),
+      features: [],
     };
     try {
       const response = mode === 'create' ? await api.post('/courses', payload) : await api.put(`/courses/${courseId}`, payload);
@@ -413,8 +401,9 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
           </div>
         </Section>
 
-        <Section icon={<ListFilter className="h-4 w-4" />} title="Highlights & card features" description="Sidebar benefits এবং course card-এর highlight lines control করুন।">
-          <div className="grid gap-5 lg:grid-cols-2"><div><h3 className="mb-3 text-xs font-black">Student highlights</h3><div className="space-y-2">{form.curriculumHighlights.map((item, index) => <div key={index} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs dark:border-slate-800 dark:bg-slate-950/50"><input className="min-w-0 flex-1 bg-transparent outline-none" value={item} onChange={(event) => update('curriculumHighlights', form.curriculumHighlights.map((current, itemIndex) => itemIndex === index ? event.target.value : current))} /><button type="button" onClick={() => update('curriculumHighlights', form.curriculumHighlights.filter((_, itemIndex) => itemIndex !== index))} className="text-slate-400 hover:text-rose-600"><Trash2 className="h-3.5 w-3.5" /></button></div>)}</div><div className="mt-3 flex gap-2"><input className={inputClass} value={newHighlight} onChange={(event) => setNewHighlight(event.target.value)} placeholder="New highlight" /><Button type="button" size="sm" variant="secondary" onClick={addHighlight}><Plus className="h-3.5 w-3.5" /></Button></div></div><div><h3 className="mb-3 text-xs font-black">Course card features</h3><div className="space-y-2">{form.features.map((item, index) => { const parsed = parseFeatureItem(item, index); return <div key={index} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5 dark:border-slate-800 dark:bg-slate-950/50"><span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${parsed.colorBg} ${parsed.colorText}`}><parsed.IconComponent className="h-3.5 w-3.5" /></span><span className="min-w-0 flex-1 truncate text-xs">{parsed.text}</span><button type="button" onClick={() => update('features', form.features.filter((_, itemIndex) => itemIndex !== index))} className="text-slate-400 hover:text-rose-600"><Trash2 className="h-3.5 w-3.5" /></button></div>; })}</div><div className="mt-3 flex flex-col gap-2 sm:flex-row"><select className={inputClass} value={newFeatureIcon} onChange={(event) => setNewFeatureIcon(event.target.value)}>{Object.entries(AVAILABLE_FEATURE_ICONS).map(([key, item]) => <option key={key} value={key}>{item.label}</option>)}</select><input className={inputClass} value={newFeature} onChange={(event) => setNewFeature(event.target.value)} placeholder="New card line" /><Button type="button" size="sm" variant="secondary" onClick={addFeature}><Plus className="h-3.5 w-3.5" /></Button></div></div></div>
+        <Section icon={<ListFilter className="h-4 w-4" />} title="Student highlights" description="Course details page-এর ‘এই কোর্সে যা থাকছে’ তালিকা ও icon এখান থেকে control করুন।">
+          <div className="space-y-3">{form.curriculumHighlights.map((item, index) => { const parsed = parseFeatureItem(item, index); return <div key={index} className="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/50 sm:grid-cols-[170px_minmax(0,1fr)_40px]"><select className={inputClass} value={parsed.iconKey} onChange={(event) => update('curriculumHighlights', form.curriculumHighlights.map((current, itemIndex) => itemIndex === index ? `icon:${event.target.value}|${parsed.text}` : current))}>{Object.entries(AVAILABLE_FEATURE_ICONS).map(([key, option]) => <option key={key} value={key}>{option.label}</option>)}</select><div className="flex min-w-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-900"><span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${parsed.colorBg} ${parsed.colorText}`}><parsed.IconComponent className="h-3.5 w-3.5" /></span><input className="min-w-0 flex-1 bg-transparent py-2.5 text-sm outline-none" value={parsed.text} onChange={(event) => update('curriculumHighlights', form.curriculumHighlights.map((current, itemIndex) => itemIndex === index ? `icon:${parsed.iconKey}|${event.target.value}` : current))} /></div><button type="button" aria-label="Highlight মুছুন" onClick={() => update('curriculumHighlights', form.curriculumHighlights.filter((_, itemIndex) => itemIndex !== index))} className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"><Trash2 className="h-4 w-4" /></button></div>; })}</div>
+          <div className="mt-4 grid gap-2 rounded-xl border border-dashed border-slate-300 p-3 dark:border-slate-700 sm:grid-cols-[170px_minmax(0,1fr)_auto]"><select className={inputClass} value={newHighlightIcon} onChange={(event) => setNewHighlightIcon(event.target.value)}>{Object.entries(AVAILABLE_FEATURE_ICONS).map(([key, item]) => <option key={key} value={key}>{item.label}</option>)}</select><input className={inputClass} value={newHighlight} onChange={(event) => setNewHighlight(event.target.value)} placeholder="নতুন highlight" /><Button type="button" size="sm" variant="secondary" onClick={addHighlight}><Plus className="mr-1 h-3.5 w-3.5" /> যোগ করুন</Button></div>
         </Section>
 
         <Section icon={<CalendarDays className="h-4 w-4" />} title="Routine & prospectus" description="Course page-এর routine banner এবং download links manage করুন।">

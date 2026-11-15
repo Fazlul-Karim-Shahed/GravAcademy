@@ -11,12 +11,8 @@ import {
   Filter,
   X,
   ChevronRight,
-  PlayCircle,
-  FileText,
-  Award,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
-import { CourseCardFeatures } from '@/components/course/CourseCardFeatures';
 import { CourseCard } from '@/components/course/CourseCard';
 
 interface Teacher {
@@ -38,7 +34,6 @@ interface Course {
   duration?: string;
   instructors?: Teacher[];
   curriculumHighlights?: string[];
-  features?: string[];
 }
 
 export default function CoursesCatalogPage() {

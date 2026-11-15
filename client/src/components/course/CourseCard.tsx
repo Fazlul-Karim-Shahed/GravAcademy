@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ChevronRight, GraduationCap } from 'lucide-react';
 import { formatDriveImageUrl } from '@/lib/drive';
-import { CourseCardFeatures } from '@/components/course/CourseCardFeatures';
 
 export type CourseCardData = {
   _id: string;
@@ -12,7 +11,6 @@ export type CourseCardData = {
   gradeLevel?: string;
   description?: string;
   thumbnailUrl?: string;
-  features?: any[];
   regularPrice?: number;
   discountPrice?: number;
   courseFee?: number;
@@ -91,12 +89,6 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
         {course.description && (
           <p className="mt-1.5 line-clamp-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{course.description}</p>
         )}
-        {course.features && course.features.length > 0 && (
-          <div className="mt-3 border-t border-slate-100 pt-3 dark:border-slate-800">
-            <CourseCardFeatures features={course.features} />
-          </div>
-        )}
-
         <div className="mt-3 flex items-end justify-between gap-3 border-t border-slate-200 pt-3 dark:border-slate-800">
           <div className="min-w-0">
             <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500">ভর্তি চলছে</span>

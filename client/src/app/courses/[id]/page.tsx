@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { formatDriveImageUrl } from '@/lib/drive';
+import { parseFeatureItem } from '@/components/course/CourseCardFeatures';
 import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import {
@@ -14,7 +15,6 @@ import {
   BookMarked,
   Calculator,
   CalendarDays,
-  Check,
   ChevronDown,
   Clock3,
   Edit,
@@ -137,10 +137,6 @@ function isDirectVideoUrl(url: string) {
   return /\.(mp4|webm|ogg)(?:[?#].*)?$/i.test(url);
 }
 
-function cleanBenefit(value: string) {
-  return value.replace(/^icon:[^|]+\|/, '').trim();
-}
-
 function courseProgram(gradeLevel?: string) {
   const value = String(gradeLevel || '').toLowerCase();
   if (/college|hsc|11|12|xi|xii/.test(value)) return 'COLLEGE PROGRAM';
@@ -229,8 +225,8 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const hasDiscount = Boolean(course.discountPrice && course.regularPrice && course.regularPrice > course.discountPrice);
   const price = hasDiscount ? course.discountPrice : course.regularPrice || course.courseFee;
   const benefits = (course.features?.length ? course.features : course.curriculumHighlights || [])
-    .map(cleanBenefit)
-    .filter(Boolean)
+    .map((item, index) => parseFeatureItem(item, index))
+    .filter((item) => Boolean(item.text))
     .slice(0, 6);
   const teachers = (course.instructors || []).filter((teacher) => teacher?._id && teacher?.name);
   const syllabus = course.syllabus || [];
@@ -528,7 +524,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
             <div className="p-6 sm:p-7">
               <h2 className="text-lg font-black text-slate-900 dark:text-white">এই কোর্সে যা থাকছে</h2>
               <div className="mt-4 space-y-3">
-                {benefits.map((benefit, index) => <div key={index} className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300"><Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />{benefit}</div>)}
+                {benefits.map((benefit, index) => <div key={index} className="flex items-start gap-3 text-xs leading-relaxed text-slate-600 dark:text-slate-300"><span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${benefit.colorBg} ${benefit.colorText}`}><benefit.IconComponent className="h-3.5 w-3.5" /></span><span className="pt-1">{benefit.text}</span></div>)}
               </div>
               <div className="mt-6 border-t border-slate-100 pt-5 dark:border-slate-800"><div className="flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400"><ShieldCheck className="h-4 w-4 shrink-0 text-emerald-500" /> Payment এখনই লাগবে না; request review-এর পর admin যোগাযোগ করবে।</div></div>
               <div className="mt-5 flex items-center justify-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400"><Phone className="h-3.5 w-3.5" /> ১৬৯১০ · <Mail className="h-3.5 w-3.5" /> support</div>

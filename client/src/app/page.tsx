@@ -34,7 +34,6 @@ import {
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
-import { CourseCardFeatures } from '@/components/course/CourseCardFeatures';
 import { CourseCard } from '@/components/course/CourseCard';
 
 // Convert English numbers to Bengali numerals
@@ -135,7 +134,6 @@ interface Course {
   batchCount?: number;
   instructors?: any[];
   curriculumHighlights?: string[];
-  features?: string[];
 }
 
 export default function HomePage() {
@@ -916,10 +914,6 @@ export default function HomePage() {
                           </p>
                         )}
 
-                        {/* Feature Micro-Badges (Hidden on mobile) */}
-                        <div className="hidden sm:block mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                          <CourseCardFeatures features={c.features} />
-                        </div>
                       </div>
                     </div>
 
