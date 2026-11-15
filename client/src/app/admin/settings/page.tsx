@@ -48,6 +48,7 @@ export default function AdminSettingsPage() {
   const [siteTagline, setSiteTagline] = useState(settings.siteTagline || '');
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>(DEFAULT_FEATURE_FLAGS);
   const [savingFeatures, setSavingFeatures] = useState(false);
   const [featureSaveSuccess, setFeatureSaveSuccess] = useState(false);
@@ -65,6 +66,7 @@ export default function AdminSettingsPage() {
     e.preventDefault();
     setSavingSettings(true);
     setSaveSuccess(false);
+    setSaveError('');
     try {
       const ok = await updateSettings({
         logoUrl,
@@ -74,9 +76,12 @@ export default function AdminSettingsPage() {
       if (ok) {
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3500);
+      } else {
+        setSaveError('এই পরিবর্তনটি শুধু Superadmin সংরক্ষণ করতে পারবেন।');
       }
     } catch (err) {
       console.error(err);
+      setSaveError('সেটিংস সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।');
     } finally {
       setSavingSettings(false);
     }
@@ -143,7 +148,7 @@ export default function AdminSettingsPage() {
     ...(user?.role === 'superadmin' ? [{ id: 'features' as TabType, label: 'Feature Release Control', icon: Sliders }] : []),
     { id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length },
     { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home },
-    { id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders },
+    ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }] : []),
     { id: 'notifications' as TabType, label: 'নোটিফিকেশন', icon: Bell },
   ];
 
@@ -513,6 +518,11 @@ export default function AdminSettingsPage() {
                   <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2.5 animate-in fade-in duration-200">
                     <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                     <span>সেটিংস ও লোগো সফলভাবে আপডেট হয়েছে এবং পুরো ওয়েবসাইটে প্রয়োগ করা হয়েছে!</span>
+                  </div>
+                )}
+                {saveError && (
+                  <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-amber-800 dark:text-amber-300 text-xs font-bold">
+                    {saveError}
                   </div>
                 )}
 
