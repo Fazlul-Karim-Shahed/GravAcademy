@@ -6,19 +6,21 @@ import { z } from 'zod';
 import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
 import { PasswordResetToken } from '../models/PasswordResetToken';
-import { sendPasswordResetEmail } from '../services/emailService';
+import {
+  sendPasswordResetEmail,
+  sendWelcomeRegistrationEmail,
+  isDisposableEmail,
+  hasValidMxRecords,
+} from '../services/emailService';
 import { ROLES, getEffectivePermissions } from '../types/roles';
 import { AuthenticatedRequest } from '../middleware/auth';
 
 // Validation Schemas
 export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
-  email: z.string().email('Please enter a valid email address').optional().or(z.literal('')),
+  email: z.string().email('অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস লিখুন।'),
   phone: z.string().optional().or(z.literal('')),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-}).refine((data) => (data.email && data.email.trim() !== '') || (data.phone && data.phone.trim() !== ''), {
-  message: 'অ্যাকাউন্ট খোলার জন্য একটি ইমেইল অথবা ফোন নম্বর আবশ্যক।',
-  path: ['email'],
 });
 
 export const loginSchema = z.object({
@@ -86,30 +88,73 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone } = req.body;
 
-    if ((!email || !email.trim()) && (!phone || !phone.trim())) {
+    if (!email || !email.trim()) {
       return res.status(400).json({
         success: false,
-        message: 'অ্যাকাউন্ট খোলার জন্য একটি ইমেইল অথবা একটি ফোন নম্বর প্রয়োজন।',
+        message: 'অ্যাকাউন্ট খোলার জন্য একটি সক্রিয় ও সঠিক ইমেইল এড্রেস আবশ্যক।',
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if email already exists
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: 'এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট তৈরি করা হয়েছে। অনুগ্রহ করে লগইন করুন।',
+      });
+    }
+
+    // Check disposable email domain
+    if (isDisposableEmail(normalizedEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'অনুগ্রহ করে একটি স্থায়ী ও ভ্যালিড ব্যক্তিগত ইমেইল ব্যবহার করুন (টেম্পোরারি ইমেইল অনুমোদিত নয়)।',
+      });
+    }
+
+    // Check DNS MX records of the email domain
+    const hasMx = await hasValidMxRecords(normalizedEmail);
+    if (!hasMx) {
+      return res.status(400).json({
+        success: false,
+        message: 'ইমেইল ডোমেইনটি সক্রিয় বা সঠিক নয়। অনুগ্রহ করে আপনার সঠিক ইমেইল এড্রেস লিখুন।',
       });
     }
 
     // Generate unique Grav ID (e.g. 261024001)
     const gravId = await generateUniquegravId();
 
+    // Send Welcome & Verification Email BEFORE saving to DB
+    const emailSent = await sendWelcomeRegistrationEmail({
+      to: normalizedEmail,
+      name: name.trim(),
+      gravId,
+    });
+
+    if (!emailSent) {
+      return res.status(400).json({
+        success: false,
+        message: 'এই ইমেইল ঠিকানায় ওয়েলকাম বা ভেরিফিকেশন ইমেইল পাঠানো সম্ভব হয়নি। ইমেইলটি সঠিক ও সক্রিয় কি না নিশ্চিত হয়ে আবার চেষ্টা করুন।',
+      });
+    }
+
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
     // SECURITY PRINCIPLE: All public signups are assigned the STUDENT role by default.
+    // Insert into DB ONLY after email is verified as successfully sent!
     const user = await User.create({
       gravId,
       name: name.trim(),
-      email: email && email.trim() ? email.trim().toLowerCase() : undefined,
+      email: normalizedEmail,
       passwordHash,
-      phone: phone ? phone.trim() : undefined,
+      phone: phone && phone.trim() ? phone.trim() : undefined,
       role: ROLES.STUDENT,
       status: 'active',
-      emailVerified: false,
+      emailVerified: true,
     });
 
     const token = generateToken(user._id.toString());
@@ -126,7 +171,7 @@ export const register = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      message: 'রেজিস্ট্রেশন সফল হয়েছে!',
+      message: 'রেজিস্ট্রেশন সফল হয়েছে! আপনার ইমেইলে একটি কনফার্মেশন পাঠানো হয়েছে।',
       data: {
         token,
         user: {

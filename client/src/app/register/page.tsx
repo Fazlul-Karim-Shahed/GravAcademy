@@ -102,23 +102,27 @@ function RegisterForm() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                ইমেইল এড্রেস (Email)
+                ইমেইল এড্রেস (Email) <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
+                  required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="tanvir@example.com (ইমেইল অথবা ফোন দিন)"
+                  placeholder="name@example.com (আপনার সক্রিয় ইমেইল)"
                   className="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
                 />
               </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                * রেজিস্ট্রেশন সম্পন্ন করার জন্য আপনার সক্রিয় ইমেইলে একটি ভেরিফিকেশন ও ওয়েলকাম মেসেজ পাঠানো হবে।
+              </p>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                মোবাইল নম্বর (Phone Number)
+                মোবাইল নম্বর (ঐচ্ছিক / Phone Number)
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -130,9 +134,6 @@ function RegisterForm() {
                   className="w-full bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
                 />
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">
-                * একাউন্ট খোলার জন্য একটি ইমেইল অথবা একটি ফোন নম্বর প্রয়োজন।
-              </p>
             </div>
 
             <div>
@@ -158,7 +159,7 @@ function RegisterForm() {
               className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-sm shadow-md shadow-blue-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              <span>একাউন্ট তৈরি করুন</span>
+              <span>{loading ? 'যাচাই ও অ্যাকাউন্ট তৈরি হচ্ছে...' : 'একাউন্ট তৈরি করুন'}</span>
             </button>
           </form>
 
