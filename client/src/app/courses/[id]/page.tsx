@@ -116,6 +116,27 @@ interface CourseDetail {
   promoCards?: PromoCardContent[];
 }
 
+function getDemoEmbedUrl(rawUrl: string) {
+  const url = rawUrl.trim();
+  const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+  if (youtubeMatch?.[1]) return `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1&autoplay=1`;
+
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch?.[1]) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+
+  const driveIdMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (url.includes('drive.google.com') && driveIdMatch?.[1]) return `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`;
+
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch?.[1]) return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
+
+  return url;
+}
+
+function isDirectVideoUrl(url: string) {
+  return /\.(mp4|webm|ogg)(?:[?#].*)?$/i.test(url);
+}
+
 function cleanBenefit(value: string) {
   return value.replace(/^icon:[^|]+\|/, '').trim();
 }
@@ -151,6 +172,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const [showBatchPicker, setShowBatchPicker] = useState(false);
   const [expandedSyllabus, setExpandedSyllabus] = useState<number | null>(null);
   const [showAllTeachers, setShowAllTeachers] = useState(false);
+  const [demoPreview, setDemoPreview] = useState<{ title: string; url: string } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -339,11 +361,11 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                         <span className="text-xs font-semibold leading-5 text-slate-700 dark:text-slate-200">{line}</span>
                       </div>)}
                     </div>}
-                    {item.demoUrl && <a href={item.demoUrl} target="_blank" rel="noreferrer" className={`${contentLines.length ? 'mt-4' : ''} flex items-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}>
+                    {item.demoUrl && <button type="button" onClick={() => setDemoPreview({ title: item.demoTitle || 'ফ্রি ডেমো ক্লাস', url: item.demoUrl || '' })} className={`${contentLines.length ? 'mt-4' : ''} flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-left text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15"><Play className="h-4 w-4 fill-current" /></span>
                       <span className="min-w-0 flex-1"><span className="block text-xs font-black">{item.demoTitle || 'ফ্রি ডেমো ক্লাস'}</span><span className="mt-0.5 block text-[10px] text-blue-100">বিনামূল্যে ক্লাসটি দেখুন</span></span>
                       <ArrowRight className="h-4 w-4 shrink-0" />
-                    </a>}
+                    </button>}
                   </div>}
                 </div>;
               })}
@@ -516,8 +538,43 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       </section>
 
       {showBatchPicker && <BatchPicker batches={batches} enrolledBatchIds={enrolledBatchIds} pendingRequestBatchIds={pendingRequestBatchIds} onClose={() => setShowBatchPicker(false)} onSelect={(batch) => router.push(`/enroll/${batch._id}/request`)} />}
+      {demoPreview && <DemoPreviewModal title={demoPreview.title} url={demoPreview.url} onClose={() => setDemoPreview(null)} />}
     </main>
   );
+}
+
+function DemoPreviewModal({ title, url, onClose }: { title: string; url: string; onClose: () => void }) {
+  const previewUrl = getDemoEmbedUrl(url);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [onClose]);
+
+  return <div role="dialog" aria-modal="true" aria-label={title} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-3 backdrop-blur-sm sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 sm:rounded-3xl">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5 dark:border-slate-800 sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white"><Play className="h-4 w-4 fill-current" /></span>
+          <h2 className="truncate text-sm font-black text-slate-900 dark:text-white sm:text-base">{title}</h2>
+        </div>
+        <button type="button" onClick={onClose} aria-label="বন্ধ করুন" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"><X className="h-5 w-5" /></button>
+      </div>
+      <div className="aspect-video w-full bg-black">
+        {isDirectVideoUrl(previewUrl)
+          ? <video src={previewUrl} controls autoPlay playsInline className="h-full w-full" />
+          : <iframe src={previewUrl} title={title} className="h-full w-full border-0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />}
+      </div>
+    </div>
+  </div>;
 }
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
