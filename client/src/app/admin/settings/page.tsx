@@ -22,6 +22,7 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
 import { useSiteSettings, FEATURE_FLAG_LABELS, DEFAULT_FEATURE_FLAGS } from '@/context/SiteSettingsContext';
 import { DriveFileUpload } from '@/components/ui/DriveFileUpload';
+import { formatDriveImageUrl } from '@/lib/drive';
 import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 
 interface UserRecord {
@@ -542,7 +543,7 @@ export default function AdminSettingsPage() {
                       <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-bold overflow-hidden shadow-md shadow-blue-500/20 shrink-0">
                         {logoUrl ? (
                           <img
-                            src={logoUrl}
+                            src={formatDriveImageUrl(logoUrl)}
                             alt="Logo Preview"
                             className="w-full h-full object-cover"
                           />
