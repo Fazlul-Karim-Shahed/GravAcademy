@@ -42,6 +42,9 @@ interface InstructorProfile {
 interface SyllabusItem {
   title: string;
   details: string;
+  contentLines?: string[];
+  demoTitle?: string;
+  demoUrl?: string;
 }
 
 interface CourseRoutine {
@@ -199,7 +202,15 @@ function hydrateForm(course: any): CourseFormData {
     curriculumHighlights: Array.isArray(course.curriculumHighlights) ? course.curriculumHighlights : base.curriculumHighlights,
     features: Array.isArray(course.features) ? course.features : base.features,
     syllabus: Array.isArray(course.syllabus)
-      ? course.syllabus.map((item: any) => ({ title: asString(item.title), details: asString(item.details) }))
+      ? course.syllabus.map((item: any) => ({
+          title: asString(item.title),
+          details: asString(item.details),
+          contentLines: Array.isArray(item.contentLines) && item.contentLines.length
+            ? item.contentLines.map((line: unknown) => asString(line)).filter(Boolean)
+            : asString(item.details).split(/\r?\n/).map((line) => line.trim()).filter(Boolean),
+          demoTitle: asString(item.demoTitle),
+          demoUrl: asString(item.demoUrl),
+        }))
       : base.syllabus,
     routine: { ...base.routine, ...(course.routine || {}) },
     supportSection: { ...base.supportSection, ...(course.supportSection || {}) },
@@ -236,6 +247,8 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
   const [newFeatureIcon, setNewFeatureIcon] = useState('play');
   const [newSyllabusTitle, setNewSyllabusTitle] = useState('');
   const [newSyllabusDetails, setNewSyllabusDetails] = useState('');
+  const [newSyllabusDemoTitle, setNewSyllabusDemoTitle] = useState('');
+  const [newSyllabusDemoUrl, setNewSyllabusDemoUrl] = useState('');
 
   const gradeOptions = useMemo(() => {
     const options = academicClasses.map((item) => item.name);
@@ -293,9 +306,18 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
   };
   const addSyllabus = () => {
     if (!newSyllabusTitle.trim()) return;
-    update('syllabus', [...form.syllabus, { title: newSyllabusTitle.trim(), details: newSyllabusDetails.trim() }]);
+    const contentLines = newSyllabusDetails.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    update('syllabus', [...form.syllabus, {
+      title: newSyllabusTitle.trim(),
+      details: contentLines.join('\n'),
+      contentLines,
+      demoTitle: newSyllabusDemoTitle.trim(),
+      demoUrl: newSyllabusDemoUrl.trim(),
+    }]);
     setNewSyllabusTitle('');
     setNewSyllabusDetails('');
+    setNewSyllabusDemoTitle('');
+    setNewSyllabusDemoUrl('');
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -353,9 +375,32 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
           {form.instructorProfiles.length > 0 && <div className="mt-5 space-y-3">{form.instructorProfiles.map((profile, index) => { const teacher = teachers.find((item) => item._id === profile.instructorId); return <div key={profile.instructorId} className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/50 sm:grid-cols-[1fr_1fr_1fr]"><div className="flex items-center gap-2 text-xs font-black"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{teacher?.name?.slice(0, 1) || 'T'}</span>{teacher?.name || 'Selected teacher'}</div><input className={inputClass} value={profile.subject} onChange={(event) => setForm((current) => ({ ...current, instructorProfiles: current.instructorProfiles.map((item, itemIndex) => itemIndex === index ? { ...item, subject: event.target.value } : item) }))} placeholder="Subject · e.g. Physics" /><input className={inputClass} value={profile.experience} onChange={(event) => setForm((current) => ({ ...current, instructorProfiles: current.instructorProfiles.map((item, itemIndex) => itemIndex === index ? { ...item, experience: event.target.value } : item) }))} placeholder="Experience · e.g. ৮+ বছর" /></div>; })}</div>}
         </Section>
 
-        <Section icon={<BookOpen className="h-4 w-4" />} title="Program syllabus" description="Course page-এর expandable syllabus items এখানে লিখুন।">
-          <div className="space-y-3">{form.syllabus.map((item, index) => <div key={`${item.title}-${index}`} className="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/50 sm:grid-cols-[1fr_1.4fr_auto]"><input className={inputClass} value={item.title} onChange={(event) => update('syllabus', form.syllabus.map((current, itemIndex) => itemIndex === index ? { ...current, title: event.target.value } : current))} placeholder="Topic title" /><input className={inputClass} value={item.details} onChange={(event) => update('syllabus', form.syllabus.map((current, itemIndex) => itemIndex === index ? { ...current, details: event.target.value } : current))} placeholder="Topic details" /><button type="button" onClick={() => update('syllabus', form.syllabus.filter((_, itemIndex) => itemIndex !== index))} className="inline-flex h-10 items-center justify-center rounded-xl px-3 text-slate-400 hover:bg-rose-50 hover:text-rose-600"><Trash2 className="h-4 w-4" /></button></div>)}</div>
-          <div className="mt-4 grid gap-2 rounded-xl border border-dashed border-slate-300 p-3 dark:border-slate-700 sm:grid-cols-[1fr_1.4fr_auto]"><input className={inputClass} value={newSyllabusTitle} onChange={(event) => setNewSyllabusTitle(event.target.value)} placeholder="নতুন topic" /><input className={inputClass} value={newSyllabusDetails} onChange={(event) => setNewSyllabusDetails(event.target.value)} placeholder="সংক্ষিপ্ত details" /><Button type="button" size="sm" variant="secondary" onClick={addSyllabus}><Plus className="mr-1 h-3.5 w-3.5" /> Add</Button></div>
+        <Section icon={<BookOpen className="h-4 w-4" />} title="Program syllabus" description="প্রতিটি বিষয়ের একাধিক লাইন ও চাইলে free demo class যোগ করুন।">
+          <div className="space-y-4">
+            {form.syllabus.map((item, index) => {
+              const lineValue = item.contentLines?.length ? item.contentLines.join('\n') : item.details;
+              return <div key={`${item.title}-${index}`} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/50">
+                <div className="flex items-start gap-3">
+                  <div className="grid min-w-0 flex-1 gap-3 md:grid-cols-2">
+                    <label className="block md:col-span-2"><span className="mb-1.5 block text-[11px] font-black text-slate-500">বিষয়ের নাম</span><input className={inputClass} value={item.title} onChange={(event) => update('syllabus', form.syllabus.map((current, itemIndex) => itemIndex === index ? { ...current, title: event.target.value } : current))} placeholder="যেমন: গণিত" /></label>
+                    <label className="block md:col-span-2"><span className="mb-1.5 block text-[11px] font-black text-slate-500">কনটেন্ট</span><textarea className={`${inputClass} min-h-28 resize-y py-3`} value={lineValue} onChange={(event) => { const details = event.target.value; update('syllabus', form.syllabus.map((current, itemIndex) => itemIndex === index ? { ...current, details, contentLines: details.split(/\r?\n/) } : current)); }} placeholder={'প্রতি লাইনে একটি বিষয় লিখুন\nযেমন: অধ্যায়ভিত্তিক ক্লাস\nসাপ্তাহিক practice'} /></label>
+                    <label className="block"><span className="mb-1.5 block text-[11px] font-black text-slate-500">Demo title <span className="font-medium">(optional)</span></span><input className={inputClass} value={item.demoTitle || ''} onChange={(event) => update('syllabus', form.syllabus.map((current, itemIndex) => itemIndex === index ? { ...current, demoTitle: event.target.value } : current))} placeholder="ফ্রি ডেমো ক্লাস" /></label>
+                    <label className="block"><span className="mb-1.5 block text-[11px] font-black text-slate-500">Demo link <span className="font-medium">(optional)</span></span><input className={inputClass} value={item.demoUrl || ''} onChange={(event) => update('syllabus', form.syllabus.map((current, itemIndex) => itemIndex === index ? { ...current, demoUrl: event.target.value } : current))} placeholder="https://..." /></label>
+                  </div>
+                  <button type="button" aria-label="Delete syllabus item" onClick={() => update('syllabus', form.syllabus.filter((_, itemIndex) => itemIndex !== index))} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"><Trash2 className="h-4 w-4" /></button>
+                </div>
+              </div>;
+            })}
+          </div>
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-300 p-4 dark:border-slate-700">
+            <div className="grid gap-3 md:grid-cols-2">
+              <input className={`${inputClass} md:col-span-2`} value={newSyllabusTitle} onChange={(event) => setNewSyllabusTitle(event.target.value)} placeholder="নতুন বিষয়ের নাম" />
+              <textarea className={`${inputClass} min-h-28 resize-y py-3 md:col-span-2`} value={newSyllabusDetails} onChange={(event) => setNewSyllabusDetails(event.target.value)} placeholder={'প্রতি লাইনে একটি কনটেন্ট লিখুন\nএকাধিক লাইন যোগ করা যাবে'} />
+              <input className={inputClass} value={newSyllabusDemoTitle} onChange={(event) => setNewSyllabusDemoTitle(event.target.value)} placeholder="Demo title (optional)" />
+              <input className={inputClass} value={newSyllabusDemoUrl} onChange={(event) => setNewSyllabusDemoUrl(event.target.value)} placeholder="Demo link (optional)" />
+            </div>
+            <Button type="button" size="sm" variant="secondary" onClick={addSyllabus} className="mt-3"><Plus className="mr-1 h-3.5 w-3.5" /> যোগ করুন</Button>
+          </div>
         </Section>
 
         <Section icon={<ListFilter className="h-4 w-4" />} title="Highlights & card features" description="Sidebar benefits এবং course card-এর highlight lines control করুন।">

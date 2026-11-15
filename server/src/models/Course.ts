@@ -38,6 +38,9 @@ export interface ICourseInstructorProfile {
 export interface ICourseSyllabusItem {
   title: string;
   details?: string;
+  contentLines?: string[];
+  demoTitle?: string;
+  demoUrl?: string;
 }
 
 export interface ICourseRoutine {
@@ -144,6 +147,9 @@ const CourseSchema = new Schema<ICourse>(
       {
         title: { type: String, required: true, trim: true, maxlength: 200 },
         details: { type: String, default: '', trim: true, maxlength: 1000 },
+        contentLines: [{ type: String, trim: true, maxlength: 500 }],
+        demoTitle: { type: String, default: '', trim: true, maxlength: 120 },
+        demoUrl: { type: String, default: '', trim: true, maxlength: 500 },
       },
     ],
     routine: {

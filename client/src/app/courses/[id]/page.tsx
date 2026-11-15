@@ -54,7 +54,10 @@ interface Teacher {
 
 interface SyllabusItem {
   title: string;
-  details: string;
+  details?: string;
+  contentLines?: string[];
+  demoTitle?: string;
+  demoUrl?: string;
 }
 
 interface InstructorProfile {
@@ -317,13 +320,31 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
               {syllabus.map((item, index) => {
                 const open = expandedSyllabus === index;
                 const SyllabusIcon = syllabusIcons[index % syllabusIcons.length];
+                const contentLines = (item.contentLines?.length
+                  ? item.contentLines
+                  : (item.details || '').split(/\r?\n/))
+                  .map((line) => line.trim())
+                  .filter(Boolean);
+                const hasContent = contentLines.length > 0 || Boolean(item.demoUrl);
                 return <div key={item.title + '-new-' + index} className={open ? 'overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(30,65,100,0.12)] ring-1 ring-blue-200 dark:bg-slate-900 dark:ring-blue-900' : 'overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(30,65,100,0.08)] dark:bg-slate-900'}>
-                  <button type="button" onClick={() => setExpandedSyllabus(open ? null : index)} className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 sm:px-6">
+                  <button type="button" onClick={() => hasContent && setExpandedSyllabus(open ? null : index)} aria-expanded={open} className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 sm:px-6">
                     <span className={"flex h-10 w-10 shrink-0 items-center justify-center rounded-none " + syllabusIconStyles[index % syllabusIconStyles.length]}><SyllabusIcon className="h-5 w-5" /></span>
                     <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black text-slate-900 dark:text-white">{item.title}</span></span>
-                    <ChevronDown className={open ? 'h-4 w-4 shrink-0 rotate-180 text-blue-600 transition-transform' : 'h-4 w-4 shrink-0 text-slate-400 transition-transform'} />
+                    {hasContent && <ChevronDown className={open ? 'h-4 w-4 shrink-0 rotate-180 text-blue-600 transition-transform' : 'h-4 w-4 shrink-0 text-slate-400 transition-transform'} />}
                   </button>
-                  {open && <div className="flex gap-3 border-t border-slate-100 px-5 pb-5 pt-3 text-xs leading-6 text-slate-600 dark:border-slate-800 dark:text-slate-300 sm:px-6"><span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />{item.details}</div>}
+                  {open && <div className="border-t border-slate-100 px-5 pb-5 pt-4 dark:border-slate-800 sm:px-6">
+                    {contentLines.length > 0 && <div className="grid gap-2.5 sm:grid-cols-2">
+                      {contentLines.map((line, lineIndex) => <div key={`${line}-${lineIndex}`} className="flex min-w-0 items-start gap-3 rounded-xl bg-slate-50 px-3.5 py-3 dark:bg-slate-800/60">
+                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"><Check className="h-3 w-3" /></span>
+                        <span className="text-xs font-semibold leading-5 text-slate-700 dark:text-slate-200">{line}</span>
+                      </div>)}
+                    </div>}
+                    {item.demoUrl && <a href={item.demoUrl} target="_blank" rel="noreferrer" className={`${contentLines.length ? 'mt-4' : ''} flex items-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15"><Play className="h-4 w-4 fill-current" /></span>
+                      <span className="min-w-0 flex-1"><span className="block text-xs font-black">{item.demoTitle || 'ফ্রি ডেমো ক্লাস'}</span><span className="mt-0.5 block text-[10px] text-blue-100">বিনামূল্যে ক্লাসটি দেখুন</span></span>
+                      <ArrowRight className="h-4 w-4 shrink-0" />
+                    </a>}
+                  </div>}
                 </div>;
               })}
             </div>
