@@ -136,6 +136,12 @@ export default function AdminTeacherAttendancePage() {
   const filteredTeachers = teachers.filter((teacher) =>
     `${teacher.name} ${teacher.gravId || ''} ${teacher.email || ''}`.toLowerCase().includes(search.trim().toLowerCase())
   );
+  const quickGroups = Array.from(running.reduce((groups, row) => {
+    const group = groups.get(row.batchId);
+    if (group) group.push(row);
+    else groups.set(row.batchId, [row]);
+    return groups;
+  }, new Map<string, RunningClass[]>()).values());
 
   if (!canManage) {
     return <main className="min-h-screen bg-slate-50 px-4 py-12 text-center text-slate-600">এই পেজ দেখার permission নেই।</main>;
@@ -168,31 +174,29 @@ export default function AdminTeacherAttendancePage() {
           ) : running.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-9 text-center dark:border-slate-700 dark:bg-slate-900">
               <Clock3 className="mx-auto mb-2 h-7 w-7 text-slate-400" />
-              <p className="font-semibold text-slate-700 dark:text-slate-200">এখন কোনো scheduled class চলছে না</p>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">আজ কোনো scheduled class নেই</p>
             </div>
           ) : (
             <div className="space-y-2.5">
-              {running.map((row) => {
-                const key = `${row.teacher._id}:${row.batchId}`;
+              {quickGroups.map((group) => {
+                const first = group[0];
+                const selected = group.find((row) => row.attendance?.status === 'present');
                 return (
-                  <article key={key} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center">
-                    <UserAvatar name={row.teacher.name} avatarUrl={row.teacher.avatarUrl} role="teacher" size="lg" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <h3 className="font-bold">{row.teacher.name}</h3>
-                        {row.teacher.gravId && <span className="text-xs text-slate-500">Grav ID: {row.teacher.gravId}</span>}
-                      </div>
-                      <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-slate-600 dark:text-slate-300">
-                        <span>{row.courseName}</span><span className="text-slate-300">·</span><span>{row.batchName}</span><span className="text-slate-300">·</span><span>{timeLabel(row.startTime, row.endTime)}</span>
-                      </p>
+                  <article key={first.batchId} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div className="mb-3 flex flex-wrap items-baseline justify-between gap-1 border-b border-slate-100 pb-3 dark:border-slate-800">
+                      <div><h3 className="font-bold">{first.courseName} · {first.batchName}</h3><p className="mt-1 text-sm text-slate-500">{timeLabel(first.startTime, first.endTime)}</p></div>
+                      <span className="text-xs font-medium text-slate-500">{group.length} জন শিক্ষক</span>
                     </div>
-                    {row.attendance?.status === 'present' ? (
-                      <div className="flex flex-wrap items-center gap-2"><span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><UserCheck className="h-4 w-4" /> উপস্থিত</span><button type="button" onClick={() => markAbsent(row)} disabled={markingKey === key} className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300">Absent করুন</button></div>
-                    ) : (
-                      <button onClick={() => markPresent(row)} disabled={markingKey === key} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60">
-                        {markingKey === key ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />} Present
-                      </button>
-                    )}
+                    <div className="space-y-2">
+                      {group.map((row) => {
+                        const key = `${row.teacher._id}:${row.batchId}`;
+                        return <div key={key} className="flex flex-wrap items-center gap-3 rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/50">
+                          <UserAvatar name={row.teacher.name} avatarUrl={row.teacher.avatarUrl} role="teacher" size="md" />
+                          <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{row.teacher.name}</p>{row.teacher.gravId && <p className="text-xs text-slate-500">{row.teacher.gravId}</p>}</div>
+                          {row.attendance?.status === 'present' ? <div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300"><UserCheck className="h-4 w-4" /> Present</span><button type="button" onClick={() => markAbsent(row)} disabled={markingKey !== null} className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300">Absent করুন</button></div> : <button type="button" onClick={() => markPresent(row)} disabled={markingKey !== null || Boolean(selected)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 text-sm font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 dark:disabled:bg-slate-700"><UserCheck className="h-4 w-4" /> Mark as Present</button>}
+                        </div>;
+                      })}
+                    </div>
                   </article>
                 );
               })}

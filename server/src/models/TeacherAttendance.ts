@@ -27,6 +27,7 @@ const TeacherAttendanceSchema = new Schema<ITeacherAttendance>({
 }, { timestamps: true });
 
 TeacherAttendanceSchema.index({ teacherId: 1, batchId: 1, attendanceDate: 1 }, { unique: true });
+TeacherAttendanceSchema.index({ batchId: 1, attendanceDate: 1 }, { unique: true, partialFilterExpression: { status: 'present' }, name: 'one_present_teacher_per_batch_day' });
 TeacherAttendanceSchema.index({ attendanceDate: -1, teacherId: 1 });
 
 export const TeacherAttendance = mongoose.model<ITeacherAttendance>('TeacherAttendance', TeacherAttendanceSchema);

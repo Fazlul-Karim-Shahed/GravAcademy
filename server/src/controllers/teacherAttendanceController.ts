@@ -22,43 +22,6 @@ const formatDhakaDate = (date = new Date()) => {
   return `${part('year')}-${part('month')}-${part('day')}`;
 };
 
-const parseClockMinutes = (value?: string) => {
-  if (!value) return null;
-  const match = value.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
-  if (!match) return null;
-  let hour = Number(match[1]);
-  const minute = Number(match[2]);
-  if (minute > 59 || hour > 23) return null;
-  const meridiem = match[3]?.toUpperCase();
-  if (meridiem) {
-    if (hour < 1 || hour > 12) return null;
-    hour = hour % 12 + (meridiem === 'PM' ? 12 : 0);
-  }
-  return hour * 60 + minute;
-};
-
-const isWithinScheduleTime = (slot: any, currentMinutes: number) => {
-  const start = parseClockMinutes(slot.startTime);
-  if (start === null) return false;
-  const end = parseClockMinutes(slot.endTime) ?? start + 90;
-  if (end >= 1440) return currentMinutes >= start || currentMinutes <= end - 1440;
-  return end >= start
-    ? currentMinutes >= start && currentMinutes <= end
-    : currentMinutes >= start || currentMinutes <= end;
-};
-
-const getBangladeshClockMinutes = (date = new Date()) => {
-  const parts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: TIME_ZONE,
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(date);
-  const hour = Number(parts.find((part) => part.type === 'hour')?.value || 0);
-  const minute = Number(parts.find((part) => part.type === 'minute')?.value || 0);
-  return hour * 60 + minute;
-};
-
 const weekdayForDate = (date: string) => {
   const day = new Date(`${date}T12:00:00.000Z`).getUTCDay();
   return DAY_KEYS[day];
@@ -118,7 +81,6 @@ export const getQuickAttendance = async (_req: AuthenticatedRequest, res: Respon
   try {
     const now = new Date();
     const today = formatDhakaDate(now);
-    const currentMinutes = getBangladeshClockMinutes(now);
     const batches = await Batch.find({ status: { $in: ['active', 'upcoming'] } })
       .populate('courseId', 'title subject gradeLevel instructors')
       .populate('assignedTeachers', 'name gravId email avatarUrl role status')
@@ -127,13 +89,13 @@ export const getQuickAttendance = async (_req: AuthenticatedRequest, res: Respon
     const running: any[] = [];
     for (const batch of batches as any[]) {
       if (!dateInBatchRange(batch, today)) continue;
-      const schedule = (batch.weeklySchedule || []).find((slot: any) =>
-        String(slot.day).toLowerCase() === weekdayForDate(today) && isWithinScheduleTime(slot, currentMinutes)
+      const schedules = (batch.weeklySchedule || []).filter((slot: any) =>
+        String(slot.day).toLowerCase() === weekdayForDate(today)
       );
-      if (!schedule) continue;
+      if (!schedules.length) continue;
 
       const directTeachers = batch.assignedTeachers || [];
-      const courseTeacherIds = (batch.courseId?.instructors || []).map((teacher: any) => teacher.toString());
+      const courseTeacherIds = directTeachers.length ? [] : (batch.courseId?.instructors || []).map((teacher: any) => teacher.toString());
       const courseTeachers = courseTeacherIds.length
         ? await User.find({ _id: { $in: courseTeacherIds }, role: 'teacher', status: { $nin: ['suspended', 'deactivated'] } })
             .select('name gravId email avatarUrl role')
@@ -154,8 +116,8 @@ export const getQuickAttendance = async (_req: AuthenticatedRequest, res: Respon
           batchName: batch.name,
           courseId: batch.courseId?._id,
           courseName: batch.courseId?.title || '',
-          startTime: schedule.startTime,
-          endTime: schedule.endTime || '',
+          startTime: schedules.map((slot: any) => slot.startTime).join(', '),
+          endTime: schedules.length === 1 ? schedules[0].endTime || '' : '',
           teacher,
           attendance: attendance || null,
         });
@@ -688,7 +650,7 @@ export const markTeacherPresent = async (req: AuthenticatedRequest, res: Respons
     const today = formatDhakaDate();
     if (date > today) return res.status(400).json({ success: false, message: 'ভবিষ্যৎ তারিখে attendance mark করা যাবে না।' });
     if (source === 'quick' && date !== today) {
-      return res.status(400).json({ success: false, message: 'Quick attendance শুধু আজকের চলমান class-এর জন্য।' });
+      return res.status(400).json({ success: false, message: 'Quick attendance শুধু আজকের class-এর জন্য।' });
     }
 
     const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
@@ -702,13 +664,14 @@ export const markTeacherPresent = async (req: AuthenticatedRequest, res: Respons
       return res.status(400).json({ success: false, message: 'এই তারিখে batch-এর class schedule নেই।' });
     }
     if (source === 'quick') {
-      const currentMinutes = getBangladeshClockMinutes();
-      const isRunningNow = ['active', 'upcoming'].includes(batch.status) && (batch.weeklySchedule || []).some((slot: any) =>
-        String(slot.day).toLowerCase() === weekdayForDate(today) && isWithinScheduleTime(slot, currentMinutes)
-      );
-      if (!isRunningNow || !dateInBatchRange(batch, today)) {
-        return res.status(400).json({ success: false, message: 'এই batch এখন চলমান নয়।' });
+      if (!['active', 'upcoming'].includes(batch.status)) {
+        return res.status(400).json({ success: false, message: 'এই batch আজকের quick attendance-এ নেই।' });
       }
+    }
+
+    const selectedTeacher = await TeacherAttendance.findOne({ batchId: batch._id, attendanceDate: date, status: 'present', teacherId: { $ne: teacherObjectId } }).select('teacherId').lean();
+    if (selectedTeacher) {
+      return res.status(409).json({ success: false, message: 'এই batch-এর জন্য ইতিমধ্যে অন্য একজন শিক্ষক Present আছেন। আগে তাঁকে Absent করুন।' });
     }
 
     const existing = await TeacherAttendance.findOne({ teacherId: teacherObjectId, batchId: batch._id, attendanceDate: date });
@@ -737,6 +700,8 @@ export const markTeacherPresent = async (req: AuthenticatedRequest, res: Respons
     return res.status(201).json({ success: true, message: 'Teacher attendance present mark হয়েছে।', data: attendance });
   } catch (error: any) {
     if (error?.code === 11000) {
+      const selectedTeacher = await TeacherAttendance.findOne({ batchId: req.body?.batchId, attendanceDate: req.body?.date, status: 'present', teacherId: { $ne: req.body?.teacherId } }).select('teacherId').lean();
+      if (selectedTeacher) return res.status(409).json({ success: false, message: 'এই batch-এর জন্য ইতিমধ্যে অন্য একজন শিক্ষক Present আছেন। আগে তাঁকে Absent করুন।' });
       const existing = await TeacherAttendance.findOne({ teacherId: req.body?.teacherId, batchId: req.body?.batchId, attendanceDate: req.body?.date });
       return res.json({ success: true, alreadyMarked: true, message: 'Attendance আগেই present mark করা হয়েছে।', data: existing });
     }
