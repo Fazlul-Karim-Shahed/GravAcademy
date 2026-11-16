@@ -18,6 +18,11 @@ export interface ITeacherPayment extends Document {
   classKeys: string[];
   courseBreakdown: Array<{ courseId: mongoose.Types.ObjectId; courseName: string; classCount: number; rate: number; subtotal: number }>;
   amountPaid: number;
+  amountRevisions?: Array<{ previousAmount: number; newAmount: number; reason: string; changedBy: mongoose.Types.ObjectId; changedAt: Date }>;
+  voidedAt?: Date;
+  voidedBy?: mongoose.Types.ObjectId;
+  voidReason?: string;
+  voidedClassKeys?: string[];
   notes?: string;
   paidBy: mongoose.Types.ObjectId;
   paidAt: Date;
@@ -47,6 +52,17 @@ const TeacherPaymentSchema = new Schema<ITeacherPayment>({
     subtotal: { type: Number, required: true, min: 0 },
   }],
   amountPaid: { type: Number, required: true, min: 1 },
+  amountRevisions: [{
+    previousAmount: { type: Number, required: true },
+    newAmount: { type: Number, required: true },
+    reason: { type: String, required: true, maxlength: 300 },
+    changedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    changedAt: { type: Date, required: true },
+  }],
+  voidedAt: { type: Date },
+  voidedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  voidReason: { type: String, maxlength: 300 },
+  voidedClassKeys: { type: [String], default: undefined },
   notes: { type: String, trim: true, maxlength: 500, default: '' },
   paidBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   paidAt: { type: Date, default: Date.now, required: true },

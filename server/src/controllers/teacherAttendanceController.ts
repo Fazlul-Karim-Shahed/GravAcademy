@@ -279,7 +279,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
 
     const classKeys = rows.map((row: any) => row.classKey);
     const paymentRecords = classKeys.length
-      ? await TeacherPayment.find({ teacherId: teacherObjectId, classKeys: { $in: classKeys } }).lean()
+      ? await TeacherPayment.find({ teacherId: teacherObjectId, classKeys: { $in: classKeys }, voidedAt: { $exists: false } }).lean()
       : [];
     const paymentsByClassKey = new Map<string, any>();
     paymentRecords.forEach((payment: any) => payment.classes.forEach((item: any) => {
@@ -367,7 +367,17 @@ export const createTeacherPayment = async (req: AuthenticatedRequest, res: Respo
     const distinctKeys = new Set(validatedClasses.map((item) => item.classKey));
     if (distinctKeys.size !== validatedClasses.length) return res.status(400).json({ success: false, message: 'একই class একাধিকবার নির্বাচন করা হয়েছে।' });
 
-    const existingPayment = await TeacherPayment.findOne({ classKeys: { $in: [...distinctKeys] } }).select('receiptNo').lean();
+    const presentRecords = await TeacherAttendance.find({
+      teacherId: teacherObjectId,
+      status: 'present',
+      $or: validatedClasses.map((item) => ({ batchId: item.batchId, attendanceDate: item.classDate })),
+    }).select('batchId attendanceDate').lean();
+    const presentKeys = new Set(presentRecords.map((record) => `${record.batchId}|${record.attendanceDate}`));
+    if (validatedClasses.some((item) => !presentKeys.has(`${item.batchId}|${item.classDate}`))) {
+      return res.status(400).json({ success: false, message: 'Payment-এর আগে সব নির্বাচিত class-এর হাজিরা Present করুন।' });
+    }
+
+    const existingPayment = await TeacherPayment.findOne({ classKeys: { $in: [...distinctKeys] }, voidedAt: { $exists: false } }).select('receiptNo').lean();
     if (existingPayment) return res.status(409).json({ success: false, message: `নির্বাচিত class-এর একটি আগেই paid হয়েছে (${existingPayment.receiptNo})। তালিকাটি refresh করুন।` });
 
     const rateMap = new Map<string, number>();
@@ -455,12 +465,85 @@ export const getTeacherPaymentReceipt = async (req: AuthenticatedRequest, res: R
       .populate('classes.batchId', 'name')
       .populate('classes.courseId', 'title')
       .populate('courseBreakdown.courseId', 'title')
+      .populate('voidedBy', 'name gravId')
       .lean();
     if (!payment) return res.status(404).json({ success: false, message: 'Teacher receipt পাওয়া যায়নি।' });
     return res.json({ success: true, data: payment });
   } catch (error: any) {
     console.error('getTeacherPaymentReceipt error:', error);
     return res.status(500).json({ success: false, message: 'Teacher receipt load করা যায়নি।' });
+  }
+};
+
+export const getTeacherPaymentHistory = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.teacherId)) return res.status(400).json({ success: false, message: 'Teacher ID সঠিক নয়।' });
+    const page = Math.max(1, Number.parseInt(String(req.query.page || '1'), 10) || 1);
+    const limit = 20;
+    const filter = { teacherId: new mongoose.Types.ObjectId(req.params.teacherId) };
+    const [data, total] = await Promise.all([
+      TeacherPayment.find(filter).select('receiptNo amountPaid paidAt voidedAt voidReason classes').sort({ paidAt: -1, _id: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      TeacherPayment.countDocuments(filter),
+    ]);
+    return res.json({ success: true, data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
+  } catch (error) {
+    console.error('getTeacherPaymentHistory error:', error);
+    return res.status(500).json({ success: false, message: 'Payment history load করা যায়নি।' });
+  }
+};
+
+export const updateTeacherPayment = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.paymentId)) return res.status(400).json({ success: false, message: 'Payment ID সঠিক নয়।' });
+    const { amountPaid, expectedAmountPaid, reason } = req.body || {};
+    const trimmedReason = typeof reason === 'string' ? reason.trim() : '';
+    if (!Number.isSafeInteger(amountPaid) || amountPaid < 1 || !Number.isSafeInteger(expectedAmountPaid) || expectedAmountPaid < 1 || trimmedReason.length < 3 || trimmedReason.length > 300) {
+      return res.status(400).json({ success: false, message: 'সঠিক amount ও কমপক্ষে ৩ অক্ষরের কারণ দিন।' });
+    }
+    const payment = await TeacherPayment.findOne({ _id: req.params.paymentId, voidedAt: { $exists: false } }).lean();
+    if (!payment) return res.status(404).json({ success: false, message: 'Active payment পাওয়া যায়নি।' });
+    if (payment.amountPaid !== expectedAmountPaid) return res.status(409).json({ success: false, message: 'Payment বদলে গেছে। Refresh করে আবার চেষ্টা করুন।' });
+
+    const rates = new Map(payment.courseBreakdown.map((course) => [String(course.courseId), course.rate]));
+    const weights = payment.classes.map((item) => rates.get(String(item.courseId)) ?? item.amount);
+    const weightTotal = weights.reduce((sum, value) => sum + value, 0);
+    if (!Number.isSafeInteger(weightTotal)) return res.status(400).json({ success: false, message: 'Reference fee-এর হিসাব সীমার বাইরে।' });
+    const divisor = weightTotal || weights.length;
+    const allocations = weights.map((value) => Math.floor(amountPaid * (weightTotal ? value : 1) / divisor));
+    let remainder = amountPaid - allocations.reduce((sum, value) => sum + value, 0);
+    for (let index = 0; remainder > 0; index = (index + 1) % allocations.length) { allocations[index] += 1; remainder -= 1; }
+    const classes = payment.classes.map((item, index) => ({ ...item, amount: allocations[index] }));
+    const courseBreakdown = payment.courseBreakdown.map((course) => ({
+      ...course,
+      subtotal: classes.filter((item) => String(item.courseId) === String(course.courseId)).reduce((sum, item) => sum + item.amount, 0),
+    }));
+    const updated = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false }, amountPaid: expectedAmountPaid }, {
+      $set: { amountPaid, classes, courseBreakdown },
+      $push: { amountRevisions: { previousAmount: expectedAmountPaid, newAmount: amountPaid, reason: trimmedReason, changedBy: req.user!._id, changedAt: new Date() } },
+    }, { new: true, runValidators: true }).lean();
+    if (!updated) return res.status(409).json({ success: false, message: 'Payment বদলে গেছে। Refresh করে আবার চেষ্টা করুন।' });
+    return res.json({ success: true, message: 'Teacher payment আপডেট হয়েছে।', data: updated });
+  } catch (error) {
+    console.error('updateTeacherPayment error:', error);
+    return res.status(500).json({ success: false, message: 'Teacher payment আপডেট করা যায়নি।' });
+  }
+};
+
+export const voidTeacherPayment = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.paymentId)) return res.status(400).json({ success: false, message: 'Payment ID সঠিক নয়।' });
+    const reason = typeof req.body?.reason === 'string' ? req.body.reason.trim() : '';
+    if (reason.length < 3 || reason.length > 300) return res.status(400).json({ success: false, message: 'বাতিলের কারণ কমপক্ষে ৩ অক্ষরে লিখুন।' });
+    const payment = await TeacherPayment.findOne({ _id: req.params.paymentId, voidedAt: { $exists: false } }).select('classKeys').lean();
+    if (!payment) return res.status(404).json({ success: false, message: 'Active payment পাওয়া যায়নি।' });
+    const voided = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false } }, {
+      $set: { voidedAt: new Date(), voidedBy: req.user!._id, voidReason: reason, voidedClassKeys: payment.classKeys, classKeys: [] },
+    }, { new: true }).lean();
+    if (!voided) return res.status(409).json({ success: false, message: 'Payment ইতিমধ্যে বদলে গেছে। Refresh করুন।' });
+    return res.json({ success: true, message: 'Teacher payment বাতিল হয়েছে।', data: voided });
+  } catch (error) {
+    console.error('voidTeacherPayment error:', error);
+    return res.status(500).json({ success: false, message: 'Teacher payment বাতিল করা যায়নি।' });
   }
 };
 

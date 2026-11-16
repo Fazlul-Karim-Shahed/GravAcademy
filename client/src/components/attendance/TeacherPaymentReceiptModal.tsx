@@ -48,6 +48,7 @@ export default function TeacherPaymentReceiptModal({ data, onClose }: Props) {
             <div><p className="text-xs text-slate-500">Teacher</p><p className="mt-1 font-bold">{teacher.name || '—'}</p>{teacher.gravId && <p className="text-xs text-slate-500">Grav ID: {teacher.gravId}</p>}</div>
             <div><p className="text-xs text-slate-500">Paid by</p><p className="mt-1 font-semibold">{paidBy.name || 'Admin'}</p></div>
           </div>
+          {data.voidedAt && <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800">VOID · {data.voidReason || 'Payment বাতিল হয়েছে'}</div>}
           <div className="overflow-x-auto py-4">
             <table className="w-full min-w-[460px] text-left text-sm">
               <thead><tr className="border-b border-slate-200 text-xs text-slate-500"><th className="py-2 pr-3">Course / Batch</th><th className="py-2 px-3">Class date</th><th className="py-2 pl-3 text-right">{isBulk ? 'Reference fee' : 'Amount'}</th></tr></thead>

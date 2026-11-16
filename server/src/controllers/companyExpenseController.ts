@@ -78,7 +78,7 @@ export const getCompanyExpenses = async (req: AuthenticatedRequest, res: Respons
 
     const teacherCollection = User.collection.name;
     const pipeline: any[] = [
-      { $match: { paidAt: dateRange } },
+      { $match: { paidAt: dateRange, voidedAt: { $exists: false } } },
       { $lookup: { from: teacherCollection, localField: 'teacherId', foreignField: '_id', as: 'teacher' } },
       { $unwind: { path: '$teacher', preserveNullAndEmptyArrays: true } },
       { $lookup: { from: teacherCollection, localField: 'paidBy', foreignField: '_id', as: 'actor' } },

@@ -62,6 +62,7 @@ export default function CompanyExpensesPage() {
   const [rows, setRows] = useState<ExpenseRow[]>([]);
   const [summary, setSummary] = useState<ExpenseSummary>({ totalExpenses: 0, teacherPayments: 0, manualExpenses: 0, count: 0 });
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [totalPages, setTotalPages] = useState(1);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -76,12 +77,21 @@ export default function CompanyExpensesPage() {
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState({ title: '', category: 'other', amount: '', expenseDate: todayDhaka(), payee: '', paymentMethod: 'cash', reference: '', notes: '' });
+  const dateError = (startDate && !endDate) || (!startDate && endDate)
+    ? 'From ও To দুটো তারিখ দিন।'
+    : startDate && endDate && startDate > endDate ? 'From তারিখ To তারিখের পরে হতে পারে না।' : '';
+  const visibleSummary = dateError ? { totalExpenses: 0, teacherPayments: 0, manualExpenses: 0, count: 0 } : summary;
 
   const loadExpenses = useCallback(async () => {
+    if (dateError) {
+      setLoading(false);
+      setError('');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
-      const response = await api.get('/finance/company-expenses', { params: { startDate, endDate, source, category, search, page, limit: 25 } });
+      const response = await api.get('/finance/company-expenses', { params: { startDate, endDate, source, category, search, page, limit: pageSize } });
       setRows(response.data.data || []);
       setSummary(response.data.summary || { totalExpenses: 0, teacherPayments: 0, manualExpenses: 0, count: 0 });
       setTotalPages(Math.max(1, response.data.pagination?.totalPages || 1));
@@ -90,14 +100,14 @@ export default function CompanyExpensesPage() {
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate, source, category, search, page]);
+  }, [startDate, endDate, source, category, search, page, pageSize, dateError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => { void loadExpenses(); }, 250);
     return () => window.clearTimeout(timer);
   }, [loadExpenses]);
 
-  const filteredTotalLabel = useMemo(() => `${summary.count.toLocaleString('bn-BD')}টি record`, [summary.count]);
+  const filteredTotalLabel = useMemo(() => `${visibleSummary.count.toLocaleString('bn-BD')}টি record`, [visibleSummary.count]);
 
   const submitExpense = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -113,8 +123,8 @@ export default function CompanyExpensesPage() {
       setForm({ title: '', category: 'other', amount: '', expenseDate: todayDhaka(), payee: '', paymentMethod: 'cash', reference: '', notes: '' });
       setShowForm(false);
       setEditingId(null);
-      setPage(1);
-      await loadExpenses();
+      if (page === 1) await loadExpenses();
+      else setPage(1);
     } catch (requestError: any) {
       setError(requestError.response?.data?.message || 'Expense যোগ করা যায়নি।');
     } finally {
@@ -187,9 +197,9 @@ export default function CompanyExpensesPage() {
         {error && !showForm && <div role="alert" className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">{error}</div>}
 
         <section className="mb-5 grid gap-3 sm:grid-cols-3">
-          <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">Total Expense</span><CircleDollarSign className="h-4 w-4 text-indigo-600" /></div><p className="mt-3 text-2xl font-black">{formatMoney(summary.totalExpenses)}</p><p className="mt-1 text-xs text-slate-500">{filteredTotalLabel}</p></article>
-          <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">Teacher Payment</span><Banknote className="h-4 w-4 text-blue-600" /></div><p className="mt-3 text-2xl font-black">{formatMoney(summary.teacherPayments)}</p><p className="mt-1 text-xs text-slate-500">Attendance থেকে তৈরি</p></article>
-          <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">Manual Expense</span><FileText className="h-4 w-4 text-amber-600" /></div><p className="mt-3 text-2xl font-black">{formatMoney(summary.manualExpenses)}</p><p className="mt-1 text-xs text-slate-500">নিজে যোগ করা খরচ</p></article>
+          <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">Total Expense</span><CircleDollarSign className="h-4 w-4 text-indigo-600" /></div><p className="mt-3 text-2xl font-black">{formatMoney(visibleSummary.totalExpenses)}</p><p className="mt-1 text-xs text-slate-500">{filteredTotalLabel}</p></article>
+          <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">Teacher Payment</span><Banknote className="h-4 w-4 text-blue-600" /></div><p className="mt-3 text-2xl font-black">{formatMoney(visibleSummary.teacherPayments)}</p><p className="mt-1 text-xs text-slate-500">Attendance থেকে তৈরি</p></article>
+          <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-slate-500">Manual Expense</span><FileText className="h-4 w-4 text-amber-600" /></div><p className="mt-3 text-2xl font-black">{formatMoney(visibleSummary.manualExpenses)}</p><p className="mt-1 text-xs text-slate-500">নিজে যোগ করা খরচ</p></article>
         </section>
 
         <section className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
@@ -202,11 +212,12 @@ export default function CompanyExpensesPage() {
             <label className="relative self-end"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={search} onChange={(event) => { setPage(1); setSearch(event.target.value); }} placeholder="Expense খুঁজুন" className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm dark:border-slate-700 dark:bg-slate-950" /></label>
             <div className="flex gap-2 self-end"><button type="button" onClick={resetToAllTime} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">সব সময়</button><button type="button" onClick={resetToMonth} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"><CalendarDays className="h-3.5 w-3.5" />এই মাস</button></div>
           </div>
+          {dateError && <p role="alert" className="mt-3 text-xs font-medium text-rose-600 dark:text-rose-400">{dateError}</p>}
         </section>
 
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-5"><div><h2 className="font-bold">Expense List</h2><p className="mt-0.5 text-xs text-slate-500">সাম্প্রতিক খরচ আগে</p></div><span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">{summary.count.toLocaleString('bn-BD')}টি</span></div>
-          {loading ? <div className="flex min-h-48 items-center justify-center text-sm text-slate-500"><LoaderCircle className="mr-2 h-4 w-4 animate-spin" />লোড হচ্ছে...</div> : rows.length === 0 ? <div className="px-5 py-14 text-center"><ArrowDownLeft className="mx-auto mb-2 h-7 w-7 text-slate-300" /><p className="font-semibold">এই filter-এ কোনো expense নেই</p><p className="mt-1 text-sm text-slate-500">তারিখ পরিবর্তন করুন অথবা নতুন expense যোগ করুন।</p></div> : <>
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-5"><div><h2 className="font-bold">Expense List</h2><p className="mt-0.5 text-xs text-slate-500">সাম্প্রতিক খরচ আগে</p></div><div className="flex items-center gap-2"><label className="text-xs text-slate-500">Rows <select aria-label="Rows per page" value={pageSize} onChange={(event) => { setPage(1); setPageSize(Number(event.target.value)); }} className="ml-1 rounded-lg border border-slate-200 bg-white px-1 py-1 text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"><option value="2">2</option><option value="25">25</option><option value="50">50</option></select></label><span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">{visibleSummary.count.toLocaleString('bn-BD')}টি</span></div></div>
+          {dateError ? <div className="px-5 py-14 text-center text-sm text-slate-600 dark:text-slate-300">{dateError}</div> : loading ? <div className="flex min-h-48 items-center justify-center text-sm text-slate-500"><LoaderCircle className="mr-2 h-4 w-4 animate-spin" />লোড হচ্ছে...</div> : rows.length === 0 ? <div className="px-5 py-14 text-center"><ArrowDownLeft className="mx-auto mb-2 h-7 w-7 text-slate-300" /><p className="font-semibold">এই filter-এ কোনো expense নেই</p><p className="mt-1 text-sm text-slate-500">তারিখ পরিবর্তন করুন অথবা নতুন expense যোগ করুন।</p></div> : <>
             <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">{rows.map((row) => <article key={`${row.source}-${row.sourceId}`} className="space-y-2.5 p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-bold">{row.title}</p><p className="mt-0.5 text-xs text-slate-500">{formatBDDate(row.date, { day: 'numeric', month: 'short', year: 'numeric' })} · {row.referenceNo}</p></div><span className="shrink-0 font-black">{formatMoney(row.amount)}</span></div><div className="flex flex-wrap items-center gap-2 text-xs text-slate-500"><span className={`rounded-full px-2.5 py-1 font-semibold ${row.source === 'teacher' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'}`}>{row.source === 'teacher' ? 'Teacher payment' : categoryLabels[row.category] || 'Manual expense'}</span>{row.payeeName && <span>{row.payeeName}</span>}{row.classCount ? <span>{row.classCount}টি class</span> : null}</div>{row.courseBreakdown?.length ? <p className="text-xs text-slate-500">{row.courseBreakdown.map((item) => `${item.courseName} (${item.classCount})`).join(' · ')}</p> : null}{canAdd && row.source === 'manual' && <div className="flex gap-2 pt-1"><button type="button" onClick={() => startEditing(row)} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-semibold dark:border-slate-700"><Pencil className="h-3.5 w-3.5" />Edit</button><button type="button" disabled={deletingId === row.sourceId} onClick={() => void deleteExpense(row)} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-rose-200 px-3 text-xs font-semibold text-rose-700 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300"><Trash2 className="h-3.5 w-3.5" />{deletingId === row.sourceId ? 'Deleting…' : 'Delete'}</button></div>}</article>)}</div>
             <div className="hidden overflow-x-auto md:block"><table className="w-full min-w-[760px] text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500 dark:bg-slate-950/50"><tr><th className="px-5 py-3 font-semibold">Date / Ref</th><th className="px-4 py-3 font-semibold">Expense</th><th className="px-4 py-3 font-semibold">Type</th><th className="px-4 py-3 font-semibold">Payee / Details</th><th className="px-5 py-3 text-right font-semibold">Amount</th>{canAdd && <th className="px-4 py-3 text-right font-semibold">Actions</th>}</tr></thead><tbody className="divide-y divide-slate-100 dark:divide-slate-800">{rows.map((row) => <tr key={`${row.source}-${row.sourceId}`} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30"><td className="px-5 py-3.5"><p className="font-medium">{formatBDDate(row.date, { day: 'numeric', month: 'short', year: 'numeric' })}</p><p className="mt-0.5 font-mono text-[11px] text-slate-400">{row.referenceNo}</p></td><td className="px-4 py-3.5 font-semibold">{row.title}</td><td className="px-4 py-3.5"><span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${row.source === 'teacher' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'}`}>{row.source === 'teacher' ? 'Teacher payment' : categoryLabels[row.category] || 'Manual'}</span></td><td className="px-4 py-3.5 text-xs text-slate-600 dark:text-slate-300">{row.payeeName || '—'}{row.classCount ? <span className="ml-2 text-slate-400">· {row.classCount} class</span> : null}{row.courseBreakdown?.length ? <p className="mt-1 text-[11px] text-slate-400">{row.courseBreakdown.map((item) => `${item.courseName} (${item.classCount})`).join(' · ')}</p> : null}</td><td className="px-5 py-3.5 text-right font-black">{formatMoney(row.amount)}</td>{canAdd && <td className="px-4 py-3.5">{row.source === 'manual' ? <div className="flex justify-end gap-1.5"><button type="button" title="Edit expense" aria-label="Edit expense" onClick={() => startEditing(row)} className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"><Pencil className="h-4 w-4" /></button><button type="button" title="Delete expense" aria-label="Delete expense" disabled={deletingId === row.sourceId} onClick={() => void deleteExpense(row)} className="grid h-9 w-9 place-items-center rounded-lg border border-rose-200 text-rose-700 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300"><Trash2 className="h-4 w-4" /></button></div> : <span className="block text-right text-xs text-slate-400">—</span>}</td>}</tr>)}</tbody></table></div>
             <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 dark:border-slate-800 sm:px-5"><span className="text-xs text-slate-500">Page {page} / {totalPages}</span><div className="flex gap-2"><button disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))} className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 disabled:opacity-40 dark:border-slate-700"><ChevronLeft className="h-4 w-4" /></button><button disabled={page >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))} className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 disabled:opacity-40 dark:border-slate-700"><ChevronRight className="h-4 w-4" /></button></div></div>

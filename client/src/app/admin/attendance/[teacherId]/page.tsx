@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { hasPermission, PERMISSIONS } from '@/lib/permissions';
+import { formatBDDate } from '@/lib/dateUtils';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import TeacherPaymentReceiptModal from '@/components/attendance/TeacherPaymentReceiptModal';
 import {
@@ -52,6 +53,15 @@ interface TeacherAttendanceView {
   batches: BatchOption[];
   data: AttendanceRow[];
 }
+interface PaymentHistoryRow {
+  _id: string;
+  receiptNo: string;
+  amountPaid: number;
+  paidAt: string;
+  voidedAt?: string;
+  voidReason?: string;
+  classes: Array<{ classDate: string }>;
+}
 
 const DAY_LABELS = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহস্পতি', 'শুক্র', 'শনি'];
 const toMonthKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -82,9 +92,24 @@ export default function TeacherAttendanceDetailPage() {
   const [paymentNotes, setPaymentNotes] = useState('');
   const [savingPayment, setSavingPayment] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryRow[]>([]);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyTotalPages, setHistoryTotalPages] = useState(1);
+  const [paymentAction, setPaymentAction] = useState<{ type: 'edit' | 'void'; payment: PaymentHistoryRow } | null>(null);
+  const [actionAmount, setActionAmount] = useState('');
+  const [actionReason, setActionReason] = useState('');
+  const [actionSaving, setActionSaving] = useState(false);
+  const dateError = (startDate && !endDate) || (!startDate && endDate)
+    ? 'শুরুর ও শেষের তারিখ দুটোই দিন।'
+    : startDate && endDate && startDate > endDate ? 'শুরুর তারিখ শেষের তারিখের পরে হতে পারে না।' : '';
 
   const loadAttendance = useCallback(async (silent = false) => {
     if (!teacherId) return;
+    if (dateError && !selectedDate) {
+      setLoading(false);
+      setError('');
+      return;
+    }
     if (!silent) setLoading(true);
     setError('');
     try {
@@ -103,9 +128,22 @@ export default function TeacherAttendanceDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [teacherId, month, selectedDate, startDate, endDate, courseId, batchId]);
+  }, [teacherId, month, selectedDate, startDate, endDate, courseId, batchId, dateError]);
 
   useEffect(() => { loadAttendance(); }, [loadAttendance]);
+
+  const loadPaymentHistory = useCallback(async () => {
+    if (!teacherId) return;
+    try {
+      const response = await api.get(`/teacher-attendance/teachers/${teacherId}/payments`, { params: { page: historyPage } });
+      setPaymentHistory(response.data.data || []);
+      setHistoryTotalPages(Math.max(1, response.data.pagination?.totalPages || 1));
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'Payment history লোড হয়নি।');
+    }
+  }, [teacherId, historyPage]);
+
+  useEffect(() => { void loadPaymentHistory(); }, [loadPaymentHistory]);
 
   const batchesForCourse = useMemo(() =>
     courseId === 'all' ? view?.batches || [] : (view?.batches || []).filter((batch) => batch.courseId === courseId),
@@ -143,7 +181,8 @@ export default function TeacherAttendanceDetailPage() {
   };
 
   const today = todayInDhaka();
-  const bulkRows = (view?.data || []).filter((row) => !row.payment && (row.attendanceDate || '') <= today);
+  const bulkRows = dateError ? [] : (view?.data || []).filter((row) =>
+    !row.payment && row.attendance?.status === 'present' && (row.attendanceDate || '') <= today);
   const paymentCourses = Array.from(new Map(paymentRows.map((row) => [row.courseId, {
     id: row.courseId,
     name: row.courseName,
@@ -191,6 +230,7 @@ export default function TeacherAttendanceDetailPage() {
       setPaymentRows([]);
       setNotice(response.data.message || 'Payment তৈরি হয়েছে।');
       await loadAttendance(true);
+      await loadPaymentHistory();
     } catch (e: any) {
       setError(e.response?.data?.message || 'Teacher payment তৈরি করা যায়নি।');
     } finally {
@@ -204,6 +244,32 @@ export default function TeacherAttendanceDetailPage() {
       setReceiptData(response.data.data);
     } catch (e: any) {
       setError(e.response?.data?.message || 'Receipt খোলা যায়নি।');
+    }
+  };
+
+  const savePaymentAction = async () => {
+    if (!paymentAction) return;
+    const reason = actionReason.trim();
+    const amount = Number(actionAmount);
+    if (reason.length < 3 || (paymentAction.type === 'edit' && (!Number.isSafeInteger(amount) || amount < 1))) {
+      setError('সঠিক amount ও কমপক্ষে ৩ অক্ষরের কারণ দিন।');
+      return;
+    }
+    setActionSaving(true);
+    setError('');
+    try {
+      const id = paymentAction.payment._id;
+      const response = paymentAction.type === 'edit'
+        ? await api.patch(`/teacher-attendance/payments/${id}`, { amountPaid: amount, expectedAmountPaid: paymentAction.payment.amountPaid, reason })
+        : await api.post(`/teacher-attendance/payments/${id}/void`, { reason });
+      setNotice(response.data.message);
+      setPaymentAction(null);
+      setReceiptData(null);
+      await Promise.all([loadAttendance(true), loadPaymentHistory()]);
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'Payment পরিবর্তন করা যায়নি।');
+    } finally {
+      setActionSaving(false);
     }
   };
 
@@ -290,6 +356,7 @@ export default function TeacherAttendanceDetailPage() {
               <label className="block"><span className="mb-1.5 block text-xs font-medium text-slate-500">শুরুর তারিখ</span><input type="date" value={startDate} onChange={(event) => { setSelectedDate(''); setStartDate(event.target.value); }} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900" /></label>
               <label className="block"><span className="mb-1.5 block text-xs font-medium text-slate-500">শেষের তারিখ</span><input type="date" value={endDate} onChange={(event) => { setSelectedDate(''); setEndDate(event.target.value); }} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900" /></label>
             </div>
+            {dateError && <p role="alert" className="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400">{dateError}</p>}
             <div className="mt-4 rounded-xl bg-slate-50 px-3.5 py-3 text-sm text-slate-600 dark:bg-slate-800/70 dark:text-slate-300">
               {selectedDate ? <span>নির্বাচিত দিন: <strong className="text-slate-900 dark:text-white">{formatDate(selectedDate)}</strong></span> : startDate && endDate ? <span>নির্বাচিত সময়: <strong className="text-slate-900 dark:text-white">{formatDate(startDate)} – {formatDate(endDate)}</strong></span> : <span>চলতি মাসের সব scheduled class</span>}
             </div>
@@ -307,6 +374,8 @@ export default function TeacherAttendanceDetailPage() {
 
           {loading ? (
             <div className="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 dark:border-slate-800 dark:bg-slate-900"><LoaderCircle className="mr-2 h-5 w-5 animate-spin" /> লোড হচ্ছে</div>
+          ) : dateError ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">{dateError}</div>
           ) : !view?.data?.length ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center dark:border-slate-700 dark:bg-slate-900">
               <CalendarDays className="mx-auto mb-2 h-7 w-7 text-slate-400" />
@@ -336,7 +405,7 @@ export default function TeacherAttendanceDetailPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                       {isPresent ? <span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><Check className="h-4 w-4" />Present</span> : <button disabled={isFuture || markingBatch === row.batchId} onClick={() => markPresent(row)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">{markingBatch === row.batchId ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}{isFuture ? 'Future' : 'Present'}</button>}
-                      {row.payment ? <><span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3 text-sm font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Paid</span><button type="button" onClick={() => openReceipt(row.payment!.paymentId)} className="min-h-10 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Receipt</button></> : <button type="button" disabled={isFuture} onClick={() => openIndividualPayment(row)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300"><Banknote className="h-4 w-4" />Make Payment</button>}
+                      {row.payment ? <><span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3 text-sm font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Paid</span><button type="button" onClick={() => openReceipt(row.payment!.paymentId)} className="min-h-10 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Receipt</button></> : isPresent ? <button type="button" disabled={isFuture} onClick={() => openIndividualPayment(row)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300"><Banknote className="h-4 w-4" />Make Payment</button> : <span className="text-xs font-medium text-slate-500">আগে হাজিরা দিন</span>}
                     </div>
                   </article>
                 );
@@ -344,7 +413,18 @@ export default function TeacherAttendanceDetailPage() {
             </div>
           )}
         </section>
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-5">
+          <h2 className="mb-4 text-lg font-bold">Payment History</h2>
+          {paymentHistory.length === 0 ? <p className="text-sm text-slate-500">এখনো কোনো payment নেই।</p> : <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            {paymentHistory.map((payment) => <div key={payment._id} className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
+              <div><p className="font-semibold">{payment.receiptNo} <span className="ml-2 text-sm text-slate-500">৳{payment.amountPaid.toLocaleString('bn-BD')}</span></p><p className="mt-1 text-xs text-slate-500">{payment.classes.length}টি class · {formatBDDate(payment.paidAt, { day: 'numeric', month: 'short', year: 'numeric' })}{payment.voidedAt ? ' · বাতিল' : ''}</p></div>
+              <div className="flex flex-wrap gap-2"><button type="button" onClick={() => void openReceipt(payment._id)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-slate-700">Receipt</button>{!payment.voidedAt && <><button type="button" onClick={() => { setPaymentAction({ type: 'edit', payment }); setActionAmount(String(payment.amountPaid)); setActionReason(''); setError(''); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-slate-700">Edit</button><button type="button" onClick={() => { setPaymentAction({ type: 'void', payment }); setActionReason(''); setError(''); }} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:text-rose-300">Void</button></>}</div>
+            </div>)}
+          </div>}
+          <div className="mt-4 flex items-center justify-end gap-3 text-xs text-slate-500"><button type="button" disabled={historyPage <= 1} onClick={() => setHistoryPage((value) => value - 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40 dark:border-slate-700">Previous</button><span>{historyPage} / {historyTotalPages}</span><button type="button" disabled={historyPage >= historyTotalPages} onClick={() => setHistoryPage((value) => value + 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40 dark:border-slate-700">Next</button></div>
+        </section>
       </div>
+      {paymentAction && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true" aria-labelledby="payment-action-title"><section className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900 sm:p-6"><h2 id="payment-action-title" className="text-lg font-bold">{paymentAction.type === 'edit' ? 'Edit Payment' : 'Void Payment'}</h2><p className="mt-1 text-sm text-slate-500">{paymentAction.payment.receiptNo} · {paymentAction.payment.classes.length}টি class</p>{paymentAction.type === 'edit' ? <label className="mt-4 block text-sm font-semibold">Final amount (৳)<input type="number" min="1" step="1" value={actionAmount} onChange={(event) => setActionAmount(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-950" /></label> : <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">এই receipt-এর সব class আবার unpaid হবে এবং Finance expense থেকে টাকা বাদ যাবে।</p>}<label className="mt-4 block text-sm font-semibold">কারণ<input value={actionReason} onChange={(event) => setActionReason(event.target.value)} maxLength={300} placeholder="কেন পরিবর্তন করছেন" className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 dark:border-slate-700 dark:bg-slate-950" /></label>{error && <p role="alert" className="mt-3 text-sm text-rose-600">{error}</p>}<div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => { setPaymentAction(null); setError(''); }} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold dark:border-slate-700">Cancel</button><button type="button" disabled={actionSaving} onClick={() => void savePaymentAction()} className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{paymentAction.type === 'edit' ? 'Save' : 'Void'}</button></div></section></div>}
       {paymentRows.length > 0 && paymentMode && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="teacher-payment-title">
           <section className="my-auto max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900 sm:p-6">
