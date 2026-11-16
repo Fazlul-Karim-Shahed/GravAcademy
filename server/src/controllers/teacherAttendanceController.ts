@@ -583,6 +583,15 @@ export const markTeacherPresent = async (req: AuthenticatedRequest, res: Respons
 
     const existing = await TeacherAttendance.findOne({ teacherId: teacherObjectId, batchId: batch._id, attendanceDate: date });
     if (existing) {
+      if (existing.status === 'absent') {
+        existing.status = 'present';
+        existing.source = source;
+        existing.markedBy = req.user!._id;
+        existing.markedAt = new Date();
+        existing.statusChanges.push({ from: 'absent', to: 'present', changedBy: req.user!._id, changedAt: new Date() });
+        await existing.save();
+        return res.json({ success: true, message: 'Teacher attendance আবার present করা হয়েছে।', data: existing });
+      }
       return res.json({ success: true, alreadyMarked: true, message: 'Attendance আগেই present mark করা হয়েছে।', data: existing });
     }
     const attendance = await TeacherAttendance.create({
@@ -603,5 +612,34 @@ export const markTeacherPresent = async (req: AuthenticatedRequest, res: Respons
     }
     console.error('markTeacherPresent error:', error);
     return res.status(500).json({ success: false, message: 'Attendance save করা যায়নি।' });
+  }
+};
+
+export const markTeacherAbsent = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { teacherId, batchId, date } = req.body || {};
+    if (!mongoose.Types.ObjectId.isValid(teacherId) || !mongoose.Types.ObjectId.isValid(batchId) || !validateDate(date)) {
+      return res.status(400).json({ success: false, message: 'Teacher, batch বা date সঠিক নয়।' });
+    }
+    const attendance = await TeacherAttendance.findOne({ teacherId, batchId, attendanceDate: date });
+    if (!attendance || attendance.status !== 'present') {
+      return res.status(409).json({ success: false, message: 'এই class বর্তমানে Present নয়। তালিকাটি refresh করুন।' });
+    }
+    const paid = await TeacherPayment.exists({
+      teacherId,
+      voidedAt: { $exists: false },
+      classes: { $elemMatch: { batchId: new mongoose.Types.ObjectId(batchId), classDate: date } },
+    });
+    if (paid) return res.status(409).json({ success: false, message: 'এই class-এর payment আগে Void করুন, তারপর Absent করুন।' });
+    const updated = await TeacherAttendance.findOneAndUpdate(
+      { _id: attendance._id, status: 'present' },
+      { $set: { status: 'absent' }, $push: { statusChanges: { from: 'present', to: 'absent', changedBy: req.user!._id, changedAt: new Date() } } },
+      { new: true, runValidators: true }
+    );
+    if (!updated) return res.status(409).json({ success: false, message: 'Attendance বদলে গেছে। Refresh করুন।' });
+    return res.json({ success: true, message: 'Teacher attendance Absent করা হয়েছে।', data: updated });
+  } catch (error) {
+    console.error('markTeacherAbsent error:', error);
+    return res.status(500).json({ success: false, message: 'Attendance সংশোধন করা যায়নি।' });
   }
 };

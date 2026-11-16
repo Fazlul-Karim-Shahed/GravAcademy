@@ -112,6 +112,27 @@ export default function AdminTeacherAttendancePage() {
     }
   };
 
+  const markAbsent = async (row: RunningClass) => {
+    const key = `${row.teacher._id}:${row.batchId}`;
+    setMarkingKey(key);
+    setError('');
+    setNotice('');
+    try {
+      const response = await api.post('/teacher-attendance/mark-absent', {
+        teacherId: row.teacher._id,
+        batchId: row.batchId,
+        date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Dhaka' }),
+      });
+      setNotice(response.data.message || 'Attendance Absent করা হয়েছে।');
+      await loadQuick(true);
+      await loadTeachers();
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'Attendance সংশোধন করা যায়নি।');
+    } finally {
+      setMarkingKey(null);
+    }
+  };
+
   const filteredTeachers = teachers.filter((teacher) =>
     `${teacher.name} ${teacher.gravId || ''} ${teacher.email || ''}`.toLowerCase().includes(search.trim().toLowerCase())
   );
@@ -166,7 +187,7 @@ export default function AdminTeacherAttendancePage() {
                       </p>
                     </div>
                     {row.attendance?.status === 'present' ? (
-                      <span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><UserCheck className="h-4 w-4" /> উপস্থিত</span>
+                      <div className="flex flex-wrap items-center gap-2"><span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><UserCheck className="h-4 w-4" /> উপস্থিত</span><button type="button" onClick={() => markAbsent(row)} disabled={markingKey === key} className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300">Absent করুন</button></div>
                     ) : (
                       <button onClick={() => markPresent(row)} disabled={markingKey === key} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60">
                         {markingKey === key ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />} Present

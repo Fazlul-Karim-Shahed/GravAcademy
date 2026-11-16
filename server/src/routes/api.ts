@@ -38,6 +38,7 @@ router.get('/teacher-attendance/quick', authenticate, requireRole(ROLES.ADMIN, R
 router.get('/teacher-attendance/teachers', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getAttendanceTeachers);
 router.get('/teacher-attendance/teachers/:teacherId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherAttendance);
 router.post('/teacher-attendance/mark', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherPresent);
+router.post('/teacher-attendance/mark-absent', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherAbsent);
 router.post('/teacher-attendance/payments', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.createTeacherPayment);
 router.get('/teacher-attendance/teachers/:teacherId/payments', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherPaymentHistory);
 router.get('/teacher-attendance/payments/:paymentId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherPaymentReceipt);
