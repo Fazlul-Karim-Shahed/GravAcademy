@@ -25,6 +25,7 @@ import * as guardianCtrl from '../controllers/guardianController';
 import * as assignmentCtrl from '../controllers/assignmentController';
 import * as marksheetCtrl from '../controllers/marksheetController';
 import * as teacherAttendanceCtrl from '../controllers/teacherAttendanceController';
+import * as companyExpenseCtrl from '../controllers/companyExpenseController';
 
 const router = Router();
 const upload = multer({
@@ -231,6 +232,21 @@ router.post(
   requirePermission(PERMISSIONS.FINANCE_COLLECT),
   validateRequest(financeCtrl.collectPaymentSchema),
   financeCtrl.collectPayment
+);
+router.get(
+  '/finance/company-expenses',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
+  requirePermission(PERMISSIONS.FINANCE_VIEW),
+  companyExpenseCtrl.getCompanyExpenses
+);
+router.post(
+  '/finance/company-expenses',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
+  requirePermission(PERMISSIONS.FINANCE_EXPENSE_MANAGE),
+  validateRequest(companyExpenseCtrl.createCompanyExpenseSchema),
+  companyExpenseCtrl.createCompanyExpense
 );
 router.get(
   '/finance/admin-payments',

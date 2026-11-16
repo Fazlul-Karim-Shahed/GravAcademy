@@ -688,6 +688,15 @@ export default function AdminFinancePage() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            {can('finance.view') && (
+              <Link
+                href="/admin/finance/company-expenses"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+              >
+                <Building2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                Company Expense
+              </Link>
+            )}
             <Link
               href="/admin/admissions"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer"

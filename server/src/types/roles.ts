@@ -38,6 +38,7 @@ export const PERMISSIONS = {
   FINANCE_REFUND: 'finance.refund',
   FINANCE_DELETE: 'finance.delete',
   FINANCE_MANUAL_PAID: 'finance.manual_paid',
+  FINANCE_EXPENSE_MANAGE: 'finance.expense_manage',
 
   // Documents & Media
   DOCUMENTS_UPLOAD: 'documents.upload',
@@ -210,6 +211,12 @@ export const ALL_PERMISSIONS_METADATA: PermissionDefinition[] = [
     category: 'Finance & Accounting',
     description: 'বকেয়া থাকা সত্ত্বেও শিক্ষার্থীকে বিশেষভাবে পেইড বা মওকুফ হিসেবে মার্ক করা',
   },
+  {
+    key: PERMISSIONS.FINANCE_EXPENSE_MANAGE,
+    label: 'কোম্পানির খরচ যোগ করা (Manage Company Expenses)',
+    category: 'Finance & Accounting',
+    description: 'ম্যানুয়াল কোম্পানি expense তৈরি ও পরিচালনা করা',
+  },
 
   // Live Classes
   {
@@ -364,6 +371,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
     PERMISSIONS.FINANCE_REFUND,
     PERMISSIONS.FINANCE_DELETE,
     PERMISSIONS.FINANCE_MANUAL_PAID,
+    PERMISSIONS.FINANCE_EXPENSE_MANAGE,
     PERMISSIONS.DOCUMENTS_UPLOAD,
     PERMISSIONS.DOCUMENTS_VIEW,
     PERMISSIONS.DOCUMENTS_DELETE,
