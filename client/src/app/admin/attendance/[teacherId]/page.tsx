@@ -416,7 +416,8 @@ export default function TeacherAttendanceDetailPage() {
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
                         <span>{row.attendanceDate ? formatDate(row.attendanceDate) : ''}</span>
                         <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{row.startTime}{row.endTime ? ` – ${row.endTime}` : ''}</span>
-                        {row.attendance?.markedAt && <span>হাজিরা: {formatTime(row.attendance.markedAt)}</span>}
+                        {isPresent && row.attendance?.markedAt && <span>হাজিরা: {formatTime(row.attendance.markedAt)}</span>}
+                        {row.attendance?.status === 'absent' && <span className="font-semibold text-rose-600 dark:text-rose-400">Absent</span>}
                         {row.topic && <span>{row.topic}</span>}
                       </div>
                     </div>
