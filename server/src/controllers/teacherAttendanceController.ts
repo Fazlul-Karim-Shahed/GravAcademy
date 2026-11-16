@@ -534,9 +534,9 @@ export const voidTeacherPayment = async (req: AuthenticatedRequest, res: Respons
     if (!mongoose.Types.ObjectId.isValid(req.params.paymentId)) return res.status(400).json({ success: false, message: 'Payment ID সঠিক নয়।' });
     const reason = typeof req.body?.reason === 'string' ? req.body.reason.trim() : '';
     if (reason.length < 3 || reason.length > 300) return res.status(400).json({ success: false, message: 'বাতিলের কারণ কমপক্ষে ৩ অক্ষরে লিখুন।' });
-    const payment = await TeacherPayment.findOne({ _id: req.params.paymentId, voidedAt: { $exists: false } }).select('classKeys').lean();
+    const payment = await TeacherPayment.findOne({ _id: req.params.paymentId, voidedAt: { $exists: false } }).select('classKeys amountPaid').lean();
     if (!payment) return res.status(404).json({ success: false, message: 'Active payment পাওয়া যায়নি।' });
-    const voided = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false } }, {
+    const voided = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false }, classKeys: payment.classKeys, amountPaid: payment.amountPaid }, {
       $set: { voidedAt: new Date(), voidedBy: req.user!._id, voidReason: reason, voidedClassKeys: payment.classKeys },
       $unset: { classKeys: 1 },
     }, { new: true }).lean();
@@ -553,7 +553,7 @@ export const undoClassTeacherPayment = async (req: AuthenticatedRequest, res: Re
     const { paymentId } = req.params;
     const { classKey, reason = 'Class payment undone by admin' } = req.body || {};
 
-    if (!mongoose.Types.ObjectId.isValid(paymentId) || !classKey) {
+    if (!mongoose.Types.ObjectId.isValid(paymentId) || typeof classKey !== 'string' || !classKey) {
       return res.status(400).json({ success: false, message: 'Payment ID ও Class Key সঠিকভাবে দিন।' });
     }
 
@@ -575,31 +575,34 @@ export const undoClassTeacherPayment = async (req: AuthenticatedRequest, res: Re
     const removedAmount = targetClass.amount || 0;
     const previousAmount = payment.amountPaid;
 
-    if (payment.classes.length <= 1) {
-      await TeacherPayment.findOneAndUpdate(
-        { _id: payment._id, voidedAt: { $exists: false } },
+    const remainingAmount = previousAmount - removedAmount;
+    const currentClassKeys = [...(payment.classKeys || [])];
+    if (payment.classes.length <= 1 || remainingAmount <= 0) {
+      const voided = await TeacherPayment.findOneAndUpdate(
+        { _id: payment._id, voidedAt: { $exists: false }, classKeys: currentClassKeys, amountPaid: previousAmount },
         {
           $set: {
             voidedAt: new Date(),
             voidedBy: req.user!._id,
             voidReason: trimmedReason,
-            voidedClassKeys: payment.classKeys,
+            voidedClassKeys: currentClassKeys,
           },
           $unset: { classKeys: 1 },
         },
         { new: true }
       ).lean();
+      if (!voided) return res.status(409).json({ success: false, message: 'Payment বদলে গেছে। Refresh করে আবার চেষ্টা করুন।' });
 
       return res.json({
         success: true,
-        message: `ক্লাসের পেমেন্ট (৳${removedAmount}) আন্ডু করা হয়েছে এবং রিসিটটি Void হয়েছে। ফাইন্যান্স থেকেও এই টাকা বাদ পড়েছে।`,
+        message: `ক্লাসের পেমেন্ট আন্ডু করা হয়েছে এবং রিসিটটি Void হয়েছে। ফাইন্যান্স থেকে ৳${previousAmount} বাদ পড়েছে।`,
         data: { voided: true, paymentId: payment._id },
       });
     }
 
     payment.classes.splice(targetIndex, 1);
     payment.classKeys = payment.classes.map((item) => item.classKey);
-    payment.amountPaid = Math.max(1, previousAmount - removedAmount);
+    payment.amountPaid = remainingAmount;
 
     const courseMap = new Map<string, { courseId: any; courseName: string; classCount: number; rate: number; subtotal: number }>();
     payment.classes.forEach((item) => {
@@ -625,20 +628,26 @@ export const undoClassTeacherPayment = async (req: AuthenticatedRequest, res: Re
       courseId: entry.courseId,
       courseName: entry.courseName || 'Course',
       classCount: entry.classCount,
-      rate: entry.rate || Math.round(entry.subtotal / entry.classCount),
+      rate: entry.rate,
       subtotal: entry.subtotal,
     }));
 
-    if (!payment.amountRevisions) payment.amountRevisions = [];
-    payment.amountRevisions.push({
+    const revision = {
       previousAmount,
       newAmount: payment.amountPaid,
       reason: `${targetClass.classDate} তারিখের ক্লাসের পেমেন্ট (৳${removedAmount}) আন্ডু করা হয়েছে। কারণ: ${trimmedReason}`.slice(0, 300),
       changedBy: req.user!._id,
       changedAt: new Date(),
-    });
-
-    await payment.save();
+    };
+    const updated = await TeacherPayment.findOneAndUpdate(
+      { _id: payment._id, voidedAt: { $exists: false }, classKeys: currentClassKeys, amountPaid: previousAmount },
+      {
+        $set: { classes: payment.classes, classKeys: payment.classKeys, amountPaid: payment.amountPaid, courseBreakdown: payment.courseBreakdown },
+        $push: { amountRevisions: revision },
+      },
+      { new: true, runValidators: true }
+    ).lean();
+    if (!updated) return res.status(409).json({ success: false, message: 'Payment বদলে গেছে। Refresh করে আবার চেষ্টা করুন।' });
 
     return res.json({
       success: true,
