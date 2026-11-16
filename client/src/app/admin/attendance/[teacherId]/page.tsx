@@ -14,7 +14,6 @@ import {
   ArrowLeft as PreviousMonth,
   ArrowRight as NextMonth,
   CalendarDays,
-  Check,
   CheckCircle2,
   ChevronDown,
   Clock3,
@@ -430,20 +429,15 @@ export default function TeacherAttendanceDetailPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                       {isPresent ? (
-                        <>
-                          <span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                            <Check className="h-4 w-4" />Present
-                          </span>
-                          <button
-                            type="button"
-                            disabled={Boolean(row.payment) || markingBatch === row.batchId}
-                            title={row.payment ? 'আগে payment Void করুন' : 'ভুল হাজিরা সংশোধন করুন'}
-                            onClick={() => markAbsent(row)}
-                            className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-rose-900 dark:text-rose-300"
-                          >
-                            Absent করুন
-                          </button>
-                        </>
+                        <button
+                          type="button"
+                          disabled={Boolean(row.payment) || markingBatch === row.batchId}
+                          title={row.payment ? 'আগে payment Void করুন' : 'ভুল হাজিরা সংশোধন করুন'}
+                          onClick={() => markAbsent(row)}
+                          className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-rose-900 dark:text-rose-300"
+                        >
+                          Absent করুন
+                        </button>
                       ) : (
                         <button
                           disabled={isFuture || markingBatch === row.batchId}
