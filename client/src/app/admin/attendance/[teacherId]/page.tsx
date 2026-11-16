@@ -98,6 +98,9 @@ export default function TeacherAttendanceDetailPage() {
   const [actionAmount, setActionAmount] = useState('');
   const [actionReason, setActionReason] = useState('');
   const [actionSaving, setActionSaving] = useState(false);
+  const [classToUndo, setClassToUndo] = useState<AttendanceRow | null>(null);
+  const [undoReason, setUndoReason] = useState('');
+  const [undoingPayment, setUndoingPayment] = useState(false);
   const dateError = (startDate && !endDate) || (!startDate && endDate)
     ? 'শুরুর ও শেষের তারিখ দুটোই দিন।'
     : startDate && endDate && startDate > endDate ? 'শুরুর তারিখ শেষের তারিখের পরে হতে পারে না।' : '';
@@ -289,6 +292,26 @@ export default function TeacherAttendanceDetailPage() {
     }
   };
 
+  const executeUndoPayment = async () => {
+    if (!classToUndo?.payment) return;
+    setUndoingPayment(true);
+    setError('');
+    try {
+      const response = await api.post(`/teacher-attendance/payments/${classToUndo.payment.paymentId}/undo-class`, {
+        classKey: classToUndo.classKey,
+        reason: undoReason.trim() || 'Class payment undone by admin',
+      });
+      setNotice(response.data.message || 'পেমেন্ট সফলভাবে আন্ডু করা হয়েছে।');
+      setClassToUndo(null);
+      setUndoReason('');
+      await Promise.all([loadAttendance(true), loadPaymentHistory()]);
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'পেমেন্ট আন্ডু করা যায়নি।');
+    } finally {
+      setUndoingPayment(false);
+    }
+  };
+
   const [yearValue, monthValue] = month.split('-').map(Number);
   const monthDate = new Date(yearValue, monthValue - 1, 1);
   const monthTitle = monthDate.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
@@ -465,6 +488,18 @@ export default function TeacherAttendanceDetailPage() {
                           >
                             Receipt
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setClassToUndo(row);
+                              setUndoReason('');
+                              setError('');
+                            }}
+                            className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:border-rose-900 dark:text-rose-300"
+                            title="এই ক্লাসের পেমেন্ট আন্ডু করুন"
+                          >
+                            পেমেন্ট আন্ডু
+                          </button>
                         </>
                       ) : isPresent ? (
                         <button
@@ -513,6 +548,54 @@ export default function TeacherAttendanceDetailPage() {
             <label className="mt-3 block"><span className="mb-1.5 block text-xs font-semibold text-slate-500">নোট (ঐচ্ছিক)</span><input value={paymentNotes} onChange={(event) => setPaymentNotes(event.target.value)} maxLength={500} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-950" placeholder="Payment note" /></label>
             {error && <p role="alert" className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">{error}</p>}
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><button type="button" onClick={() => { setPaymentRows([]); setPaymentMode(null); }} className="min-h-11 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">Cancel</button><button type="button" disabled={savingPayment} onClick={savePayment} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-60">{savingPayment ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Banknote className="h-4 w-4" />}Make Payment</button></div>
+          </section>
+        </div>
+      )}
+      {classToUndo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true" aria-labelledby="undo-payment-title">
+          <section className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900 sm:p-6">
+            <h2 id="undo-payment-title" className="text-lg font-bold text-rose-600 dark:text-rose-400">পেমেন্ট আন্ডু নিশ্চিতকরণ</h2>
+            <div className="mt-3 rounded-xl bg-rose-50/60 p-3.5 text-sm text-slate-700 dark:bg-rose-950/30 dark:text-slate-200">
+              <p className="font-semibold">{classToUndo.courseName} · {classToUndo.batchName}</p>
+              <p className="mt-1 text-xs text-slate-500">তারিখ: {formatDate(classToUndo.attendanceDate || '')} · সময়: {classToUndo.startTime}{classToUndo.endTime ? ` – ${classToUndo.endTime}` : ''}</p>
+              {classToUndo.payment && (
+                <p className="mt-2 text-xs font-semibold text-rose-700 dark:text-rose-300">
+                  রিসিট নং: {classToUndo.payment.receiptNo} (টাকার পরিমাণ: ৳{classToUndo.payment.amount.toLocaleString('bn-BD')})
+                </p>
+              )}
+            </div>
+            <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+              আপনি কি নিশ্চিত যে এই নির্দিষ্ট ক্লাসের পেমেন্ট আন্ডু করতে চান? ফাইন্যান্স থেকেও এই ক্লাসের টাকা স্বয়ংক্রিয়ভাবে বাদ যাবে।
+            </p>
+            <label className="mt-3 block text-xs font-semibold text-slate-500">
+              কারণ (ঐচ্ছিক)
+              <input
+                value={undoReason}
+                onChange={(e) => setUndoReason(e.target.value)}
+                maxLength={300}
+                placeholder="পেমেন্ট আন্ডু করার কারণ"
+                className="mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-950"
+              />
+            </label>
+            {error && <p role="alert" className="mt-3 text-sm text-rose-600">{error}</p>}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => { setClassToUndo(null); setError(''); }}
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold dark:border-slate-700"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                disabled={undoingPayment}
+                onClick={executeUndoPayment}
+                className="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+              >
+                {undoingPayment && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                হ্যাঁ, পেমেন্ট আন্ডু করুন
+              </button>
+            </div>
           </section>
         </div>
       )}

@@ -44,6 +44,7 @@ router.get('/teacher-attendance/teachers/:teacherId/payments', authenticate, req
 router.get('/teacher-attendance/payments/:paymentId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherPaymentReceipt);
 router.patch('/teacher-attendance/payments/:paymentId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.updateTeacherPayment);
 router.post('/teacher-attendance/payments/:paymentId/void', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.voidTeacherPayment);
+router.post('/teacher-attendance/payments/:paymentId/undo-class', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.undoClassTeacherPayment);
 
 // --- AUTH & PROFILE ROUTES ---
 router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl.register);

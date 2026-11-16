@@ -547,6 +547,102 @@ export const voidTeacherPayment = async (req: AuthenticatedRequest, res: Respons
   }
 };
 
+export const undoClassTeacherPayment = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { paymentId } = req.params;
+    const { classKey, reason = 'Class payment undone by admin' } = req.body || {};
+
+    if (!mongoose.Types.ObjectId.isValid(paymentId) || !classKey) {
+      return res.status(400).json({ success: false, message: 'Payment ID ও Class Key সঠিকভাবে দিন।' });
+    }
+
+    const trimmedReason = typeof reason === 'string' && reason.trim().length >= 3
+      ? reason.trim().slice(0, 300)
+      : 'Class payment undone by admin';
+
+    const payment = await TeacherPayment.findOne({ _id: paymentId, voidedAt: { $exists: false } });
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'সক্রিয় Payment পাওয়া যায়নি বা এটি ইতিমধ্যে বাতিল করা হয়েছে।' });
+    }
+
+    const targetIndex = payment.classes.findIndex((item) => item.classKey === classKey);
+    if (targetIndex === -1) {
+      return res.status(404).json({ success: false, message: 'এই রিসিটে নির্দিষ্ট ক্লাসটি পাওয়া যায়নি।' });
+    }
+
+    const targetClass = payment.classes[targetIndex];
+    const removedAmount = targetClass.amount || 0;
+    const previousAmount = payment.amountPaid;
+
+    if (payment.classes.length <= 1) {
+      payment.voidedAt = new Date();
+      payment.voidedBy = req.user!._id;
+      payment.voidReason = trimmedReason;
+      payment.voidedClassKeys = payment.classKeys;
+      payment.classKeys = [];
+      await payment.save();
+
+      return res.json({
+        success: true,
+        message: `ক্লাসের পেমেন্ট (৳${removedAmount}) আন্ডু করা হয়েছে এবং রিসিটটি Void হয়েছে। ফাইন্যান্স থেকেও এই টাকা বাদ পড়েছে।`,
+        data: { voided: true, paymentId: payment._id },
+      });
+    }
+
+    payment.classes.splice(targetIndex, 1);
+    payment.classKeys = payment.classes.map((item) => item.classKey);
+    payment.amountPaid = Math.max(1, previousAmount - removedAmount);
+
+    const courseMap = new Map<string, { courseId: any; courseName: string; classCount: number; rate: number; subtotal: number }>();
+    payment.classes.forEach((item) => {
+      const cIdStr = String(item.courseId);
+      const existing = courseMap.get(cIdStr) || {
+        courseId: item.courseId,
+        courseName: '',
+        classCount: 0,
+        rate: 0,
+        subtotal: 0,
+      };
+      existing.classCount += 1;
+      existing.subtotal += item.amount;
+      const prevCb = payment.courseBreakdown.find((cb) => String(cb.courseId) === cIdStr);
+      if (prevCb) {
+        existing.courseName = prevCb.courseName;
+        existing.rate = prevCb.rate;
+      }
+      courseMap.set(cIdStr, existing);
+    });
+
+    payment.courseBreakdown = Array.from(courseMap.values()).map((entry) => ({
+      courseId: entry.courseId,
+      courseName: entry.courseName || 'Course',
+      classCount: entry.classCount,
+      rate: entry.rate || Math.round(entry.subtotal / entry.classCount),
+      subtotal: entry.subtotal,
+    }));
+
+    if (!payment.amountRevisions) payment.amountRevisions = [];
+    payment.amountRevisions.push({
+      previousAmount,
+      newAmount: payment.amountPaid,
+      reason: `${targetClass.classDate} তারিখের ক্লাসের পেমেন্ট (৳${removedAmount}) আন্ডু করা হয়েছে। কারণ: ${trimmedReason}`.slice(0, 300),
+      changedBy: req.user!._id,
+      changedAt: new Date(),
+    });
+
+    await payment.save();
+
+    return res.json({
+      success: true,
+      message: `ক্লাসের পেমেন্ট সফলভাবে আন্ডু করা হয়েছে। ফাইন্যান্স থেকে ৳${removedAmount} স্বয়ংক্রিয়ভাবে বাদ দেওয়া হয়েছে।`,
+      data: { voided: false, updatedAmountPaid: payment.amountPaid, paymentId: payment._id },
+    });
+  } catch (error) {
+    console.error('undoClassTeacherPayment error:', error);
+    return res.status(500).json({ success: false, message: 'ক্লাসের পেমেন্ট আন্ডু করা সম্ভব হয়নি।' });
+  }
+};
+
 export const markTeacherPresent = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { teacherId, batchId, date, source = 'manual' } = req.body || {};
