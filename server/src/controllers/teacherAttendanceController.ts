@@ -229,6 +229,8 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
     const rangeEnd = selectedDate || (hasEnd ? String(endDate) : monthEnd);
     const rangeLength = (Date.parse(`${rangeEnd}T12:00:00.000Z`) - Date.parse(`${rangeStart}T12:00:00.000Z`)) / 86_400_000;
     if (rangeLength > 366) return res.status(400).json({ success: false, message: 'একবারে সর্বোচ্চ এক বছরের ক্লাস দেখা যাবে।' });
+    const today = formatDhakaDate();
+    const visibleRangeEnd = rangeEnd > today ? today : rangeEnd;
 
     let batches = await assignedBatchesForTeacher(teacherObjectId);
     if (courseId && mongoose.Types.ObjectId.isValid(String(courseId))) {
@@ -241,7 +243,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
     const attendanceFilter: any = {
       teacherId: teacherObjectId,
       batchId: { $in: batchIds },
-      attendanceDate: { $gte: rangeStart, $lte: rangeEnd },
+      attendanceDate: { $gte: rangeStart, $lte: visibleRangeEnd },
     };
 
     const attendanceRecords = await TeacherAttendance.find(attendanceFilter)
@@ -255,7 +257,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
     ]));
 
     const days: string[] = [];
-    for (let cursor = new Date(`${rangeStart}T12:00:00.000Z`); cursor <= new Date(`${rangeEnd}T12:00:00.000Z`); cursor.setUTCDate(cursor.getUTCDate() + 1)) {
+    for (let cursor = new Date(`${rangeStart}T12:00:00.000Z`); cursor <= new Date(`${visibleRangeEnd}T12:00:00.000Z`); cursor.setUTCDate(cursor.getUTCDate() + 1)) {
       days.push(cursor.toISOString().slice(0, 10));
     }
     const rows = days.flatMap((classDate) => batches.flatMap((batch: any) => {
@@ -294,7 +296,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
     const scheduledDates: string[] = [];
     for (let day = 1; day <= daysInMonth; day += 1) {
       const calendarDate = `${month}-${String(day).padStart(2, '0')}`;
-      if (batches.some((batch: any) => isScheduledForDate(batch, calendarDate))) scheduledDates.push(calendarDate);
+      if (calendarDate <= today && batches.some((batch: any) => isScheduledForDate(batch, calendarDate))) scheduledDates.push(calendarDate);
     }
 
     const uniqueCourses = Array.from(new Map(batches.map((batch: any) => [batch.courseId?._id?.toString(), {
@@ -306,7 +308,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
       teacher,
       date: selectedDate || null,
       mode: selectedDate ? 'schedule' : hasStart ? 'range' : 'month',
-      range: { startDate: rangeStart, endDate: rangeEnd },
+      range: { startDate: rangeStart, endDate: visibleRangeEnd },
       scheduledDates,
       courses: uniqueCourses,
       batches: batches.map((batch: any) => ({ _id: batch._id, name: batch.name, courseId: batch.courseId?._id, courseName: batch.courseId?.title || '' })),
