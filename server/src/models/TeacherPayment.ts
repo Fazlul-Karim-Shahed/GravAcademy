@@ -15,7 +15,7 @@ export interface ITeacherPayment extends Document {
   receiptNo: string;
   teacherId: mongoose.Types.ObjectId;
   classes: ITeacherPaymentClass[];
-  classKeys: string[];
+  classKeys?: string[];
   courseBreakdown: Array<{ courseId: mongoose.Types.ObjectId; courseName: string; classCount: number; rate: number; subtotal: number }>;
   amountPaid: number;
   amountRevisions?: Array<{ previousAmount: number; newAmount: number; reason: string; changedBy: mongoose.Types.ObjectId; changedAt: Date }>;
@@ -43,7 +43,7 @@ const TeacherPaymentSchema = new Schema<ITeacherPayment>({
     topic: { type: String, default: '' },
     amount: { type: Number, required: true, min: 0 },
   }],
-  classKeys: { type: [String], required: true },
+  classKeys: { type: [String], default: undefined },
   courseBreakdown: [{
     courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
     courseName: { type: String, required: true },
@@ -68,8 +68,8 @@ const TeacherPaymentSchema = new Schema<ITeacherPayment>({
   paidAt: { type: Date, default: Date.now, required: true },
 }, { timestamps: true });
 
-// Each scheduled class occurrence can be included in only one payment receipt.
-TeacherPaymentSchema.index({ classKeys: 1 }, { unique: true, name: 'teacher_payment_class_once' });
+// Each scheduled class occurrence can be included in only one active payment receipt.
+TeacherPaymentSchema.index({ classKeys: 1 }, { unique: true, sparse: true, name: 'teacher_payment_class_once' });
 TeacherPaymentSchema.index({ teacherId: 1, paidAt: -1 });
 
 export const TeacherPayment = mongoose.model<ITeacherPayment>('TeacherPayment', TeacherPaymentSchema);

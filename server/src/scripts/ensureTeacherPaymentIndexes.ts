@@ -10,7 +10,7 @@ const ensureIndexes = async () => {
     const collection = mongoose.connection.db!.collection('teacherpayments');
     await collection.createIndex(
       { classKeys: 1 },
-      { unique: true, name: 'teacher_payment_class_once' },
+      { unique: true, sparse: true, name: 'teacher_payment_class_once' },
     );
     await collection.createIndex(
       { teacherId: 1, paidAt: -1 },

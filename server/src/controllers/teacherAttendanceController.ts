@@ -537,7 +537,8 @@ export const voidTeacherPayment = async (req: AuthenticatedRequest, res: Respons
     const payment = await TeacherPayment.findOne({ _id: req.params.paymentId, voidedAt: { $exists: false } }).select('classKeys').lean();
     if (!payment) return res.status(404).json({ success: false, message: 'Active payment পাওয়া যায়নি।' });
     const voided = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false } }, {
-      $set: { voidedAt: new Date(), voidedBy: req.user!._id, voidReason: reason, voidedClassKeys: payment.classKeys, classKeys: [] },
+      $set: { voidedAt: new Date(), voidedBy: req.user!._id, voidReason: reason, voidedClassKeys: payment.classKeys },
+      $unset: { classKeys: 1 },
     }, { new: true }).lean();
     if (!voided) return res.status(409).json({ success: false, message: 'Payment ইতিমধ্যে বদলে গেছে। Refresh করুন।' });
     return res.json({ success: true, message: 'Teacher payment বাতিল হয়েছে।', data: voided });
@@ -575,12 +576,19 @@ export const undoClassTeacherPayment = async (req: AuthenticatedRequest, res: Re
     const previousAmount = payment.amountPaid;
 
     if (payment.classes.length <= 1) {
-      payment.voidedAt = new Date();
-      payment.voidedBy = req.user!._id;
-      payment.voidReason = trimmedReason;
-      payment.voidedClassKeys = payment.classKeys;
-      payment.classKeys = [];
-      await payment.save();
+      await TeacherPayment.findOneAndUpdate(
+        { _id: payment._id, voidedAt: { $exists: false } },
+        {
+          $set: {
+            voidedAt: new Date(),
+            voidedBy: req.user!._id,
+            voidReason: trimmedReason,
+            voidedClassKeys: payment.classKeys,
+          },
+          $unset: { classKeys: 1 },
+        },
+        { new: true }
+      ).lean();
 
       return res.json({
         success: true,
