@@ -19,6 +19,7 @@ export interface ITeacherPayment extends Document {
   courseBreakdown: Array<{ courseId: mongoose.Types.ObjectId; courseName: string; classCount: number; rate: number; subtotal: number }>;
   amountPaid: number;
   amountRevisions?: Array<{ previousAmount: number; newAmount: number; reason: string; changedBy: mongoose.Types.ObjectId; changedAt: Date }>;
+  undoneClasses?: Array<ITeacherPaymentClass & { reason: string; undoneBy: mongoose.Types.ObjectId; undoneAt: Date }>;
   voidedAt?: Date;
   voidedBy?: mongoose.Types.ObjectId;
   voidReason?: string;
@@ -58,6 +59,19 @@ const TeacherPaymentSchema = new Schema<ITeacherPayment>({
     reason: { type: String, required: true, maxlength: 300 },
     changedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     changedAt: { type: Date, required: true },
+  }],
+  undoneClasses: [{
+    classKey: { type: String, required: true },
+    batchId: { type: Schema.Types.ObjectId, ref: 'Batch', required: true },
+    courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+    classDate: { type: String, required: true },
+    startTime: { type: String, required: true },
+    endTime: { type: String, default: '' },
+    topic: { type: String, default: '' },
+    amount: { type: Number, required: true, min: 0 },
+    reason: { type: String, required: true, maxlength: 300 },
+    undoneBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    undoneAt: { type: Date, required: true },
   }],
   voidedAt: { type: Date },
   voidedBy: { type: Schema.Types.ObjectId, ref: 'User' },

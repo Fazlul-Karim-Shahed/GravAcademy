@@ -55,6 +55,17 @@ export default function TeacherPaymentReceiptModal({ data, onClose }: Props) {
               <tbody>{(data.classes || []).map((item: any, index: number) => <tr key={`${item.classKey}-${index}`} className="border-b border-slate-100"><td className="py-3 pr-3"><p className="font-semibold">{item.courseId?.title || 'Course'}</p><p className="text-xs text-slate-500">{item.batchId?.name || 'Batch'} · {item.startTime}{item.endTime ? `–${item.endTime}` : ''}</p></td><td className="px-3 py-3">{dateLabel(item.classDate)}</td><td className="py-3 pl-3 text-right font-bold">৳{Number(isBulk ? courseRates.get(String(item.courseId?._id || item.courseId)) ?? item.amount : item.amount || 0).toLocaleString('bn-BD')}</td></tr>)}</tbody>
             </table>
           </div>
+          {(data.undoneClasses || []).length > 0 && (
+            <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-950">
+              <p className="font-bold">আন্ডু করা ক্লাস</p>
+              {(data.undoneClasses || []).map((item: any, index: number) => (
+                <div key={`${item.classKey}-${index}`} className="mt-2 border-t border-amber-200 pt-2 first:border-0 first:pt-0">
+                  <p className="font-semibold">{item.courseId?.title || 'Course'} · {item.batchId?.name || 'Batch'} · {dateLabel(item.classDate)} · ৳{Number(item.amount || 0).toLocaleString('bn-BD')}</p>
+                  <p className="mt-0.5 text-xs">কারণ: {item.reason}</p>
+                </div>
+              ))}
+            </div>
+          )}
           {data.notes && <p className="border-t border-slate-200 pt-4 text-sm"><span className="font-semibold">Note:</span> {data.notes}</p>}
           {isBulk && <div className="mt-4 flex justify-end text-sm text-slate-500"><div className="flex min-w-52 justify-between gap-8"><span>Reference total</span><span>৳{referenceTotal.toLocaleString('bn-BD')}</span></div></div>}
           <div className="mt-5 flex justify-end border-t-2 border-slate-800 pt-4"><div className="flex min-w-52 justify-between gap-8 text-lg font-black"><span>Total paid</span><span>৳{Number(data.amountPaid || 0).toLocaleString('bn-BD')}</span></div></div>

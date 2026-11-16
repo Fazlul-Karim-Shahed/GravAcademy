@@ -466,6 +466,8 @@ export const getTeacherPaymentReceipt = async (req: AuthenticatedRequest, res: R
       .populate('classes.courseId', 'title')
       .populate('courseBreakdown.courseId', 'title')
       .populate('voidedBy', 'name gravId')
+      .populate('undoneClasses.batchId', 'name')
+      .populate('undoneClasses.courseId', 'title')
       .lean();
     if (!payment) return res.status(404).json({ success: false, message: 'Teacher receipt পাওয়া যায়নি।' });
     return res.json({ success: true, data: payment });
@@ -517,7 +519,7 @@ export const updateTeacherPayment = async (req: AuthenticatedRequest, res: Respo
       ...course,
       subtotal: classes.filter((item) => String(item.courseId) === String(course.courseId)).reduce((sum, item) => sum + item.amount, 0),
     }));
-    const updated = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false }, amountPaid: expectedAmountPaid }, {
+    const updated = await TeacherPayment.findOneAndUpdate({ _id: payment._id, voidedAt: { $exists: false }, amountPaid: expectedAmountPaid, classKeys: payment.classKeys }, {
       $set: { amountPaid, classes, courseBreakdown },
       $push: { amountRevisions: { previousAmount: expectedAmountPaid, newAmount: amountPaid, reason: trimmedReason, changedBy: req.user!._id, changedAt: new Date() } },
     }, { new: true, runValidators: true }).lean();
@@ -643,7 +645,22 @@ export const undoClassTeacherPayment = async (req: AuthenticatedRequest, res: Re
       { _id: payment._id, voidedAt: { $exists: false }, classKeys: currentClassKeys, amountPaid: previousAmount },
       {
         $set: { classes: payment.classes, classKeys: payment.classKeys, amountPaid: payment.amountPaid, courseBreakdown: payment.courseBreakdown },
-        $push: { amountRevisions: revision },
+        $push: {
+          amountRevisions: revision,
+          undoneClasses: {
+            classKey: targetClass.classKey,
+            batchId: targetClass.batchId,
+            courseId: targetClass.courseId,
+            classDate: targetClass.classDate,
+            startTime: targetClass.startTime,
+            endTime: targetClass.endTime || '',
+            topic: targetClass.topic || '',
+            amount: removedAmount,
+            reason: trimmedReason,
+            undoneBy: req.user!._id,
+            undoneAt: new Date(),
+          },
+        },
       },
       { new: true, runValidators: true }
     ).lean();
