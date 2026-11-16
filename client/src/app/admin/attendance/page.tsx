@@ -220,7 +220,7 @@ export default function AdminTeacherAttendancePage() {
                     </div>
                   </div>
                   <Link href={`/admin/attendance/${teacher._id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-blue-950/30">
-                    Manual Attendance <ArrowRight className="h-4 w-4" />
+                    Attendance & Payment <ArrowRight className="h-4 w-4" />
                   </Link>
                 </article>
               ))}

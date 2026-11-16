@@ -4,7 +4,9 @@ import { AuthenticatedRequest } from '../middleware/auth';
 import { Batch } from '../models/Batch';
 import { Course } from '../models/Course';
 import { TeacherAttendance } from '../models/TeacherAttendance';
+import { TeacherPayment } from '../models/TeacherPayment';
 import { User } from '../models/User';
+import { generateReceiptNumber } from './financeController';
 
 const TIME_ZONE = 'Asia/Dhaka';
 const DAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -83,7 +85,7 @@ const assignedBatchesForTeacher = async (teacherId: mongoose.Types.ObjectId) => 
       }] : []),
     ],
   })
-    .populate('courseId', 'title subject gradeLevel')
+    .populate('courseId', 'title subject gradeLevel instructors')
     .sort({ name: 1 })
     .lean();
 };
@@ -107,6 +109,10 @@ const validateDate = (value: unknown): value is string => {
   const parsed = new Date(`${value}T12:00:00.000Z`);
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 };
+
+const getClassKey = (teacherId: any, batchId: any, date: string, slot: any) => JSON.stringify([
+  teacherId.toString(), batchId.toString(), date, String(slot.startTime || ''), String(slot.endTime || ''), String(slot.topic || ''),
+]);
 
 export const getQuickAttendance = async (_req: AuthenticatedRequest, res: Response) => {
   try {
@@ -200,7 +206,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
       .lean();
     if (!teacher) return res.status(404).json({ success: false, message: 'Teacher পাওয়া যায়নি।' });
 
-    const { date, courseId, batchId } = req.query;
+    const { date, courseId, batchId, startDate, endDate } = req.query;
     const selectedDate = typeof date === 'string' ? date : '';
     if (selectedDate && !validateDate(selectedDate)) {
       return res.status(400).json({ success: false, message: 'তারিখটি সঠিক format-এ দিন।' });
@@ -209,6 +215,20 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
     if (!/^\d{4}-\d{2}$/.test(month)) {
       return res.status(400).json({ success: false, message: 'মাসটি সঠিক format-এ দিন।' });
     }
+    const hasStart = typeof startDate === 'string' && startDate.length > 0;
+    const hasEnd = typeof endDate === 'string' && endDate.length > 0;
+    if (hasStart !== hasEnd || (hasStart && (!validateDate(startDate) || !validateDate(endDate) || String(startDate) > String(endDate)))) {
+      return res.status(400).json({ success: false, message: 'Start ও end date সঠিকভাবে নির্বাচন করুন।' });
+    }
+
+    const year = Number(month.slice(0, 4));
+    const monthIndex = Number(month.slice(5, 7)) - 1;
+    const monthStart = `${month}-01`;
+    const monthEnd = `${month}-${String(new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()).padStart(2, '0')}`;
+    const rangeStart = selectedDate || (hasStart ? String(startDate) : monthStart);
+    const rangeEnd = selectedDate || (hasEnd ? String(endDate) : monthEnd);
+    const rangeLength = (Date.parse(`${rangeEnd}T12:00:00.000Z`) - Date.parse(`${rangeStart}T12:00:00.000Z`)) / 86_400_000;
+    if (rangeLength > 366) return res.status(400).json({ success: false, message: 'একবারে সর্বোচ্চ এক বছরের ক্লাস দেখা যাবে।' });
 
     let batches = await assignedBatchesForTeacher(teacherObjectId);
     if (courseId && mongoose.Types.ObjectId.isValid(String(courseId))) {
@@ -218,8 +238,11 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
       batches = batches.filter((batch: any) => batch._id.toString() === String(batchId));
     }
     const batchIds = batches.map((batch: any) => batch._id);
-    const attendanceFilter: any = { teacherId: teacherObjectId, batchId: { $in: batchIds } };
-    if (selectedDate) attendanceFilter.attendanceDate = selectedDate;
+    const attendanceFilter: any = {
+      teacherId: teacherObjectId,
+      batchId: { $in: batchIds },
+      attendanceDate: { $gte: rangeStart, $lte: rangeEnd },
+    };
 
     const attendanceRecords = await TeacherAttendance.find(attendanceFilter)
       .populate('batchId', 'name')
@@ -227,41 +250,46 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
       .populate('markedBy', 'name gravId')
       .sort({ attendanceDate: -1, markedAt: -1 })
       .lean();
-    const attendanceByBatch = new Map(attendanceRecords.map((record: any) => [record.batchId?._id?.toString() || record.batchId?.toString(), record]));
+    const attendanceByBatchDate = new Map(attendanceRecords.map((record: any) => [
+      `${record.batchId?._id?.toString() || record.batchId?.toString()}|${record.attendanceDate}`, record,
+    ]));
 
-    let rows: any[];
-    if (selectedDate) {
-      rows = batches.flatMap((batch: any) => {
-        if (!isScheduledForDate(batch, selectedDate)) return [];
-        const slots = (batch.weeklySchedule || []).filter((slot: any) => String(slot.day).toLowerCase() === weekdayForDate(selectedDate));
-        return slots.map((slot: any) => ({
-          batchId: batch._id,
-          batchName: batch.name,
-          courseId: batch.courseId?._id,
-          courseName: batch.courseId?.title || '',
-          startTime: slot.startTime,
-          endTime: slot.endTime || '',
-          topic: slot.topic || '',
-          attendance: attendanceByBatch.get(batch._id.toString()) || null,
-        }));
-      }).sort((a, b) => a.startTime.localeCompare(b.startTime));
-    } else {
-      rows = attendanceRecords.map((record: any) => ({
-        _id: record._id,
-        attendanceDate: record.attendanceDate,
-        markedAt: record.markedAt,
-        source: record.source,
-        status: record.status,
-        batchId: record.batchId?._id,
-        batchName: record.batchId?.name || '',
-        courseId: record.courseId?._id,
-        courseName: record.courseId?.title || '',
-        markedBy: record.markedBy,
-      }));
+    const days: string[] = [];
+    for (let cursor = new Date(`${rangeStart}T12:00:00.000Z`); cursor <= new Date(`${rangeEnd}T12:00:00.000Z`); cursor.setUTCDate(cursor.getUTCDate() + 1)) {
+      days.push(cursor.toISOString().slice(0, 10));
     }
+    const rows = days.flatMap((classDate) => batches.flatMap((batch: any) => {
+      if (!isScheduledForDate(batch, classDate)) return [];
+      const slots = (batch.weeklySchedule || []).filter((slot: any) => String(slot.day).toLowerCase() === weekdayForDate(classDate));
+      return slots.map((slot: any) => ({
+        classKey: getClassKey(teacherObjectId, batch._id, classDate, slot),
+        attendanceDate: classDate,
+        batchId: batch._id,
+        batchName: batch.name,
+        courseId: batch.courseId?._id,
+        courseName: batch.courseId?.title || '',
+        startTime: slot.startTime,
+        endTime: slot.endTime || '',
+        topic: slot.topic || '',
+        attendance: attendanceByBatchDate.get(`${batch._id.toString()}|${classDate}`) || null,
+      }));
+    })).sort((a: any, b: any) => b.attendanceDate.localeCompare(a.attendanceDate) || String(b.startTime).localeCompare(String(a.startTime)));
 
-    const year = Number(month.slice(0, 4));
-    const monthIndex = Number(month.slice(5, 7)) - 1;
+    const classKeys = rows.map((row: any) => row.classKey);
+    const paymentRecords = classKeys.length
+      ? await TeacherPayment.find({ teacherId: teacherObjectId, classKeys: { $in: classKeys } }).lean()
+      : [];
+    const paymentsByClassKey = new Map<string, any>();
+    paymentRecords.forEach((payment: any) => payment.classes.forEach((item: any) => {
+      if (classKeys.includes(item.classKey)) paymentsByClassKey.set(item.classKey, {
+        paymentId: payment._id,
+        receiptNo: payment.receiptNo,
+        amount: item.amount,
+        paidAt: payment.paidAt,
+      });
+    }));
+    rows.forEach((row: any) => { row.payment = paymentsByClassKey.get(row.classKey) || null; });
+
     const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
     const scheduledDates: string[] = [];
     for (let day = 1; day <= daysInMonth; day += 1) {
@@ -277,7 +305,8 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
       success: true,
       teacher,
       date: selectedDate || null,
-      mode: selectedDate ? 'schedule' : 'history',
+      mode: selectedDate ? 'schedule' : hasStart ? 'range' : 'month',
+      range: { startDate: rangeStart, endDate: rangeEnd },
       scheduledDates,
       courses: uniqueCourses,
       batches: batches.map((batch: any) => ({ _id: batch._id, name: batch.name, courseId: batch.courseId?._id, courseName: batch.courseId?.title || '' })),
@@ -286,6 +315,150 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
   } catch (error: any) {
     console.error('getTeacherAttendance error:', error);
     return res.status(500).json({ success: false, message: 'Attendance history load করা যায়নি।' });
+  }
+};
+
+export const createTeacherPayment = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { teacherId, classes, rates = [], amountPaid, notes = '', bulk = false } = req.body || {};
+    if (!mongoose.Types.ObjectId.isValid(teacherId) || !Array.isArray(classes) || classes.length < 1 || classes.length > 500) {
+      return res.status(400).json({ success: false, message: 'Teacher ও class list সঠিকভাবে দিন।' });
+    }
+    const teacherObjectId = new mongoose.Types.ObjectId(teacherId);
+    const teacher = await User.findOne({ _id: teacherObjectId, role: 'teacher', status: { $nin: ['suspended', 'deactivated'] } })
+      .select('_id name gravId email phone avatarUrl')
+      .lean();
+    if (!teacher) return res.status(404).json({ success: false, message: 'Teacher পাওয়া যায়নি।' });
+
+    const assignedBatches = await assignedBatchesForTeacher(teacherObjectId);
+    const batchesById = new Map(assignedBatches.map((batch: any) => [batch._id.toString(), batch]));
+    const validatedClasses: any[] = [];
+    for (const item of classes) {
+      if (!mongoose.Types.ObjectId.isValid(item?.batchId) || !validateDate(item?.date)) {
+        return res.status(400).json({ success: false, message: 'Class বা date সঠিক নয়।' });
+      }
+      if (String(item.date) > formatDhakaDate()) return res.status(400).json({ success: false, message: 'ভবিষ্যৎ class-এর payment করা যাবে না।' });
+      const batch = batchesById.get(String(item.batchId));
+      if (!batch || !teacherIsAssigned(batch, teacherObjectId) || !isScheduledForDate(batch, String(item.date))) {
+        return res.status(400).json({ success: false, message: 'নির্বাচিত teacher-এর schedule-এ কোনো class নেই।' });
+      }
+      const slot = (batch.weeklySchedule || []).find((candidate: any) =>
+        String(candidate.day).toLowerCase() === weekdayForDate(String(item.date))
+        && String(candidate.startTime || '') === String(item.startTime || '')
+        && String(candidate.endTime || '') === String(item.endTime || '')
+        && String(candidate.topic || '') === String(item.topic || '')
+      );
+      if (!slot) return res.status(400).json({ success: false, message: 'Class schedule পরিবর্তিত হয়েছে। তালিকাটি refresh করে আবার চেষ্টা করুন।' });
+      const classKey = getClassKey(teacherObjectId, batch._id, String(item.date), slot);
+      if (item.classKey !== classKey) return res.status(400).json({ success: false, message: 'Class তথ্য মেলেনি। তালিকাটি refresh করুন।' });
+      validatedClasses.push({
+        classKey,
+        batchId: batch._id,
+        courseId: (batch.courseId as any)._id || batch.courseId,
+        courseName: (batch.courseId as any).title || 'Course',
+        classDate: String(item.date),
+        startTime: String(slot.startTime),
+        endTime: String(slot.endTime || ''),
+        topic: String(slot.topic || ''),
+      });
+    }
+    const distinctKeys = new Set(validatedClasses.map((item) => item.classKey));
+    if (distinctKeys.size !== validatedClasses.length) return res.status(400).json({ success: false, message: 'একই class একাধিকবার নির্বাচন করা হয়েছে।' });
+
+    const existingPayment = await TeacherPayment.findOne({ classKeys: { $in: [...distinctKeys] } }).select('receiptNo').lean();
+    if (existingPayment) return res.status(409).json({ success: false, message: `নির্বাচিত class-এর একটি আগেই paid হয়েছে (${existingPayment.receiptNo})। তালিকাটি refresh করুন।` });
+
+    const rateMap = new Map<string, number>();
+    if (!Array.isArray(rates)) return res.status(400).json({ success: false, message: 'Course rate সঠিক নয়।' });
+    for (const entry of rates) {
+      if (!mongoose.Types.ObjectId.isValid(entry?.courseId) || !Number.isSafeInteger(entry?.rate) || entry.rate < 0) {
+        return res.status(400).json({ success: false, message: 'প্রতি course-এর rate শূন্য বা তার বেশি পূর্ণসংখ্যা হতে হবে।' });
+      }
+      rateMap.set(String(entry.courseId), entry.rate);
+    }
+    const baseAmounts = validatedClasses.map((item) => {
+      const courseIdValue = String(item.courseId);
+      return rateMap.has(courseIdValue) ? rateMap.get(courseIdValue)! : null;
+    });
+    const isBulk = bulk === true;
+    if (!isBulk && validatedClasses.length !== 1) return res.status(400).json({ success: false, message: 'Individual payment-এর জন্য একটি class নির্বাচন করুন।' });
+    let allocatedAmounts: number[];
+    if (!isBulk) {
+      if (!Number.isSafeInteger(amountPaid) || amountPaid < 1) return res.status(400).json({ success: false, message: 'Payment amount ১ টাকা বা তার বেশি পূর্ণসংখ্যা দিন।' });
+      allocatedAmounts = [amountPaid];
+    } else {
+      if (baseAmounts.some((amount) => amount === null)) return res.status(400).json({ success: false, message: 'সব course-এর প্রতি class payment rate দিন।' });
+      const calculatedTotal = (baseAmounts as number[]).reduce((sum, amount) => sum + amount, 0);
+      const finalAmount = amountPaid === undefined ? calculatedTotal : amountPaid;
+      if (!Number.isSafeInteger(finalAmount) || finalAmount < 1) return res.status(400).json({ success: false, message: 'Final payment ১ টাকা বা তার বেশি পূর্ণসংখ্যা দিন।' });
+      const weights = baseAmounts as number[];
+      const weightTotal = weights.reduce((sum, value) => sum + value, 0);
+      const normalizedWeights = weightTotal > 0 ? weights : weights.map(() => 1);
+      const normalizedTotal = weightTotal > 0 ? weightTotal : weights.length;
+      allocatedAmounts = normalizedWeights.map((weight) => Math.floor((finalAmount * weight) / normalizedTotal));
+      let remainder = finalAmount - allocatedAmounts.reduce((sum, value) => sum + value, 0);
+      for (let index = 0; remainder > 0; index = (index + 1) % allocatedAmounts.length) {
+        allocatedAmounts[index] += 1;
+        remainder -= 1;
+      }
+    }
+    const groups = new Map<string, { courseId: any; courseName: string; classCount: number; rate: number; subtotal: number }>();
+    validatedClasses.forEach((item, index) => {
+      const courseIdValue = String(item.courseId);
+      const group = groups.get(courseIdValue) || {
+        courseId: item.courseId,
+        courseName: item.courseName,
+        classCount: 0,
+        rate: rateMap.get(courseIdValue) ?? allocatedAmounts[index],
+        subtotal: 0,
+      };
+      group.classCount += 1;
+      group.subtotal += allocatedAmounts[index];
+      groups.set(courseIdValue, group);
+      item.amount = allocatedAmounts[index];
+    });
+    const totalAmount = allocatedAmounts.reduce((sum, value) => sum + value, 0);
+    const payment = await TeacherPayment.create({
+      receiptNo: await generateReceiptNumber(),
+      teacherId: teacherObjectId,
+      classes: validatedClasses,
+      classKeys: [...distinctKeys],
+      courseBreakdown: [...groups.values()],
+      amountPaid: totalAmount,
+      notes: String(notes).slice(0, 500),
+      paidBy: req.user!._id,
+      paidAt: new Date(),
+    });
+    const populated = await TeacherPayment.findById(payment._id)
+      .populate('teacherId', 'name gravId email phone avatarUrl')
+      .populate('paidBy', 'name gravId')
+      .populate('classes.batchId', 'name')
+      .populate('classes.courseId', 'title')
+      .populate('courseBreakdown.courseId', 'title')
+      .lean();
+    return res.status(201).json({ success: true, message: 'Teacher payment সংরক্ষিত হয়েছে।', data: populated });
+  } catch (error: any) {
+    if (error?.code === 11000) return res.status(409).json({ success: false, message: 'নির্বাচিত class-এর payment ইতিমধ্যে তৈরি হয়েছে। তালিকাটি refresh করুন।' });
+    console.error('createTeacherPayment error:', error);
+    return res.status(500).json({ success: false, message: 'Teacher payment সংরক্ষণ করা যায়নি।' });
+  }
+};
+
+export const getTeacherPaymentReceipt = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.paymentId)) return res.status(400).json({ success: false, message: 'Receipt ID সঠিক নয়।' });
+    const payment = await TeacherPayment.findById(req.params.paymentId)
+      .populate('teacherId', 'name gravId email phone avatarUrl')
+      .populate('paidBy', 'name gravId')
+      .populate('classes.batchId', 'name')
+      .populate('classes.courseId', 'title')
+      .populate('courseBreakdown.courseId', 'title')
+      .lean();
+    if (!payment) return res.status(404).json({ success: false, message: 'Teacher receipt পাওয়া যায়নি।' });
+    return res.json({ success: true, data: payment });
+  } catch (error: any) {
+    console.error('getTeacherPaymentReceipt error:', error);
+    return res.status(500).json({ success: false, message: 'Teacher receipt load করা যায়নি।' });
   }
 };
 

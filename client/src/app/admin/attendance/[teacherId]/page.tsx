@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import TeacherPaymentReceiptModal from '@/components/attendance/TeacherPaymentReceiptModal';
 import {
   ArrowLeft,
   ArrowLeft as PreviousMonth,
@@ -16,6 +17,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock3,
+  Banknote,
   Filter,
   LoaderCircle,
   RefreshCw,
@@ -24,6 +26,7 @@ import {
 
 interface BatchOption { _id: string; name: string; courseId: string; courseName: string }
 interface AttendanceRow {
+  classKey: string;
   _id?: string;
   attendanceDate?: string;
   markedAt?: string;
@@ -37,12 +40,13 @@ interface AttendanceRow {
   endTime?: string;
   topic?: string;
   attendance?: { status: string; markedAt: string; source: string } | null;
+  payment?: { paymentId: string; receiptNo: string; amount: number; paidAt: string } | null;
   markedBy?: { name?: string; gravId?: string };
 }
 interface TeacherAttendanceView {
   success: boolean;
   teacher: { _id: string; name: string; gravId?: string; email?: string; avatarUrl?: string };
-  mode: 'history' | 'schedule';
+  mode: 'month' | 'range' | 'schedule';
   scheduledDates: string[];
   courses: Array<{ _id: string; title: string }>;
   batches: BatchOption[];
@@ -64,11 +68,20 @@ export default function TeacherAttendanceDetailPage() {
   const [selectedDate, setSelectedDate] = useState('');
   const [courseId, setCourseId] = useState('all');
   const [batchId, setBatchId] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [view, setView] = useState<TeacherAttendanceView | null>(null);
   const [loading, setLoading] = useState(true);
   const [markingBatch, setMarkingBatch] = useState<string | null>(null);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+  const [paymentRows, setPaymentRows] = useState<AttendanceRow[]>([]);
+  const [paymentMode, setPaymentMode] = useState<'single' | 'bulk' | null>(null);
+  const [paymentRates, setPaymentRates] = useState<Record<string, string>>({});
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentNotes, setPaymentNotes] = useState('');
+  const [savingPayment, setSavingPayment] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
 
   const loadAttendance = useCallback(async (silent = false) => {
     if (!teacherId) return;
@@ -79,6 +92,7 @@ export default function TeacherAttendanceDetailPage() {
         params: {
           month,
           ...(selectedDate ? { date: selectedDate } : {}),
+          ...(!selectedDate && (startDate || endDate) ? { startDate, endDate } : {}),
           ...(courseId !== 'all' ? { courseId } : {}),
           ...(batchId !== 'all' ? { batchId } : {}),
         },
@@ -89,7 +103,7 @@ export default function TeacherAttendanceDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [teacherId, month, selectedDate, courseId, batchId]);
+  }, [teacherId, month, selectedDate, startDate, endDate, courseId, batchId]);
 
   useEffect(() => { loadAttendance(); }, [loadAttendance]);
 
@@ -104,11 +118,11 @@ export default function TeacherAttendanceDetailPage() {
 
   const moveMonth = (amount: number) => {
     const [year, monthNumber] = month.split('-').map(Number);
+    setSelectedDate('');
     setMonth(toMonthKey(new Date(year, monthNumber - 1 + amount, 1)));
   };
 
   const markPresent = async (row: AttendanceRow) => {
-    if (!selectedDate) return;
     setMarkingBatch(row.batchId);
     setNotice('');
     setError('');
@@ -116,7 +130,7 @@ export default function TeacherAttendanceDetailPage() {
       const response = await api.post('/teacher-attendance/mark', {
         teacherId,
         batchId: row.batchId,
-        date: selectedDate,
+        date: row.attendanceDate,
         source: 'manual',
       });
       setNotice(response.data.message || 'উপস্থিতি নেওয়া হয়েছে।');
@@ -125,6 +139,71 @@ export default function TeacherAttendanceDetailPage() {
       setError(e.response?.data?.message || 'Attendance mark করা যায়নি।');
     } finally {
       setMarkingBatch(null);
+    }
+  };
+
+  const today = todayInDhaka();
+  const bulkRows = (view?.data || []).filter((row) => !row.payment && (row.attendanceDate || '') <= today);
+  const paymentCourses = Array.from(new Map(paymentRows.map((row) => [row.courseId, {
+    id: row.courseId,
+    name: row.courseName,
+    count: paymentRows.filter((item) => item.courseId === row.courseId).length,
+  }])).values());
+  const calculatedAmount = paymentCourses.reduce((sum, course) => sum + course.count * Number(paymentRates[course.id] || 0), 0);
+
+  const openBulkPayment = () => {
+    setPaymentMode('bulk');
+    setPaymentRows(bulkRows);
+    setPaymentRates(Object.fromEntries(Array.from(new Set(bulkRows.map((row) => row.courseId))).map((id) => [id, '0'])));
+    setPaymentAmount('');
+    setPaymentNotes('');
+    setError('');
+  };
+
+  const openIndividualPayment = (row: AttendanceRow) => {
+    setPaymentMode('single');
+    setPaymentRows([row]);
+    setPaymentRates({ [row.courseId]: '0' });
+    setPaymentAmount('');
+    setPaymentNotes('');
+    setError('');
+  };
+
+  const savePayment = async () => {
+    if (!paymentRows.length) return;
+    const amount = paymentMode === 'bulk' && paymentAmount === '' ? calculatedAmount : Number(paymentAmount);
+    if (!Number.isSafeInteger(amount) || amount < 1) {
+      setError('Payment amount ১ টাকা বা তার বেশি পূর্ণসংখ্যা দিন।');
+      return;
+    }
+    setSavingPayment(true);
+    setError('');
+    try {
+      const response = await api.post('/teacher-attendance/payments', {
+        teacherId,
+        bulk: paymentMode === 'bulk',
+        classes: paymentRows.map((row) => ({ classKey: row.classKey, batchId: row.batchId, date: row.attendanceDate, startTime: row.startTime, endTime: row.endTime, topic: row.topic })),
+        rates: Object.entries(paymentRates).map(([courseId, value]) => ({ courseId, rate: Number(value || 0) })),
+        amountPaid: amount,
+        notes: paymentNotes,
+      });
+      setReceiptData(response.data.data);
+      setPaymentRows([]);
+      setNotice(response.data.message || 'Payment তৈরি হয়েছে।');
+      await loadAttendance(true);
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'Teacher payment তৈরি করা যায়নি।');
+    } finally {
+      setSavingPayment(false);
+    }
+  };
+
+  const openReceipt = async (paymentId: string) => {
+    try {
+      const response = await api.get(`/teacher-attendance/payments/${paymentId}`);
+      setReceiptData(response.data.data);
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'Receipt খোলা যায়নি।');
     }
   };
 
@@ -147,7 +226,7 @@ export default function TeacherAttendanceDetailPage() {
           <div className="flex items-center gap-3">
             <UserAvatar name={view?.teacher?.name || 'Teacher'} avatarUrl={view?.teacher?.avatarUrl} role="teacher" size="xl" />
             <div className="min-w-0">
-              <p className="mb-0.5 text-sm font-semibold text-blue-700 dark:text-blue-400">Manual Attendance</p>
+              <p className="mb-0.5 text-sm font-semibold text-blue-700 dark:text-blue-400">Attendance & Payment</p>
               <h1 className="truncate text-xl font-bold sm:text-2xl">{view?.teacher?.name || (loading ? 'লোড হচ্ছে' : 'Teacher')}</h1>
               {view?.teacher?.gravId && <p className="mt-1 text-xs text-slate-500">Grav ID: {view.teacher.gravId}</p>}
             </div>
@@ -178,7 +257,7 @@ export default function TeacherAttendanceDetailPage() {
                 const selected = selectedDate === value;
                 const isToday = todayInDhaka() === value;
                 return (
-                  <button key={value} onClick={() => setSelectedDate(selected ? '' : value)} aria-pressed={selected} className={`relative mx-auto grid h-10 w-10 place-items-center rounded-full text-sm transition sm:h-11 sm:w-11 ${selected ? 'bg-blue-600 font-bold text-white' : isScheduled ? 'bg-blue-50 font-semibold text-blue-800 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-900' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'} ${isToday && !selected ? 'ring-1 ring-emerald-500' : ''}`}>
+                  <button key={value} onClick={() => { setStartDate(''); setEndDate(''); setSelectedDate(selected ? '' : value); }} aria-pressed={selected} className={`relative mx-auto grid h-10 w-10 place-items-center rounded-full text-sm transition sm:h-11 sm:w-11 ${selected ? 'bg-blue-600 font-bold text-white' : isScheduled ? 'bg-blue-50 font-semibold text-blue-800 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-900' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'} ${isToday && !selected ? 'ring-1 ring-emerald-500' : ''}`}>
                     {day}{isScheduled && !selected && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-blue-600 dark:bg-blue-300" />}
                   </button>
                 );
@@ -189,7 +268,7 @@ export default function TeacherAttendanceDetailPage() {
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5" aria-label="Attendance filters">
             <div className="mb-4 flex items-center justify-between gap-2">
-              <h2 className="flex items-center gap-2 font-bold"><Filter className="h-4 w-4 text-slate-500" />Course ও batch</h2>
+              <h2 className="flex items-center gap-2 font-bold"><Filter className="h-4 w-4 text-slate-500" />সময় ও batch</h2>
               <button onClick={() => loadAttendance()} className="inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"><RefreshCw className="h-3.5 w-3.5" />Refresh</button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -202,8 +281,16 @@ export default function TeacherAttendanceDetailPage() {
                 <span className="relative block"><select value={batchId} onChange={(event) => setBatchId(event.target.value)} className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-white px-3 pr-9 text-sm outline-none focus:border-blue-400 dark:border-slate-700 dark:bg-slate-900"><option value="all">সব batch</option>{batchesForCourse.map((batch) => <option key={batch._id} value={batch._id}>{batch.name}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /></span>
               </label>
             </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button type="button" onClick={() => { setSelectedDate(''); setStartDate(''); setEndDate(''); setMonth(toMonthKey(new Date())); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">এই মাস</button>
+              <button type="button" onClick={() => { const previous = new Date(); previous.setMonth(previous.getMonth() - 1); setSelectedDate(''); setStartDate(''); setEndDate(''); setMonth(toMonthKey(previous)); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">আগের মাস</button>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label className="block"><span className="mb-1.5 block text-xs font-medium text-slate-500">শুরুর তারিখ</span><input type="date" value={startDate} onChange={(event) => { setSelectedDate(''); setStartDate(event.target.value); }} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900" /></label>
+              <label className="block"><span className="mb-1.5 block text-xs font-medium text-slate-500">শেষের তারিখ</span><input type="date" value={endDate} onChange={(event) => { setSelectedDate(''); setEndDate(event.target.value); }} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-900" /></label>
+            </div>
             <div className="mt-4 rounded-xl bg-slate-50 px-3.5 py-3 text-sm text-slate-600 dark:bg-slate-800/70 dark:text-slate-300">
-              {selectedDate ? <span>Selected date: <strong className="text-slate-900 dark:text-white">{formatDate(selectedDate)}</strong></span> : <span>সব attendance history · নতুন record আগে</span>}
+              {selectedDate ? <span>নির্বাচিত দিন: <strong className="text-slate-900 dark:text-white">{formatDate(selectedDate)}</strong></span> : startDate && endDate ? <span>নির্বাচিত সময়: <strong className="text-slate-900 dark:text-white">{formatDate(startDate)} – {formatDate(endDate)}</strong></span> : <span>চলতি মাসের সব scheduled class</span>}
             </div>
           </section>
         </div>
@@ -211,10 +298,10 @@ export default function TeacherAttendanceDetailPage() {
         <section aria-live="polite">
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold sm:text-xl">{selectedDate ? formatDate(selectedDate) : 'Attendance History'}</h2>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{selectedDate ? 'এই দিনের scheduled batch অনুযায়ী হাজিরা' : 'সর্বশেষ attendance প্রথমে'}</p>
+              <h2 className="text-lg font-bold sm:text-xl">{selectedDate ? formatDate(selectedDate) : startDate && endDate ? 'নির্বাচিত সময়ের ক্লাস' : monthTitle}</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">তারিখ অনুযায়ী নতুন class আগে</p>
             </div>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">{view?.data?.length || 0}টি</span>
+            <button type="button" disabled={!bulkRows.length || loading} onClick={openBulkPayment} className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"><Banknote className="h-4 w-4" />Bulk Payment <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{bulkRows.length}</span></button>
           </div>
 
           {loading ? (
@@ -222,16 +309,16 @@ export default function TeacherAttendanceDetailPage() {
           ) : !view?.data?.length ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center dark:border-slate-700 dark:bg-slate-900">
               <CalendarDays className="mx-auto mb-2 h-7 w-7 text-slate-400" />
-              <p className="font-semibold text-slate-700 dark:text-slate-200">{selectedDate ? 'এই তারিখে কোনো scheduled batch নেই' : 'এখনো attendance history নেই'}</p>
-              <p className="mt-1 text-sm text-slate-500">Calendar থেকে class day বেছে attendance mark করুন।</p>
+              <p className="font-semibold text-slate-700 dark:text-slate-200">{selectedDate ? 'এই তারিখে কোনো scheduled class নেই' : 'এই সময়ে কোনো scheduled class নেই'}</p>
+              <p className="mt-1 text-sm text-slate-500">অন্য দিন বা date range বেছে নিন।</p>
             </div>
           ) : (
             <div className="space-y-2.5">
               {view.data.map((row, index) => {
-                const isPresent = selectedDate ? row.attendance?.status === 'present' : row.status === 'present';
-                const isFuture = Boolean(selectedDate && selectedDate > todayInDhaka());
+                const isPresent = row.attendance?.status === 'present';
+                const isFuture = Boolean((row.attendanceDate || '') > todayInDhaka());
                 return (
-                  <article key={row._id || `${row.batchId}-${row.startTime || index}`} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center">
+                  <article key={row.classKey || `${row.batchId}-${row.attendanceDate}-${row.startTime || index}`} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center">
                     <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${isPresent ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300' : 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'}`}>
                       {isPresent ? <CheckCircle2 className="h-5 w-5" /> : <CalendarDays className="h-5 w-5" />}
                     </div>
@@ -240,19 +327,16 @@ export default function TeacherAttendanceDetailPage() {
                         <h3 className="font-bold">{row.courseName}</h3><span className="text-slate-300">·</span><span className="text-sm text-slate-600 dark:text-slate-300">{row.batchName}</span>
                       </div>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                        {selectedDate ? <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{row.startTime}{row.endTime ? ` – ${row.endTime}` : ''}</span> : <span>{row.attendanceDate ? formatDate(row.attendanceDate) : ''}</span>}
-                        {!selectedDate && row.markedAt && <span>Mark: {formatTime(row.markedAt)}</span>}
-                        {!selectedDate && row.source && <span>{row.source === 'quick' ? 'Quick' : 'Manual'}</span>}
+                        <span>{row.attendanceDate ? formatDate(row.attendanceDate) : ''}</span>
+                        <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{row.startTime}{row.endTime ? ` – ${row.endTime}` : ''}</span>
+                        {row.attendance?.markedAt && <span>হাজিরা: {formatTime(row.attendance.markedAt)}</span>}
                         {row.topic && <span>{row.topic}</span>}
                       </div>
                     </div>
-                    {isPresent ? (
-                      <span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><Check className="h-4 w-4" /> Present</span>
-                    ) : selectedDate ? (
-                      <button disabled={isFuture || markingBatch === row.batchId} onClick={() => markPresent(row)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
-                        {markingBatch === row.batchId ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}{isFuture ? 'Future date' : 'Present'}
-                      </button>
-                    ) : null}
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                      {isPresent ? <span className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><Check className="h-4 w-4" />Present</span> : <button disabled={isFuture || markingBatch === row.batchId} onClick={() => markPresent(row)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">{markingBatch === row.batchId ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}{isFuture ? 'Future' : 'Present'}</button>}
+                      {row.payment ? <><span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3 text-sm font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">Paid ৳{row.payment.amount.toLocaleString('bn-BD')}</span><button type="button" onClick={() => openReceipt(row.payment!.paymentId)} className="min-h-10 rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Receipt</button></> : <button type="button" disabled={isFuture} onClick={() => openIndividualPayment(row)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300"><Banknote className="h-4 w-4" />Make Payment</button>}
+                    </div>
                   </article>
                 );
               })}
@@ -260,6 +344,27 @@ export default function TeacherAttendanceDetailPage() {
           )}
         </section>
       </div>
+      {paymentRows.length > 0 && paymentMode && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="teacher-payment-title">
+          <section className="my-auto max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl dark:bg-slate-900 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div><h2 id="teacher-payment-title" className="text-lg font-bold">{paymentMode === 'bulk' ? 'Bulk Payment' : 'Class Payment'}</h2><p className="mt-1 text-sm text-slate-500">{paymentRows.length}টি class · {view?.teacher?.name}</p></div>
+              <button type="button" onClick={() => { setPaymentRows([]); setPaymentMode(null); }} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">বন্ধ করুন</button>
+            </div>
+            {paymentMode === 'bulk' ? (
+              <div className="mt-5 space-y-3">
+                {paymentCourses.map((course) => <div key={course.id} className="grid grid-cols-[minmax(0,1fr)_100px_70px] items-center gap-3 rounded-xl border border-slate-200 p-3 dark:border-slate-700 sm:grid-cols-[minmax(0,1fr)_130px_100px]"><div className="min-w-0"><p className="truncate text-sm font-semibold">{course.name}</p><p className="text-xs text-slate-500">{course.count}টি class</p></div><label className="text-xs text-slate-500">প্রতি class<input type="number" min="0" step="1" value={paymentRates[course.id] ?? '0'} onChange={(event) => { setPaymentRates((current) => ({ ...current, [course.id]: event.target.value })); setPaymentAmount(''); }} className="mt-1 h-10 w-full rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" /></label><div className="text-right"><p className="text-[11px] text-slate-500">মোট</p><p className="text-sm font-bold">৳{(course.count * Number(paymentRates[course.id] || 0)).toLocaleString('bn-BD')}</p></div></div>)}
+                <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800"><span>হিসাবকৃত মোট</span><strong>৳{calculatedAmount.toLocaleString('bn-BD')}</strong></div>
+              </div>
+            ) : <div className="mt-5 rounded-xl border border-slate-200 p-3 text-sm dark:border-slate-700"><p className="font-semibold">{paymentRows[0].courseName} · {paymentRows[0].batchName}</p><p className="mt-1 text-xs text-slate-500">{formatDate(paymentRows[0].attendanceDate || '')} · {paymentRows[0].startTime}{paymentRows[0].endTime ? ` – ${paymentRows[0].endTime}` : ''}</p></div>}
+            <label className="mt-4 block"><span className="mb-1.5 block text-xs font-semibold text-slate-500">{paymentMode === 'bulk' ? 'চূড়ান্ত payment amount' : 'Payment amount'} (৳)</span><input type="number" min="1" step="1" value={paymentMode === 'bulk' && paymentAmount === '' ? calculatedAmount || '' : paymentAmount} onChange={(event) => setPaymentAmount(event.target.value)} className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-lg font-bold text-slate-900 outline-none focus:border-indigo-400 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="টাকার পরিমাণ" /></label>
+            <label className="mt-3 block"><span className="mb-1.5 block text-xs font-semibold text-slate-500">নোট (ঐচ্ছিক)</span><input value={paymentNotes} onChange={(event) => setPaymentNotes(event.target.value)} maxLength={500} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm dark:border-slate-700 dark:bg-slate-950" placeholder="Payment note" /></label>
+            {error && <p role="alert" className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">{error}</p>}
+            <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><button type="button" onClick={() => { setPaymentRows([]); setPaymentMode(null); }} className="min-h-11 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">Cancel</button><button type="button" disabled={savingPayment} onClick={savePayment} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-bold text-white hover:bg-indigo-700 disabled:opacity-60">{savingPayment ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Banknote className="h-4 w-4" />}Make Payment</button></div>
+          </section>
+        </div>
+      )}
+      {receiptData && <TeacherPaymentReceiptModal data={receiptData} onClose={() => setReceiptData(null)} />}
     </main>
   );
 }
