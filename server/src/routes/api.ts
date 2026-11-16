@@ -248,6 +248,21 @@ router.post(
   validateRequest(companyExpenseCtrl.createCompanyExpenseSchema),
   companyExpenseCtrl.createCompanyExpense
 );
+router.put(
+  '/finance/company-expenses/:id',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
+  requirePermission(PERMISSIONS.FINANCE_EXPENSE_MANAGE),
+  validateRequest(companyExpenseCtrl.updateCompanyExpenseSchema),
+  companyExpenseCtrl.updateCompanyExpense
+);
+router.delete(
+  '/finance/company-expenses/:id',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
+  requirePermission(PERMISSIONS.FINANCE_EXPENSE_MANAGE),
+  companyExpenseCtrl.deleteCompanyExpense
+);
 router.get(
   '/finance/admin-payments',
   authenticate,

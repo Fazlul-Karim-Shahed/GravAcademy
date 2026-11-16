@@ -17,6 +17,9 @@ export interface ICompanyExpense extends Document {
   reference?: string;
   notes?: string;
   createdBy: mongoose.Types.ObjectId;
+  updatedBy?: mongoose.Types.ObjectId;
+  deletedAt?: Date;
+  deletedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +35,9 @@ const CompanyExpenseSchema = new Schema<ICompanyExpense>({
   reference: { type: String, trim: true, maxlength: 120, default: '' },
   notes: { type: String, trim: true, maxlength: 500, default: '' },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  deletedAt: { type: Date, default: undefined, index: true },
+  deletedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
 CompanyExpenseSchema.index({ expenseDate: -1, createdAt: -1 });

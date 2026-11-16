@@ -31,6 +31,10 @@ export const createCompanyExpenseSchema = z.object({
   notes: z.string().trim().max(500).optional().or(z.literal('')),
 });
 
+export const updateCompanyExpenseSchema = createCompanyExpenseSchema;
+
+const parseExpenseId = (value: string) => /^[a-f\d]{24}$/i.test(value);
+
 const createExpenseNumber = async () => {
   const parts = new Intl.DateTimeFormat('en-GB', { timeZone: TIME_ZONE, year: '2-digit', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
   const values: Record<string, string> = {};
@@ -88,7 +92,7 @@ export const getCompanyExpenses = async (req: AuthenticatedRequest, res: Respons
         createdBy: '$actor.name',
       } },
       { $unionWith: { coll: CompanyExpense.collection.name, pipeline: [
-        { $match: { expenseDate: dateRange } },
+        { $match: { expenseDate: dateRange, deletedAt: { $exists: false } } },
         { $lookup: { from: teacherCollection, localField: 'createdBy', foreignField: '_id', as: 'actor' } },
         { $unwind: { path: '$actor', preserveNullAndEmptyArrays: true } },
         { $project: {
@@ -144,11 +148,44 @@ export const createCompanyExpense = async (req: AuthenticatedRequest, res: Respo
       reference,
       notes,
       createdBy: req.user!._id,
+      updatedBy: req.user!._id,
     });
     const data = await CompanyExpense.findById(expense._id).populate('createdBy', 'name gravId').lean();
     return res.status(201).json({ success: true, message: 'Expense সংরক্ষণ হয়েছে।', data });
   } catch (error: any) {
     console.error('createCompanyExpense error:', error);
     return res.status(500).json({ success: false, message: 'Expense সংরক্ষণ করা যায়নি।' });
+  }
+};
+
+export const updateCompanyExpense = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!parseExpenseId(req.params.id)) return res.status(400).json({ success: false, message: 'Expense ID সঠিক নয়।' });
+    const { title, category, amount, expenseDate, payee = '', paymentMethod = 'cash', reference = '', notes = '' } = req.body;
+    if (!validDate(expenseDate) || expenseDate > formatDhakaDate()) {
+      return res.status(400).json({ success: false, message: 'Expense date আজকের বা আগের তারিখ হতে হবে।' });
+    }
+    const data = await CompanyExpense.findOneAndUpdate({ _id: req.params.id, deletedAt: { $exists: false } }, {
+      $set: { title, category, amount, expenseDate: new Date(`${expenseDate}T12:00:00.000+06:00`), payee, paymentMethod, reference, notes, updatedBy: req.user!._id },
+    }, { new: true, runValidators: true }).populate('createdBy', 'name gravId').lean();
+    if (!data) return res.status(404).json({ success: false, message: 'Expense পাওয়া যায়নি।' });
+    return res.json({ success: true, message: 'Expense আপডেট হয়েছে।', data });
+  } catch (error: any) {
+    console.error('updateCompanyExpense error:', error);
+    return res.status(500).json({ success: false, message: 'Expense আপডেট করা যায়নি।' });
+  }
+};
+
+export const deleteCompanyExpense = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!parseExpenseId(req.params.id)) return res.status(400).json({ success: false, message: 'Expense ID সঠিক নয়।' });
+    const deleted = await CompanyExpense.findOneAndUpdate({ _id: req.params.id, deletedAt: { $exists: false } }, {
+      $set: { deletedAt: new Date(), deletedBy: req.user!._id },
+    }, { new: true }).lean();
+    if (!deleted) return res.status(404).json({ success: false, message: 'Expense পাওয়া যায়নি।' });
+    return res.json({ success: true, message: 'Expense মুছে ফেলা হয়েছে।' });
+  } catch (error: any) {
+    console.error('deleteCompanyExpense error:', error);
+    return res.status(500).json({ success: false, message: 'Expense মুছে ফেলা যায়নি।' });
   }
 };
