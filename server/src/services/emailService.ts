@@ -190,14 +190,14 @@ export const sendEnrollmentRequestReceivedEmail = async ({
   const hasVerificationLink = Boolean(verificationUrl);
   return sendGmailTextEmail({
     to,
-    subject: hasVerificationLink ? 'Confirm your email for Grav Academy enrollment | Grav Academy' : 'Your Grav Academy enrollment request was submitted',
-    linkLabel: hasVerificationLink ? 'ইমেইল verify করুন' : undefined,
+    subject: hasVerificationLink ? 'আপনার ইমেইল যাচাই করুন | Grav Academy' : 'আপনার ভর্তি অনুরোধ জমা হয়েছে',
+    linkLabel: hasVerificationLink ? 'ইমেইল যাচাই করুন' : undefined,
     body: hasVerificationLink
       ? [
-          'Hi ' + (name || 'there') + ',', '',
-          'Confirm this email address to submit your request to join the batch "' + batchName + '":',
-          verificationUrl || '', 'This link expires in 24 hours.', '',
-          'Your request will reach our admission team only after email confirmation.', '', 'Grav Academy',
+          'প্রিয় ' + (name || 'শিক্ষার্থী') + ',', '',
+          '"' + batchName + '" ব্যাচে ভর্তি হওয়ার অনুরোধ জমা দিতে আপনার ইমেইলটি যাচাই করুন।',
+          verificationUrl || '', 'এই লিংকটি ২৪ ঘণ্টা পর্যন্ত কার্যকর থাকবে।', '',
+          'ইমেইল যাচাই করার পর আপনার অনুরোধটি আমাদের ভর্তি টিমের কাছে পাঠানো হবে।', '', 'Grav Academy',
         ].join('\n')
       : [
           'Hi ' + (name || 'there') + ',', '',
