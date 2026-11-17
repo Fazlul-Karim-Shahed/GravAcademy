@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, GraduationCap, Loader2, Phone, Mail, UserRound, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, GraduationCap, Loader2, Mail, MailCheck, Phone, UserRound, ShieldCheck } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
@@ -85,7 +85,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
           <div className="py-24 text-center"><Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto" /></div>
         ) : submitted ? (
           <div className="max-w-xl mx-auto bg-white dark:bg-slate-900 rounded-[28px] border border-emerald-200 dark:border-emerald-900/60 p-8 sm:p-12 text-center shadow-[0_18px_50px_rgba(15,23,42,0.07)]">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center mx-auto mb-5"><CheckCircle2 className="w-8 h-8" /></div>
+            <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center mx-auto mb-5">{user ? <CheckCircle2 className="w-8 h-8" /> : <MailCheck className="w-8 h-8" />}</div>
             <h1 className="text-xl sm:text-2xl font-black">{user ? 'Request পাঠানো হয়েছে' : 'আপনার ইমেইল ভেরিফাই করুন'}</h1>
             <p className="text-sm leading-6 text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto">{submittedMessage || (user ? 'Admin review করে approve করলে এই batch আপনার classroom-এ দেখা যাবে।' : 'আপনার ইমেইলে একটি যাচাইকরণ লিংক পাঠানো হয়েছে। Inbox বা spam folder দেখে লিংকটিতে ক্লিক করুন।')}</p>
             <div className="flex flex-wrap justify-center gap-3 mt-7">{user && <Link href="/dashboard" className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">Dashboard</Link>}<Link href="/courses" className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">কোর্স দেখুন</Link></div>
