@@ -123,7 +123,7 @@ function RegisterForm() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                মোবাইল নম্বর (ঐচ্ছিক / Phone Number)
+                মোবাইল নম্বর (WhatsApp, ঐচ্ছিক)
               </label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />

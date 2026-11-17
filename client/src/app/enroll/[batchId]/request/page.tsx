@@ -55,8 +55,8 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
-    if (!form.name.trim() || !form.phone.trim()) {
-      setError('নাম ও মোবাইল নম্বর দিন।');
+    if (!form.name.trim() || (!form.phone.trim() && !form.email.trim())) {
+      setError('নাম এবং যোগাযোগের জন্য ইমেইল অথবা মোবাইল নম্বর দিন।');
       return;
     }
     setSubmitting(true);
@@ -107,12 +107,12 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
               {error && <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold">{error}</div>}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
                 <Field label="নাম *" icon={<UserRound className="w-4 h-4" />} value={form.name} onChange={(v) => update('name', v)} required readOnly={Boolean(user?.name)} />
-                <Field label="মোবাইল *" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} required type="tel" readOnly={Boolean(user?.phone)} />
+                <Field label="মোবাইল (WhatsApp, ঐচ্ছিক)" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} type="tel" readOnly={Boolean(user?.phone)} />
                 <Field label={user ? "ইমেইল" : "ইমেইল (ভেরিফিকেশনের জন্য আবশ্যক) *"} icon={<Mail className="w-4 h-4" />} value={form.email} onChange={(v) => update('email', v)} required={!user} type="email" readOnly={Boolean(user?.email)} />
                 <Field label="শ্রেণি" value={form.gradeLevel} onChange={() => {}} readOnly />
                 <Field label="স্কুল / কলেজ" value={form.schoolOrCollege} onChange={(v) => update('schoolOrCollege', v)} readOnly={Boolean(user?.studentDetails?.schoolOrCollege)} />
                 <Field label="অভিভাবকের নাম" value={form.guardianName} onChange={(v) => update('guardianName', v)} readOnly={Boolean(user?.studentDetails?.guardianName)} />
-                <Field label="অভিভাবকের মোবাইল" value={form.guardianPhone} onChange={(v) => update('guardianPhone', v)} type="tel" readOnly={Boolean(user?.studentDetails?.guardianPhone)} />
+                <Field label="অভিভাবকের মোবাইল (WhatsApp)" value={form.guardianPhone} onChange={(v) => update('guardianPhone', v)} type="tel" readOnly={Boolean(user?.studentDetails?.guardianPhone)} />
               </div>
               <label className="block mt-5"><span className="text-xs font-bold text-slate-600 dark:text-slate-300">মেসেজ <span className="font-normal text-slate-400">(optional)</span></span><textarea value={form.message} onChange={(e) => update('message', e.target.value)} maxLength={500} rows={3} className="mt-1.5 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-950 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 resize-none transition-colors" placeholder="কোনো তথ্য জানাতে চাইলে লিখুন" /></label>
               <button type="submit" disabled={submitting} className="w-full mt-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-600/15 transition-colors disabled:opacity-60">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}{submitting ? 'পাঠানো হচ্ছে...' : 'Request পাঠান'}</button>

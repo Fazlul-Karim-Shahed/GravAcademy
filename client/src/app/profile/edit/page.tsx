@@ -427,7 +427,7 @@ export default function ProfileEditPage() {
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
-                  ফোন নম্বর
+                  ফোন নম্বর (WhatsApp)
                 </label>
                 <input
                   type="text"
@@ -683,7 +683,7 @@ export default function ProfileEditPage() {
 
                 <div className="sm:col-span-2">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
-                    জরুরি যোগাযোগের জন্য অভিভাবকের ফোন নম্বর
+                    জরুরি যোগাযোগের জন্য অভিভাবকের ফোন নম্বর (WhatsApp)
                   </label>
                   <input
                     type="text"

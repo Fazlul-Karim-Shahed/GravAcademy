@@ -731,7 +731,7 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল (ঐচ্ছিক)</label>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল (WhatsApp, ঐচ্ছিক)</label>
                   <input
                     type="text"
                     value={staffPhone}

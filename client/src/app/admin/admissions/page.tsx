@@ -833,7 +833,7 @@ export default function AdminAdmissionsPage() {
                     {/* Student Phone */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        মোবাইল নম্বর <span className="text-rose-500">*</span>
+                        মোবাইল নম্বর (WhatsApp, ঐচ্ছিক)
                       </label>
                       <div className="relative">
                         <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
