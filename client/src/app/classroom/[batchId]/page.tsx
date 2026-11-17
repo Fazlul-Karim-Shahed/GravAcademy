@@ -158,7 +158,7 @@ export default function BatchClassroomPage({
     [...members.teachers, ...(canViewStudentMembers ? members.students : [])]
       .map((member) => member.email?.trim().toLowerCase())
       .filter((email): email is string => Boolean(email)),
-  ));
+  )).filter((email) => email !== user?.email?.trim().toLowerCase());
 
   const copyBatchEmails = async () => {
     if (!batchEmails.length) return;
