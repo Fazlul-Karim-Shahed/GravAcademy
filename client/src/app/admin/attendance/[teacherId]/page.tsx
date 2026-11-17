@@ -80,6 +80,7 @@ export default function TeacherAttendanceDetailPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [view, setView] = useState<TeacherAttendanceView | null>(null);
+  const [showAllClasses, setShowAllClasses] = useState(false);
   const [loading, setLoading] = useState(true);
   const [markingBatch, setMarkingBatch] = useState<string | null>(null);
   const [notice, setNotice] = useState('');
@@ -101,6 +102,9 @@ export default function TeacherAttendanceDetailPage() {
   const [classToUndo, setClassToUndo] = useState<AttendanceRow | null>(null);
   const [undoReason, setUndoReason] = useState('');
   const [undoingPayment, setUndoingPayment] = useState(false);
+  useEffect(() => {
+    setShowAllClasses(false);
+  }, [month, selectedDate, startDate, endDate, courseId, batchId]);
   const dateError = (startDate && !endDate) || (!startDate && endDate)
     ? 'শুরুর ও শেষের তারিখ দুটোই দিন।'
     : startDate && endDate && startDate > endDate ? 'শুরুর তারিখ শেষের তারিখের পরে হতে পারে না।' : '';
@@ -423,7 +427,7 @@ export default function TeacherAttendanceDetailPage() {
             </div>
           ) : (
             <div className="space-y-2.5">
-              {view.data.map((row, index) => {
+              {view.data.slice(0, showAllClasses ? undefined : 10).map((row, index) => {
                 const isPresent = row.attendance?.status === 'present';
                 const isFuture = Boolean((row.attendanceDate || '') > todayInDhaka());
                 const isAbsent = !isPresent && !isFuture;
@@ -515,6 +519,15 @@ export default function TeacherAttendanceDetailPage() {
                   </article>
                 );
               })}
+              {view.data.length > 10 && !showAllClasses && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllClasses(true)}
+                  className="mx-auto mt-4 block min-h-10 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-800"
+                >
+                  Show all ({view.data.length})
+                </button>
+              )}
             </div>
           )}
         </section>
