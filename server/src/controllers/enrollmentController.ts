@@ -279,26 +279,32 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       guardianName: guardianName?.trim() || undefined,
       guardianPhone: guardianPhone?.trim() || undefined,
       message: message?.trim() || undefined,
-      status: 'pending',
+      status: isGuest ? 'verification_pending' : 'pending',
     });
 
     if (isGuest) {
       const normalizedEmail = email.trim().toLowerCase();
+      const { rawToken, verificationUrl } = await createEmailVerification({ enrollmentRequestId: request._id });
       const emailSent = await sendEnrollmentRequestReceivedEmail({
         to: normalizedEmail,
         name: name.trim(),
         batchName: batch.name,
+        verificationUrl,
       });
       if (!emailSent) {
-        await EnrollmentRequest.deleteOne({ _id: request._id });
-        return res.status(400).json({ success: false, message: 'এই ইমেইলে request confirmation পাঠানো যায়নি। ইমেইলটি যাচাই করে আবার চেষ্টা করুন।' });
+        const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+        await Promise.all([
+          EnrollmentRequest.deleteOne({ _id: request._id }),
+          EmailVerificationToken.deleteOne({ tokenHash }),
+        ]);
+        return res.status(400).json({ success: false, message: 'এই ইমেইলে verification link পাঠানো যায়নি। ইমেইলটি যাচাই করে আবার চেষ্টা করুন।' });
       }
     }
 
     return res.status(201).json({
       success: true,
       message: isGuest
-        ? 'আপনার request admin-এর কাছে পাঠানো হয়েছে। আমাদের প্রতিনিধি শীঘ্রই আপনার সঙ্গে যোগাযোগ করবে।'
+        ? 'আপনার request শুরু হয়েছে। ইমেইল inbox বা spam folder চেক করে verification link-এ click করুন। Email verify হওয়ার পর request admin-এর কাছে পাঠানো হবে।'
         : 'ভর্তি request সফলভাবে পাঠানো হয়েছে।',
       data: request,
     });
