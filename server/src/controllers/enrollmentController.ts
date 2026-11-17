@@ -562,9 +562,9 @@ export const rejectEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
     request.reviewedAt = new Date();
     request.reviewNote = req.body?.reviewNote?.trim() || 'Request rejected by admin';
     await request.save();
-    return res.json({ success: true, message: 'Request reject à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤', data: request });
+    return res.json({ success: true, message: 'Request প্রত্যাখ্যান করা হয়েছে।', data: request });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Request reject à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    return res.status(500).json({ success: false, message: 'Request প্রত্যাখ্যান করা যায়নি।' });
   }
 };
 
