@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Maximize, Pause, Play } from 'lucide-react';
 
 type PlayerState = -1 | 0 | 1 | 2 | 3 | 5;
@@ -60,10 +60,38 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
   const wrapperRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
   const seekingRef = useRef(false);
+  const hideTimerRef = useRef<number | null>(null);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [controlsVisible, setControlsVisible] = useState(true);
+
+  const showControls = useCallback(() => {
+    setControlsVisible(true);
+    if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+    if (document.fullscreenElement === wrapperRef.current) {
+      hideTimerRef.current = window.setTimeout(() => {
+        if (seekingRef.current) showControls();
+        else setControlsVisible(false);
+      }, 3000);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      if (document.fullscreenElement === wrapperRef.current) showControls();
+      else {
+        if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+        setControlsVisible(true);
+      }
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+      if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+    };
+  }, [showControls]);
 
   useEffect(() => {
     let cancelled = false;
@@ -118,7 +146,13 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
   }, [videoId]);
 
   return (
-    <div ref={wrapperRef} className="lesson-video-player overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-950 shadow-lg dark:border-slate-800/90">
+    <div
+      ref={wrapperRef}
+      className={`lesson-video-player overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-950 shadow-lg dark:border-slate-800/90 ${controlsVisible ? '' : 'is-idle'}`}
+      onMouseMove={showControls}
+      onTouchStart={showControls}
+      onKeyDown={showControls}
+    >
       <div className="lesson-video-surface aspect-video bg-black" aria-label={title}>
         <div ref={mountRef} className="h-full w-full" />
       </div>
@@ -140,9 +174,9 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
           step={1}
           value={Math.min(Math.floor(currentTime), Math.max(1, Math.floor(duration)))}
           disabled={!ready || duration <= 0}
-          onPointerDown={() => { seekingRef.current = true; }}
-          onPointerUp={() => { seekingRef.current = false; }}
-          onPointerCancel={() => { seekingRef.current = false; }}
+          onPointerDown={() => { seekingRef.current = true; showControls(); }}
+          onPointerUp={() => { seekingRef.current = false; showControls(); }}
+          onPointerCancel={() => { seekingRef.current = false; showControls(); }}
           onChange={(event) => {
             const seconds = Number(event.target.value);
             setCurrentTime(seconds);
@@ -160,6 +194,7 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
           <Maximize size={18} />
         </button>
       </div>
+      <button type="button" className="lesson-video-wake" onMouseEnter={showControls} onClick={showControls} aria-label="ভিডিও কন্ট্রোল দেখান" />
     </div>
   );
 }

@@ -925,6 +925,28 @@ html.dark .mobile-glass-surface {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
+.lesson-video-wake {
+  display: none;
+}
+
+.lesson-video-player:fullscreen.is-idle .lesson-video-controls {
+  height: 0;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lesson-video-player:fullscreen.is-idle .lesson-video-wake {
+  display: block;
+  flex: 0 0 8px;
+  width: 100%;
+  background: #020617;
+  cursor: pointer;
+}
+
 /* Ensure data tables always have smooth horizontal scroll with visible indicator on small mobile */
 @media (max-width: 640px) {
   .responsive-table-wrapper {
