@@ -163,10 +163,9 @@ export default function BatchClassroomPage({
   const copyBatchEmails = async () => {
     if (!batchEmails.length) return;
     try {
-      // Keep one address per line. YouTube Studio can split pasted lines into
-      // separate recipients more reliably than a comma-separated text string.
-      await navigator.clipboard.writeText(batchEmails.join('\n'));
-      setEmailCopyNotice('প্রতিটি email আলাদা লাইনে কপি হয়েছে।');
+      // YouTube Studio accepts the compact comma-separated recipient format.
+      await navigator.clipboard.writeText(batchEmails.join(','));
+      setEmailCopyNotice('YouTube-এর জন্য সব email কপি হয়েছে।');
     } catch {
       setEmailCopyNotice('কপি করা যায়নি। Email তালিকা select করে কপি করুন।');
     }
