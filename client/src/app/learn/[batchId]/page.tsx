@@ -26,6 +26,7 @@ import {
   Pencil,
 } from 'lucide-react';
 import { ScheduleSlot, getDayInfo, formatTo12Hour } from '@/lib/schedule';
+import YouTubeLessonPlayer from '@/components/learning/YouTubeLessonPlayer';
 
 interface Resource {
   _id: string;
@@ -258,16 +259,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
             {activeLesson ? (
               <>
                 {/* Embedded Video Container */}
-                <div className="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800/90 bg-slate-950 aspect-video relative shadow-lg">
-                  {activeLesson.youtubeVideoId ? (
-                    <iframe
-                      className="w-full h-full"
-                      src={`https://www.youtube-nocookie.com/embed/${activeLesson.youtubeVideoId}?rel=0&modestbranding=1`}
-                      title={activeLesson.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
+                {activeLesson.youtubeVideoId ? (
+                  <YouTubeLessonPlayer key={activeLesson._id} videoId={activeLesson.youtubeVideoId} title={activeLesson.title} />
+                ) : (
+                  <div className="rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800/90 bg-slate-950 aspect-video relative shadow-lg">
                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 p-8 text-center bg-radial from-slate-900 to-slate-950">
                       <div className="w-16 h-16 rounded-2xl bg-slate-900/90 border border-slate-800 text-slate-400 flex items-center justify-center mb-3 shadow-inner">
                         <Video className="w-7 h-7 text-slate-500" />
@@ -277,8 +272,8 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                         লাইভ ক্লাসের সময় সরাসরি ক্লাসরুমে অংশ নিন অথবা নিচের লেকচার শিট পড়ে প্রস্তুতি সম্পন্ন করুন।
                       </p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Lesson Notes & Overview */}
                 <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
