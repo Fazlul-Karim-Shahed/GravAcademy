@@ -124,7 +124,12 @@ const flushPendingMessages = () => {
 };
 
 export const queueWhatsAppForEmail = (email: string, subject: string, body: string) => {
-  pendingMessages.push({ email, subject, body });
+  const isVerificationMessage = /verify|verification|ইমেইল যাচাই/i.test(subject);
+  const whatsappBody = isVerificationMessage
+    ? 'আপনার Grav Academy ইমেইলে একটি verification link পাঠানো হয়েছে। অনুগ্রহ করে email inbox বা spam folder চেক করে সেই link-এ click করে আপনার ইমেইল verify করুন।'
+    : body;
+  const whatsappSubject = isVerificationMessage ? 'ইমেইল যাচাই করুন' : subject;
+  pendingMessages.push({ email, subject: whatsappSubject, body: whatsappBody });
   flushPendingMessages();
 };
 
