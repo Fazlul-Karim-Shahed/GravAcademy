@@ -99,7 +99,7 @@ export default function AdminSettingsPage() {
     let active = true;
     const refresh = async () => { if (active) await checkWhatsAppStatus(); };
     void refresh();
-    const timer = window.setInterval(() => { void refresh(); }, 5000);
+    const timer = window.setInterval(() => { void refresh(); }, 15000);
     return () => { active = false; window.clearInterval(timer); };
   }, [activeTab, user?.role]);
 

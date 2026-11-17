@@ -928,7 +928,8 @@
     }
 
     fetchTelemetry();
-    setInterval(fetchTelemetry, 3000);
+    // Keep the health dashboard lightweight; overlapping polls are already guarded above.
+    setInterval(fetchTelemetry, 15000);
   </script>
 </body>
 </html>

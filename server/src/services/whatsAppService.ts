@@ -25,7 +25,19 @@ export const startWhatsApp = () => {
     puppeteer: {
       headless: true,
       ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}),
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--disable-component-update',
+        '--disable-default-apps',
+        '--disable-sync',
+        '--no-first-run',
+        '--no-default-browser-check',
+      ],
     },
   });
   client.on('qr', async (qr) => {
