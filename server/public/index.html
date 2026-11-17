@@ -819,8 +819,11 @@
     }
 
     let ramInitialized = false;
+    let telemetryInFlight = false;
 
     async function fetchTelemetry() {
+      if (telemetryInFlight) return;
+      telemetryInFlight = true;
       const clientStart = performance.now();
       try {
         const res = await fetch('/api/status?t=' + Date.now());
@@ -904,6 +907,8 @@
           badgeWrap.className = 'server-badge offline';
           badgeStatus.textContent = 'SERVER_OFFLINE';
         }
+      } finally {
+        telemetryInFlight = false;
       }
     }
 
