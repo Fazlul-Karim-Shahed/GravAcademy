@@ -34,9 +34,12 @@ import {
   BookOpen,
   Award,
   ArrowRight,
+  Clipboard,
+  X,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { LiveKitClassroomModal } from '@/components/classroom/LiveKitClassroomModal';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 
 interface BatchInfo {
   _id: string;
@@ -137,6 +140,8 @@ export default function BatchClassroomPage({
   const [studentToRemove, setStudentToRemove] = useState<MemberUser | null>(null);
   const [removingStudent, setRemovingStudent] = useState(false);
   const [removeNotice, setRemoveNotice] = useState('');
+  const [showEmailList, setShowEmailList] = useState(false);
+  const [emailCopyNotice, setEmailCopyNotice] = useState('');
 
   // Shift Batch State
   const [studentToShift, setStudentToShift] = useState<MemberUser | null>(null);
@@ -148,7 +153,22 @@ export default function BatchClassroomPage({
 
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
   const isTeacher = user?.role === 'teacher';
-  const canViewStudentMembers = isAdmin || isTeacher;
+  const canViewStudentMembers = isAdmin || isTeacher || hasPermission(user, PERMISSIONS.BATCHES_VIEW);
+  const batchEmails = Array.from(new Set(
+    [...members.teachers, ...(canViewStudentMembers ? members.students : [])]
+      .map((member) => member.email?.trim().toLowerCase())
+      .filter((email): email is string => Boolean(email)),
+  ));
+
+  const copyBatchEmails = async () => {
+    if (!batchEmails.length) return;
+    try {
+      await navigator.clipboard.writeText(batchEmails.join(', '));
+      setEmailCopyNotice('সব email কপি হয়েছে।');
+    } catch {
+      setEmailCopyNotice('কপি করা যায়নি। Email তালিকা select করে কপি করুন।');
+    }
+  };
 
   const loadOverview = async () => {
     setLoading(true);
@@ -870,8 +890,43 @@ export default function BatchClassroomPage({
                     {members.students.length || memberCounts.studentsCount} জন শিক্ষার্থী
                   </span>
                 )}
+                {canViewStudentMembers && (
+                  <button
+                    type="button"
+                    onClick={() => { setShowEmailList(true); setEmailCopyNotice(''); }}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/60"
+                  >
+                    <Mail className="h-3.5 w-3.5" /> Get all email
+                  </button>
+                )}
               </div>
             </div>
+
+            {showEmailList && canViewStudentMembers && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-6" role="dialog" aria-modal="true" aria-labelledby="batch-email-title">
+                <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div>
+                      <h3 id="batch-email-title" className="text-base font-bold text-slate-900 dark:text-white">Batch member emails</h3>
+                      <p className="mt-1 text-xs text-slate-500">{batchEmails.length}টি unique email</p>
+                    </div>
+                    <button type="button" onClick={() => setShowEmailList(false)} aria-label="Close email list" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"><X className="h-4 w-4" /></button>
+                  </div>
+                  <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950">
+                    {batchEmails.length ? (
+                      <pre className="whitespace-pre-wrap break-all font-mono text-sm leading-7 text-slate-700 dark:text-slate-200">{batchEmails.join('\n')}</pre>
+                    ) : (
+                      <p className="py-6 text-center text-sm text-slate-500">কোনো email পাওয়া যায়নি।</p>
+                    )}
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+                    {emailCopyNotice && <span role="status" className="mr-auto text-xs font-semibold text-emerald-600 dark:text-emerald-400">{emailCopyNotice}</span>}
+                    <button type="button" onClick={() => void copyBatchEmails()} disabled={!batchEmails.length} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"><Clipboard className="h-4 w-4" /> Copy all email</button>
+                    <button type="button" onClick={() => setShowEmailList(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Close</button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Removal Notification */}
             {removeNotice && (

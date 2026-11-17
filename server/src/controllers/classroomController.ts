@@ -10,6 +10,7 @@ import { DiscussionMessage } from '../models/DiscussionMessage';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { sendClassroomEmailNotification } from '../services/emailService';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
+import { getEffectivePermissions, PERMISSIONS } from '../types/roles';
 
 export const createAnnouncementSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters').max(200),
@@ -128,7 +129,13 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
     const combinedTeachers = Array.from(teacherMap.values());
     batch.assignedTeachers = combinedTeachers as any;
 
-    const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole);
+    const effectivePermissions = getEffectivePermissions(
+      userRole as any,
+      req.user?.customPermissions as any,
+      req.user?.revokedPermissions as any,
+    );
+    const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole)
+      || effectivePermissions.includes(PERMISSIONS.BATCHES_VIEW);
 
     const studentCount = canViewAllMembers
       ? await Enrollment.countDocuments({
