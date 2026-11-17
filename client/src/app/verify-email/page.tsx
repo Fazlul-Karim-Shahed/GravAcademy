@@ -11,7 +11,7 @@ function VerifyEmailContent() {
   const params = useSearchParams();
   const token = params.get('token') || '';
   const [state, setState] = useState<'ready' | 'loading' | 'success' | 'error'>(token ? 'ready' : 'error');
-  const [message, setMessage] = useState(token ? 'চালিয়ে যেতে নিচের button-এ click করুন।' : 'Verification link-এ token পাওয়া যায়নি। ইমেইলের পুরো link ব্যবহার করুন।');
+  const [message, setMessage] = useState(token ? 'ইমেইল যাচাই করা হচ্ছে…' : 'Verification link-এ token পাওয়া যায়নি। ইমেইলের পুরো link ব্যবহার করুন।');
   const [email, setEmail] = useState('');
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
@@ -20,22 +20,24 @@ function VerifyEmailContent() {
     if (!token) {
       setState('error');
       setMessage('Verification link-এ token পাওয়া যায়নি। ইমেইলের পুরো link ব্যবহার করুন।');
+      return;
     }
-  }, [token]);
-
-  const verify = async () => {
+    let active = true;
     setState('loading');
     setMessage('ইমেইল যাচাই করা হচ্ছে…');
     api.post('/auth/verify-email', { token })
       .then((response) => {
+        if (!active) return;
         setState('success');
         setMessage(response.data?.message || 'ইমেইল verify হয়েছে।');
       })
       .catch((error: any) => {
+        if (!active) return;
         setState('error');
         setMessage(error.response?.data?.message || 'এই verification link ব্যবহার করা যাচ্ছে না।');
       });
-  };
+    return () => { active = false; };
+  }, [token]);
 
   const resend = async () => {
     setResending(true);
@@ -66,11 +68,6 @@ function VerifyEmailContent() {
           {state === 'success' ? 'ইমেইল verify হয়েছে' : state === 'error' ? 'Verify করা যায়নি' : 'ইমেইল যাচাই হচ্ছে'}
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-300" role="status">{message}</p>
-        {state === 'ready' && (
-          <button type="button" onClick={verify} className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
-            Email confirm করুন
-          </button>
-        )}
         {state === 'error' && (
           <div className="mx-auto mt-7 max-w-sm space-y-3">
             <form onSubmit={(event) => { event.preventDefault(); void resend(); }} className="flex flex-col gap-2 sm:flex-row">
