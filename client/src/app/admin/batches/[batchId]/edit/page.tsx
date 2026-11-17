@@ -321,6 +321,7 @@ export default function EditBatchPage() {
                 <option value="upcoming">Upcoming (Scheduled for launch)</option>
                 <option value="active">Active (Open for Admissions)</option>
                 <option value="completed">Completed (Archived)</option>
+                <option value="archived">Archived</option>
               </select>
             </div>
 
