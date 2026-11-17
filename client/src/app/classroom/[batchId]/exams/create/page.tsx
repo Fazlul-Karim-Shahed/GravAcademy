@@ -403,7 +403,7 @@ export default function CreateExamPage({
       if (!puter?.ai?.chat) throw new Error('AI service এখন প্রস্তুত নয়');
       const prompt = `You are a strict exam-question formatter. Convert the pasted text into valid JSON only (no markdown, no explanation).
 Return exactly: {"questions":[{"questionText":"string","options":[{"text":"string"},{"text":"string"},{"text":"string"},{"text":"string"}],"correctOptionIndex":0,"marks":1}]}
-Rules: preserve the original language and meaning; create exactly 4 non-empty options per MCQ; correctOptionIndex must be 0,1,2,or 3; infer the answer only when clearly provided, otherwise use 0; marks must be a number; remove numbering and labels from questionText; never add fields; do not invent questions.
+Rules: return exactly one question object for every question in the pasted text (never omit or merge questions); preserve the original language and meaning; create exactly 4 non-empty options per MCQ; correctOptionIndex must be 0,1,2,or 3; infer the answer only when clearly provided, otherwise use 0; marks must be a number; remove numbering and labels from questionText; never add fields; do not invent questions.
 
 Pasted questions:
 ${bulkText}`;
@@ -412,6 +412,7 @@ ${bulkText}`;
       const jsonText = String(raw).replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
       const parsed = JSON.parse(jsonText);
       const questions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+      const expectedCount = bulkText.split(/\n\s*\n+/).filter((block) => block.trim()).length;
       const normalized: MCQQuestionInput[] = questions.map((q: any, index: number) => {
         const options = Array.isArray(q.options) ? q.options.slice(0, 4).map((o: any, optionIndex: number) => ({
           optionId: `opt_ai_${Date.now()}_${index}_${optionIndex}`,
@@ -421,6 +422,9 @@ ${bulkText}`;
         return { questionText: String(q.questionText || '').trim(), imageUrl: '', options, correctOptionId: options[correctIndex]?.optionId || options[0]?.optionId || '', marks: Number(q.marks) || 1 };
       }).filter((q: MCQQuestionInput) => q.questionText && q.options.length === 4 && q.options.every((o) => o.text));
       if (!normalized.length) throw new Error('AI কোনো সম্পূর্ণ ৪-option প্রশ্ন তৈরি করতে পারেনি');
+      if (expectedCount > 1 && normalized.length < expectedCount) {
+        throw new Error(`AI ${expectedCount}টির মধ্যে ${normalized.length}টি প্রশ্ন সম্পূর্ণ করতে পেরেছে। অনুগ্রহ করে আবার চেষ্টা করুন বা manual converter ব্যবহার করুন।`);
+      }
       setMcqQuestions((prev) => prev.length === 1 && !prev[0].questionText.trim() ? normalized : [...prev, ...normalized]);
       setShowBulkModal(false);
       setBulkText('');
