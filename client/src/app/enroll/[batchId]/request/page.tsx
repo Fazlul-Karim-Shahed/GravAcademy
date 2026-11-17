@@ -108,7 +108,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
                 <Field label="নাম *" icon={<UserRound className="w-4 h-4" />} value={form.name} onChange={(v) => update('name', v)} required readOnly={Boolean(user?.name)} />
                 <Field label="মোবাইল (WhatsApp) *" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} required type="tel" readOnly={Boolean(user?.phone)} />
-                <Field label={user ? "ইমেইল" : "ইমেইল (ভেরিফিকেশনের জন্য আবশ্যক) *"} icon={<Mail className="w-4 h-4" />} value={form.email} onChange={(v) => update('email', v)} required={!user} type="email" readOnly={Boolean(user?.email)} />
+                <Field label={user ? "ইমেইল" : "ইমেইল (request confirmation-এর জন্য আবশ্যক) *"} icon={<Mail className="w-4 h-4" />} value={form.email} onChange={(v) => update('email', v)} required={!user} type="email" readOnly={Boolean(user?.email)} />
                 <Field label="শ্রেণি" value={form.gradeLevel} onChange={() => {}} readOnly />
                 <Field label="স্কুল / কলেজ" value={form.schoolOrCollege} onChange={(v) => update('schoolOrCollege', v)} readOnly={Boolean(user?.studentDetails?.schoolOrCollege)} />
                 <Field label="অভিভাবকের নাম" value={form.guardianName} onChange={(v) => update('guardianName', v)} readOnly={Boolean(user?.studentDetails?.guardianName)} />

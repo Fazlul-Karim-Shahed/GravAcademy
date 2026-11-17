@@ -187,21 +187,24 @@ export const sendEnrollmentRequestReceivedEmail = async ({
   batchName: string;
   verificationUrl?: string;
 }): Promise<boolean> => {
+  const hasVerificationLink = Boolean(verificationUrl);
   return sendGmailTextEmail({
     to,
-    subject: 'Confirm your email for Grav Academy enrollment | Grav Academy',
-    linkLabel: 'ইমেইল verify করুন',
-    body: [
-      'Hi ' + (name || 'there') + ',',
-      '',
-      'Confirm this email address to submit your request to join the batch "' + batchName + '":',
-      verificationUrl || '',
-      'This link expires in 24 hours.',
-      '',
-      'Your request will reach our admission team only after email confirmation.',
-      '',
-      'Grav Academy',
-    ].join('\n'),
+    subject: hasVerificationLink ? 'Confirm your email for Grav Academy enrollment | Grav Academy' : 'Your Grav Academy enrollment request was submitted',
+    linkLabel: hasVerificationLink ? 'ইমেইল verify করুন' : undefined,
+    body: hasVerificationLink
+      ? [
+          'Hi ' + (name || 'there') + ',', '',
+          'Confirm this email address to submit your request to join the batch "' + batchName + '":',
+          verificationUrl || '', 'This link expires in 24 hours.', '',
+          'Your request will reach our admission team only after email confirmation.', '', 'Grav Academy',
+        ].join('\n')
+      : [
+          'Hi ' + (name || 'there') + ',', '',
+          'আপনার "' + batchName + '" batch-এ ভর্তি হওয়ার request সফলভাবে admin-এর কাছে জমা হয়েছে।',
+          'আমাদের প্রতিনিধি খুব শীঘ্রই আপনার সঙ্গে যোগাযোগ করবে।', '',
+          'এটি confirmation email; আপনার account admin approve করার পর তৈরি হবে।', '', 'Grav Academy',
+        ].join('\n'),
   });
 };
 
