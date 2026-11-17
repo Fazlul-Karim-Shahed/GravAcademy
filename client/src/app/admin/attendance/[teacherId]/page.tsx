@@ -359,11 +359,11 @@ export default function TeacherAttendanceDetailPage() {
                 if (!day) return <div key={`blank-${index}`} />;
                 const value = `${month}-${String(day).padStart(2, '0')}`;
                 const isFutureDate = value > today;
-                const isScheduled = !isFutureDate && scheduledDates.has(value);
+                const isScheduled = scheduledDates.has(value);
                 const selected = selectedDate === value;
                 const isToday = todayInDhaka() === value;
                 return (
-                  <button key={value} disabled={isFutureDate} onClick={() => { setStartDate(''); setEndDate(''); setSelectedDate(selected ? '' : value); }} aria-pressed={selected} className={`relative mx-auto grid h-10 w-10 place-items-center rounded-full text-sm transition disabled:cursor-not-allowed disabled:text-slate-300 dark:disabled:text-slate-700 sm:h-11 sm:w-11 ${selected ? 'bg-blue-600 font-bold text-white' : isScheduled ? 'bg-blue-50 font-semibold text-blue-800 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-900' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'} ${isToday && !selected ? 'ring-1 ring-emerald-500' : ''}`}>
+                  <button key={value} disabled={isFutureDate} onClick={() => { setStartDate(''); setEndDate(''); setSelectedDate(selected ? '' : value); }} aria-pressed={selected} className={`relative mx-auto grid h-10 w-10 place-items-center rounded-full text-sm transition disabled:cursor-not-allowed disabled:text-slate-300 dark:disabled:text-slate-700 sm:h-11 sm:w-11 ${selected ? 'bg-blue-600 font-bold text-white' : isScheduled && !isFutureDate ? 'bg-blue-50 font-semibold text-blue-800 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-900' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'} ${isToday && !selected ? 'ring-1 ring-emerald-500' : ''}`}>
                     {day}{isScheduled && !selected && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-blue-600 dark:bg-blue-300" />}
                   </button>
                 );

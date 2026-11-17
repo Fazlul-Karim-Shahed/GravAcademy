@@ -258,7 +258,7 @@ export const getTeacherAttendance = async (req: AuthenticatedRequest, res: Respo
     const scheduledDates: string[] = [];
     for (let day = 1; day <= daysInMonth; day += 1) {
       const calendarDate = `${month}-${String(day).padStart(2, '0')}`;
-      if (calendarDate <= today && batches.some((batch: any) => isScheduledForDate(batch, calendarDate))) scheduledDates.push(calendarDate);
+      if (batches.some((batch: any) => isScheduledForDate(batch, calendarDate))) scheduledDates.push(calendarDate);
     }
 
     const uniqueCourses = Array.from(new Map(batches.map((batch: any) => [batch.courseId?._id?.toString(), {
