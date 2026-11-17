@@ -408,7 +408,12 @@ Rules: return exactly one question object for every question in the pasted text 
 Pasted questions:
 ${bulkText}`;
       const result = await puter.ai.chat(prompt, { model: 'openai/gpt-5.4-nano' });
-      const raw = typeof result === 'string' ? result : result?.message?.content || result?.text || '';
+      const content = result?.message?.content;
+      const raw = typeof result === 'string'
+        ? result
+        : Array.isArray(content)
+          ? content.map((part: any) => typeof part === 'string' ? part : part?.text || '').join('')
+          : content || result?.text || result?.content || '';
       const jsonText = String(raw).replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
       const parsed = JSON.parse(jsonText);
       const questions = Array.isArray(parsed?.questions) ? parsed.questions : [];
@@ -430,7 +435,9 @@ ${bulkText}`;
       setBulkText('');
       alert(`AI দিয়ে ${normalized.length} টি প্রশ্ন সাজানো হয়েছে। Save করার আগে preview দেখে নিন।`);
     } catch (error: any) {
-      setErrorMessage(error?.message || 'AI দিয়ে প্রশ্ন সাজানো যায়নি।');
+      const message = error?.message || 'AI দিয়ে প্রশ্ন সাজানো যায়নি। আবার চেষ্টা করুন।';
+      setErrorMessage(message);
+      alert(message);
     } finally {
       setAiFormatting(false);
     }
