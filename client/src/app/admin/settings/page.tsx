@@ -18,6 +18,7 @@ import {
   Key,
   ExternalLink,
   Sparkles,
+  RefreshCw,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
@@ -50,6 +51,19 @@ export default function AdminSettingsPage() {
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const [whatsAppFeedback, setWhatsAppFeedback] = useState('');
   const [disconnectingWhatsApp, setDisconnectingWhatsApp] = useState(false);
+  const [checkingWhatsApp, setCheckingWhatsApp] = useState(false);
+
+  const checkWhatsAppStatus = async () => {
+    setCheckingWhatsApp(true);
+    try {
+      const response = await api.get('/whatsapp/status');
+      setWhatsAppStatus(response.data.data);
+    } catch {
+      setWhatsAppStatus({ state: 'error', qrImage: null, lastError: 'স্ট্যাটাস লোড করা যায়নি' });
+    } finally {
+      setCheckingWhatsApp(false);
+    }
+  };
 
   const disconnectWhatsApp = async () => {
     if (!window.confirm('বর্তমান WhatsApp account disconnect করবেন? এরপর নতুন account connect করতে QR scan করতে হবে।')) return;
@@ -83,16 +97,9 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     if (activeTab !== 'notifications' || !['admin', 'superadmin'].includes(user?.role || '')) return;
     let active = true;
-    const refresh = async () => {
-      try {
-        const response = await api.get('/whatsapp/status');
-        if (active) setWhatsAppStatus(response.data.data);
-      } catch {
-        if (active) setWhatsAppStatus({ state: 'error', qrImage: null, lastError: 'স্ট্যাটাস লোড করা যায়নি' });
-      }
-    };
-    refresh();
-    const timer = window.setInterval(refresh, 5000);
+    const refresh = async () => { if (active) await checkWhatsAppStatus(); };
+    void refresh();
+    const timer = window.setInterval(() => { void refresh(); }, 5000);
     return () => { active = false; window.clearInterval(timer); };
   }, [activeTab, user?.role]);
 
@@ -715,9 +722,14 @@ export default function AdminSettingsPage() {
                   ইমেইল সফলভাবে পাঠানো হলে নিবন্ধিত ফোন নম্বরে একই বার্তা WhatsApp-এ পাঠানোর চেষ্টা হবে। সংযোগ না থাকলে WhatsApp বার্তা যাবে না।
                 </p>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
-                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                    অবস্থা: {whatsAppStatus?.state === 'ready' ? 'সংযুক্ত' : whatsAppStatus?.state === 'qr' ? 'QR স্ক্যান করুন' : whatsAppStatus?.state === 'starting' ? 'সংযোগ হচ্ছে' : whatsAppStatus?.state === 'disconnected' ? 'বিচ্ছিন্ন' : whatsAppStatus?.state === 'error' ? 'সমস্যা হয়েছে' : 'লোড হচ্ছে'}
-                  </p>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                      অবস্থা: {whatsAppStatus?.state === 'ready' ? 'সংযুক্ত' : whatsAppStatus?.state === 'qr' ? 'QR স্ক্যান করুন' : whatsAppStatus?.state === 'starting' ? 'সংযোগ হচ্ছে' : whatsAppStatus?.state === 'disconnected' ? 'বিচ্ছিন্ন' : whatsAppStatus?.state === 'error' ? 'সমস্যা হয়েছে' : 'লোড হচ্ছে'}
+                    </p>
+                    <button type="button" onClick={() => void checkWhatsAppStatus()} disabled={checkingWhatsApp} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-white disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">
+                      <RefreshCw className={`h-3.5 w-3.5 ${checkingWhatsApp ? 'animate-spin' : ''}`} /> স্ট্যাটাস চেক করুন
+                    </button>
+                  </div>
                   {whatsAppStatus?.qrImage && (
                     <div className="mt-4 space-y-2">
                       <p className="text-xs text-slate-600 dark:text-slate-300">ফোনের WhatsApp → Linked devices → Link a device থেকে QR স্ক্যান করুন।</p>
