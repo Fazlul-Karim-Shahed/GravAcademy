@@ -118,11 +118,11 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
   }, [videoId]);
 
   return (
-    <div ref={wrapperRef} className="overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-950 shadow-lg dark:border-slate-800/90">
-      <div className="aspect-video bg-black" aria-label={title}>
+    <div ref={wrapperRef} className="lesson-video-player overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-950 shadow-lg dark:border-slate-800/90">
+      <div className="lesson-video-surface aspect-video bg-black" aria-label={title}>
         <div ref={mountRef} className="h-full w-full" />
       </div>
-      <div className="flex min-h-12 items-center gap-3 px-3 py-2 text-white sm:px-4">
+      <div className="lesson-video-controls flex min-h-12 items-center gap-3 px-3 py-2 text-white sm:px-4">
         <button
           type="button"
           disabled={!ready}

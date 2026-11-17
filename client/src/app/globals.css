@@ -904,6 +904,27 @@ html.dark .mobile-glass-surface {
   -webkit-backdrop-filter: blur(16px);
 }
 
+/* Keep the lecture controls inside the visible area in fullscreen. */
+.lesson-video-player:fullscreen {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  border-radius: 0;
+}
+
+.lesson-video-player:fullscreen .lesson-video-surface {
+  flex: 1 1 auto;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+.lesson-video-player:fullscreen .lesson-video-controls {
+  flex: 0 0 auto;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
 /* Ensure data tables always have smooth horizontal scroll with visible indicator on small mobile */
 @media (max-width: 640px) {
   .responsive-table-wrapper {
