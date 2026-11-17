@@ -24,7 +24,7 @@ import { AuthenticatedRequest } from '../middleware/auth';
 export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস লিখুন।'),
-  phone: z.string().optional().or(z.literal('')),
+  phone: z.string().trim().min(1, 'মোবাইল নম্বর দিন'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 

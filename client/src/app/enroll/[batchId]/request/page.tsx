@@ -55,8 +55,8 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
-    if (!form.name.trim() || (!form.phone.trim() && !form.email.trim())) {
-      setError('নাম এবং যোগাযোগের জন্য ইমেইল অথবা মোবাইল নম্বর দিন।');
+    if (!form.name.trim() || !form.phone.trim()) {
+      setError('নাম ও মোবাইল নম্বর দিন।');
       return;
     }
     setSubmitting(true);
@@ -107,7 +107,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
               {error && <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold">{error}</div>}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
                 <Field label="নাম *" icon={<UserRound className="w-4 h-4" />} value={form.name} onChange={(v) => update('name', v)} required readOnly={Boolean(user?.name)} />
-                <Field label="মোবাইল (WhatsApp, ঐচ্ছিক)" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} type="tel" readOnly={Boolean(user?.phone)} />
+                <Field label="মোবাইল (WhatsApp) *" icon={<Phone className="w-4 h-4" />} value={form.phone} onChange={(v) => update('phone', v)} required type="tel" readOnly={Boolean(user?.phone)} />
                 <Field label={user ? "ইমেইল" : "ইমেইল (ভেরিফিকেশনের জন্য আবশ্যক) *"} icon={<Mail className="w-4 h-4" />} value={form.email} onChange={(v) => update('email', v)} required={!user} type="email" readOnly={Boolean(user?.email)} />
                 <Field label="শ্রেণি" value={form.gradeLevel} onChange={() => {}} readOnly />
                 <Field label="স্কুল / কলেজ" value={form.schoolOrCollege} onChange={(v) => update('schoolOrCollege', v)} readOnly={Boolean(user?.studentDetails?.schoolOrCollege)} />

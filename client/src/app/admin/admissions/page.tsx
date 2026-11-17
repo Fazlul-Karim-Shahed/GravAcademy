@@ -517,8 +517,8 @@ export default function AdminAdmissionsPage() {
       setErrorMsg('নতুন শিক্ষার্থী নিবন্ধনের জন্য একটি সক্রিয় ও সঠিক ইমেইল এড্রেস আবশ্যক (লগইন তথ্য ও ওয়েলকাম বার্তা পাঠানো হবে)।');
       return;
     }
-    if (!studentPhone.trim() && !studentEmail.trim()) {
-      setErrorMsg('যোগাযোগের জন্য শিক্ষার্থীর ফোন নম্বর অথবা ইমেইল যেকোনো একটি অবশ্যই দেওয়া প্রয়োজন।');
+    if (!studentPhone.trim()) {
+      setErrorMsg('শিক্ষার্থীর মোবাইল নম্বর দেওয়া আবশ্যক।');
       return;
     }
 
@@ -833,7 +833,7 @@ export default function AdminAdmissionsPage() {
                     {/* Student Phone */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                        মোবাইল নম্বর (WhatsApp, ঐচ্ছিক)
+                        মোবাইল নম্বর (WhatsApp) <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
                         <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />

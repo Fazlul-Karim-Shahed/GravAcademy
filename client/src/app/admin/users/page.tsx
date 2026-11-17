@@ -731,9 +731,10 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল (WhatsApp, ঐচ্ছিক)</label>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">মোবাইল (WhatsApp) *</label>
                   <input
                     type="text"
+                    required
                     value={staffPhone}
                     onChange={(e) => setStaffPhone(e.target.value)}
                     placeholder="017XXXXXXXX"

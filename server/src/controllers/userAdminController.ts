@@ -39,7 +39,7 @@ import {
 export const createStaffSchema = z.object({
   name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষরের হতে হবে').max(100),
   email: z.string().email('অনুগ্রহ করে একটি সঠিক ইমেইল ঠিকানা দিন'),
-  phone: z.string().optional().or(z.literal('')),
+  phone: z.string().trim().min(1, 'মোবাইল নম্বর দিন'),
   password: z.string().min(6, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'),
   role: z.enum(['teacher', 'guardian', 'employee']),
 });

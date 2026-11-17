@@ -46,21 +46,18 @@ export const enrollBatchSchema = z.object({
 export const createEnrollmentRequestSchema = z.object({
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Batch ID'),
   name: z.string().min(2).max(120),
-  phone: z.string().max(30).optional().or(z.literal('')),
+  phone: z.string().trim().min(1, 'মোবাইল নম্বর দিন').max(30),
   email: z.string().email().optional().or(z.literal('')),
   schoolOrCollege: z.string().max(160).optional().or(z.literal('')),
   gradeLevel: z.string().max(80).optional().or(z.literal('')),
   guardianName: z.string().max(120).optional().or(z.literal('')),
   guardianPhone: z.string().max(30).optional().or(z.literal('')),
   message: z.string().max(500).optional().or(z.literal('')),
-}).refine((data) => Boolean(data.phone?.trim() || data.email?.trim()), {
-  message: 'à¦®à§‹à¦¬à¦¾à¦‡à¦² à¦…à¦¥à¦¬à¦¾ à¦‡à¦®à§‡à¦‡à¦²à§‡à¦° à¦…à¦¨à§à¦¤à¦¤ à¦à¦•à¦Ÿà¦¿ à¦¦à¦¿à¦¨',
-  path: ['phone'],
 });
 
 export const adminAdmitStudentSchema = z.object({
   name: z.string().min(2, 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¨à¦¾à¦® à¦†à¦¬à¦¶à§à¦¯à¦•'),
-  phone: z.string().optional().or(z.literal('')),
+  phone: z.string().trim().min(1, 'মোবাইল নম্বর দিন'),
   email: z.string().email('à¦¸à¦ à¦¿à¦• à¦‡à¦®à§‡à¦‡à¦² à¦ à¦¿à¦•à¦¾à¦¨à¦¾ à¦¦à¦¿à¦¨').optional().or(z.literal('')),
   batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'à¦­à§à¦² à¦¬à§à¦¯à¦¾à¦š à¦†à¦‡à¦¡à¦¿'),
   courseId: z.string().optional().or(z.literal('')),
