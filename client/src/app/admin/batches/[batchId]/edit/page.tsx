@@ -25,7 +25,10 @@ interface CourseItem {
   title: string;
   gradeLevel?: string;
   subject?: string;
+  durationMonths?: number;
 }
+
+const todayInDhaka = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
 export default function EditBatchPage() {
   const router = useRouter();
@@ -38,6 +41,8 @@ export default function EditBatchPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [originalStartDate, setOriginalStartDate] = useState('');
+  const [statusTouched, setStatusTouched] = useState(false);
 
   // Class Filter
   const [selectedClass, setSelectedClass] = useState<string>('All');
@@ -51,7 +56,6 @@ export default function EditBatchPage() {
     capacity: 40,
     meetingUrl: '',
     startDate: '',
-    durationMonths: 1,
   });
 
   useEffect(() => {
@@ -78,6 +82,7 @@ export default function EditBatchPage() {
         const b = batchRes.data.data;
         const cId = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId._id : (b.courseId || '');
         const cGrade = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId.gradeLevel : '';
+        setOriginalStartDate(b.startDate ? new Date(b.startDate).toISOString().slice(0, 10) : '');
 
         if (cGrade) {
           setSelectedClass(cGrade);
@@ -97,7 +102,6 @@ export default function EditBatchPage() {
           capacity: b.capacity || 40,
           meetingUrl: b.meetingUrl || '',
           startDate: b.startDate ? new Date(b.startDate).toISOString().slice(0, 10) : '',
-          durationMonths: b.durationMonths || 1,
         });
       }
     } catch (err: any) {
@@ -122,6 +126,10 @@ export default function EditBatchPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!courses.find((course) => course._id === form.courseId)?.durationMonths) {
+      setError('আগে নির্বাচিত course-এর মেয়াদ (মাস) নির্ধারণ করুন।');
+      return;
+    }
     setSubmitting(true);
     setError('');
     setSuccess('');
@@ -134,7 +142,7 @@ export default function EditBatchPage() {
       const payload: any = {
         name: form.name,
         courseId: form.courseId,
-        status: form.status,
+        ...(statusTouched || form.startDate === originalStartDate ? { status: form.status } : {}),
         scheduleText: finalScheduleText,
         weeklySchedule: form.weeklySchedule.map((s) => ({
           ...s,
@@ -142,7 +150,7 @@ export default function EditBatchPage() {
         })),
         capacity: Number(form.capacity),
         meetingUrl: form.meetingUrl.trim(),
-        ...(form.startDate ? { startDate: form.startDate, durationMonths: Number(form.durationMonths) } : {}),
+        startDate: form.startDate,
       };
 
       const res = await api.put(`/batches/${batchId}`, payload);
@@ -289,15 +297,13 @@ export default function EditBatchPage() {
             <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40 sm:p-5">
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">ব্যাচের সময়কাল</h2>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শুরুর তারিখ ও মাস দিলে শেষের তারিখ backend হিসাব করবে।</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শেষের তারিখ course-এর মেয়াদ থেকে হিসাব হবে।</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ
-                  <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ *
+                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
                 </label>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">ব্যাচ চলবে (মাস)
-                  <input type="number" min="1" max="120" value={form.durationMonths} onChange={(e) => setForm({ ...form, durationMonths: Number(e.target.value) })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
-                </label>
+                <p className="self-end pb-3 text-sm text-slate-500 dark:text-slate-400">নির্বাচিত course: {courses.find((course) => course._id === form.courseId)?.durationMonths ? `${courses.find((course) => course._id === form.courseId)?.durationMonths} মাস` : 'মেয়াদ নির্ধারিত নেই'}</p>
               </div>
             </section>
 
@@ -308,7 +314,7 @@ export default function EditBatchPage() {
               </label>
               <select
                 value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                onChange={(e) => { setStatusTouched(true); setForm({ ...form, status: e.target.value }); }}
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
               >
                 <option value="draft">Draft (Private setup)</option>

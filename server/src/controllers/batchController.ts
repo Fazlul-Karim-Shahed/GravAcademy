@@ -21,9 +21,8 @@ export const scheduleSlotSchema = z.object({
 export const createBatchSchema = z.object({
   name: z.string().min(2).max(120),
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Course ID'),
-  status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).default('draft'),
+  status: z.enum(['draft', 'upcoming', 'active', 'completed', 'archived']).optional(),
   startDate: z.string().date(),
-  durationMonths: z.number().int().min(1).max(120),
   enrollmentOpenDate: z.string().datetime().optional(),
   enrollmentCloseDate: z.string().datetime().optional(),
   capacity: z.number().min(0).optional(),
@@ -203,7 +202,6 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
       courseId,
       status,
       startDate,
-      durationMonths,
       enrollmentOpenDate,
       enrollmentCloseDate,
       capacity,
@@ -216,15 +214,19 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
     const finalMeetingUrl = meetingUrl && meetingUrl.trim().length > 0 ? meetingUrl.trim() : '';
 
     // 1. Create the new destination Batch record
+    const course = await Course.findById(courseId).select('durationMonths');
+    if (!course) return res.status(404).json({ success: false, message: 'Course পাওয়া যায়নি।' });
+    if (!course.durationMonths) return res.status(400).json({ success: false, message: 'আগে course edit করে মেয়াদ (মাস) নির্ধারণ করুন।' });
     const normalizedStartDate = new Date(`${startDate}T00:00:00.000Z`);
-    const calculatedEndDate = addCalendarMonths(normalizedStartDate, durationMonths);
+    const calculatedEndDate = addCalendarMonths(normalizedStartDate, course.durationMonths);
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
     const newBatch = await Batch.create({
       name,
       courseId,
-      status: status || 'draft',
+      status: status || (startDate > today ? 'upcoming' : 'active'),
       startDate: normalizedStartDate,
-      durationMonths,
+      durationMonths: course.durationMonths,
       endDate: calculatedEndDate,
       enrollmentOpenDate,
       enrollmentCloseDate,
@@ -362,8 +364,9 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     if (name !== undefined) batch.name = name;
+    if (courseId !== undefined && !mongoose.Types.ObjectId.isValid(courseId)) return res.status(400).json({ success: false, message: 'Course নির্বাচন সঠিক নয়।' });
     if (courseId !== undefined) batch.courseId = courseId;
-    if (status !== undefined) batch.status = status;
+    if (status !== undefined && !['draft', 'upcoming', 'active', 'completed', 'archived'].includes(status)) return res.status(400).json({ success: false, message: 'Status নির্বাচন সঠিক নয়।' });
     if (scheduleText !== undefined) batch.scheduleText = scheduleText;
     if (req.body.meetingUrl !== undefined) batch.meetingUrl = req.body.meetingUrl;
     if (weeklySchedule !== undefined && Array.isArray(weeklySchedule)) {
@@ -372,18 +375,19 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
     if (capacity !== undefined) batch.capacity = Number(capacity);
 
     const startDate = req.body.startDate;
-    const durationMonths = req.body.durationMonths;
-    if (startDate !== undefined || durationMonths !== undefined) {
-      if (typeof startDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(startDate) || new Date(`${startDate}T00:00:00.000Z`).toISOString().slice(0, 10) !== startDate) {
-        return res.status(400).json({ success: false, message: 'A valid batch start date is required' });
-      }
-      if (!Number.isInteger(durationMonths) || durationMonths < 1 || durationMonths > 120) {
-        return res.status(400).json({ success: false, message: 'Batch duration must be between 1 and 120 months' });
-      }
-      batch.startDate = new Date(`${startDate}T00:00:00.000Z`);
-      batch.durationMonths = durationMonths;
-      batch.endDate = addCalendarMonths(batch.startDate, durationMonths);
+    if (typeof startDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(startDate) || Number.isNaN(Date.parse(`${startDate}T00:00:00.000Z`)) || new Date(`${startDate}T00:00:00.000Z`).toISOString().slice(0, 10) !== startDate) {
+      return res.status(400).json({ success: false, message: 'Batch-এর শুরুর তারিখ দিতে হবে।' });
     }
+    const course = await Course.findById(batch.courseId).select('durationMonths');
+    if (!course) return res.status(404).json({ success: false, message: 'Course পাওয়া যায়নি।' });
+    if (!course.durationMonths) return res.status(400).json({ success: false, message: 'আগে course edit করে মেয়াদ (মাস) নির্ধারণ করুন।' });
+    const previousStartDate = batch.startDate?.toISOString().slice(0, 10);
+    batch.startDate = new Date(`${startDate}T00:00:00.000Z`);
+    batch.durationMonths = course.durationMonths;
+    batch.endDate = addCalendarMonths(batch.startDate, course.durationMonths);
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    if (status !== undefined) batch.status = status;
+    else if (previousStartDate !== startDate) batch.status = startDate > today ? 'upcoming' : 'active';
     await batch.save();
 
     return res.status(200).json({

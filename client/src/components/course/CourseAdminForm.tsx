@@ -77,6 +77,7 @@ interface CourseFormData {
   targetAudience: string;
   studentAccessMode: 'manual' | 'lifetime';
   studentAccessMonths: number | '';
+  durationMonths: number | '';
   isPublished: boolean;
   instructors: string[];
   curriculumHighlights: string[];
@@ -146,6 +147,7 @@ function getDefaultForm(): CourseFormData {
     targetAudience: '',
     studentAccessMode: 'manual',
     studentAccessMonths: '',
+    durationMonths: '',
     isPublished: true,
     instructors: [],
     curriculumHighlights: defaultHighlights,
@@ -177,6 +179,7 @@ function hydrateForm(course: any): CourseFormData {
     targetAudience: asString(course.targetAudience),
     studentAccessMode: course.studentAccessMode === 'lifetime' ? 'lifetime' : 'manual',
     studentAccessMonths: Number(course.studentAccessMonths) > 0 ? Number(course.studentAccessMonths) : '',
+    durationMonths: Number(course.durationMonths) > 0 ? Number(course.durationMonths) : '',
     isPublished: course.isPublished ?? true,
     instructors: instructorIds,
     curriculumHighlights: Array.isArray(course.features) && course.features.length
@@ -305,6 +308,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
       discountPrice: Number(form.discountPrice) || 0,
       studentAccessMode: form.studentAccessMode,
       studentAccessMonths: form.studentAccessMode === 'manual' && form.studentAccessMonths !== '' ? Number(form.studentAccessMonths) : null,
+      durationMonths: Number(form.durationMonths),
       instructors: form.instructors,
       instructorProfiles: [],
       features: [],
@@ -337,6 +341,9 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
             <Field label="Course title *"><input required className={inputClass} value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="Class 10 Physics Masterclass" /></Field>
             <Field label="Class / grade *"><select required className={inputClass} value={form.gradeLevel} onChange={(event) => update('gradeLevel', event.target.value)}>{(gradeOptions.length ? gradeOptions : [form.gradeLevel]).map((item) => <option key={item}>{item}</option>)}</select></Field>
             <Field label="Subject"><input className={inputClass} value={form.subject} onChange={(event) => update('subject', event.target.value)} placeholder="Physics" /></Field>
+          </div>
+          <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40">
+            <Field label="কোর্স চলবে (মাস) *" hint="Batch-এর শেষ তারিখ এই মেয়াদ থেকে হিসাব হবে।"><input required type="number" min="1" max="120" step="1" className={inputClass} value={form.durationMonths} onChange={(event) => update('durationMonths', event.target.value ? Number(event.target.value) : '')} placeholder="যেমন ১২" /></Field>
           </div>
           <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40">
             <h3 className="text-xs font-black text-slate-800 dark:text-slate-200">Student access</h3>

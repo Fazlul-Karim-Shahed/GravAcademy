@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { Course } from '../models/Course';
+import { Batch } from '../models/Batch';
+import { addCalendarMonths } from '../services/batchAccessService';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { AuditLog } from '../models/AuditLog';
 
@@ -20,6 +22,7 @@ export const createCourseSchema = z.object({
   regularPrice: z.number().min(0).optional(),
   discountPrice: z.number().min(0).optional(),
   duration: z.string().optional(),
+  durationMonths: z.number().int().min(1).max(120),
   studentAccessMode: z.enum(['manual', 'lifetime']).default('manual'),
   studentAccessMonths: z.number().int().min(1).max(120).nullable().optional(),
   isPublished: z.boolean().default(false),
@@ -174,11 +177,30 @@ export const createCourse = async (req: AuthenticatedRequest, res: Response) => 
 export const updateCourse = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const course = await Course.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
-
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
+    const months = req.body?.durationMonths;
+    if (!Number.isInteger(months) || months < 1 || months > 120) {
+      return res.status(400).json({ success: false, message: 'Course duration must be between 1 and 120 months.' });
     }
+    const session = await mongoose.startSession();
+    let course;
+    try {
+      await session.withTransaction(async () => {
+        course = await Course.findByIdAndUpdate(id, req.body, { new: true, runValidators: true, session });
+        if (!course) return;
+        const batches = await Batch.find({ courseId: id, startDate: { $exists: true } }).select('_id startDate').session(session).lean();
+        if (batches.length) {
+          await Batch.bulkWrite(batches.map((batch) => ({
+            updateOne: {
+              filter: { _id: batch._id },
+              update: { $set: { durationMonths: months, endDate: addCalendarMonths(new Date(batch.startDate!), months) } },
+            },
+          })), { session });
+        }
+      });
+    } finally {
+      await session.endSession();
+    }
+    if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
     return res.status(200).json({
       success: true,

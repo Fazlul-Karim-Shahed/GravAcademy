@@ -39,6 +39,7 @@ interface Course {
   regularPrice?: number;
   discountPrice?: number;
   duration?: string;
+  durationMonths?: number;
   isPublished: boolean;
   createdAt: string;
 }
@@ -396,7 +397,7 @@ function AdminCoursesContent() {
                             <div className="px-2 min-w-0">
                               <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight mb-0.5">মেয়াদকাল</span>
                               <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 truncate block">
-                                {course.duration || '১ বছর'}
+                                {course.durationMonths ? `${course.durationMonths} মাস` : 'নির্ধারিত নয়'}
                               </span>
                             </div>
 

@@ -25,7 +25,10 @@ interface CourseItem {
   title: string;
   gradeLevel?: string;
   subject?: string;
+  durationMonths?: number;
 }
+
+const todayInDhaka = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
 function CreateBatchContent() {
   const router = useRouter();
@@ -39,6 +42,7 @@ function CreateBatchContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [statusTouched, setStatusTouched] = useState(false);
 
   // Hierarchical Filter State
   const [selectedClass, setSelectedClass] = useState<string>('All');
@@ -51,8 +55,7 @@ function CreateBatchContent() {
     scheduleText: '',
     weeklySchedule: [] as ScheduleSlot[],
     capacity: 40,
-    startDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10),
-    durationMonths: 1,
+    startDate: '',
     meetingUrl: '',
     copyFromBatchId: cloneFromId,
   });
@@ -96,8 +99,7 @@ function CreateBatchContent() {
               scheduleText: source.scheduleText || '',
               weeklySchedule: Array.isArray(source.weeklySchedule) ? source.weeklySchedule : [],
               capacity: source.capacity || 40,
-              startDate: source.startDate ? new Date(source.startDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-              durationMonths: source.durationMonths || 1,
+              startDate: '',
               meetingUrl: source.meetingUrl || '',
               copyFromBatchId: cloneFromId,
             });
@@ -137,6 +139,10 @@ function CreateBatchContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!courses.find((course) => course._id === form.courseId)?.durationMonths) {
+      setError('আগে নির্বাচিত course-এর মেয়াদ (মাস) নির্ধারণ করুন।');
+      return;
+    }
     setSubmitting(true);
     setError('');
     setSuccess('');
@@ -150,7 +156,7 @@ function CreateBatchContent() {
       const payload: any = {
         name: form.name,
         courseId: form.courseId,
-        status: form.status,
+        ...(statusTouched ? { status: form.status } : {}),
         scheduleText: finalScheduleText,
         weeklySchedule: form.weeklySchedule.map((s) => ({
           ...s,
@@ -158,7 +164,6 @@ function CreateBatchContent() {
         })),
         capacity: Number(form.capacity),
         startDate: form.startDate,
-        durationMonths: Number(form.durationMonths),
       };
 
       if (form.copyFromBatchId) {
@@ -303,15 +308,13 @@ function CreateBatchContent() {
             <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40 sm:p-5">
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">ব্যাচের সময়কাল</h2>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শুরুর তারিখ ও মাস দিলে শেষের তারিখ backend হিসাব করবে।</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শেষের তারিখ course-এর মেয়াদ থেকে হিসাব হবে।</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ
-                  <input type="date" required value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ *
+                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
                 </label>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">ব্যাচ চলবে (মাস)
-                  <input type="number" required min="1" max="120" value={form.durationMonths} onChange={(e) => setForm({ ...form, durationMonths: Number(e.target.value) })} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
-                </label>
+                <p className="self-end pb-3 text-sm text-slate-500 dark:text-slate-400">নির্বাচিত course: {courses.find((course) => course._id === form.courseId)?.durationMonths ? `${courses.find((course) => course._id === form.courseId)?.durationMonths} মাস` : 'মেয়াদ নির্ধারিত নেই'}</p>
               </div>
             </section>
 
@@ -322,12 +325,14 @@ function CreateBatchContent() {
               </label>
               <select
                 value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                onChange={(e) => { setStatusTouched(true); setForm({ ...form, status: e.target.value }); }}
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
               >
                 <option value="draft">Draft (Private setup)</option>
+                <option value="upcoming">Upcoming (Scheduled for launch)</option>
                 <option value="active">Active (Open for Admissions)</option>
                 <option value="completed">Completed (Archived)</option>
+                <option value="archived">Archived</option>
               </select>
             </div>
 
