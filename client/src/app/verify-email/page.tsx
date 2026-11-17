@@ -54,16 +54,13 @@ function VerifyEmailContent() {
   const iconColor = state === 'success' ? 'text-emerald-600' : state === 'error' ? 'text-rose-500' : 'text-blue-600';
 
   return (
-    <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-slate-50 px-4 py-12 dark:bg-slate-950 sm:py-16">
-      <section className="w-full max-w-md rounded-2xl border border-slate-200 bg-white text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="border-b border-slate-100 px-7 py-6 dark:border-slate-800 sm:px-10">
-          <div className="flex justify-center">
-            <SiteLogo size="lg" showText={true} textClassName="text-base" taglineClassName="text-[10px]" />
-          </div>
-        </div>
-        <div className="p-7 sm:p-10">
-          <div className={`mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 ${iconColor}`}>
-            <Icon className={`h-6 w-6 ${state === 'loading' ? 'animate-spin' : ''}`} />
+    <main className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center bg-slate-50 px-4 py-12 dark:bg-slate-950 sm:py-16">
+      <div className="mb-7 flex justify-center">
+        <SiteLogo size="xl" showText={true} textClassName="text-lg" taglineClassName="text-xs" />
+      </div>
+      <section className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white p-7 text-center shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 sm:p-10">
+          <div className={`mx-auto mb-5 flex h-12 w-12 items-center justify-center ${iconColor}`}>
+            <Icon className={`h-7 w-7 ${state === 'loading' ? 'animate-spin' : ''}`} />
           </div>
         <h1 className="text-xl font-extrabold text-slate-900 dark:text-white sm:text-2xl">
           {state === 'success' ? 'ইমেইল verify হয়েছে' : state === 'error' ? 'Verify করা যায়নি' : 'ইমেইল যাচাই হচ্ছে'}
@@ -91,7 +88,6 @@ function VerifyEmailContent() {
             <Link href="/" className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">হোমে ফিরুন</Link>
           </div>
         )}
-        </div>
       </section>
     </main>
   );
