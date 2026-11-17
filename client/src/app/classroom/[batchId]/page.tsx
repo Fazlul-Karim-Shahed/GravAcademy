@@ -163,8 +163,10 @@ export default function BatchClassroomPage({
   const copyBatchEmails = async () => {
     if (!batchEmails.length) return;
     try {
-      await navigator.clipboard.writeText(batchEmails.join(', '));
-      setEmailCopyNotice('সব email কপি হয়েছে।');
+      // YouTube Studio's private-sharing field parses comma-separated addresses.
+      // Keep the copied value compact so the entire list is recognized in one paste.
+      await navigator.clipboard.writeText(batchEmails.join(','));
+      setEmailCopyNotice('YouTube-এর জন্য সব email কপি হয়েছে।');
     } catch {
       setEmailCopyNotice('কপি করা যায়নি। Email তালিকা select করে কপি করুন।');
     }
