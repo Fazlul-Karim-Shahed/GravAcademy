@@ -9,6 +9,7 @@ import { ROLES } from '../types/roles';
 import { User } from '../models/User';
 import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
+import { classroomLink, dispatchNotification, notifyExamPublished, notifyStudent } from '../services/classroomNotificationService';
 
 // Schema for Question Option
 const optionSchema = z.object({
@@ -118,6 +119,7 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
     if (!exam) {
       return res.status(404).json({ success: false, message: 'à¦à¦•à§à¦¸à¦¾à¦® à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
     }
+    const wasPublished = exam.isPublished;
 
     if (body.title !== undefined) exam.title = body.title.trim();
     if (body.instructions !== undefined) exam.instructions = body.instructions.trim();
@@ -176,6 +178,8 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
     if (body.mcqQuestions !== undefined || body.negativeMarkPerWrong !== undefined) {
       await regradeExamAttempts(exam, updatedQuestions, previousQuestions);
     }
+
+    if (!wasPublished && exam.isPublished) dispatchNotification(notifyExamPublished(exam));
 
     return res.status(200).json({
       success: true,
@@ -270,6 +274,8 @@ export const createExam = async (req: AuthenticatedRequest, res: Response) => {
 
       await Question.insertMany(questionDocs);
     }
+
+    if (exam.isPublished) dispatchNotification(notifyExamPublished(exam));
 
     return res.status(201).json({
       success: true,
@@ -585,6 +591,9 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
       status: isAutoEvaluated ? 'evaluated' : 'submitted',
     });
 
+    if (isAutoEvaluated) dispatchNotification(notifyStudent(user!.gravId, `পরীক্ষার ফল: ${exam.title}`,
+      `"${exam.title}" পরীক্ষার ফল প্রস্তুত।\n${classroomLink(exam.batchId.toString(), `/exams/${exam._id}/result`)}`));
+
     return res.status(200).json({
       success: true,
       message: isAutoEvaluated
@@ -681,6 +690,7 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
     if (typeof annotatedFileName === 'string' && annotatedFileName.trim()) {
       attempt.annotatedFileName = annotatedFileName.trim();
     }
+    const wasEvaluated = attempt.isEvaluated;
     attempt.isEvaluated = true;
     attempt.evaluatedBy = user?._id;
     attempt.evaluatedAt = new Date();
@@ -688,6 +698,8 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
     attempt.status = 'evaluated';
 
     await attempt.save();
+    if (!wasEvaluated) dispatchNotification(notifyStudent(attempt.gravId, `পরীক্ষার ফল: ${exam.title}`,
+      `"${exam.title}" পরীক্ষার ফল প্রস্তুত।\n${classroomLink(exam.batchId.toString(), `/exams/${exam._id}/result`)}`));
 
     return res.status(200).json({
       success: true,

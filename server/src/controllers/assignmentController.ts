@@ -9,6 +9,7 @@ import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ROLES } from '../types/roles';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
+import { classroomLink, dispatchNotification, notifyAssignmentPublished, notifyBatchTeachers, notifyStudent } from '../services/classroomNotificationService';
 
 // ==========================================
 // Validation Schemas
@@ -131,6 +132,8 @@ export const createAssignment = async (req: AuthenticatedRequest, res: Response)
       isPublished: data.isPublished,
       createdBy: user._id,
     });
+
+    if (assignment.isPublished) dispatchNotification(notifyAssignmentPublished(assignment));
 
     return res.status(201).json({
       success: true,
@@ -286,6 +289,7 @@ export const updateAssignment = async (req: AuthenticatedRequest, res: Response)
     }
 
     const data = updateAssignmentSchema.parse(req.body);
+    const wasPublished = assignment.isPublished;
     const nextTotalMarks = data.totalMarks ?? assignment.totalMarks;
     const nextPassMarks = data.passMarks ?? assignment.passMarks;
     if (nextPassMarks > nextTotalMarks) {
@@ -302,6 +306,7 @@ export const updateAssignment = async (req: AuthenticatedRequest, res: Response)
     if (data.isPublished !== undefined) assignment.isPublished = data.isPublished;
 
     await assignment.save();
+    if (!wasPublished && assignment.isPublished) dispatchNotification(notifyAssignmentPublished(assignment));
     return res.json({ success: true, message: 'Assignment updated successfully', data: assignment });
   } catch (error: any) {
     console.error('updateAssignment error:', error);
@@ -431,6 +436,11 @@ export const submitAssignment = async (req: AuthenticatedRequest, res: Response)
 
     await submission.save();
 
+    dispatchNotification(notifyStudent(user.gravId, `অ্যাসাইনমেন্ট জমা হয়েছে: ${assignment.title}`,
+      `আপনার "${assignment.title}" অ্যাসাইনমেন্ট জমা হয়েছে।\n${classroomLink(assignment.batchId.toString(), `/assignments/${assignment._id}`)}`));
+    dispatchNotification(notifyBatchTeachers(assignment.batchId.toString(), `অ্যাসাইনমেন্ট জমা: ${assignment.title}`,
+      `${user.name} "${assignment.title}" অ্যাসাইনমেন্ট জমা দিয়েছে।\n${classroomLink(assignment.batchId.toString(), `/assignments/${assignment._id}/submissions`)}`));
+
     return res.status(200).json({
       success: true,
       message: isOverdue
@@ -549,6 +559,9 @@ export const gradeAssignmentSubmission = async (req: AuthenticatedRequest, res: 
     submission.status = data.status;
 
     await submission.save();
+
+    dispatchNotification(notifyStudent(submission.gravId, `অ্যাসাইনমেন্ট মূল্যায়ন: ${assignment.title}`,
+      `"${assignment.title}" অ্যাসাইনমেন্টের মূল্যায়ন ${submission.status === 'resubmit_requested' ? 'সংশোধনের জন্য ফেরত দেওয়া হয়েছে' : 'সম্পন্ন হয়েছে'}।\n${classroomLink(submission.batchId.toString(), `/assignments/${assignment._id}`)}`));
 
     return res.json({
       success: true,

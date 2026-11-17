@@ -125,6 +125,9 @@ const sendGmailEmail = async ({
 
 const sendGmailTextEmail = sendGmailEmail;
 
+export const sendClassroomEventEmail = async (to: string, subject: string, body: string): Promise<boolean> =>
+  sendGmailTextEmail({ to, subject, body });
+
 export const sendEmailVerificationLinkEmail = async ({
   to,
   name,

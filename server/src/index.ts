@@ -14,6 +14,7 @@ import mongoose from 'mongoose';
 import { connectDB } from './config/db';
 import apiRouter from './routes/api';
 import { startWhatsApp } from './services/whatsAppService';
+import { runAssignmentReminders, runExamReminders } from './services/classroomNotificationService';
 
 dotenv.config();
 
@@ -192,6 +193,21 @@ const startServer = async () => {
     console.log(`🚀 Grav Academy API Server running on http://localhost:${PORT}`);
     setupSelfPing();
     startWhatsApp();
+    let remindersRunning = false;
+    const checkReminders = async () => {
+      if (remindersRunning) return;
+      remindersRunning = true;
+      try {
+        await runAssignmentReminders();
+        await runExamReminders();
+      } catch (error) {
+        console.warn('[Classroom reminders]', error);
+      } finally {
+        remindersRunning = false;
+      }
+    };
+    void checkReminders();
+    setInterval(() => void checkReminders(), 10 * 60 * 1000);
   });
 };
 
