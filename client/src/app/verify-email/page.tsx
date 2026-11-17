@@ -66,11 +66,6 @@ function VerifyEmailContent() {
           {state === 'success' ? 'ইমেইল verify হয়েছে' : state === 'error' ? 'Verify করা যায়নি' : 'ইমেইল যাচাই হচ্ছে'}
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-300" role="status">{message}</p>
-        {state === 'success' && (
-          <Link href="/login" className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
-            Login করুন
-          </Link>
-        )}
         {state === 'ready' && (
           <button type="button" onClick={verify} className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
             Email confirm করুন
