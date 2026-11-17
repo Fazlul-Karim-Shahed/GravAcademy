@@ -30,6 +30,7 @@ import * as whatsAppCtrl from '../controllers/whatsAppController';
 
 const router = Router();
 router.get('/whatsapp/status', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), whatsAppCtrl.getStatus);
+router.post('/whatsapp/disconnect', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), whatsAppCtrl.disconnect);
 router.post('/whatsapp/users/:userId/send', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.USERS_MANAGE), whatsAppCtrl.sendToStudent);
 const upload = multer({
   storage: multer.memoryStorage(),

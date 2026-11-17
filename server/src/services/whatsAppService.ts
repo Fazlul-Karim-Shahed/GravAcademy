@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs/promises';
 import QRCode from 'qrcode';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 import { User } from '../models/User';
@@ -11,11 +12,13 @@ let qrImage: string | null = null;
 let lastError: string | null = null;
 let sendQueue: Promise<void> = Promise.resolve();
 const pendingMessages: Array<{ email: string; subject: string; body: string }> = [];
+let intentionalDisconnect = false;
 
 export const getWhatsAppStatus = () => ({ state, qrImage, lastError });
 
 export const startWhatsApp = () => {
   if (client) return;
+  intentionalDisconnect = false;
   const sessionPath = process.env.WHATSAPP_SESSION_PATH || path.resolve(process.cwd(), '.wwebjs_auth');
   client = new Client({
     authStrategy: new LocalAuth({ dataPath: sessionPath, clientId: 'gravacademy' }),
@@ -58,13 +61,28 @@ export const startWhatsApp = () => {
     client = null;
     void disconnectedClient?.destroy().catch(() => undefined);
     // Reconnect using the persisted LocalAuth session after transient drops.
-    setTimeout(() => startWhatsApp(), 5000);
+    if (!intentionalDisconnect) setTimeout(() => startWhatsApp(), 5000);
   });
   client.initialize().catch((error) => {
     state = 'error';
     lastError = error instanceof Error ? error.message : 'Initialization failed';
     console.warn('[WhatsApp] Startup failed:', lastError);
   });
+};
+
+export const disconnectWhatsApp = async () => {
+  intentionalDisconnect = true;
+  const activeClient = client;
+  client = null;
+  if (activeClient) {
+    try { await activeClient.logout(); } catch { /* already disconnected */ }
+    try { await activeClient.destroy(); } catch { /* cleanup continues */ }
+  }
+  const sessionPath = process.env.WHATSAPP_SESSION_PATH || path.resolve(process.cwd(), '.wwebjs_auth');
+  await fs.rm(sessionPath, { recursive: true, force: true });
+  state = 'disconnected';
+  qrImage = null;
+  lastError = null;
 };
 
 const normalizePhone = (raw?: string): string | null => {

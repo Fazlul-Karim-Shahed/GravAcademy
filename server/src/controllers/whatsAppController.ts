@@ -3,11 +3,20 @@ import mongoose from 'mongoose';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
-import { getWhatsAppStatus, sendWhatsAppToPhone } from '../services/whatsAppService';
+import { disconnectWhatsApp, getWhatsAppStatus, sendWhatsAppToPhone } from '../services/whatsAppService';
 
 export const getStatus = (_req: unknown, res: Response) => {
   res.setHeader('Cache-Control', 'no-store');
   return res.json({ success: true, data: getWhatsAppStatus() });
+};
+
+export const disconnect = async (_req: AuthenticatedRequest, res: Response) => {
+  try {
+    await disconnectWhatsApp();
+    return res.json({ success: true, message: 'WhatsApp account disconnected.' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error instanceof Error ? error.message : 'WhatsApp disconnect failed.' });
+  }
 };
 
 export const sendToStudent = async (req: AuthenticatedRequest, res: Response) => {

@@ -49,6 +49,21 @@ export default function AdminSettingsPage() {
   const [whatsAppMessage, setWhatsAppMessage] = useState('');
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const [whatsAppFeedback, setWhatsAppFeedback] = useState('');
+  const [disconnectingWhatsApp, setDisconnectingWhatsApp] = useState(false);
+
+  const disconnectWhatsApp = async () => {
+    if (!window.confirm('বর্তমান WhatsApp account disconnect করবেন? এরপর নতুন account connect করতে QR scan করতে হবে।')) return;
+    setDisconnectingWhatsApp(true);
+    try {
+      await api.post('/whatsapp/disconnect');
+      setWhatsAppFeedback('WhatsApp account disconnect হয়েছে। নতুন account connect করতে QR scan করুন।');
+      setWhatsAppStatus({ state: 'disconnected', qrImage: null, lastError: null });
+    } catch (error: any) {
+      setWhatsAppFeedback(error.response?.data?.message || 'WhatsApp disconnect করা যায়নি।');
+    } finally {
+      setDisconnectingWhatsApp(false);
+    }
+  };
 
   const sendStudentWhatsApp = async () => {
     if (!messageRecipient || !whatsAppMessage.trim()) return;
@@ -710,6 +725,12 @@ export default function AdminSettingsPage() {
                     </div>
                   )}
                   {whatsAppStatus?.lastError && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{whatsAppStatus.lastError}</p>}
+                  {whatsAppStatus?.state === 'ready' && (
+                    <button type="button" onClick={() => void disconnectWhatsApp()} disabled={disconnectingWhatsApp} className="mt-4 rounded-xl border border-rose-200 px-4 py-2 text-sm font-bold text-rose-700 transition hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900/60 dark:text-rose-300 dark:hover:bg-rose-950/40">
+                      {disconnectingWhatsApp ? 'Disconnect হচ্ছে...' : 'বর্তমান account disconnect করুন'}
+                    </button>
+                  )}
+                  {whatsAppFeedback && <p className="mt-3 text-xs font-semibold text-slate-600 dark:text-slate-300" role="status">{whatsAppFeedback}</p>}
                 </div>
               </div>
             )}
