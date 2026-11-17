@@ -18,7 +18,11 @@ type YouTubeAPI = {
     width: string;
     height: string;
     playerVars: Record<string, string | number>;
-    events: { onReady: () => void; onStateChange: (event: { data: PlayerState }) => void };
+    events: {
+      onReady: () => void;
+      onStateChange: (event: { data: PlayerState }) => void;
+      onError: (event: { data: number }) => void;
+    };
   }) => YouTubePlayer;
 };
 
@@ -65,6 +69,7 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [playbackError, setPlaybackError] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
 
   const showControls = useCallback(() => {
@@ -99,6 +104,7 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
     setPlaying(false);
     setCurrentTime(0);
     setDuration(0);
+    setPlaybackError(false);
     loadYouTubeAPI().then((YT) => {
       if (cancelled || !mountRef.current) return;
       playerRef.current = new YT.Player(mountRef.current, {
@@ -124,10 +130,13 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
               setDuration(playerRef.current?.getDuration() || 0);
             }
           },
+          onError: () => {
+            if (!cancelled) setPlaybackError(true);
+          },
         },
       });
     }).catch(() => {
-      // The iframe API can be blocked by browser extensions or network rules.
+      if (!cancelled) setPlaybackError(true);
     });
 
     const timer = window.setInterval(() => {
@@ -194,6 +203,20 @@ export default function YouTubeLessonPlayer({ videoId, title }: { videoId: strin
           <Maximize size={18} />
         </button>
       </div>
+      {playbackError && (
+        <div className="border-t border-white/10 px-4 py-3 text-center text-sm text-slate-200">
+          ভিডিওটি এখানে চলছে না। অনুমতি পাওয়া Google অ্যাকাউন্টে লগইন করে{' '}
+          <a
+            href={`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-white underline underline-offset-2"
+          >
+            YouTube-এ খুলুন
+          </a>
+          । লগইনের পর প্রয়োজন হলে এই লিংক আবার খুলুন।
+        </div>
+      )}
       <button type="button" className="lesson-video-wake" onMouseEnter={showControls} onClick={showControls} aria-label="ভিডিও কন্ট্রোল দেখান" />
     </div>
   );
