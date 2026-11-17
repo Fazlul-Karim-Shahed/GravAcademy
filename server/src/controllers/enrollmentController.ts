@@ -239,7 +239,7 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
       ? await EnrollmentRequest.findOne({ batchId: batch._id, status: { $in: ['pending', 'verification_pending'] }, $or: contactFilters })
       : await EnrollmentRequest.findOne({ applicantGravId, batchId: batch._id, status: 'pending' });
     if (existingRequest) {
-      return res.status(409).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦à¦•à¦Ÿà¦¿ request à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ pending à¦†à¦›à§‡à¥¤', data: existingRequest });
+      return res.status(409).json({ success: false, message: 'এই batch-এর জন্য আপনার একটি request আগে থেকেই pending আছে।', data: existingRequest });
     }
 
     if (isGuest) {
@@ -305,8 +305,8 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
     });
   } catch (error: any) {
     console.error('createEnrollmentRequest error:', error);
-    if (error?.code === 11000) return res.status(409).json({ success: false, message: 'à¦à¦‡ à¦¬à§à¦¯à¦¾à¦šà§‡à¦° à¦œà¦¨à§à¦¯ à¦†à¦ªà¦¨à¦¾à¦° à¦à¦•à¦Ÿà¦¿ request à¦†à¦—à§‡ à¦¥à§‡à¦•à§‡à¦‡ à¦†à¦›à§‡à¥¤' });
-    return res.status(500).json({ success: false, message: 'à¦­à¦°à§à¦¤à¦¿ request à¦ªà¦¾à¦ à¦¾à¦¨à§‹ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    if (error?.code === 11000) return res.status(409).json({ success: false, message: 'এই batch-এর জন্য আপনার একটি request আগে থেকেই pending আছে।' });
+    return res.status(500).json({ success: false, message: 'ভর্তি request পাঠানো যায়নি।' });
   }
 };
 
@@ -320,7 +320,7 @@ export const getMyEnrollmentRequests = async (req: AuthenticatedRequest, res: Re
       .lean();
     return res.json({ success: true, data: requests });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'à¦†à¦ªà¦¨à¦¾à¦° request à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    return res.status(500).json({ success: false, message: 'আপনার request তালিকা লোড করা যায়নি।' });
   }
 };
 
@@ -347,7 +347,7 @@ export const getAdminEnrollmentRequests = async (req: AuthenticatedRequest, res:
     return res.json({ success: true, count: enrichedRequests.length, data: enrichedRequests });
   } catch (error) {
     console.error('getAdminEnrollmentRequests error:', error);
-    return res.status(500).json({ success: false, message: 'à¦­à¦°à§à¦¤à¦¿ request à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    return res.status(500).json({ success: false, message: 'ভর্তি request তালিকা লোড করা যায়নি।' });
   }
 };
 
@@ -374,7 +374,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
   try {
     const reviewerId = req.user?._id;
     const request = await EnrollmentRequest.findOne({ _id: req.params.requestId, status: 'pending' }).populate('batchId').populate('courseId');
-    if (!request) return res.status(404).json({ success: false, message: 'Pending request à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    if (!request) return res.status(404).json({ success: false, message: 'Pending request পাওয়া যায়নি।' });
 
     const batch: any = request.batchId;
     const course: any = request.courseId;
@@ -556,7 +556,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
 export const rejectEnrollmentRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const request = await EnrollmentRequest.findOne({ _id: req.params.requestId, status: 'pending' });
-    if (!request) return res.status(404).json({ success: false, message: 'Pending request à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    if (!request) return res.status(404).json({ success: false, message: 'Pending request পাওয়া যায়নি।' });
     request.status = 'rejected';
     request.reviewedBy = req.user?._id;
     request.reviewedAt = new Date();
