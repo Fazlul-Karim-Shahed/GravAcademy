@@ -203,130 +203,54 @@ export default function DailyScheduleView({
           </p>
         </div>
       ) : (layout === 'table' || (layout === 'auto' && role === 'admin')) ? (
-        /* Modern Glassmorphic Responsive Table for Admin Monitoring */
-        <div className="overflow-hidden rounded-2xl border border-slate-200/90 dark:border-slate-800/90 bg-white/70 dark:bg-slate-950/60 shadow-sm backdrop-blur-md">
+        /* Simple schedule table for admin monitoring */
+        <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[760px] text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-100/70 dark:bg-slate-900/80 text-[12px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                  <th className="py-3.5 px-4 sm:px-6">সময় ও স্থিতি</th>
-                  <th className="py-3.5 px-4">ব্যাচ ও শ্রেণি</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">কোর্স, বিষয় ও টপিক</th>
-                  <th className="py-3.5 px-4 hidden lg:table-cell">শিক্ষক</th>
-                  <th className="py-3.5 px-4 text-center">লাইভ ক্লাস</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-right">অ্যাকশন</th>
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-3">সময়</th>
+                  <th className="px-4 py-3">ক্লাস</th>
+                  <th className="px-4 py-3">কোর্স</th>
+                  <th className="px-4 py-3">ব্যাচ</th>
+                  <th className="px-4 py-3">Manage</th>
+                  <th className="px-4 py-3">Enter Classroom</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                 {currentClasses.map((item, index) => {
-                  const hasMeetUrl = Boolean(item.meetingUrl);
                   return (
                     <tr
                       key={`${item.batchId}-${index}`}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                      className="hover:bg-slate-50 dark:hover:bg-slate-900/70 transition-colors"
                     >
-                      {/* সময় ও স্থিতি */}
-                      <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <span className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
-                            <Clock className="w-3.5 h-3.5" />
-                          </span>
-                          <div>
-                            <span className="font-extrabold text-slate-800 dark:text-white block text-xs">
-                              {formatTo12Hour(item.startTime)}
-                            </span>
-                            {item.endTime && (
-                              <span className="text-[11px] text-slate-400 block font-medium">
-                                হতে {formatTo12Hour(item.endTime)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                      <td className="px-4 py-3 whitespace-nowrap text-slate-700 dark:text-slate-200">
+                        {formatTo12Hour(item.startTime)}{item.endTime ? ` – ${formatTo12Hour(item.endTime)}` : ''}
                       </td>
-
-                      {/* ব্যাচ ও শ্রেণি */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-bold text-slate-900 dark:text-slate-100 text-xs">
-                            {item.batchName}
-                          </span>
-                          {item.course?.gradeLevel && (
-                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80">
-                              {item.course.gradeLevel}
-                            </span>
-                          )}
-                        </div>
-                        {/* Mobile visible course & topic subtitle */}
-                        <div className="md:hidden space-y-0.5 mt-1">
-                          <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                            {item.course?.title || 'কোর্স'}
-                          </div>
-                          {item.topic && (
-                            <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
-                              <BookOpen className="w-2.5 h-2.5 shrink-0" />
-                              <span className="truncate max-w-[180px]">টপিক: {item.topic}</span>
-                            </div>
-                          )}
-                        </div>
+                      <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                        {item.course?.gradeLevel || '—'}
                       </td>
-
-                      {/* কোর্স, বিষয় ও টপিক */}
-                      <td className="py-3.5 px-4 hidden md:table-cell">
-                        <div className="font-semibold text-slate-700 dark:text-slate-200 max-w-[220px] truncate" title={item.course?.title}>
-                          {item.course?.title || '—'}
-                        </div>
-                        <div className="flex flex-col gap-0.5 mt-0.5">
-                          {item.course?.subject && (
-                            <span className="text-[11px] text-slate-400 font-medium">
-                              বিষয়: {item.course.subject}
-                            </span>
-                          )}
-                          {item.topic && (
-                            <div className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
-                              <BookOpen className="w-3 h-3 shrink-0" />
-                              <span className="truncate max-w-[200px]" title={item.topic}>
-                                টপিক: {item.topic}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                      <td className="px-4 py-3 text-slate-700 dark:text-slate-200 max-w-[220px]">
+                        <span className="block truncate" title={item.course?.title}>{item.course?.title || '—'}</span>
                       </td>
-
-                      {/* শিক্ষক */}
-                      <td className="py-3.5 px-4 hidden lg:table-cell">
-                        {item.assignedTeachers && item.assignedTeachers.length > 0 ? (
-                          <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-semibold">
-                            <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span className="truncate max-w-[140px]">
-                              {item.assignedTeachers.map((t) => t.name).join(', ')}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-slate-400 text-[11px] font-medium">—</span>
-                        )}
+                      <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-200">
+                        {item.batchName}
                       </td>
-
-                      {/* লাইভ ক্লাসরুম লিংক */}
-                      <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <Link
-                          href={`/classroom/${item.batchId}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-xs hover:shadow-emerald-500/20 active:scale-95 transition-all"
-                          title="সরাসরি লাইভ ক্লাসরুমে প্রবেশ করুন"
-                        >
-                          <Video className="w-3.5 h-3.5" />
-                          <span>লাইভ ক্লাস</span>
-                        </Link>
-                      </td>
-
-                      {/* অ্যাকশন */}
-                      <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <Link
                           href={`/admin/batches/${item.batchId}/edit`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors text-xs"
+                          className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                           title="ব্যাচ ও ক্লাসের সময়সূচী পরিবর্তন করুন"
                         >
-                          <span>ম্যানেজ</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
+                          Manage
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <Link
+                          href={`/classroom/${item.batchId}`}
+                          className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                        >
+                          Enter Classroom
                         </Link>
                       </td>
                     </tr>
