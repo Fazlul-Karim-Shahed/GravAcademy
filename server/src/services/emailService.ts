@@ -233,7 +233,7 @@ export const sendEnrollmentApprovalEmail = async ({
       ];
   return sendGmailTextEmail({
     to,
-    subject: 'Grav Academy enrollment approved',
+    subject: `গ্র্যাভ একাডেমিতে আপনাকে স্বাগতম! [${batchName}]`,
     body: [
       'প্রিয় ' + (name || 'শিক্ষার্থী') + ',',
       '',

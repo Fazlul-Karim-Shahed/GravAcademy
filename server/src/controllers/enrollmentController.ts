@@ -16,7 +16,6 @@ import { generateUniquegravId } from './authController';
 import { generateReceiptNumber } from './financeController';
 import { ROLES } from '../types/roles';
 import {
-  sendEnrollmentApprovalEmail,
   sendEnrollmentRequestReceivedEmail,
   sendWelcomeRegistrationEmail,
   isDisposableEmail,
@@ -428,23 +427,6 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
       const generatedgravId = await generateUniquegravId();
       defaultPassword = generatedgravId;
 
-      // Send Welcome & Credential Email BEFORE saving student to DB
-      const emailSent = await sendWelcomeRegistrationEmail({
-        to: normalizedEmail,
-        name: request.name.trim(),
-        gravId: generatedgravId,
-        role: 'student',
-        password: defaultPassword,
-        batchName: batch.name,
-      });
-
-      if (!emailSent) {
-        return res.status(400).json({
-          success: false,
-          message: 'শিক্ষার্থীর ইমেইল ঠিকানায় ওয়েলকাম বা ক্রেডেনশিয়াল ইমেইল পাঠানো সম্ভব হয়নি। অনুগ্রহ করে ইমেইলটি যাচাই করুন।',
-        });
-      }
-
       const passwordHash = await bcrypt.hash(defaultPassword, 10);
       studentDoc = await User.create({
         gravId: generatedgravId,
@@ -517,13 +499,12 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
 
     let emailSent = false;
     if (request.email) {
-      emailSent = await sendEnrollmentApprovalEmail({
+      emailSent = await sendWelcomeRegistrationEmail({
         to: request.email,
         name: studentDoc.name,
-        batchName: batch.name,
         gravId: studentDoc.gravId,
         password: isNewUserCreated ? defaultPassword : undefined,
-        existingAccount: !isNewUserCreated,
+        batchName: batch.name,
       });
     }
 
