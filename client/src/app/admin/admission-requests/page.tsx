@@ -53,7 +53,7 @@ export default function AdmissionRequestsPage() {
       const accountNote = data?.isNewUserCreated && student?.defaultPassword
         ? ` Login: ${student.gravId} / ${student.defaultPassword}`
         : '';
-      const emailNote = data?.emailSent ? ' Email sent.' : '';
+      const emailNote = data?.emailSent ? ' Email পাঠানো হয়েছে।' : '';
       setNotice(`${res.data?.message || 'Request approved.'}${accountNote}${emailNote}`);
       await loadRequests();
     } catch (err: any) {

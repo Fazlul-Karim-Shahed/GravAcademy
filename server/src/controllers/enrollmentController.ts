@@ -530,8 +530,8 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     return res.json({
       success: true,
       message: isNewUserCreated
-        ? 'Request approve à¦•à¦°à§‡ à¦¨à¦¤à§à¦¨ student account à¦¤à§ˆà¦°à¦¿ à¦“ batch-à¦ à¦­à¦°à§à¦¤à¦¿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤'
-        : 'Request approve à¦•à¦°à§‡ student-à¦•à§‡ batch-à¦ à¦­à¦°à§à¦¤à¦¿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
+        ? 'Request approve করে নতুন student account তৈরি ও batch-এ ভর্তি করা হয়েছে।'
+        : 'Request approve করে student-কে batch-এ ভর্তি করা হয়েছে।',
       data: {
         request,
         enrollment,
@@ -549,7 +549,7 @@ export const approveEnrollmentRequest = async (req: AuthenticatedRequest, res: R
     });
   } catch (error: any) {
     console.error('approveEnrollmentRequest error:', error);
-    return res.status(500).json({ success: false, message: 'Request approve à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤' });
+    return res.status(500).json({ success: false, message: 'Request approve করা যায়নি।' });
   }
 };
 
