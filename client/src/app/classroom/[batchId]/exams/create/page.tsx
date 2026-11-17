@@ -87,6 +87,7 @@ export default function CreateExamPage({
   // Bulk Import modal / text
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [bulkText, setBulkText] = useState('');
+  const [aiFormatting, setAiFormatting] = useState(false);
 
   // Uploading image tracking: key = 'q_idx' or 'opt_idx_optidx'
   const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
@@ -376,6 +377,58 @@ export default function CreateExamPage({
     } catch (err) {
       console.error(err);
       alert('টেক্সট পার্স করতে সমস্যা হয়েছে।');
+    }
+  };
+
+  const formatBulkWithAI = async () => {
+    if (!bulkText.trim() || aiFormatting) return;
+    setAiFormatting(true);
+    setErrorMessage('');
+    try {
+      const win = window as Window & { puter?: { ai?: { chat: (prompt: string, options?: { model?: string }) => Promise<any> } } };
+      if (!win.puter?.ai?.chat) {
+        await new Promise<void>((resolve, reject) => {
+          const existing = document.querySelector('script[data-puter-ai]');
+          if (existing) { existing.addEventListener('load', () => resolve(), { once: true }); return; }
+          const script = document.createElement('script');
+          script.src = 'https://js.puter.com/v2/';
+          script.async = true;
+          script.dataset.puterAi = 'true';
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('AI service load করা যায়নি'));
+          document.head.appendChild(script);
+        });
+      }
+      const puter = (window as any).puter;
+      if (!puter?.ai?.chat) throw new Error('AI service এখন প্রস্তুত নয়');
+      const prompt = `You are a strict exam-question formatter. Convert the pasted text into valid JSON only (no markdown, no explanation).
+Return exactly: {"questions":[{"questionText":"string","options":[{"text":"string"},{"text":"string"},{"text":"string"},{"text":"string"}],"correctOptionIndex":0,"marks":1}]}
+Rules: preserve the original language and meaning; create exactly 4 non-empty options per MCQ; correctOptionIndex must be 0,1,2,or 3; infer the answer only when clearly provided, otherwise use 0; marks must be a number; remove numbering and labels from questionText; never add fields; do not invent questions.
+
+Pasted questions:
+${bulkText}`;
+      const result = await puter.ai.chat(prompt, { model: 'openai/gpt-5.4-nano' });
+      const raw = typeof result === 'string' ? result : result?.message?.content || result?.text || '';
+      const jsonText = String(raw).replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+      const parsed = JSON.parse(jsonText);
+      const questions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+      const normalized: MCQQuestionInput[] = questions.map((q: any, index: number) => {
+        const options = Array.isArray(q.options) ? q.options.slice(0, 4).map((o: any, optionIndex: number) => ({
+          optionId: `opt_ai_${Date.now()}_${index}_${optionIndex}`,
+          text: String(o?.text || '').trim(), imageUrl: '',
+        })) : [];
+        const correctIndex = Math.max(0, Math.min(3, Number(q.correctOptionIndex) || 0));
+        return { questionText: String(q.questionText || '').trim(), imageUrl: '', options, correctOptionId: options[correctIndex]?.optionId || options[0]?.optionId || '', marks: Number(q.marks) || 1 };
+      }).filter((q: MCQQuestionInput) => q.questionText && q.options.length === 4 && q.options.every((o) => o.text));
+      if (!normalized.length) throw new Error('AI কোনো সম্পূর্ণ ৪-option প্রশ্ন তৈরি করতে পারেনি');
+      setMcqQuestions((prev) => prev.length === 1 && !prev[0].questionText.trim() ? normalized : [...prev, ...normalized]);
+      setShowBulkModal(false);
+      setBulkText('');
+      alert(`AI দিয়ে ${normalized.length} টি প্রশ্ন সাজানো হয়েছে। Save করার আগে preview দেখে নিন।`);
+    } catch (error: any) {
+      setErrorMessage(error?.message || 'AI দিয়ে প্রশ্ন সাজানো যায়নি।');
+    } finally {
+      setAiFormatting(false);
     }
   };
 
@@ -1206,6 +1259,14 @@ export default function CreateExamPage({
                   className="px-5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20"
                 >
                   প্রশ্নগুলো কনভার্ট করুন
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void formatBulkWithAI()}
+                  disabled={aiFormatting || !bulkText.trim()}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                >
+                  {aiFormatting ? 'AI সাজাচ্ছে...' : 'AI দিয়ে সাজান'}
                 </button>
               </div>
             </div>
