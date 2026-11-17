@@ -13,6 +13,7 @@ import os from 'os';
 import mongoose from 'mongoose';
 import { connectDB } from './config/db';
 import apiRouter from './routes/api';
+import { startWhatsApp } from './services/whatsAppService';
 
 dotenv.config();
 
@@ -190,6 +191,7 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`🚀 Grav Academy API Server running on http://localhost:${PORT}`);
     setupSelfPing();
+    startWhatsApp();
   });
 };
 

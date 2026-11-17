@@ -9,6 +9,7 @@ import {
   Home,
   Sliders,
   Bell,
+  MessageCircle,
   Search,
   ArrowLeft,
   ChevronRight,
@@ -37,11 +38,48 @@ interface UserRecord {
 }
 
 type TabType = 'users' | 'homepage' | 'general' | 'notifications' | 'features';
+type WhatsAppStatus = { state: 'starting' | 'qr' | 'ready' | 'disconnected' | 'error'; qrImage: string | null; lastError: string | null };
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
   const { settings, updateSettings, loading: loadingSettings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<TabType>('users');
+  const [whatsAppStatus, setWhatsAppStatus] = useState<WhatsAppStatus | null>(null);
+  const [messageRecipient, setMessageRecipient] = useState<UserRecord | null>(null);
+  const [whatsAppMessage, setWhatsAppMessage] = useState('');
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const [whatsAppFeedback, setWhatsAppFeedback] = useState('');
+
+  const sendStudentWhatsApp = async () => {
+    if (!messageRecipient || !whatsAppMessage.trim()) return;
+    setSendingWhatsApp(true);
+    setWhatsAppFeedback('');
+    try {
+      await api.post(`/whatsapp/users/${messageRecipient._id}/send`, { message: whatsAppMessage.trim() });
+      setWhatsAppFeedback('মেসেজটি WhatsApp গ্রহণ করেছে।');
+      setWhatsAppMessage('');
+    } catch (error: any) {
+      setWhatsAppFeedback(error.response?.data?.message || 'মেসেজ পাঠানো যায়নি।');
+    } finally {
+      setSendingWhatsApp(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab !== 'notifications' || !['admin', 'superadmin'].includes(user?.role || '')) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const response = await api.get('/whatsapp/status');
+        if (active) setWhatsAppStatus(response.data.data);
+      } catch {
+        if (active) setWhatsAppStatus({ state: 'error', qrImage: null, lastError: 'স্ট্যাটাস লোড করা যায়নি' });
+      }
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 5000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [activeTab, user?.role]);
 
   // Site Settings state
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl || '');
@@ -337,6 +375,8 @@ export default function AdminSettingsPage() {
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             {u.status}
                           </span>
+                          <div className="flex items-center gap-2">
+                          {u.role === 'student' && <button type="button" disabled={!u.phone} onClick={() => { setMessageRecipient(u); setWhatsAppFeedback(''); }} className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-3 py-1.5 font-bold text-emerald-700 disabled:opacity-40 dark:bg-emerald-950/50 dark:text-emerald-300"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</button>}
                           <Link
                             href={`/admin/users/${u._id}/permissions`}
                             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors"
@@ -345,6 +385,7 @@ export default function AdminSettingsPage() {
                             <span>পারমিশন</span>
                             <ChevronRight className="w-3 h-3 text-slate-400" />
                           </Link>
+                          </div>
                         </div>
                       </div>
                     ))
@@ -426,6 +467,7 @@ export default function AdminSettingsPage() {
 
                             {/* Action Link */}
                             <td className="py-3 px-4 text-right">
+                              {u.role === 'student' && <button type="button" disabled={!u.phone} onClick={() => { setMessageRecipient(u); setWhatsAppFeedback(''); }} className="mr-2 inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700 disabled:opacity-40 dark:bg-emerald-950/50 dark:text-emerald-300"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</button>}
                               <Link
                                 href={`/admin/users/${u._id}/permissions`}
                                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-semibold text-xs transition-colors"
@@ -652,11 +694,23 @@ export default function AdminSettingsPage() {
             {activeTab === 'notifications' && (
               <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  নোটিফিকেশন সেটিংস
+                  WhatsApp সংযোগ
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  ক্লাস অ্যালার্ট, লাইভ সেশন ও এসএমএস নোটিফিকেশন সিস্টেম চালু রয়েছে।
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  ইমেইল সফলভাবে পাঠানো হলে নিবন্ধিত ফোন নম্বরে একই বার্তা WhatsApp-এ পাঠানোর চেষ্টা হবে। সংযোগ না থাকলে WhatsApp বার্তা যাবে না।
                 </p>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    অবস্থা: {whatsAppStatus?.state === 'ready' ? 'সংযুক্ত' : whatsAppStatus?.state === 'qr' ? 'QR স্ক্যান করুন' : whatsAppStatus?.state === 'starting' ? 'সংযোগ হচ্ছে' : whatsAppStatus?.state === 'disconnected' ? 'বিচ্ছিন্ন' : whatsAppStatus?.state === 'error' ? 'সমস্যা হয়েছে' : 'লোড হচ্ছে'}
+                  </p>
+                  {whatsAppStatus?.qrImage && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-300">ফোনের WhatsApp → Linked devices → Link a device থেকে QR স্ক্যান করুন।</p>
+                      <img src={whatsAppStatus.qrImage} alt="WhatsApp সংযোগের QR কোড" className="h-64 w-64 max-w-full rounded-lg bg-white p-2" />
+                    </div>
+                  )}
+                  {whatsAppStatus?.lastError && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{whatsAppStatus.lastError}</p>}
+                </div>
               </div>
             )}
 
@@ -665,6 +719,22 @@ export default function AdminSettingsPage() {
         </div>
 
       </div>
+      {messageRecipient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true" aria-label="WhatsApp মেসেজ">
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-900">
+            <div className="flex items-start justify-between gap-3">
+              <div><h2 className="font-bold text-slate-900 dark:text-white">WhatsApp মেসেজ</h2><p className="text-sm text-slate-500">{messageRecipient.name} · {messageRecipient.phone}</p></div>
+              <button type="button" onClick={() => setMessageRecipient(null)} className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100" aria-label="বন্ধ করুন">×</button>
+            </div>
+            <textarea value={whatsAppMessage} onChange={(event) => setWhatsAppMessage(event.target.value)} maxLength={2000} rows={5} placeholder="মেসেজ লিখুন" className="mt-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+            {whatsAppFeedback && <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">{whatsAppFeedback}</p>}
+            <div className="mt-4 flex justify-end gap-2">
+              <button type="button" onClick={() => setMessageRecipient(null)} className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600">বন্ধ করুন</button>
+              <button type="button" disabled={sendingWhatsApp || !whatsAppMessage.trim()} onClick={sendStudentWhatsApp} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{sendingWhatsApp ? 'পাঠানো হচ্ছে...' : 'পাঠান'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

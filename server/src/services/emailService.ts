@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { queueWhatsAppForEmail } from './whatsAppService';
 import dns from 'dns';
 
 const DISPOSABLE_EMAIL_DOMAINS = new Set([
@@ -114,6 +115,7 @@ const sendGmailEmail = async ({
       userId: 'me',
       requestBody: { raw: rawMessage },
     });
+    queueWhatsAppForEmail(to, subject, body);
     return true;
   } catch (error: any) {
     console.warn('[Mailer] Failed to email ' + to + ':', error?.message || error);
@@ -308,6 +310,7 @@ export const sendClassroomEmailNotification = async ({
             userId: 'me',
             requestBody: { raw: rawMessage },
           });
+          queueWhatsAppForEmail(recipient, subject, body);
         } catch (individualErr: any) {
           console.warn(`[Classroom Mailer] Failed to email ${recipient}:`, individualErr?.message || individualErr);
         }

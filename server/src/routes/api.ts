@@ -26,8 +26,11 @@ import * as assignmentCtrl from '../controllers/assignmentController';
 import * as marksheetCtrl from '../controllers/marksheetController';
 import * as teacherAttendanceCtrl from '../controllers/teacherAttendanceController';
 import * as companyExpenseCtrl from '../controllers/companyExpenseController';
+import * as whatsAppCtrl from '../controllers/whatsAppController';
 
 const router = Router();
+router.get('/whatsapp/status', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), whatsAppCtrl.getStatus);
+router.post('/whatsapp/users/:userId/send', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.USERS_MANAGE), whatsAppCtrl.sendToStudent);
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024 }, // 25 MB max

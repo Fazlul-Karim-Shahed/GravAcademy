@@ -39,6 +39,7 @@ desktop.ini
 *.sw?
 
 # Environment Files
+.wwebjs_auth/
 .env
 .env.*
 !.env.example
