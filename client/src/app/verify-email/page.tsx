@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { CheckCircle2, Loader2, MailCheck, XCircle } from 'lucide-react';
+import { SiteLogo } from '@/components/common/SiteLogo';
 
 function VerifyEmailContent() {
   const params = useSearchParams();
@@ -53,15 +54,19 @@ function VerifyEmailContent() {
   const iconColor = state === 'success' ? 'text-emerald-600' : state === 'error' ? 'text-rose-500' : 'text-blue-600';
 
   return (
-    <main className="flex min-h-[70vh] items-center justify-center px-4 py-12">
-      <section className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-7 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-10">
-        <div className={`mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-800 ${iconColor}`}>
+    <main className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden bg-slate-50 px-4 py-12 dark:bg-slate-950 sm:py-16">
+      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-blue-100/70 blur-3xl dark:bg-blue-950/40" />
+      <div className="pointer-events-none absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-indigo-100/70 blur-3xl dark:bg-indigo-950/40" />
+      <section className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white text-center shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+        <div className="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-500" />
+        <div className="p-7 sm:p-10">
+          <div className="mb-7 flex justify-center">
+            <SiteLogo size="xl" showText={true} textClassName="text-lg" taglineClassName="text-xs" />
+          </div>
+          <div className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 ring-8 ring-slate-50/70 dark:bg-slate-800 dark:ring-slate-800/50 ${iconColor}`}>
           <Icon className={`h-7 w-7 ${state === 'loading' ? 'animate-spin' : ''}`} />
-        </div>
-        <p className="mb-2 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-          <MailCheck className="h-4 w-4" /> Grav Academy
-        </p>
-        <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">
+          </div>
+        <h1 className="text-xl font-extrabold text-slate-900 dark:text-white sm:text-2xl">
           {state === 'success' ? 'ইমেইল verify হয়েছে' : state === 'error' ? 'Verify করা যায়নি' : 'ইমেইল যাচাই হচ্ছে'}
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-300" role="status">{message}</p>
@@ -87,6 +92,7 @@ function VerifyEmailContent() {
             <Link href="/" className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">হোমে ফিরুন</Link>
           </div>
         )}
+        </div>
       </section>
     </main>
   );
