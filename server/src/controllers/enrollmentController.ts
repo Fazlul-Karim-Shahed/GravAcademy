@@ -235,7 +235,7 @@ export const createEnrollmentRequest = async (req: AuthenticatedRequest, res: Re
     }
 
     const existingRequest = isGuest
-      ? await EnrollmentRequest.findOne({ batchId: batch._id, status: { $in: ['pending', 'verification_pending'] }, $or: contactFilters })
+      ? await EnrollmentRequest.findOne({ batchId: batch._id, status: 'pending', $or: contactFilters })
       : await EnrollmentRequest.findOne({ applicantGravId, batchId: batch._id, status: 'pending' });
     if (existingRequest) {
       return res.status(409).json({ success: false, message: 'এই batch-এর জন্য আপনার একটি request আগে থেকেই pending আছে।', data: existingRequest });
