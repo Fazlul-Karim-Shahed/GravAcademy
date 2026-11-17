@@ -10,6 +10,7 @@ let state: ConnectionState = 'starting';
 let qrImage: string | null = null;
 let lastError: string | null = null;
 let sendQueue: Promise<void> = Promise.resolve();
+const pendingMessages: Array<{ email: string; subject: string; body: string }> = [];
 
 export const getWhatsAppStatus = () => ({ state, qrImage, lastError });
 
@@ -39,6 +40,7 @@ export const startWhatsApp = () => {
     qrImage = null;
     lastError = null;
     console.info('[WhatsApp] Connected');
+    flushPendingMessages();
   });
   client.on('authenticated', () => { state = 'starting'; qrImage = null; });
   client.on('auth_failure', (message) => {
@@ -52,6 +54,11 @@ export const startWhatsApp = () => {
     qrImage = null;
     lastError = String(reason);
     console.warn('[WhatsApp] Disconnected:', reason);
+    const disconnectedClient = client;
+    client = null;
+    void disconnectedClient?.destroy().catch(() => undefined);
+    // Reconnect using the persisted LocalAuth session after transient drops.
+    setTimeout(() => startWhatsApp(), 5000);
   });
   client.initialize().catch((error) => {
     state = 'error';
@@ -77,8 +84,7 @@ const resolvePhone = async (email: string): Promise<string | null> => {
   return normalizePhone(request?.phone);
 };
 
-export const queueWhatsAppForEmail = (email: string, subject: string, body: string) => {
-  if (state !== 'ready' || !client) return;
+const enqueueSend = (email: string, subject: string, body: string) => {
   sendQueue = sendQueue.catch(() => undefined).then(async () => {
     try {
       if (state !== 'ready' || !client) return;
@@ -91,6 +97,17 @@ export const queueWhatsAppForEmail = (email: string, subject: string, body: stri
       console.warn('[WhatsApp] Delivery failed for', email, error instanceof Error ? error.message : error);
     }
   });
+};
+
+const flushPendingMessages = () => {
+  if (state !== 'ready' || !client || !pendingMessages.length) return;
+  const messages = pendingMessages.splice(0, pendingMessages.length);
+  for (const message of messages) enqueueSend(message.email, message.subject, message.body);
+};
+
+export const queueWhatsAppForEmail = (email: string, subject: string, body: string) => {
+  pendingMessages.push({ email, subject, body });
+  flushPendingMessages();
 };
 
 export const sendWhatsAppToPhone = async (rawPhone: string, message: string): Promise<void> => {
