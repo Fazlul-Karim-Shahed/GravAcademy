@@ -3,8 +3,8 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
 export const formatBulkMcqWithGemini = async (text: string): Promise<any[]> => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('Gemini API key এখনো configure করা হয়নি।');
-  const numberedCount = (text.match(/^\s*(?:\d+\s*[.)]|প্রশ্ন\s*\d+\s*[.:)])/gim) || []).length;
-  const optionGroupCount = (text.match(/^\s*\((?:ক|a)\)\s+/gim) || []).length;
+  const numberedCount = (text.match(/(?:^|\s)(?:\d+\s*[.)]|প্রশ্ন\s*\d+\s*[.:)])\s*/gim) || []).length;
+  const optionGroupCount = (text.match(/\((?:ক|a)\)\s+/gim) || []).length;
   const expectedCount = numberedCount || optionGroupCount || text.split(/\n\s*\n+/).filter((block) => block.trim()).length;
   const structuredBlocks = text.split(/(?=^\s*\d+\s*[.)]\s*)/m).map((block) => block.trim()).filter(Boolean);
   const structuredQuestions = structuredBlocks.map((block) => {
