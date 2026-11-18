@@ -91,6 +91,7 @@ interface DiscussionMsg {
   message: string;
   createdAt: string;
 }
+interface ClassroomMaterial { id: string; title: string; url: string; category: string; }
 
 export const dynamic = 'force-dynamic';
 
@@ -106,7 +107,9 @@ export default function BatchClassroomPage({
   const { isFeatureEnabled } = useSiteSettings();
 
   // Start with a simple classroom home; detailed areas remain available as tabs.
-  const [activeTab, setActiveTab] = useState<'home' | 'discussion' | 'announcements' | 'members'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'discussion' | 'announcements' | 'members' | 'materials'>('home');
+  const [materials, setMaterials] = useState<ClassroomMaterial[]>([]);
+  const [materialsLoading, setMaterialsLoading] = useState(false);
 
   const [batch, setBatch] = useState<BatchInfo | null>(null);
   const [memberCounts, setMemberCounts] = useState<{
@@ -117,6 +120,18 @@ export default function BatchClassroomPage({
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (activeTab !== 'materials' || materials.length) return;
+    let active = true;
+    setMaterialsLoading(true);
+    api.get(`/batches/${batchId}/assignments`).then((response) => {
+      const items = response.data?.data?.assignments || response.data?.assignments || response.data?.data || [];
+      const next = (Array.isArray(items) ? items : []).filter((item: any) => item.attachmentUrl).map((item: any) => ({ id: item._id, title: item.title || 'Assignment document', url: item.attachmentUrl, category: 'Assignment' }));
+      if (active) setMaterials(next);
+    }).catch(() => { if (active) setMaterials([]); }).finally(() => { if (active) setMaterialsLoading(false); });
+    return () => { active = false; };
+  }, [activeTab, batchId, materials.length]);
 
   // Discussions State
   const [messages, setMessages] = useState<DiscussionMsg[]>([]);
@@ -517,6 +532,7 @@ export default function BatchClassroomPage({
             { key: 'home' as const, label: 'হোম', icon: BookOpen, count: null },
             { key: 'discussion' as const, label: 'ডিসকাশন', icon: MessageSquare, count: messages.length },
             { key: 'announcements' as const, label: 'নোটিশ', icon: Megaphone, count: announcements.length },
+            { key: 'materials' as const, label: 'Materials', icon: FileText, count: materials.length },
             {
               key: 'members' as const,
               label: canViewStudentMembers ? 'সদস্য' : 'শিক্ষকবৃন্দ',
@@ -549,6 +565,13 @@ export default function BatchClassroomPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
 
         {/* ================= CLASSROOM HOME ================= */}
+        {activeTab === 'materials' && (
+          <section className="space-y-4">
+            <div><h2 className="text-xl font-black text-slate-900 dark:text-white">Classroom Materials</h2><p className="mt-1 text-sm text-slate-500">এই classroom-এর uploaded PDF ও document এক জায়গায় দেখুন।</p></div>
+            {materialsLoading ? <div className="rounded-2xl bg-white p-8 text-center text-sm text-slate-500 dark:bg-slate-900">Materials লোড হচ্ছে...</div> : materials.length ? <div className="grid gap-3 sm:grid-cols-2">{materials.map((material) => <a key={material.id} href={material.url} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 hover:border-indigo-400 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"><div className="rounded-xl bg-rose-50 p-2.5 text-rose-600 dark:bg-rose-950/40"><FileText className="h-5 w-5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold text-slate-800 dark:text-white">{material.title}</p><p className="mt-1 text-xs text-slate-500">{material.category} · PDF/Document</p></div><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-slate-400" /></a>)}</div> : <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900">এখনো কোনো material upload করা হয়নি।</div>}
+          </section>
+        )}
+
         {activeTab === 'home' && (
           <div className="space-y-6">
             <div>

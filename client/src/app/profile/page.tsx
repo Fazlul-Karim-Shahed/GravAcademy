@@ -65,6 +65,7 @@ export default function ProfileViewPage() {
       : user.role === 'guardian'
       ? 'অভিভাবক'
       : 'শিক্ষার্থী';
+  const joinedDate = (user as any).createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-GB') : '—';
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 transition-colors">
@@ -157,6 +158,28 @@ export default function ProfileViewPage() {
             </div>
           </div>
         </div>
+
+        {/* Printable identity card */}
+        <section className="mb-8 rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">আপনার ID Card</h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">পরিচয়পত্রটি print করে ব্যবহার করতে পারেন।</p>
+            </div>
+            <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 print:hidden"><FileText className="h-4 w-4" /> Print</button>
+          </div>
+          <div className="mx-auto max-w-[520px] overflow-hidden rounded-2xl border border-blue-200 bg-white shadow-lg dark:border-blue-900/60">
+            <div className="flex items-center justify-between bg-gradient-to-r from-blue-700 to-indigo-600 px-5 py-4 text-white">
+              <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15"><GraduationCap className="h-6 w-6" /></div><div><p className="text-sm font-black tracking-wide">GRAV ACADEMY</p><p className="text-[10px] text-blue-100">Your Academic Care</p></div></div>
+              <span className="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase">{user.role}</span>
+            </div>
+            <div className="flex gap-4 p-5">
+              <UserAvatar name={user.name} avatarUrl={user.avatarUrl} role={user.role} size="lg" className="h-20 w-20 shrink-0 rounded-xl border-2 border-blue-100 dark:border-blue-900" />
+              <div className="min-w-0 flex-1"><h4 className="truncate text-lg font-black text-slate-900 dark:text-white">{user.name}</h4><p className="mt-1 text-xs font-semibold text-blue-600 dark:text-blue-400">{roleTitle}</p><div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[11px] text-slate-500 dark:text-slate-400"><span><b className="block text-[9px] uppercase text-slate-400">ID</b>{user.gravId || '—'}</span><span><b className="block text-[9px] uppercase text-slate-400">Joined</b>{joinedDate}</span></div></div>
+            </div>
+            <div className="border-t border-slate-100 px-5 py-2.5 text-[10px] font-semibold text-slate-400 dark:border-slate-800">Official identity card · Grav Academy</div>
+          </div>
+        </section>
 
         {/* ROLE-SPECIFIC DETAILED SECTION */}
         {user.role === 'teacher' && (
