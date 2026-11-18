@@ -3,7 +3,8 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
 export const formatBulkMcqWithGemini = async (text: string): Promise<any[]> => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('Gemini API key এখনো configure করা হয়নি।');
-  const expectedCount = text.split(/\n\s*\n+/).filter((block) => block.trim()).length;
+  const numberedCount = (text.match(/^\s*(?:\d+\s*[.)]|প্রশ্ন\s*\d+\s*[.:)])/gim) || []).length;
+  const expectedCount = numberedCount || text.split(/\n\s*\n+/).filter((block) => block.trim()).length;
   const prompt = `Return JSON only with exactly ${expectedCount} question objects. Preserve every question occurrence in order, including duplicates. Each object needs questionText, exactly 4 options with text, correctOptionIndex (0-3), and marks. Preserve Bangla and use given answers. Input:\n${text}`;
   const request = (model: string) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, responseMimeType: 'application/json' } }) });
   let response = await request(GEMINI_MODEL);
