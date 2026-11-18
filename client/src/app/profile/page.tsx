@@ -161,6 +161,7 @@ export default function ProfileViewPage() {
         </div>
 
         {/* Printable identity card */}
+        <style jsx global>{`@media print { body * { visibility: hidden !important; } #identity-card-sheet, #identity-card-sheet * { visibility: visible !important; } #identity-card-sheet { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; } }`}</style>
         <section className="mb-8 rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
@@ -169,7 +170,7 @@ export default function ProfileViewPage() {
             </div>
             <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 print:hidden"><FileText className="h-4 w-4" /> Print</button>
           </div>
-          <div className="mx-auto grid w-full max-w-[620px] grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:items-start sm:gap-5">
+          <div id="identity-card-sheet" className="mx-auto grid w-full max-w-[620px] grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:items-start sm:gap-5">
             <div className="relative h-[390px] w-[245px] overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-200 print:shadow-none">
               <div className="relative h-[155px] overflow-hidden rounded-b-[48%] bg-[#202532] px-4 pt-5 text-center text-white"><div className="relative z-30 flex justify-center"><SiteLogo size="lg" showText={true} textClassName="text-white text-sm" taglineClassName="text-slate-300 text-[9px]" className="!border-0 !bg-transparent" /></div><div className="absolute -bottom-14 -left-8 z-20 h-28 w-[310px] rounded-[50%] border-b-[14px] border-green-500" /><div className="absolute -bottom-[4.5rem] -left-8 z-20 h-28 w-[310px] rounded-[50%] border-b-[8px] border-lime-400" /></div>
               <div className="relative z-10 -mt-8 flex flex-col items-center px-5 pt-0 text-center"><UserAvatar name={user.name} avatarUrl={user.avatarUrl} role={user.role} size="lg" className="h-24 w-24 rounded-2xl border-4 border-white bg-white shadow-md" /><h4 className="mt-3 max-w-full break-words text-lg font-black leading-tight text-slate-900">{user.name}</h4><p className="text-xs font-semibold text-green-600">{roleTitle}</p><div className="mt-4 w-full space-y-1.5 text-left text-[11px] text-slate-600"><p><b className="inline-block w-16">ID No.</b>{user.gravId || '—'}</p><p><b className="inline-block w-16">Joined</b>{joinedDate}</p><p className="break-all"><b className="inline-block w-16">Email</b>{user.email}</p></div></div>
