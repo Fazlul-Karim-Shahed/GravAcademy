@@ -47,7 +47,7 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
   return (
     <Link
       href={`/courses/${course.slug || course._id}`}
-      className={`group flex flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-700 ${className}`}
+      className={`group flex flex-col overflow-hidden rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-orange-500/50 ${className}`}
     >
       <div className="relative aspect-[16/9] overflow-hidden rounded-[17px] bg-[#180a22]">
         {course.thumbnailUrl ? (
@@ -83,7 +83,7 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col px-3.5 pb-2.5 pt-3.5 sm:px-4 sm:pb-3">
-        <h3 className="line-clamp-2 text-base font-black leading-snug text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+        <h3 className="line-clamp-2 text-base font-black leading-snug text-slate-900 transition-colors group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">
           {course.title}
         </h3>
         {course.description && (
@@ -94,14 +94,14 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
             <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500">ভর্তি চলছে</span>
             {price ? (
               <div className="mt-0.5 flex items-baseline gap-1.5">
-                <span className="text-base font-black text-pink-600 dark:text-pink-400">৳{price}</span>
+                <span className="text-base font-black text-orange-600 dark:text-orange-400">৳{price}</span>
                 {hasDiscount && <span className="text-[11px] text-slate-400 line-through">৳{course.regularPrice}</span>}
               </div>
             ) : (
               <span className="mt-0.5 block text-sm font-black text-emerald-600 dark:text-emerald-400">ফ্রি কোর্স</span>
             )}
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white transition-colors group-hover:bg-blue-600 dark:bg-white dark:text-slate-900 dark:group-hover:bg-blue-500 dark:group-hover:text-white">
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white transition-colors group-hover:bg-orange-500 dark:bg-white dark:text-slate-900 dark:group-hover:bg-orange-500 dark:group-hover:text-white">
             ব্যাচ দেখুন <ChevronRight className="h-3.5 w-3.5" />
           </span>
         </div>

@@ -522,8 +522,8 @@ html.dark .clean-card:hover {
     90deg, 
     #ffffff 0%, 
     #ffffff 20%, 
-    rgba(254, 215, 170, 0.85) 35%, 
-    rgba(244, 63, 94, 0.45) 50%, 
+    rgba(254, 215, 170, 0.9) 35%, 
+    rgba(255, 120, 20, 0.75) 50%, 
     rgba(254, 240, 138, 0.85) 65%, 
     #ffffff 80%, 
     #ffffff 100%
@@ -533,19 +533,19 @@ html.dark .clean-card:hover {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: sweepLeftRightLeft 20s ease-in-out infinite;
-  filter: drop-shadow(0 2px 14px rgba(244, 63, 94, 0.2));
+  filter: drop-shadow(0 2px 14px rgba(255, 106, 0, 0.22));
 }
 
 .animate-glow-sweep-subtitle {
   background: linear-gradient(
     90deg, 
-    rgba(255, 228, 230, 0.85) 0%, 
-    rgba(255, 228, 230, 0.85) 25%, 
-    rgba(254, 240, 138, 0.8) 45%, 
+    rgba(255, 237, 213, 0.9) 0%, 
+    rgba(255, 237, 213, 0.9) 25%, 
+    rgba(254, 240, 138, 0.85) 45%, 
     #ffffff 50%, 
-    rgba(253, 164, 175, 0.45) 55%, 
-    rgba(255, 228, 230, 0.85) 75%, 
-    rgba(255, 228, 230, 0.85) 100%
+    rgba(254, 215, 170, 0.7) 55%, 
+    rgba(255, 237, 213, 0.9) 75%, 
+    rgba(255, 237, 213, 0.9) 100%
   );
   background-size: 250% 100%;
   -webkit-background-clip: text;
@@ -580,9 +580,9 @@ html.dark .clean-card:hover {
 
 /* Starfield background pattern using layered deep space gradients */
 .cosmic-hero-bg {
-  background-color: #030408;
+  background-color: #090a0d;
   background-image: 
-    radial-gradient(ellipse at 50% 15%, rgba(136, 19, 55, 0.45) 0%, rgba(15, 23, 42, 0.1) 60%, transparent 100%),
+    radial-gradient(ellipse at 50% 15%, rgba(154, 52, 18, 0.28) 0%, rgba(9, 10, 13, 0.1) 60%, transparent 100%),
     radial-gradient(1px 1px at 15px 25px, #ffffff, rgba(0,0,0,0)),
     radial-gradient(1.5px 1.5px at 70px 90px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
     radial-gradient(1.2px 1.2px at 160px 45px, rgba(226,232,240,0.85), rgba(0,0,0,0)),
@@ -592,7 +592,7 @@ html.dark .clean-card:hover {
     radial-gradient(2.2px 2.2px at 510px 50px, rgba(255,255,255,1), rgba(0,0,0,0)),
     radial-gradient(1.5px 1.5px at 630px 130px, #fed7aa, rgba(0,0,0,0)),
     radial-gradient(1px 1px at 730px 40px, #ffffff, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 840px 170px, #fbcfe8, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 840px 170px, #fed7aa, rgba(0,0,0,0)),
     radial-gradient(1.2px 1.2px at 930px 75px, #93c5fd, rgba(0,0,0,0)),
     radial-gradient(1.8px 1.8px at 1040px 120px, #ffffff, rgba(0,0,0,0)),
     radial-gradient(1px 1px at 1140px 30px, #ffffff, rgba(0,0,0,0)),

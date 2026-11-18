@@ -292,39 +292,39 @@ export default function HomePage() {
         ].slice(0, 4);
 
   return (
-    <div className="bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white transition-colors">
+    <div className="bg-[#f8fafc] dark:bg-[#090a0d] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-[#ff6a00] selection:text-white transition-colors">
 
       {/* 2. COSMIC GLOWING HORIZON HERO SECTION (Inspired by 10 Minute School) */}
       <section className="relative overflow-hidden cosmic-hero-bg text-white py-12 md:py-0 md:-mt-20 md:pt-20 lg:-mt-24 lg:pt-24 md:min-h-[calc(100vh+5rem)] lg:min-h-[calc(100vh+6rem)] flex flex-col items-center justify-center">
         
-        {/* Deep space radial ambient lighting & celestial nebula glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[550px] bg-gradient-to-b from-rose-950/50 via-red-950/25 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-red-600/18 rounded-full blur-[120px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[400px] h-[300px] bg-blue-900/15 rounded-full blur-[100px] pointer-events-none -z-10" />
-        <div className="absolute -top-10 right-1/4 w-[400px] h-[300px] bg-purple-900/15 rounded-full blur-[100px] pointer-events-none -z-10" />
+        {/* Deep space radial ambient lighting & warm celestial orange/amber aura */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[550px] bg-gradient-to-b from-orange-950/30 via-amber-950/15 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[400px] h-[300px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[400px] h-[300px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
 
         {/* 🌟 GLOWING & DIMMING STARS (Twinkling Cosmic Starfield) - Placed above base background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           {/* Top-left star cluster */}
           <div className="absolute top-[8%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[18%] left-[5%] w-1 h-1 rounded-full bg-rose-200 animate-star-twinkle-medium" style={{ animationDelay: '1.2s' }} />
+          <div className="absolute top-[18%] left-[5%] w-1 h-1 rounded-full bg-orange-200 animate-star-twinkle-medium" style={{ animationDelay: '1.2s' }} />
           <div className="absolute top-[28%] left-[18%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" style={{ animationDelay: '0.6s' }} />
           <div className="absolute top-[12%] left-[24%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" style={{ animationDelay: '2.4s' }} />
           
           {/* Top-center star cluster */}
           <div className="absolute top-[7%] left-[42%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" style={{ animationDelay: '1.8s' }} />
-          <div className="absolute top-[15%] left-[56%] w-1 h-1 rounded-full bg-rose-300 animate-star-twinkle-slow" style={{ animationDelay: '3.1s' }} />
+          <div className="absolute top-[15%] left-[56%] w-1 h-1 rounded-full bg-orange-300 animate-star-twinkle-slow" style={{ animationDelay: '3.1s' }} />
           <div className="absolute top-[10%] left-[66%] w-1.5 h-1.5 rounded-full bg-amber-200 animate-star-twinkle-fast" style={{ animationDelay: '0.9s' }} />
           
           {/* Top-right star cluster */}
           <div className="absolute top-[11%] right-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" style={{ animationDelay: '1.5s' }} />
-          <div className="absolute top-[24%] right-[7%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-fast" style={{ animationDelay: '2.7s' }} />
-          <div className="absolute top-[16%] right-[20%] w-1 h-1 rounded-full bg-rose-200 animate-star-twinkle-medium" style={{ animationDelay: '0.4s' }} />
+          <div className="absolute top-[24%] right-[7%] w-1 h-1 rounded-full bg-amber-100 animate-star-twinkle-fast" style={{ animationDelay: '2.7s' }} />
+          <div className="absolute top-[16%] right-[20%] w-1 h-1 rounded-full bg-orange-200 animate-star-twinkle-medium" style={{ animationDelay: '0.4s' }} />
           <div className="absolute top-[32%] right-[15%] w-1 h-1 rounded-full bg-amber-100 animate-star-twinkle-slow" style={{ animationDelay: '3.8s' }} />
           
           {/* Mid & lower background stars */}
           <div className="absolute top-[48%] left-[7%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" style={{ animationDelay: '2.1s' }} />
-          <div className="absolute top-[64%] left-[14%] w-1 h-1 rounded-full bg-rose-200 animate-star-twinkle-slow" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-[64%] left-[14%] w-1 h-1 rounded-full bg-orange-200 animate-star-twinkle-slow" style={{ animationDelay: '1s' }} />
           <div className="absolute top-[44%] right-[8%] w-1 h-1 rounded-full bg-white animate-star-twinkle-fast" style={{ animationDelay: '3.3s' }} />
           <div className="absolute top-[70%] right-[16%] w-1.5 h-1.5 rounded-full bg-amber-200 animate-star-twinkle-medium" style={{ animationDelay: '1.7s' }} />
 
@@ -346,21 +346,21 @@ export default function HomePage() {
                 maskImage: 'radial-gradient(ellipse 65% 65% at 50% 100%, black 40%, transparent 75%)',
                 WebkitMaskImage: 'radial-gradient(ellipse 65% 65% at 50% 100%, black 40%, transparent 75%)',
               }}
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[15%] w-[120%] sm:w-[95%] h-[160px] rounded-t-[500px] pointer-events-none border-t-[3px] border-rose-400/90 shadow-[0_-14px_45px_12px_rgba(239,68,68,0.55),0_-2px_15px_rgba(255,255,255,0.95)] animate-horizon-glow" 
+              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[15%] w-[120%] sm:w-[95%] h-[160px] rounded-t-[500px] pointer-events-none border-t-[3px] border-orange-400/80 shadow-[0_-12px_36px_10px_rgba(255,106,0,0.35),0_-2px_12px_rgba(255,255,255,0.9)] animate-horizon-glow" 
             />
             
-            {/* Atmospheric Red & Crimson Air Eclipse Glow Behind the Title (Seamless Radial Blend) */}
+            {/* Atmospheric Warm Amber Air Eclipse Glow Behind the Title (Seamless Radial Blend) */}
             <div 
               style={{
-                background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(225, 29, 72, 0.28) 0%, rgba(239, 68, 68, 0.15) 40%, transparent 75%)',
+                background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255, 106, 0, 0.16) 0%, rgba(245, 158, 11, 0.08) 45%, transparent 75%)',
               }}
               className="absolute -inset-x-20 -inset-y-10 pointer-events-none blur-3xl animate-cosmic-air-1" 
             />
 
-            {/* Secondary Soft Golden-Rose Luminous Air Wave */}
+            {/* Secondary Soft Golden-Luminous Air Wave */}
             <div 
               style={{
-                background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(245, 158, 11, 0.18) 0%, rgba(244, 63, 94, 0.12) 45%, transparent 70%)',
+                background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(254, 215, 170, 0.14) 0%, rgba(255, 106, 0, 0.06) 45%, transparent 70%)',
               }}
               className="absolute -inset-x-10 -inset-y-6 pointer-events-none blur-2xl animate-cosmic-air-2" 
             />
@@ -631,7 +631,7 @@ export default function HomePage() {
           <div className="mt-12 sm:mt-16 lg:mt-24 pb-8 lg:pb-14 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <Link
               href="/free-classes"
-              className="px-8 py-3.5 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-500/35 hover:shadow-emerald-500/50 hover:scale-105 transition-all flex items-center gap-2.5"
+              className="px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transition-all flex items-center gap-2.5"
             >
               <span>ফ্রি ক্লাস (HSC / SSC)</span>
               <ArrowRight className="w-4 h-4" />
@@ -639,10 +639,10 @@ export default function HomePage() {
 
             <Link
               href="/courses"
-              className="px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base border border-white/25 backdrop-blur-md hover:scale-105 transition-all flex items-center gap-2.5 shadow-lg"
+              className="px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base border border-white/20 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all flex items-center gap-2.5 shadow-lg"
             >
               <span>সকল কোর্স দেখুন</span>
-              <ChevronRight className="w-4 h-4 text-rose-300" />
+              <ChevronRight className="w-4 h-4 text-orange-300" />
             </Link>
           </div>
 
@@ -652,17 +652,17 @@ export default function HomePage() {
 
       {/* 3. KEY METRICS SHOWCASE (Compact, Centered, Background Watermark Icons, Scroll-triggered Counter Animation) */}
       <section className="relative z-30 -mt-8 sm:-mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-[24px] sm:rounded-[32px] bg-white/95 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 sm:p-5 md:p-6 overflow-hidden">
+        <div className="relative rounded-[24px] sm:rounded-[32px] bg-white/95 dark:bg-[#111318]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-[#262b34] shadow-[0_16px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-4 sm:p-5 md:p-6 overflow-hidden">
           {/* Subtle Ambient Glow Blobs */}
-          <div className="absolute -top-16 -left-16 w-40 h-40 bg-blue-500/10 dark:bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -right-16 w-40 h-40 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-16 -left-16 w-40 h-40 bg-orange-500/8 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 w-40 h-40 bg-emerald-500/8 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
             
             {/* Metric 1: Students */}
-            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-blue-500/40 dark:hover:border-blue-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-[#090a0d]/60 border border-slate-200/70 dark:border-[#1a1d24] hover:border-orange-500/40 dark:hover:border-orange-400/40 hover:bg-white dark:hover:bg-[#111318] transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
               {/* Background Watermark Icon */}
-              <div className="absolute -right-3 -bottom-3 text-blue-500/10 dark:text-blue-400/10 pointer-events-none group-hover:scale-115 group-hover:text-blue-500/15 dark:group-hover:text-blue-400/15 transition-all duration-500">
+              <div className="absolute -right-3 -bottom-3 text-orange-500/10 dark:text-orange-400/10 pointer-events-none group-hover:scale-115 group-hover:text-orange-500/15 dark:group-hover:text-orange-400/15 transition-all duration-500">
                 <Users className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
               </div>
 
@@ -677,7 +677,7 @@ export default function HomePage() {
             </div>
 
             {/* Metric 2: Classes */}
-            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-emerald-500/40 dark:hover:border-emerald-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-[#090a0d]/60 border border-slate-200/70 dark:border-[#1a1d24] hover:border-emerald-500/40 dark:hover:border-emerald-400/40 hover:bg-white dark:hover:bg-[#111318] transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
               {/* Background Watermark Icon */}
               <div className="absolute -right-3 -bottom-3 text-emerald-500/10 dark:text-emerald-400/10 pointer-events-none group-hover:scale-115 group-hover:text-emerald-500/15 dark:group-hover:text-emerald-400/15 transition-all duration-500">
                 <PlayCircle className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
@@ -694,7 +694,7 @@ export default function HomePage() {
             </div>
 
             {/* Metric 3: Syllabus */}
-            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-amber-500/40 dark:hover:border-amber-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-[#090a0d]/60 border border-slate-200/70 dark:border-[#1a1d24] hover:border-amber-500/40 dark:hover:border-amber-400/40 hover:bg-white dark:hover:bg-[#111318] transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
               {/* Background Watermark Icon */}
               <div className="absolute -right-3 -bottom-3 text-amber-500/10 dark:text-amber-400/10 pointer-events-none group-hover:scale-115 group-hover:text-amber-500/15 dark:group-hover:text-amber-400/15 transition-all duration-500">
                 <CheckCircle2 className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
@@ -711,9 +711,9 @@ export default function HomePage() {
             </div>
 
             {/* Metric 4: Mentorship */}
-            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/70 dark:border-slate-800/70 hover:border-purple-500/40 dark:hover:border-purple-400/40 hover:bg-white dark:hover:bg-slate-900 transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
+            <div className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-[#090a0d]/60 border border-slate-200/70 dark:border-[#1a1d24] hover:border-teal-500/40 dark:hover:border-teal-400/40 hover:bg-white dark:hover:bg-[#111318] transition-all duration-300 hover:shadow-md text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[120px]">
               {/* Background Watermark Icon */}
-              <div className="absolute -right-3 -bottom-3 text-purple-500/10 dark:text-purple-400/10 pointer-events-none group-hover:scale-115 group-hover:text-purple-500/15 dark:group-hover:text-purple-400/15 transition-all duration-500">
+              <div className="absolute -right-3 -bottom-3 text-teal-500/10 dark:text-teal-400/10 pointer-events-none group-hover:scale-115 group-hover:text-teal-500/15 dark:group-hover:text-teal-400/15 transition-all duration-500">
                 <MessageCircle className="w-20 h-20 sm:w-24 sm:h-24 stroke-[1.2]" />
               </div>
 
@@ -738,10 +738,9 @@ export default function HomePage() {
       {/* 4. FEATURED COURSES SECTION (Unified Continuous Flow) */}
       <section id="featured-courses" className="relative py-20 sm:py-28 overflow-hidden">
         
-        {/* Subtle cute ambient cosmic glows in the background */}
-        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[300px] bg-rose-500/5 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle cute ambient glows in the background */}
+        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-orange-500/6 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-amber-500/6 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -751,7 +750,7 @@ export default function HomePage() {
               {/* Title */}
               <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                 জনপ্রিয় কোর্স ও{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                   ব্যাচসমূহ
                 </span>
               </h2>
@@ -765,7 +764,7 @@ export default function HomePage() {
             <div
               role="tablist"
               aria-label="ক্লাস অনুযায়ী কোর্স বাছাই করুন"
-              className="w-full lg:w-auto flex items-center gap-1 p-1 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-inner overflow-x-auto scrollbar-none max-w-full"
+              className="w-full lg:w-auto flex items-center gap-1 p-1 rounded-2xl bg-slate-100/90 dark:bg-[#111318]/90 border border-slate-200/80 dark:border-[#262b34] shadow-inner overflow-x-auto scrollbar-none max-w-full"
             >
               {classList.slice(0, 6).map((cls) => {
                 const isActive = selectedClass === cls;
@@ -778,8 +777,8 @@ export default function HomePage() {
                     onClick={() => setSelectedClass(cls)}
                     className={`min-w-max px-3.5 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-700'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-slate-800/70'
+                        ? 'bg-white dark:bg-[#1a1d24] text-orange-600 dark:text-orange-400 shadow-sm ring-1 ring-orange-500/30 dark:ring-orange-500/30'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-[#181b20]'
                     }`}
                   >
                     {cls === 'All' ? 'সকল শ্রেণি' : cls}
@@ -792,19 +791,19 @@ export default function HomePage() {
           {/* Courses Grid */}
           {loadingCourses ? (
             <div className="py-24 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+              <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border-2 border-orange-500/20 border-t-orange-500 animate-spin mx-auto" />
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্সগুলো সাজানো হচ্ছে...</p>
             </div>
           ) : filteredCourses.length === 0 ? (
-            <div className="text-center py-16 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-[32px] border border-slate-200/80 dark:border-slate-800 p-8 sm:p-12 max-w-md mx-auto shadow-sm">
-              <div className="w-16 h-16 rounded-2xl bg-blue-100/80 dark:bg-blue-950/60 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800">
-                <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div className="text-center py-16 bg-white/70 dark:bg-[#111318]/70 backdrop-blur-xl rounded-[32px] border border-slate-200/80 dark:border-[#262b34] p-8 sm:p-12 max-w-md mx-auto shadow-sm">
+              <div className="w-16 h-16 rounded-2xl bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-800">
+                <BookOpen className="w-8 h-8 text-orange-600 dark:text-orange-400" />
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white">কোনো কোর্স পাওয়া যায়নি</h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6">এই শ্রেণির জন্য নতুন কোর্স ও ব্যাচ খুব শীঘ্রই লাইভ হবে।</p>
               <button
                 onClick={() => setSelectedClass('All')}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md shadow-blue-500/25 transition-all"
+                className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-xl text-xs font-black shadow-md shadow-orange-500/20 transition-all"
               >
                 সব কোর্স দেখুন
               </button>
@@ -963,10 +962,10 @@ export default function HomePage() {
           <div className="mt-14 sm:mt-16 text-center">
             <Link
               href="/courses"
-              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white dark:bg-slate-900/90 border-2 border-slate-200/90 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 text-slate-900 dark:text-white font-black text-sm shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
+              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white dark:bg-[#111318] border-2 border-slate-200/90 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 text-slate-900 dark:text-white font-black text-sm shadow-sm hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300"
             >
               <span>সকল কোর্স ও ব্যাচ ক্যাটালগ দেখুন</span>
-              <ArrowRight className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
@@ -976,16 +975,16 @@ export default function HomePage() {
       {/* 5. VISUAL SECTION 1: LIVE CLASS (Cute, Cosmic & Glossy Glass Aesthetic) */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
         
-        {/* Subtle cute ambient cosmic glows */}
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 -left-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle cute ambient glows */}
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-orange-500/8 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -left-40 w-96 h-96 bg-amber-500/8 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Image on Left - Glossy Glass Container */}
             <div className="lg:col-span-6 order-1 lg:order-1">
-              <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
+              <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
                 
                 {/* Image Mask Frame */}
                 <div className="relative rounded-[28px] sm:rounded-[34px] overflow-hidden aspect-[16/10.5] bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner">
@@ -1001,16 +1000,16 @@ export default function HomePage() {
                   {/* Overlaid Cute Top Badge */}
                   <div className="absolute top-3.5 left-3.5 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-black border border-white/25 shadow-lg">
                     <span className="relative flex h-2 w-2">
-                      <span className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-75" />
-                      <span className="relative m-auto h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)]" />
+                      <span className="absolute inset-0 rounded-full bg-orange-500 animate-ping opacity-75" />
+                      <span className="relative m-auto h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(255,106,0,0.9)]" />
                     </span>
                     <span>ইন্টারেক্টিভ লাইভ ক্লাস</span>
                   </div>
 
                   {/* Bottom cute tag overlay */}
                   <div className="absolute bottom-3.5 inset-x-3.5 z-10 flex items-center justify-between pointer-events-none">
-                    <div className="px-3.5 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-md text-slate-900 dark:text-white text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15 flex items-center gap-2">
-                      <Video className="w-3.5 h-3.5 text-blue-500" />
+                    <div className="px-3.5 py-1.5 rounded-2xl bg-white/95 dark:bg-[#111318]/90 backdrop-blur-md text-slate-900 dark:text-white text-xs font-black shadow-md border border-slate-200/60 dark:border-white/15 flex items-center gap-2">
+                      <Video className="w-3.5 h-3.5 text-orange-500" />
                       <span>টু-ওয়ে অডিও ও স্ক্রিন শেয়ার</span>
                     </div>
                   </div>
@@ -1022,7 +1021,7 @@ export default function HomePage() {
             <div className="lg:col-span-6 order-2 lg:order-2">
               <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.3] tracking-tight">
                 ইন্টারেক্টিভ{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                   অনলাইন ক্লাস
                 </span>
               </h2>
@@ -1031,16 +1030,16 @@ export default function HomePage() {
                 অনলাইন হলেও মনে হবে শিক্ষক তোমার সামনেই আছেন! সরাসরি কথা বলে প্রশ্ন করা এবং স্ক্রিনে হাতে-কলমে সমাধান পাওয়ার আধুনিক ব্যবস্থা।
               </p>
 
-              {/* 3 Cute Glassmorphic Feature Pill Cards */}
+              {/* 3 Cute Feature Cards */}
               <div className="mt-8 space-y-3.5">
                 
                 {/* Feature 1 */}
-                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-blue-500/60 dark:hover:border-blue-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-blue-500/25 group-hover/item:scale-108 transition-transform">
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-orange-500/25 group-hover/item:scale-108 transition-transform">
                     ১
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-orange-600 dark:group-hover/item:text-orange-400 transition-colors">
                       সরাসরি কথা বলে ডাউট সলভ
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -1050,7 +1049,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Feature 2 */}
-                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
                   <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-emerald-500/25 group-hover/item:scale-108 transition-transform">
                     ২
                   </div>
@@ -1065,12 +1064,12 @@ export default function HomePage() {
                 </div>
 
                 {/* Feature 3 */}
-                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-purple-500/60 dark:hover:border-purple-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-purple-500/25 group-hover/item:scale-108 transition-transform">
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-amber-500/25 group-hover/item:scale-108 transition-transform">
                     ৩
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-purple-600 dark:group-hover/item:text-purple-400 transition-colors">
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-amber-600 dark:group-hover/item:text-amber-400 transition-colors">
                       আনলিমিটেড রেকর্ডেড ক্লাস
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -1085,7 +1084,7 @@ export default function HomePage() {
               <div className="mt-8 pt-2">
                 <Link
                   href="/free-classes"
-                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-102 transition-all duration-300"
+                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-102 transition-all duration-300"
                 >
                   <span>ফ্রি ক্লাস ও সেমিনার দেখুন</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1101,9 +1100,9 @@ export default function HomePage() {
       {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS (Cute Cosmic Glass Aesthetic) */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
         
-        {/* Subtle cute ambient cosmic glows */}
-        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 -right-40 w-96 h-96 bg-amber-500/10 dark:bg-amber-600/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle cute ambient glows */}
+        <div className="absolute top-1/4 -left-40 w-96 h-96 bg-emerald-500/8 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -right-40 w-96 h-96 bg-orange-500/8 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -1127,7 +1126,7 @@ export default function HomePage() {
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 
                 {/* Highlight Card 1 */}
-                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-slate-900/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
+                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-[#111318]/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
                   <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-amber-500/25 group-hover/card:scale-110 transition-transform">
                     <Award className="w-5 h-5" />
                   </div>
@@ -1140,7 +1139,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Highlight Card 2 */}
-                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-slate-900/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-slate-800/80 hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
+                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-[#111318]/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
                   <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-emerald-500/25 group-hover/card:scale-110 transition-transform">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
@@ -1168,7 +1167,7 @@ export default function HomePage() {
 
             {/* Image on Right - Glossy Glass Container */}
             <div className="lg:col-span-6 order-1 lg:order-2">
-              <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
+              <div className="relative p-2.5 sm:p-3.5 rounded-[36px] sm:rounded-[44px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] shadow-xl shadow-slate-200/50 dark:shadow-black/50 group">
                 
                 {/* Image Mask Frame */}
                 <div className="relative rounded-[28px] sm:rounded-[34px] overflow-hidden aspect-[16/10.5] bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner">
@@ -1204,9 +1203,9 @@ export default function HomePage() {
       {/* 7. TEACHERS / FACULTY SECTION (Cute Cosmic Glass Aesthetic) */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
         
-        {/* Subtle cute ambient cosmic glows */}
-        <div className="absolute top-1/4 -right-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle cute ambient glows */}
+        <div className="absolute top-1/4 -right-40 w-96 h-96 bg-orange-500/6 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -left-40 w-96 h-96 bg-amber-500/6 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -1214,7 +1213,7 @@ export default function HomePage() {
           <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
             <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
               যাদের সান্নিধ্যে{' '}
-              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                 তোমার স্বপ্নপূরণ
               </span>
             </h2>
@@ -1228,7 +1227,7 @@ export default function HomePage() {
             {instructorsList.slice(0, 4).map((teacher, idx) => (
               <div
                 key={idx}
-                className="group relative p-2 sm:p-3.5 rounded-[22px] sm:rounded-[30px] bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl border sm:border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-purple-500/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center"
+                className="group relative p-2 sm:p-3.5 rounded-[22px] sm:rounded-[30px] bg-white/90 dark:bg-[#111318]/80 backdrop-blur-xl border sm:border-2 border-slate-200/90 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-orange-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center"
               >
                 {/* Portrait Photo */}
                 <div className="relative rounded-[16px] sm:rounded-[22px] overflow-hidden aspect-[4/3.5] w-full bg-slate-900 border border-slate-200/60 dark:border-white/10 shadow-inner flex items-center justify-center">
@@ -1255,7 +1254,7 @@ export default function HomePage() {
                 <div className="w-full px-1.5 pt-3 pb-2 flex flex-col items-center text-center flex-1 justify-between">
                   <div>
                     {/* Teacher Name */}
-                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors leading-snug">
                       {teacher.name}
                     </h3>
 
@@ -1272,7 +1271,7 @@ export default function HomePage() {
                   {/* Teaching Subject (সে কোন সাবজেক্টে পড়ায় - একটু নিচে ক্লিয়ার ব্যাজ হিসেবে) */}
                   {teacher.subjects && teacher.subjects.length > 0 && (
                     <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 w-full flex items-center justify-center">
-                      <span className="inline-block px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 text-[10px] sm:text-[11px] font-bold border border-blue-200/60 dark:border-blue-800/60 leading-tight">
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 text-[10px] sm:text-[11px] font-bold border border-orange-200/60 dark:border-orange-800/60 leading-tight">
                         {teacher.subjects.join(' • ')}
                       </span>
                     </div>
@@ -1288,9 +1287,9 @@ export default function HomePage() {
       {/* 8. 3-STEP ADMISSION PROCESS (Cute Cosmic Glass Aesthetic) */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
         
-        {/* Subtle cute ambient cosmic glows */}
-        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 -right-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle cute ambient glows */}
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-orange-500/6 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -right-40 w-96 h-96 bg-amber-500/6 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -1298,7 +1297,7 @@ export default function HomePage() {
           <div className="text-center max-w-xl mx-auto mb-14 sm:mb-16">
             <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
               ভর্তি হতে মাত্র{' '}
-              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                 ৩টি সহজ ধাপ
               </span>
             </h2>
@@ -1311,11 +1310,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative">
             
             {/* Step 1 */}
-            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-blue-500/70 dark:hover:border-blue-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] hover:border-orange-500/70 dark:hover:border-orange-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-orange-500/25 group-hover:scale-110 transition-transform">
                 ১
               </div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                 রেজিস্ট্রেশন করুন
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
@@ -1324,11 +1323,11 @@ export default function HomePage() {
             </div>
 
             {/* Step 2 */}
-            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-indigo-500/70 dark:hover:border-indigo-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform">
+            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] hover:border-amber-500/70 dark:hover:border-amber-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-amber-500/25 group-hover:scale-110 transition-transform">
                 ২
               </div>
-              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                 কোর্স ও ব্যাচ পছন্দ করুন
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
@@ -1337,8 +1336,8 @@ export default function HomePage() {
             </div>
 
             {/* Step 3 */}
-            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-slate-800/90 hover:border-emerald-500/70 dark:hover:border-emerald-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-green-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
+            <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] hover:border-emerald-500/70 dark:hover:border-emerald-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-green-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/25 group-hover:scale-110 transition-transform">
                 ৩
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
@@ -1357,9 +1356,9 @@ export default function HomePage() {
       {/* 9. FREQUENTLY ASKED QUESTIONS (FAQ) (Cute Cosmic Glass Aesthetic) */}
       <section className="relative py-20 sm:py-28 overflow-hidden">
         
-        {/* Subtle cute ambient cosmic glows */}
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 -left-40 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+        {/* Subtle cute ambient glows */}
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-orange-500/6 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 -left-40 w-96 h-96 bg-amber-500/6 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -1367,7 +1366,7 @@ export default function HomePage() {
           <div className="text-center max-w-xl mx-auto mb-14 sm:mb-16">
             <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
               সচরাচর{' '}
-              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-400">
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                 জিজ্ঞাসিত প্রশ্ন (FAQ)
               </span>
             </h2>
@@ -1385,20 +1384,20 @@ export default function HomePage() {
                   key={idx}
                   className={`rounded-[26px] border-2 transition-all duration-300 overflow-hidden backdrop-blur-xl ${
                     isOpen
-                      ? 'bg-white/95 dark:bg-slate-900/90 border-blue-500/70 dark:border-purple-500/70 shadow-lg shadow-blue-500/10 dark:shadow-purple-500/10'
-                      : 'bg-white/80 dark:bg-slate-900/75 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
+                      ? 'bg-white/95 dark:bg-[#111318]/90 border-orange-500/70 dark:border-orange-400/70 shadow-lg shadow-orange-500/10'
+                      : 'bg-white/80 dark:bg-[#111318]/75 border-slate-200/80 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-black text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-black text-sm sm:text-base text-slate-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 transition-colors cursor-pointer"
                   >
                     <span className="flex items-center gap-3">
                       <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
                         isOpen
-                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25'
+                          : 'bg-slate-100 dark:bg-[#1a1d24] text-slate-500 dark:text-slate-400'
                       }`}>
                         {idx + 1}
                       </span>
@@ -1406,8 +1405,8 @@ export default function HomePage() {
                     </span>
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                       isOpen
-                        ? 'bg-blue-100 dark:bg-purple-950/60 text-blue-600 dark:text-purple-300 rotate-180'
-                        : 'bg-slate-100/80 dark:bg-slate-800/80 text-slate-400'
+                        ? 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 rotate-180'
+                        : 'bg-slate-100/80 dark:bg-[#1a1d24] text-slate-400'
                     }`}>
                       <ChevronDown className="w-4 h-4" />
                     </div>
@@ -1427,14 +1426,14 @@ export default function HomePage() {
       </section>
 
       {/* 10. BOTTOM BANNER / CTA (Full Width Solid Midnight Clean Aesthetic - Same As Footer) */}
-      <section className="relative w-full py-20 sm:py-28 overflow-hidden bg-[#080c1a] text-white text-center">
+      <section className="relative w-full py-20 sm:py-28 overflow-hidden bg-[#090a0d] border-t border-[#262b34] text-white text-center">
 
         <div className="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Title */}
           <h2 className="text-2xl sm:text-4xl lg:text-[44px] font-black tracking-tight leading-tight">
             আজই শুরু হোক তোমার{' '}
-            <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300">
+            <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300">
               সেরা প্রস্তুতি!
             </span>
           </h2>
@@ -1447,7 +1446,7 @@ export default function HomePage() {
           <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <Link
               href="/register"
-              className="group px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-blue-500/30 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
+              className="group px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-orange-500/25 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
               <span>বিনামূল্যে একাউন্ট খুলুন</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
@@ -1455,7 +1454,7 @@ export default function HomePage() {
 
             <Link
               href="/courses"
-              className="px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs sm:text-base border border-white/20 sm:border-2 backdrop-blur-md hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
+              className="px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs sm:text-base border border-white/20 sm:border-2 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
               <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>সকল কোর্স দেখুন</span>
@@ -1466,9 +1465,9 @@ export default function HomePage() {
       </section>
 
       {/* 11. FOOTER (Matching Bottom Banner) */}
-      <footer className="relative bg-[#080c1a] text-slate-400 py-12 text-xs">
+      <footer className="relative bg-[#090a0d] text-slate-400 py-12 text-xs border-t border-[#181b20]">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-indigo-950/80">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-[#181b20]">
             <div>
               <div className="flex items-center gap-2.5 text-white font-extrabold text-base mb-3">
                 <SiteLogo size="sm" showText={false} />
@@ -1480,35 +1479,35 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-indigo-300">কোর্সসমূহ</h4>
+              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-orange-400/90">কোর্সসমূহ</h4>
               <ul className="space-y-2">
-                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">Class 6 - 8 Foundation</Link></li>
-                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">Class 9 - 10 SSC Special</Link></li>
-                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">Class 11 - 12 HSC Prep</Link></li>
-                <li><Link href="/free-classes" className="hover:text-indigo-300 transition-colors">ফ্রি ক্লাস ও সেমিনার</Link></li>
+                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">Class 6 - 8 Foundation</Link></li>
+                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">Class 9 - 10 SSC Special</Link></li>
+                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">Class 11 - 12 HSC Prep</Link></li>
+                <li><Link href="/free-classes" className="hover:text-orange-400 transition-colors">ফ্রি ক্লাস ও সেমিনার</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-indigo-300">কুইক লিংকস</h4>
+              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-orange-400/90">কুইক লিংকস</h4>
               <ul className="space-y-2">
-                <li><Link href="/login" className="hover:text-indigo-300 transition-colors">লগইন</Link></li>
-                <li><Link href="/register" className="hover:text-indigo-300 transition-colors">রেজিস্ট্রেশন</Link></li>
-                <li><Link href="/courses" className="hover:text-indigo-300 transition-colors">সকল ব্যাচ</Link></li>
+                <li><Link href="/login" className="hover:text-orange-400 transition-colors">লগইন</Link></li>
+                <li><Link href="/register" className="hover:text-orange-400 transition-colors">রেজিস্ট্রেশন</Link></li>
+                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">সকল ব্যাচ</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-indigo-300">যোগাযোগ ও হেল্পলাইন</h4>
+              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-orange-400/90">যোগাযোগ ও হেল্পলাইন</h4>
               <p className="leading-relaxed mb-2">সকাল ৯টা থেকে রাত ১০টা পর্যন্ত যেকোনো সহায়তায়:</p>
-              <p className="text-white font-bold text-sm text-indigo-200">📞 16910 / 01700-000000</p>
+              <p className="text-white font-bold text-sm text-orange-300">📞 16910 / 01700-000000</p>
               <p className="text-slate-400 mt-1">ইমেইল: support@gravacademy.com</p>
             </div>
           </div>
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-slate-500 gap-2">
             <div>© {new Date().getFullYear()} Grav Academy. সর্বস্বত্ব সংরক্ষিত।</div>
-            <div className="text-indigo-400/60 font-medium">Bangladeshi Academic Coaching Platform</div>
+            <div className="text-orange-400/60 font-medium">Bangladeshi Academic Coaching Platform</div>
           </div>
         </div>
       </footer>
