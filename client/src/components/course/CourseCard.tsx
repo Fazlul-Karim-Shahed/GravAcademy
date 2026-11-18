@@ -89,19 +89,19 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
         {course.description && (
           <p className="mt-1.5 line-clamp-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{course.description}</p>
         )}
-        <div className="mt-3 flex items-end justify-between gap-3 border-t border-slate-200 pt-3 dark:border-slate-800">
+        <div className="mt-auto pt-2.5 sm:pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500">ভর্তি চলছে</span>
             {price ? (
-              <div className="mt-0.5 flex items-baseline gap-1.5">
-                <span className="text-base font-black text-orange-600 dark:text-orange-400">৳{price}</span>
-                {hasDiscount && <span className="text-[11px] text-slate-400 line-through">৳{course.regularPrice}</span>}
+              <div className="mt-0.5 flex items-baseline gap-1.5 flex-wrap">
+                <span className="text-sm sm:text-base font-black text-orange-600 dark:text-orange-400">৳{price}</span>
+                {hasDiscount && <span className="text-[10px] sm:text-[11px] text-slate-400 line-through">৳{course.regularPrice}</span>}
               </div>
             ) : (
-              <span className="mt-0.5 block text-sm font-black text-emerald-600 dark:text-emerald-400">ফ্রি কোর্স</span>
+              <span className="mt-0.5 block text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">ফ্রি কোর্স</span>
             )}
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white transition-colors group-hover:bg-orange-500 dark:bg-white dark:text-slate-900 dark:group-hover:bg-orange-500 dark:group-hover:text-white">
+          <span className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white transition-colors group-hover:bg-orange-500 dark:bg-white dark:text-slate-900 dark:group-hover:bg-orange-500 dark:group-hover:text-white shadow-xs">
             ব্যাচ দেখুন <ChevronRight className="h-3.5 w-3.5" />
           </span>
         </div>
