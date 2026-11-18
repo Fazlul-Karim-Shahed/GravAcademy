@@ -170,7 +170,7 @@ export default function ProfileViewPage() {
             </div>
             <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 print:hidden"><FileText className="h-4 w-4" /> Print</button>
           </div>
-          <div id="identity-card-sheet" className="mx-auto grid w-full max-w-[620px] grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:items-start sm:gap-5">
+          <div id="identity-card-sheet" style={{ colorScheme: 'light' }} className="mx-auto grid w-full max-w-[620px] grid-cols-1 justify-items-center gap-6 bg-transparent text-black sm:grid-cols-2 sm:items-start sm:gap-5">
             <div className="relative h-[390px] w-[245px] overflow-hidden bg-white shadow-xl ring-1 ring-slate-200 print:shadow-none">
               <div className="absolute inset-x-0 top-0 h-[24px] bg-[#323032]" />
               <div className="absolute inset-x-0 top-[24px] h-[7px] bg-red-600" />
