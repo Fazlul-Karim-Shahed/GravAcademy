@@ -5,9 +5,9 @@ export const formatBulkMcqWithGemini = async (text: string): Promise<any[]> => {
   if (!apiKey) throw new Error('Gemini API key এখনো configure করা হয়নি।');
   const expectedCount = text.split(/\n\s*\n+/).filter((block) => block.trim()).length;
   const prompt = `Return JSON only with exactly ${expectedCount} question objects. Preserve every question occurrence in order, including duplicates. Each object needs questionText, exactly 4 options with text, correctOptionIndex (0-3), and marks. Preserve Bangla and use given answers. Input:\n${text}`;
-  const request = (model: string) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, responseMimeType: 'application/json' } }) });
+  const request = (model: string) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, responseMimeType: 'application/json' } }) });
   let response = await request(GEMINI_MODEL);
-  if (!response.ok && (response.status === 429 || response.status === 500 || response.status === 503) && GEMINI_MODEL !== 'gemini-flash-lite-latest') response = await request('gemini-flash-lite-latest');
+  if (!response.ok && GEMINI_MODEL !== 'gemini-flash-lite-latest') response = await request('gemini-flash-lite-latest');
   if (!response.ok) throw new Error(`Gemini request failed (${response.status})`);
   const payload: any = await response.json();
   const raw = payload?.candidates?.[0]?.content?.parts?.map((part: any) => part.text || '').join('') || '';
