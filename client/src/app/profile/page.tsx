@@ -182,7 +182,7 @@ export default function ProfileViewPage() {
             </div>
             <div className="relative h-[390px] w-[245px] overflow-hidden bg-white shadow-xl ring-1 ring-slate-200 print:shadow-none">
               <div className="flex h-[171px] flex-col items-center pt-5 text-[#555]">
-                <div className="flex h-[27px] w-[27px] items-center justify-center rounded-[3px] bg-black text-[22px] font-bold leading-none text-white">T</div>
+                <SiteLogo size="sm" showText={false} className="!h-[27px] !w-[27px] !border-0 !bg-transparent object-contain" />
                 <div className="mt-[83px] whitespace-nowrap text-[8px] font-light leading-4 tracking-[0.04em]">DATE ISSUED: {(() => { const issued = (user as typeof user & { createdAt?: string }).createdAt; return issued ? new Date(issued).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'; })()}</div>
                 <div className="whitespace-nowrap text-[8px] font-light leading-4 tracking-[0.04em]">EXPIRY DATE: {(() => { const issued = (user as typeof user & { createdAt?: string }).createdAt; const d = issued ? new Date(issued) : new Date(); d.setFullYear(d.getFullYear() + 1); return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); })()}</div>
               </div>
