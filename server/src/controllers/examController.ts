@@ -10,6 +10,17 @@ import { User } from '../models/User';
 import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 import { classroomLink, dispatchNotification, notifyExamPublished, notifyStudent } from '../services/classroomNotificationService';
+import { formatBulkMcqWithGemini } from '../services/geminiService';
+
+export const formatBulkQuestions = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const text = String(req.body?.text || '').trim();
+    if (!text || text.length > 100000) return res.status(400).json({ success: false, message: 'Question text is required.' });
+    return res.json({ success: true, data: { questions: await formatBulkMcqWithGemini(text) } });
+  } catch (error) {
+    return res.status(503).json({ success: false, message: error instanceof Error ? error.message : 'AI formatting failed.' });
+  }
+};
 
 // Schema for Question Option
 const optionSchema = z.object({

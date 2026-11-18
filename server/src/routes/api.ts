@@ -435,6 +435,7 @@ router.post(
   requirePermission(PERMISSIONS.EXAMS_MANAGE),
   examCtrl.createExam
 );
+router.post('/exams/format-questions', authenticate, requireFeature(FEATURE_FLAGS.exams), requirePermission(PERMISSIONS.EXAMS_MANAGE), examCtrl.formatBulkQuestions);
 router.put(
   '/exams/:examId',
   authenticate,

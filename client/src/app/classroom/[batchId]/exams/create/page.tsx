@@ -385,42 +385,9 @@ export default function CreateExamPage({
     setAiFormatting(true);
     setErrorMessage('');
     try {
-      const win = window as Window & { puter?: { ai?: { chat: (prompt: string, options?: { model?: string }) => Promise<any> } } };
-      if (!win.puter?.ai?.chat) {
-        await new Promise<void>((resolve, reject) => {
-          const existing = document.querySelector('script[data-puter-ai]');
-          if (existing) { existing.addEventListener('load', () => resolve(), { once: true }); return; }
-          const script = document.createElement('script');
-          script.src = 'https://js.puter.com/v2/';
-          script.async = true;
-          script.dataset.puterAi = 'true';
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error('AI service load করা যায়নি'));
-          document.head.appendChild(script);
-        });
-      }
-      const puter = (window as any).puter;
-      if (!puter?.ai?.chat) throw new Error('AI service এখন প্রস্তুত নয়');
       const expectedCount = bulkText.split(/\n\s*\n+/).filter((block) => block.trim()).length;
-      const prompt = `You are a strict exam-question formatter. Convert the pasted text into valid JSON only (no markdown, no explanation).
-Return exactly ${expectedCount} question objects: {"questions":[{"questionText":"string","options":[{"text":"string"},{"text":"string"},{"text":"string"},{"text":"string"}],"correctOptionIndex":0,"marks":1}]}
-Rules: return exactly one question object for every question occurrence in the pasted text (never omit, merge, reorder, or deduplicate questions); repeated/duplicate questions are intentional and must remain as separate objects; preserve the original language and meaning; create exactly 4 non-empty options per MCQ; correctOptionIndex must be 0,1,2,or 3; infer the answer only when clearly provided, otherwise use 0; marks must be a number; remove numbering and labels from questionText; never add fields; do not invent questions.
-
-Pasted questions:
-${bulkText}`;
-      const result = await Promise.race([
-        puter.ai.chat(prompt, { model: 'openai/gpt-5.4-nano' }),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('AI response পেতে বেশি সময় লাগছে। Puter account/login বা internet connection পরীক্ষা করুন।')), 60000)),
-      ]);
-      const content = result?.message?.content;
-      const raw = typeof result === 'string'
-        ? result
-        : Array.isArray(content)
-          ? content.map((part: any) => typeof part === 'string' ? part : part?.text || '').join('')
-          : content || result?.text || result?.content || '';
-      const jsonText = String(raw).replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
-      const parsed = JSON.parse(jsonText);
-      const questions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+      const response = await api.post('/exams/format-questions', { text: bulkText });
+      const questions = Array.isArray(response.data?.data?.questions) ? response.data.data.questions : [];
       const normalized: MCQQuestionInput[] = questions.map((q: any, index: number) => {
         const options = Array.isArray(q.options) ? q.options.slice(0, 4).map((o: any, optionIndex: number) => ({
           optionId: `opt_ai_${Date.now()}_${index}_${optionIndex}`,
