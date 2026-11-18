@@ -85,6 +85,7 @@ export default function EditExamPage({
   // Bulk Import modal / text
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [bulkText, setBulkText] = useState('');
+  const [aiFormatting, setAiFormatting] = useState(false);
 
   // Uploading image tracking: key = 'q_idx' or 'opt_idx_optidx'
   const [uploadingImageKey, setUploadingImageKey] = useState<string | null>(null);
@@ -368,19 +369,19 @@ export default function EditExamPage({
         const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
         if (lines.length < 3) continue;
 
-        let questionText = lines[0].replace(/^(\d+[\.\)]|\#\d+)\s*/, '');
+        let questionText = lines[0].replace(/^([0-9০-৯]+[\.\)]|\#\d+|প্রশ্ন\s*[0-9০-৯]+[\.\:\)]?)\s*/i, '');
         const options: MCQQuestionOptionInput[] = [];
         let correctLetter = 'A';
 
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i];
-          const ansMatch = line.match(/^(?:উত্তর|Ans|Answer)\s*[:：\-]?\s*([A-Da-dক-ঘ1-4])/i);
+          const ansMatch = line.match(/^(?:উত্তর|সঠিক উত্তর|Ans|Answer)\s*[:：\-]?\s*([A-Da-dক-ঘ1-4১-৪])/i);
           if (ansMatch) {
             correctLetter = ansMatch[1].toUpperCase();
             continue;
           }
 
-          const optMatch = line.match(/^([A-Da-dক-ঘ1-4]|\([A-Da-dক-ঘ1-4]\))[\.\)\s\-]+(.*)/);
+          const optMatch = line.match(/^([A-Da-dক-ঘ1-4১-৪]|\([A-Da-dক-ঘ1-4১-৪]\))[\.\)\s\-]+(.*)/);
           if (optMatch) {
             const letter = optMatch[1].replace(/[\(\)]/g, '').toUpperCase();
             const text = optMatch[2].trim();
@@ -400,9 +401,9 @@ export default function EditExamPage({
 
         if (options.length >= 2) {
           let correctIdx = 0;
-          if (correctLetter === 'B' || correctLetter === 'খ' || correctLetter === '2') correctIdx = 1;
-          else if (correctLetter === 'C' || correctLetter === 'গ' || correctLetter === '3') correctIdx = 2;
-          else if (correctLetter === 'D' || correctLetter === 'ঘ' || correctLetter === '4') correctIdx = 3;
+          if (correctLetter === 'B' || correctLetter === 'খ' || correctLetter === '2' || correctLetter === '২') correctIdx = 1;
+          else if (correctLetter === 'C' || correctLetter === 'গ' || correctLetter === '3' || correctLetter === '৩') correctIdx = 2;
+          else if (correctLetter === 'D' || correctLetter === 'ঘ' || correctLetter === '4' || correctLetter === '৪') correctIdx = 3;
 
           if (correctIdx >= options.length) correctIdx = 0;
 
@@ -427,6 +428,49 @@ export default function EditExamPage({
     } catch (err) {
       console.error(err);
       alert('টেক্সট পার্স করতে সমস্যা হয়েছে।');
+    }
+  };
+
+  const formatBulkWithAI = async () => {
+    if (!bulkText.trim() || aiFormatting) return;
+    setAiFormatting(true);
+    setErrorMessage('');
+    try {
+      const response = await api.post('/exams/format-questions', { text: bulkText });
+      const questions = Array.isArray(response.data?.data?.questions) ? response.data.data.questions : [];
+      const normalized: MCQQuestionInput[] = questions.map((q: any, index: number) => {
+        const rawOptions = Array.isArray(q.options) ? q.options : [];
+        const options = rawOptions
+          .map((o: any, optionIndex: number) => ({
+            optionId: `opt_ai_${Date.now()}_${index}_${optionIndex}`,
+            text: String(o?.text || '').trim(),
+            imageUrl: '',
+          }))
+          .filter((o: any) => o.text);
+        const correctIndex = Math.max(0, Math.min(Math.max(0, options.length - 1), Number(q.correctOptionIndex) || 0));
+        return {
+          questionText: String(q.questionText || '').trim(),
+          imageUrl: '',
+          options,
+          correctOptionId: options[correctIndex]?.optionId || options[0]?.optionId || '',
+          marks: Number(q.marks) || 1,
+        };
+      }).filter((q: MCQQuestionInput) => q.questionText && q.options.length >= 2);
+
+      if (!normalized.length) {
+        throw new Error('AI কোনো বৈধ বহুনির্বাচনি প্রশ্ন তৈরি করতে পারেনি। টেক্সটটি চেক করে আবার চেষ্টা করুন।');
+      }
+
+      setMcqQuestions((prev) => [...prev, ...normalized]);
+      setShowBulkModal(false);
+      setBulkText('');
+      alert(`AI দিয়ে ${normalized.length} টি প্রশ্ন সাজানো হয়েছে। Save করার আগে preview দেখে নিন।`);
+    } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message || 'AI দিয়ে প্রশ্ন সাজানো যায়নি। আবার চেষ্টা করুন।';
+      setErrorMessage(message);
+      alert(message);
+    } finally {
+      setAiFormatting(false);
     }
   };
 
@@ -1315,6 +1359,14 @@ export default function EditExamPage({
                   className="px-5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20"
                 >
                   প্রশ্নগুলো কনভার্ট করুন
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void formatBulkWithAI()}
+                  disabled={aiFormatting || !bulkText.trim()}
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                >
+                  {aiFormatting ? 'AI সাজাচ্ছে...' : 'AI দিয়ে সাজান'}
                 </button>
               </div>
             </div>

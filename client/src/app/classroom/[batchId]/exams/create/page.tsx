@@ -313,19 +313,19 @@ export default function CreateExamPage({
         const lines = block.split('\n').map((l) => l.trim()).filter(Boolean);
         if (lines.length < 3) continue;
 
-        let questionText = lines[0].replace(/^(\d+[\.\)]|\#\d+)\s*/, '');
+        let questionText = lines[0].replace(/^([0-9০-৯]+[\.\)]|\#\d+|প্রশ্ন\s*[0-9০-৯]+[\.\:\)]?)\s*/i, '');
         const options: MCQQuestionOptionInput[] = [];
         let correctLetter = 'A';
 
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i];
-          const ansMatch = line.match(/^(?:উত্তর|Ans|Answer)\s*[:：\-]?\s*([A-Da-dক-ঘ1-4])/i);
+          const ansMatch = line.match(/^(?:উত্তর|সঠিক উত্তর|Ans|Answer)\s*[:：\-]?\s*([A-Da-dক-ঘ1-4১-৪])/i);
           if (ansMatch) {
             correctLetter = ansMatch[1].toUpperCase();
             continue;
           }
 
-          const optMatch = line.match(/^([A-Da-dক-ঘ1-4]|\([A-Da-dক-ঘ1-4]\))[\.\)\s\-]+(.*)/);
+          const optMatch = line.match(/^([A-Da-dক-ঘ1-4১-৪]|\([A-Da-dক-ঘ1-4১-৪]\))[\.\)\s\-]+(.*)/);
           if (optMatch) {
             const letter = optMatch[1].replace(/[\(\)]/g, '').toUpperCase();
             const text = optMatch[2].trim();
@@ -345,9 +345,9 @@ export default function CreateExamPage({
 
         if (options.length >= 2) {
           let correctIdx = 0;
-          if (correctLetter === 'B' || correctLetter === 'খ' || correctLetter === '2') correctIdx = 1;
-          else if (correctLetter === 'C' || correctLetter === 'গ' || correctLetter === '3') correctIdx = 2;
-          else if (correctLetter === 'D' || correctLetter === 'ঘ' || correctLetter === '4') correctIdx = 3;
+          if (correctLetter === 'B' || correctLetter === 'খ' || correctLetter === '2' || correctLetter === '২') correctIdx = 1;
+          else if (correctLetter === 'C' || correctLetter === 'গ' || correctLetter === '3' || correctLetter === '৩') correctIdx = 2;
+          else if (correctLetter === 'D' || correctLetter === 'ঘ' || correctLetter === '4' || correctLetter === '৪') correctIdx = 3;
 
           if (correctIdx >= options.length) correctIdx = 0;
 
@@ -385,27 +385,37 @@ export default function CreateExamPage({
     setAiFormatting(true);
     setErrorMessage('');
     try {
-      const expectedCount = bulkText.split(/\n\s*\n+/).filter((block) => block.trim()).length;
       const response = await api.post('/exams/format-questions', { text: bulkText });
       const questions = Array.isArray(response.data?.data?.questions) ? response.data.data.questions : [];
       const normalized: MCQQuestionInput[] = questions.map((q: any, index: number) => {
-        const options = Array.isArray(q.options) ? q.options.slice(0, 4).map((o: any, optionIndex: number) => ({
-          optionId: `opt_ai_${Date.now()}_${index}_${optionIndex}`,
-          text: String(o?.text || '').trim(), imageUrl: '',
-        })) : [];
-        const correctIndex = Math.max(0, Math.min(3, Number(q.correctOptionIndex) || 0));
-        return { questionText: String(q.questionText || '').trim(), imageUrl: '', options, correctOptionId: options[correctIndex]?.optionId || options[0]?.optionId || '', marks: Number(q.marks) || 1 };
-      }).filter((q: MCQQuestionInput) => q.questionText && q.options.length === 4 && q.options.every((o) => o.text));
-      if (!normalized.length) throw new Error('AI কোনো সম্পূর্ণ ৪-option প্রশ্ন তৈরি করতে পারেনি');
-      if (expectedCount > 1 && normalized.length < expectedCount) {
-        throw new Error(`AI ${expectedCount}টির মধ্যে ${normalized.length}টি প্রশ্ন সম্পূর্ণ করতে পেরেছে। অনুগ্রহ করে আবার চেষ্টা করুন বা manual converter ব্যবহার করুন।`);
+        const rawOptions = Array.isArray(q.options) ? q.options : [];
+        const options = rawOptions
+          .map((o: any, optionIndex: number) => ({
+            optionId: `opt_ai_${Date.now()}_${index}_${optionIndex}`,
+            text: String(o?.text || '').trim(),
+            imageUrl: '',
+          }))
+          .filter((o: any) => o.text);
+        const correctIndex = Math.max(0, Math.min(Math.max(0, options.length - 1), Number(q.correctOptionIndex) || 0));
+        return {
+          questionText: String(q.questionText || '').trim(),
+          imageUrl: '',
+          options,
+          correctOptionId: options[correctIndex]?.optionId || options[0]?.optionId || '',
+          marks: Number(q.marks) || 1,
+        };
+      }).filter((q: MCQQuestionInput) => q.questionText && q.options.length >= 2);
+
+      if (!normalized.length) {
+        throw new Error('AI কোনো বৈধ বহুনির্বাচনি প্রশ্ন তৈরি করতে পারেনি। টেক্সটটি চেক করে আবার চেষ্টা করুন।');
       }
+
       setMcqQuestions((prev) => prev.length === 1 && !prev[0].questionText.trim() ? normalized : [...prev, ...normalized]);
       setShowBulkModal(false);
       setBulkText('');
       alert(`AI দিয়ে ${normalized.length} টি প্রশ্ন সাজানো হয়েছে। Save করার আগে preview দেখে নিন।`);
     } catch (error: any) {
-      const message = error?.message || 'AI দিয়ে প্রশ্ন সাজানো যায়নি। আবার চেষ্টা করুন।';
+      const message = error?.response?.data?.message || error?.message || 'AI দিয়ে প্রশ্ন সাজানো যায়নি। আবার চেষ্টা করুন।';
       setErrorMessage(message);
       alert(message);
     } finally {
