@@ -5,10 +5,14 @@ export const formatBulkMcqWithGemini = async (text: string): Promise<any[]> => {
   if (!apiKey) throw new Error('Gemini API key এখনো configure করা হয়নি।');
   const numberedCount = (text.match(/^\s*(?:\d+\s*[.)]|প্রশ্ন\s*\d+\s*[.:)])/gim) || []).length;
   const expectedCount = numberedCount || text.split(/\n\s*\n+/).filter((block) => block.trim()).length;
-  const prompt = `Return JSON only with exactly ${expectedCount} question objects. Preserve every question occurrence in order, including duplicates. Each object needs questionText, exactly 4 options with text, correctOptionIndex (0-3), and marks. Preserve Bangla and use given answers. Input:\n${text}`;
+  const prompt = `You are a strict MCQ parser. Read the ENTIRE input before answering. Extract exactly ${expectedCount} question occurrences in the original order, including duplicates. Never merge questions and never omit a question. A question starts at a number such as 1., 2., etc. or a clear new question sentence; its four options start with (ক), (খ), (গ), (ঘ) or (a), (b), (c), (d). The answer line starts with Ans, Answer, উত্তর or উত্তর:. Remove only numbering, markdown bold markers and labels; preserve the actual Bangla text. Return JSON only in exactly this shape: {"questions":[{"questionText":"...","options":[{"text":"..."},{"text":"..."},{"text":"..."},{"text":"..."}],"correctOptionIndex":0,"marks":1}]}. correctOptionIndex must map ক/ক or a to 0, খ/b to 1, গ/c to 2, ঘ/d to 3. The array length MUST be exactly ${expectedCount}. Input follows:\n${text}`;
   const request = (model: string) => fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, responseMimeType: 'application/json' } }) });
   let response = await request(GEMINI_MODEL);
   if (!response.ok && GEMINI_MODEL !== 'gemini-flash-lite-latest') response = await request('gemini-flash-lite-latest');
+  if (!response.ok && (response.status === 429 || response.status >= 500)) {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    response = await request('gemini-flash-lite-latest');
+  }
   if (!response.ok) throw new Error(`Gemini request failed (${response.status})`);
   const payload: any = await response.json();
   const raw = payload?.candidates?.[0]?.content?.parts?.map((part: any) => part.text || '').join('') || '';
