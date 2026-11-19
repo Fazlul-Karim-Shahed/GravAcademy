@@ -630,21 +630,21 @@ export default function HomePage() {
           </div>
 
           {/* Action CTAs: Free Class and All Courses Button */}
-          <div className="mt-12 sm:mt-16 lg:mt-24 pb-8 lg:pb-14 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <div className="mt-8 sm:mt-14 lg:mt-20 pb-6 sm:pb-8 lg:pb-12 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
             <Link
               href="/free-classes"
-              className="px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-105 transition-all flex items-center gap-2.5"
+              className="px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold sm:font-extrabold text-xs sm:text-base shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-105 transition-all flex items-center gap-2 sm:gap-2.5"
             >
               <span>ফ্রি ক্লাস (HSC / SSC)</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Link>
 
             <Link
               href="/courses"
-              className="px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-sm sm:text-base border border-white/20 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all flex items-center gap-2.5 shadow-lg"
+              className="px-4.5 py-2.5 sm:px-7 sm:py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-base border border-white/20 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all flex items-center gap-2 sm:gap-2.5 shadow-lg"
             >
               <span>সকল কোর্স দেখুন</span>
-              <ChevronRight className="w-4 h-4 text-orange-300" />
+              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-300" />
             </Link>
           </div>
 
@@ -805,7 +805,7 @@ export default function HomePage() {
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6">এই শ্রেণির জন্য নতুন কোর্স ও ব্যাচ খুব শীঘ্রই লাইভ হবে।</p>
               <button
                 onClick={() => setSelectedClass('All')}
-                className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-xl text-xs font-black shadow-md shadow-orange-950/20 transition-all"
+                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold sm:font-black shadow-md shadow-orange-950/20 transition-all"
               >
                 সব কোর্স দেখুন
               </button>
@@ -819,13 +819,13 @@ export default function HomePage() {
           )}
 
           {/* Cute Catalog CTA Button */}
-          <div className="mt-14 sm:mt-16 text-center">
+          <div className="mt-10 sm:mt-16 text-center">
             <Link
               href="/courses"
-              className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white dark:bg-[#111318] border-2 border-slate-200/90 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 text-slate-900 dark:text-white font-black text-sm shadow-sm hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300"
+              className="group inline-flex items-center gap-2 sm:gap-2.5 px-4 py-2 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 sm:border-2 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 text-slate-900 dark:text-white font-bold sm:font-black text-xs sm:text-sm shadow-sm hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300"
             >
-              <span>সকল কোর্স ও ব্যাচ ক্যাটালগ দেখুন</span>
-              <ArrowRight className="w-4 h-4 text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform" />
+              <span>সকল কোর্স ও ব্যাচ দেখুন</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
@@ -941,13 +941,13 @@ export default function HomePage() {
               </div>
 
               {/* Cute CTA Button */}
-              <div className="mt-8 pt-2">
+              <div className="mt-6 sm:mt-8 pt-1 sm:pt-2">
                 <Link
                   href="/free-classes"
-                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-xs sm:text-sm shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-102 transition-all duration-300"
+                  className="group inline-flex items-center gap-2 sm:gap-2.5 px-4.5 py-2.5 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold sm:font-black text-xs sm:text-sm shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-102 transition-all duration-300"
                 >
                   <span>ফ্রি ক্লাস ও সেমিনার দেখুন</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
@@ -1014,13 +1014,13 @@ export default function HomePage() {
               </div>
 
               {/* Cute CTA Button */}
-              <div className="mt-8 pt-2">
+              <div className="mt-6 sm:mt-8 pt-1 sm:pt-2">
                 <Link
                   href="/register"
-                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-700 hover:to-cyan-800 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-102 transition-all duration-300"
+                  className="group inline-flex items-center gap-2 sm:gap-2.5 px-4.5 py-2.5 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-700 hover:to-cyan-800 text-white font-bold sm:font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-102 transition-all duration-300"
                 >
-                  <span>ফ্রি স্টুডেন্ট অ্যাকাউন্ট খুলুন</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span>ফ্রি একাউন্ট খুলুন</span>
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -1303,10 +1303,10 @@ export default function HomePage() {
           </p>
 
           {/* Cute CTA Buttons */}
-          <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+          <div className="mt-6 sm:mt-10 flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
             <Link
               href="/register"
-              className="group px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-orange-950/25 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
+              className="group px-4 py-2 sm:px-7 sm:py-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold sm:font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-orange-950/25 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
               <span>বিনামূল্যে একাউন্ট খুলুন</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
@@ -1314,7 +1314,7 @@ export default function HomePage() {
 
             <Link
               href="/courses"
-              className="px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 text-white font-black text-xs sm:text-base border border-white/20 sm:border-2 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
+              className="px-4 py-2 sm:px-7 sm:py-3 rounded-lg sm:rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold sm:font-black text-xs sm:text-base border border-white/20 sm:border-2 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
               <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>সকল কোর্স দেখুন</span>
