@@ -606,7 +606,10 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
     });
   } catch (error: any) {
     console.error('Update profile error:', error);
-    return res.status(500).json({ success: false, message: 'প্রোফাইল আপডেট করতে সমস্যা হয়েছে।' });
+    return res.status(500).json({
+      success: false,
+      message: error?.message || 'প্রোফাইল আপডেট করতে সমস্যা হয়েছে।',
+    });
   }
 };
 
@@ -652,27 +655,30 @@ export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => 
       });
     }
 
-    const sanitizedName = `avatar_${req.user.gravId || req.user._id}_${Date.now()}.${file.mimetype.split('/')[1] || 'jpg'}`;
+    const ext = file.mimetype.split('/')[1] || 'jpg';
+    const sanitizedName = `avatar_${req.user.gravId || req.user._id}_${Date.now()}.${ext === 'jpeg' ? 'jpg' : ext}`;
 
+    let avatarUrl = '';
     let driveFileId = '';
-    const isDriveConfigured =
-      process.env.GOOGLE_CLIENT_ID &&
-      process.env.GOOGLE_CLIENT_SECRET &&
-      process.env.GOOGLE_REFRESH_TOKEN;
 
-    if (isDriveConfigured) {
+    try {
       const { uploadFileToDrive } = await import('../services/googleDriveService');
       const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
       driveFileId = driveRes.fileId;
-    } else {
-      console.warn('⚠️ Google Drive OAuth not configured. Using stub.');
-      driveFileId = `stub_drive_${Date.now()}`;
+      avatarUrl = driveRes.webViewLink || (driveFileId.startsWith('local_')
+        ? `${(process.env.SERVER_URL || 'https://gravapi.138.2.92.182.nip.io').replace(/\/$/, '')}/uploads/avatars/${sanitizedName}`
+        : `https://lh3.googleusercontent.com/d/${driveFileId}`);
+    } catch (uploadErr: any) {
+      console.warn('Direct uploadFileToDrive failed, attempting direct local disk write:', uploadErr?.message);
+      const fs = await import('fs');
+      const path = await import('path');
+      const uploadDir = path.resolve(__dirname, '../../public/uploads/avatars');
+      fs.mkdirSync(uploadDir, { recursive: true });
+      fs.writeFileSync(path.join(uploadDir, sanitizedName), file.buffer);
+      const hostUrl = process.env.SERVER_URL || 'https://gravapi.138.2.92.182.nip.io';
+      avatarUrl = `${hostUrl.replace(/\/$/, '')}/uploads/avatars/${sanitizedName}`;
+      driveFileId = `local_${sanitizedName}`;
     }
-
-    // Google Drive direct image viewable URL (using CDN for embeddability)
-    const avatarUrl = isDriveConfigured
-      ? `https://lh3.googleusercontent.com/d/${driveFileId}`
-      : `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(req.user.name)}`;
 
     const user = await User.findById(req.user._id);
     if (user) {
@@ -682,7 +688,7 @@ export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => 
 
     return res.status(200).json({
       success: true,
-      message: 'প্রোফাইল ছবি সফলভাবে ড্রাইভে আপলোড ও সেভ করা হয়েছে!',
+      message: 'প্রোফাইল ছবি সফলভাবে আপলোড ও সেভ করা হয়েছে!',
       data: {
         avatarUrl,
         driveFileId,
@@ -692,7 +698,7 @@ export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => 
     console.error('uploadAvatar error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'ছবি আপলোড করতে সমস্যা হয়েছে।',
+      message: error?.message || 'ছবি আপলোড করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
     });
   }
 };

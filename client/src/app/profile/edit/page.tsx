@@ -126,7 +126,7 @@ export default function ProfileEditPage() {
       }
     } catch (err: any) {
       console.error('Avatar upload error:', err);
-      throw new Error(err.response?.data?.message || 'ছবি আপলোড করার সময় সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
+      throw new Error(err.response?.data?.message || err.message || 'ছবি আপলোড করার সময় সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
     } finally {
       setUploadingAvatar(false);
       setAvatarProgress(0);
@@ -240,7 +240,7 @@ export default function ProfileEditPage() {
       console.error('Profile update error:', err);
       setMessage({
         type: 'error',
-        text: err.response?.data?.message || 'প্রোফাইল আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+        text: err.response?.data?.message || err.message || 'প্রোফাইল আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
       });
     } finally {
       setSaving(false);
