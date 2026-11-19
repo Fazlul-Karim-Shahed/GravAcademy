@@ -631,7 +631,7 @@ export default function HomePage() {
           <div className="mt-12 sm:mt-16 lg:mt-24 pb-8 lg:pb-14 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <Link
               href="/free-classes"
-              className="px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transition-all flex items-center gap-2.5"
+              className="px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-105 transition-all flex items-center gap-2.5"
             >
               <span>ফ্রি ক্লাস (HSC / SSC)</span>
               <ArrowRight className="w-4 h-4" />
@@ -803,7 +803,7 @@ export default function HomePage() {
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6">এই শ্রেণির জন্য নতুন কোর্স ও ব্যাচ খুব শীঘ্রই লাইভ হবে।</p>
               <button
                 onClick={() => setSelectedClass('All')}
-                className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-xl text-xs font-black shadow-md shadow-orange-500/20 transition-all"
+                className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-xl text-xs font-black shadow-md shadow-orange-950/20 transition-all"
               >
                 সব কোর্স দেখুন
               </button>
@@ -942,7 +942,7 @@ export default function HomePage() {
               <div className="mt-8 pt-2">
                 <Link
                   href="/free-classes"
-                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-102 transition-all duration-300"
+                  className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-xs sm:text-sm shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-102 transition-all duration-300"
                 >
                   <span>ফ্রি ক্লাস ও সেমিনার দেখুন</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1254,7 +1254,7 @@ export default function HomePage() {
                     <span className="flex items-center gap-3">
                       <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
                         isOpen
-                          ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25'
+                          ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25'
                           : 'bg-slate-100 dark:bg-[#1a1d24] text-slate-500 dark:text-slate-400'
                       }`}>
                         {idx + 1}
@@ -1304,7 +1304,7 @@ export default function HomePage() {
           <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <Link
               href="/register"
-              className="group px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-orange-500/25 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
+              className="group px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-xs sm:text-base shadow-lg sm:shadow-xl shadow-orange-950/25 hover:scale-105 transition-all duration-300 flex items-center gap-2 sm:gap-2.5"
             >
               <span>বিনামূল্যে একাউন্ট খুলুন</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />

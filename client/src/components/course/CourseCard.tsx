@@ -101,7 +101,7 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
               <span className="mt-0.5 block text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400">ফ্রি কোর্স</span>
             )}
           </div>
-          <span className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white transition-colors group-hover:bg-orange-500 dark:bg-white dark:text-slate-900 dark:group-hover:bg-orange-500 dark:group-hover:text-white shadow-xs">
+          <span className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-3.5 py-2 text-xs font-bold shadow-xs transition-all duration-200">
             ব্যাচ দেখুন <ChevronRight className="h-3.5 w-3.5" />
           </span>
         </div>
