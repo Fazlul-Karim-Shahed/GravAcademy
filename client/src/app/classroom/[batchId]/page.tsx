@@ -378,9 +378,9 @@ export default function BatchClassroomPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ক্লাসরুম লোড হচ্ছে...</p>
         </div>
       </div>
@@ -389,8 +389,8 @@ export default function BatchClassroomPage({
 
   if (error || !batch) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 px-4">
-        <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center shadow-lg">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 px-4">
+        <div className="max-w-md mx-auto bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] text-center shadow-lg">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">প্রবেশাধিকার সংরক্ষিত</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
@@ -398,7 +398,7 @@ export default function BatchClassroomPage({
           </p>
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>পূর্ববর্তী পাতায় ফিরে যান</span>
@@ -419,7 +419,7 @@ export default function BatchClassroomPage({
         );
       case 'teacher':
         return (
-          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/70 text-orange-700 dark:text-orange-300 border border-orange-200/60 dark:border-orange-800/60">
             শিক্ষক
           </span>
         );
@@ -439,14 +439,14 @@ export default function BatchClassroomPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors pb-16">
       
       {/* 1. TOP HEADER BANNER (Cosmic Theme) */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white pt-7 pb-8 sm:pt-8 sm:pb-9 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white pt-7 pb-8 sm:pt-8 sm:pb-9 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         {/* Deep space radial ambient lighting */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-orange-900/15 rounded-full blur-[80px] pointer-events-none -z-10" />
 
         {/* Twinkling Cosmic Stars */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -548,8 +548,8 @@ export default function BatchClassroomPage({
                 title={tab.label}
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold shrink-0 transition-colors ${
                   activeTab === tab.key
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-indigo-400'
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                    : 'bg-white dark:bg-[#111318] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#262b34] hover:border-orange-400'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -568,7 +568,7 @@ export default function BatchClassroomPage({
         {activeTab === 'materials' && (
           <section className="space-y-4">
             <div><h2 className="text-xl font-black text-slate-900 dark:text-white">Classroom Materials</h2><p className="mt-1 text-sm text-slate-500">এই classroom-এর uploaded PDF ও document এক জায়গায় দেখুন।</p></div>
-            {materialsLoading ? <div className="rounded-2xl bg-white p-8 text-center text-sm text-slate-500 dark:bg-slate-900">Materials লোড হচ্ছে...</div> : materials.length ? <div className="grid gap-3 sm:grid-cols-2">{materials.map((material) => <a key={material.id} href={material.url} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 hover:border-indigo-400 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900"><div className="rounded-xl bg-rose-50 p-2.5 text-rose-600 dark:bg-rose-950/40"><FileText className="h-5 w-5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold text-slate-800 dark:text-white">{material.title}</p><p className="mt-1 text-xs text-slate-500">{material.category} · PDF/Document</p></div><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-slate-400" /></a>)}</div> : <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900">এখনো কোনো material upload করা হয়নি।</div>}
+            {materialsLoading ? <div className="rounded-2xl bg-white p-8 text-center text-sm text-slate-500 dark:bg-[#111318]">Materials লোড হচ্ছে...</div> : materials.length ? <div className="grid gap-3 sm:grid-cols-2">{materials.map((material) => <a key={material.id} href={material.url} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 hover:border-orange-400 hover:shadow-sm dark:border-[#262b34] dark:bg-[#111318]"><div className="rounded-xl bg-orange-50 p-2.5 text-orange-600 dark:bg-orange-950/40"><FileText className="h-5 w-5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold text-slate-800 dark:text-white">{material.title}</p><p className="mt-1 text-xs text-slate-500">{material.category} · PDF/Document</p></div><ExternalLink className="ml-auto h-4 w-4 shrink-0 text-slate-400" /></a>)}</div> : <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 dark:border-[#262b34] dark:bg-[#111318]">এখনো কোনো material upload করা হয়নি।</div>}
           </section>
         )}
 
@@ -580,15 +580,15 @@ export default function BatchClassroomPage({
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <Link href={`/learn/${batchId}`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/60 transition-all duration-300 flex flex-col justify-between">
-                <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-blue-500/10 dark:group-hover:text-blue-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
-                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/50 group-hover:bg-blue-600 group-hover:text-white transition-colors"><BookOpen className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" /></div>
+              <Link href={`/learn/${batchId}`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-orange-400/80 dark:hover:border-orange-500/60 transition-all duration-300 flex flex-col justify-between">
+                <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-orange-500/10 dark:group-hover:text-orange-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/50 group-hover:bg-orange-600 group-hover:text-white transition-colors"><BookOpen className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" /></div>
                 <span className="block text-sm font-bold text-slate-900 dark:text-white">লেকচার</span>
                 <span className="block text-[11px] text-slate-500 mt-1">পড়াশোনা শুরু করুন</span>
               </Link>
 
               {isFeatureEnabled('assignments', user?.role === 'superadmin') && (
-                <Link href={`/classroom/${batchId}/assignments`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between">
+                <Link href={`/classroom/${batchId}/assignments`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between">
                   <Award className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
                   <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Award className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" /></div>
                   <span className="block text-sm font-bold text-slate-900 dark:text-white">অ্যাসাইনমেন্ট</span>
@@ -596,14 +596,14 @@ export default function BatchClassroomPage({
                 </Link>
               )}
 
-              <Link href={`/classroom/${batchId}/exams`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between">
+              <Link href={`/classroom/${batchId}/exams`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between">
                 <FileText className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
                 <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors"><FileText className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" /></div>
                 <span className="block text-sm font-bold text-slate-900 dark:text-white">এক্সাম</span>
                 <span className="block text-[11px] text-slate-500 mt-1">পরীক্ষা দিন</span>
               </Link>
 
-              <Link href={`/classroom/${batchId}/marksheet`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between">
+              <Link href={`/classroom/${batchId}/marksheet`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between">
                 <GraduationCap className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 pointer-events-none" />
                 <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors"><GraduationCap className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" /></div>
                 <span className="block text-sm font-bold text-slate-900 dark:text-white">মার্কশিট</span>
@@ -615,10 +615,10 @@ export default function BatchClassroomPage({
               <button onClick={() => setIsJitsiOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 text-xs font-bold transition-colors">
                 <Video className="w-4 h-4" /> লাইভ ক্লাস
               </button>
-              <button onClick={() => setActiveTab('announcements')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-4 text-xs font-bold transition-colors">
+              <button onClick={() => setActiveTab('announcements')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 border border-transparent dark:border-[#262b34] py-2.5 px-4 text-xs font-bold transition-colors">
                 <Megaphone className="w-4 h-4" /> নোটিশ
               </button>
-              <button onClick={() => setActiveTab('members')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-4 text-xs font-bold transition-colors">
+              <button onClick={() => setActiveTab('members')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 border border-transparent dark:border-[#262b34] py-2.5 px-4 text-xs font-bold transition-colors">
                 <Users className="w-4 h-4" /> {canViewStudentMembers ? 'সদস্য' : 'শিক্ষকবৃন্দ'}
               </button>
             </div>
@@ -630,9 +630,9 @@ export default function BatchClassroomPage({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             {/* Left 8 Cols: Simple & Clean Chat Thread */}
-            <div className="lg:col-span-8 rounded-3xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200/90 md:dark:border-slate-800 p-1 sm:p-3 md:p-6 md:shadow-sm flex flex-col h-[580px] sm:h-[640px] max-w-full overflow-hidden">
+            <div className="lg:col-span-8 rounded-3xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200/90 md:dark:border-[#262b34] p-1 sm:p-3 md:p-6 md:shadow-sm flex flex-col h-[580px] sm:h-[640px] max-w-full overflow-hidden">
               
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4 gap-2">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#262b34] mb-4 gap-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
@@ -648,7 +648,7 @@ export default function BatchClassroomPage({
               <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-w-0">
                 {messages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
-                    <MessageSquare className="w-12 h-12 mb-2 opacity-40 text-blue-500" />
+                    <MessageSquare className="w-12 h-12 mb-2 opacity-40 text-orange-500" />
                     <p className="text-sm font-bold text-slate-700 dark:text-slate-300">এখনো কোনো ডিসকাশন শুরু হয়নি</p>
                     <p className="text-xs text-slate-400 mt-1 max-w-sm">
                       আপনার প্রথম বার্তা বা পড়া সম্পর্কিত প্রশ্ন নিচে লিখে পাঠান। শিক্ষক ও সহপাঠীরা মতামত দিতে পারবেন।
@@ -662,7 +662,7 @@ export default function BatchClassroomPage({
                         key={msg._id}
                         className={`flex gap-3 items-start ${isMe ? 'flex-row-reverse' : ''}`}
                       >
-                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 flex items-center justify-center font-bold text-xs shrink-0">
                           {msg.senderName.slice(0, 2).toUpperCase()}
                         </div>
 
@@ -683,8 +683,8 @@ export default function BatchClassroomPage({
                           <div
                             className={`p-3.5 rounded-2xl text-xs leading-relaxed font-medium break-words max-w-full ${
                               isMe
-                                ? 'bg-blue-600 text-white rounded-tr-xs shadow-xs'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-tl-xs'
+                                ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-tr-xs shadow-xs'
+                                : 'bg-slate-100 dark:bg-[#151921] text-slate-900 dark:text-slate-100 rounded-tl-xs'
                             }`}
                           >
                             {msg.message}
@@ -697,18 +697,18 @@ export default function BatchClassroomPage({
               </div>
 
               {/* Message Input Box */}
-              <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
+              <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-[#262b34] mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="আপনার বার্তা বা প্রশ্ন লিখুন..."
-                  className="flex-1 min-w-0 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="flex-1 min-w-0 bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim() || sendingMsg}
-                  className="px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors shrink-0 cursor-pointer"
+                  className="px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors shrink-0 cursor-pointer"
                   title="পাঠান"
                 >
                   <span className="hidden xs:inline sm:inline">পাঠান</span>
@@ -722,9 +722,9 @@ export default function BatchClassroomPage({
             <div className="lg:col-span-4 space-y-4">
               
               {/* Routine Card */}
-              <div className="group rounded-2xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200/90 md:dark:border-slate-800 p-4 shadow-xs hover:shadow-lg hover:border-blue-400/70 transition-all">
+              <div className="group rounded-2xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200/90 md:dark:border-[#262b34] p-4 shadow-xs hover:shadow-lg hover:border-orange-400/70 transition-all">
                 <div className="flex items-center gap-2 mb-3">
-                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     ক্লাস রুটিন
                   </h4>
@@ -735,10 +735,10 @@ export default function BatchClassroomPage({
               </div>
 
               {/* Teachers Assigned */}
-              <div className="group rounded-2xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200/90 md:dark:border-slate-800 p-4 shadow-xs hover:shadow-lg hover:border-indigo-400/70 transition-all">
+              <div className="group rounded-2xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200/90 md:dark:border-[#262b34] p-4 shadow-xs hover:shadow-lg hover:border-orange-400/70 transition-all">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       দায়িত্বপ্রাপ্ত শিক্ষকবৃন্দ ({batch.assignedTeachers?.length || 0})
                     </h4>
@@ -747,8 +747,8 @@ export default function BatchClassroomPage({
 
                 <div className="space-y-3">
                   {batch.assignedTeachers?.map((t) => (
-                    <div key={t._id} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-100 dark:border-slate-800/80">
-                      <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div key={t._id} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
+                      <div className="w-9 h-9 rounded-xl bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300 flex items-center justify-center font-bold text-xs shrink-0">
                         {t.name.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -765,7 +765,7 @@ export default function BatchClassroomPage({
               </div>
 
               {/* Members Stats Pill */}
-              <div className="group rounded-2xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200/90 md:dark:border-slate-800 p-4 shadow-xs hover:shadow-lg hover:border-emerald-400/70 transition-all flex items-center justify-between">
+              <div className="group rounded-2xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200/90 md:dark:border-[#262b34] p-4 shadow-xs hover:shadow-lg hover:border-emerald-400/70 transition-all flex items-center justify-between">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                     {canViewStudentMembers ? 'মোট সদস্য' : 'কোর্স শিক্ষক'}
@@ -778,7 +778,7 @@ export default function BatchClassroomPage({
                 </div>
                 <button
                   onClick={() => setActiveTab('members')}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-blue-600 dark:text-blue-400 transition-colors"
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222d] text-xs font-bold text-orange-600 dark:text-orange-400 transition-colors"
                 >
                   {canViewStudentMembers ? 'সদস্য দেখুন' : 'শিক্ষক দেখুন'}
                 </button>
@@ -794,10 +794,10 @@ export default function BatchClassroomPage({
           <div className="space-y-6">
             
             {/* Header / New Announcement Action */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl md:bg-white md:dark:bg-slate-900 p-1 sm:p-3 md:p-5 md:border md:border-slate-200/90 md:dark:border-slate-800 md:shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl md:bg-white md:dark:bg-[#111318] p-1 sm:p-3 md:p-5 md:border md:border-slate-200/90 md:dark:border-[#262b34] md:shadow-sm">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Megaphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <Megaphone className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   <span>ব্যাচ এনাউন্সমেন্ট ও নোটিশ</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -807,7 +807,7 @@ export default function BatchClassroomPage({
 
               <button
                 onClick={() => setShowAnnounceModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>নতুন নোটিশ</span>
@@ -816,7 +816,7 @@ export default function BatchClassroomPage({
 
             {/* Announcements List */}
             {announcements.length === 0 ? (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-slate-200/90 dark:border-slate-800">
+              <div className="bg-white dark:bg-[#111318] rounded-3xl p-12 text-center border border-slate-200/90 dark:border-[#262b34]">
                 <Megaphone className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">বর্তমানে কোনো এনাউন্সমেন্ট নেই</h4>
                 <p className="text-xs text-slate-500 mt-1 mb-4">
@@ -824,7 +824,7 @@ export default function BatchClassroomPage({
                 </p>
                 <button
                   onClick={() => setShowAnnounceModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-colors"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>নোটিশ দিন</span>
@@ -835,16 +835,16 @@ export default function BatchClassroomPage({
                 {announcements.map((a) => (
                   <div
                     key={a._id}
-                      className={`rounded-2xl p-4 sm:p-5 bg-white dark:bg-slate-900 border transition-all hover:shadow-lg ${
+                      className={`rounded-2xl p-4 sm:p-5 bg-white dark:bg-[#111318] border transition-all hover:shadow-lg ${
                       a.isPinned
-                        ? 'border-blue-400 dark:border-blue-700 shadow-md ring-1 ring-blue-500/20'
-                        : 'border-slate-200/90 dark:border-slate-800 shadow-xs'
+                        ? 'border-orange-400 dark:border-orange-700 shadow-md ring-1 ring-orange-500/20'
+                        : 'border-slate-200/90 dark:border-[#262b34] shadow-xs'
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                       <div className="flex items-center gap-2">
                         {a.isPinned && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800">
                             <Pin className="w-3 h-3" /> পিন করা
                           </span>
                         )}
@@ -873,7 +873,7 @@ export default function BatchClassroomPage({
                       {a.content}
                     </p>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-[#262b34] text-xs">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-slate-600 dark:text-slate-400">প্রকাশক:</span>
                         <span className="font-bold text-slate-900 dark:text-white">{a.authorName}</span>
@@ -906,7 +906,7 @@ export default function BatchClassroomPage({
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-200/60 dark:border-orange-800/60">
                   {members.teachers.length || memberCounts.teachersCount} জন শিক্ষক
                 </span>
                 {canViewStudentMembers && (
@@ -918,7 +918,7 @@ export default function BatchClassroomPage({
                   <button
                     type="button"
                     onClick={() => { setShowEmailList(true); setEmailCopyNotice(''); }}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/60"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-bold text-orange-700 transition hover:bg-orange-100 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-300 dark:hover:bg-orange-900/60"
                   >
                     <Mail className="h-3.5 w-3.5" /> Get all email
                   </button>
@@ -927,16 +927,16 @@ export default function BatchClassroomPage({
             </div>
 
             {showEmailList && canViewStudentMembers && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-6" role="dialog" aria-modal="true" aria-labelledby="batch-email-title">
-                <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:p-6">
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs px-4 py-6" role="dialog" aria-modal="true" aria-labelledby="batch-email-title">
+                <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <div>
                       <h3 id="batch-email-title" className="text-base font-bold text-slate-900 dark:text-white">Batch member emails</h3>
                       <p className="mt-1 text-xs text-slate-500">{batchEmails.length}টি unique email</p>
                     </div>
-                    <button type="button" onClick={() => setShowEmailList(false)} aria-label="Close email list" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setShowEmailList(false)} aria-label="Close email list" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-[#151921]"><X className="h-4 w-4" /></button>
                   </div>
-                  <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950">
+                  <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-[#262b34] dark:bg-[#0b0d12]">
                     {batchEmails.length ? (
                       <pre className="whitespace-pre-wrap break-all font-mono text-sm leading-7 text-slate-700 dark:text-slate-200">{batchEmails.join('\n')}</pre>
                     ) : (
@@ -945,8 +945,8 @@ export default function BatchClassroomPage({
                   </div>
                   <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
                     {emailCopyNotice && <span role="status" className="mr-auto text-xs font-semibold text-emerald-600 dark:text-emerald-400">{emailCopyNotice}</span>}
-                    <button type="button" onClick={() => void copyBatchEmails()} disabled={!batchEmails.length} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"><Clipboard className="h-4 w-4" /> Copy all email</button>
-                    <button type="button" onClick={() => setShowEmailList(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Close</button>
+                    <button type="button" onClick={() => void copyBatchEmails()} disabled={!batchEmails.length} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-4 py-2.5 text-sm font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-50"><Clipboard className="h-4 w-4" /> Copy all email</button>
+                    <button type="button" onClick={() => setShowEmailList(false)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-[#262b34] dark:text-slate-200 dark:hover:bg-[#151921]">Close</button>
                   </div>
                 </div>
               </div>
@@ -971,7 +971,7 @@ export default function BatchClassroomPage({
                 <div>
                   {canViewStudentMembers && (
                     <div className="mb-3 flex items-center gap-2">
-                      <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                       <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         শিক্ষক ও ইনস্ট্রাক্টর ({members.teachers.length} জন)
                       </h4>
@@ -979,7 +979,7 @@ export default function BatchClassroomPage({
                   )}
 
                   {members.teachers.length === 0 ? (
-                    <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-8 text-center text-xs text-slate-400 font-medium">
+                    <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-8 text-center text-xs text-slate-400 font-medium">
                       বর্তমানে এই ক্লাসরুমে কোনো শিক্ষক নির্ধারিত নেই।
                     </div>
                   ) : (
@@ -987,7 +987,7 @@ export default function BatchClassroomPage({
                       {members.teachers.map((t: any) => (
                         <div
                           key={t._id}
-                          className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/60 shadow-xs hover:shadow-lg hover:border-blue-400 transition-all flex items-center gap-3.5"
+                          className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#111318] border border-orange-200 dark:border-orange-900/60 shadow-xs hover:shadow-lg hover:border-orange-400 transition-all flex items-center gap-3.5"
                         >
                           <UserAvatar
                             name={t.name}
@@ -1002,7 +1002,7 @@ export default function BatchClassroomPage({
                               </span>
                               {roleBadge('teacher')}
                             </div>
-                            <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-blue-400 block truncate">
+                            <span className="text-[11px] font-mono font-bold text-orange-600 dark:text-orange-400 block truncate">
                               {t.gravId ? `Grav ID: ${t.gravId}` : 'শিক্ষক'}
                             </span>
                             {t.email && (
@@ -1019,7 +1019,7 @@ export default function BatchClassroomPage({
 
                 {/* Students Section (Only visible to Admins and Teachers) */}
                 {canViewStudentMembers && (
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <div className="pt-2 border-t border-slate-200 dark:border-[#262b34]">
                     <div className="mb-3 flex items-center gap-2">
                       <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -1028,7 +1028,7 @@ export default function BatchClassroomPage({
                     </div>
 
                     {members.students.length === 0 ? (
-                      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-8 text-center text-xs text-slate-400 font-medium">
+                      <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-8 text-center text-xs text-slate-400 font-medium">
                         এই ব্যাচে এখনো কোনো শিক্ষার্থী নেই।
                       </div>
                     ) : (
@@ -1036,7 +1036,7 @@ export default function BatchClassroomPage({
                         {members.students.map((s) => (
                           <div
                             key={s._id}
-                            className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all flex items-center justify-between gap-3"
+                            className="group relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs hover:shadow-lg hover:border-emerald-300 transition-all flex items-center justify-between gap-3"
                           >
                             <div className="flex items-center gap-3.5 min-w-0 flex-1">
                               <UserAvatar
@@ -1065,7 +1065,7 @@ export default function BatchClassroomPage({
                                   type="button"
                                   onClick={() => handleOpenShiftModal(s)}
                                   title="ব্যাচ বা কোর্স পরিবর্তন করুন (শিফট)"
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200/80 dark:border-blue-800/60 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-900/50 border border-orange-200/80 dark:border-orange-800/60 text-xs font-bold transition-all cursor-pointer shadow-2xs"
                                 >
                                   <ArrowRightLeft className="w-3.5 h-3.5" />
                                   <span>শিফট</span>
@@ -1099,7 +1099,7 @@ export default function BatchClassroomPage({
       {/* ================= MODAL: REMOVE STUDENT CONFIRMATION ================= */}
       {studentToRemove && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <div className="w-full max-w-md bg-white dark:bg-[#111318] rounded-3xl p-6 border border-slate-200 dark:border-[#262b34] shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
@@ -1114,14 +1114,14 @@ export default function BatchClassroomPage({
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 mb-4 space-y-1.5 text-xs">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34] mb-4 space-y-1.5 text-xs">
               <div className="flex justify-between">
                 <span className="text-slate-500">শিক্ষার্থী:</span>
                 <span className="font-bold text-slate-900 dark:text-white">{studentToRemove.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Grav ID:</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToRemove.gravId || 'N/A'}</span>
+                <span className="font-mono font-bold text-orange-600 dark:text-orange-400">{studentToRemove.gravId || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">বর্তমান ব্যাচ:</span>
@@ -1138,7 +1138,7 @@ export default function BatchClassroomPage({
                 type="button"
                 disabled={removingStudent}
                 onClick={() => setStudentToRemove(null)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
               >
                 বাতিল
               </button>
@@ -1168,9 +1168,9 @@ export default function BatchClassroomPage({
       {/* ================= MODAL: SHIFT STUDENT BATCH ================= */}
       {studentToShift && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <div className="w-full max-w-lg bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-[#262b34] shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
                 <ArrowRightLeft className="w-5 h-5" />
               </div>
               <div>
@@ -1183,14 +1183,14 @@ export default function BatchClassroomPage({
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 mb-4 space-y-1.5 text-xs">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34] mb-4 space-y-1.5 text-xs">
               <div className="flex justify-between">
                 <span className="text-slate-500">শিক্ষার্থী:</span>
                 <span className="font-bold text-slate-900 dark:text-white">{studentToShift.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Grav ID:</span>
-                <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{studentToShift.gravId || 'N/A'}</span>
+                <span className="font-mono font-bold text-orange-600 dark:text-orange-400">{studentToShift.gravId || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">বর্তমান ব্যাচ:</span>
@@ -1205,14 +1205,14 @@ export default function BatchClassroomPage({
                 </label>
                 {loadingBatchesForShift ? (
                   <div className="py-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                    <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-orange-500" />
                     <span>ব্যাচ তালিকা লোড হচ্ছে...</span>
                   </div>
                 ) : (
                   <select
                     value={selectedTargetBatchId}
                     onChange={(e) => setSelectedTargetBatchId(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="">-- ব্যাচ নির্বাচন করুন --</option>
                     {allBatchesForShift
@@ -1239,7 +1239,7 @@ export default function BatchClassroomPage({
                 type="button"
                 disabled={shiftingStudent}
                 onClick={() => setStudentToShift(null)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
               >
                 বাতিল
               </button>
@@ -1247,7 +1247,7 @@ export default function BatchClassroomPage({
                 type="button"
                 disabled={shiftingStudent || !selectedTargetBatchId}
                 onClick={handleConfirmShiftStudent}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 active:scale-95 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all disabled:opacity-50"
               >
                 {shiftingStudent ? (
                   <>
@@ -1270,10 +1270,10 @@ export default function BatchClassroomPage({
       {/* ================= MODAL: CREATE ANNOUNCEMENT ================= */}
       {showAnnounceModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-5">
+          <div className="w-full max-w-lg bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-[#262b34] shadow-2xl">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#262b34] mb-5">
               <div className="flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-blue-600" />
+                <Megaphone className="w-5 h-5 text-orange-600" />
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">নতুন এনাউন্সমেন্ট তৈরি করুন</h3>
               </div>
               <button
@@ -1295,7 +1295,7 @@ export default function BatchClassroomPage({
                   value={announceForm.title}
                   onChange={(e) => setAnnounceForm({ ...announceForm, title: e.target.value })}
                   placeholder="যেমন: আগামী রবিবারের স্পেশাল ক্লাস ও সিলেবাস"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -1309,7 +1309,7 @@ export default function BatchClassroomPage({
                   value={announceForm.content}
                   onChange={(e) => setAnnounceForm({ ...announceForm, content: e.target.value })}
                   placeholder="আপনার নোটিশ বিস্তারিত এখানে লিখুন..."
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl p-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 leading-relaxed"
                 />
               </div>
 
@@ -1319,19 +1319,19 @@ export default function BatchClassroomPage({
                   id="pinCheck"
                   checked={announceForm.isPinned}
                   onChange={(e) => setAnnounceForm({ ...announceForm, isPinned: e.target.checked })}
-                  className="w-4 h-4 rounded text-blue-600"
+                  className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500"
                 />
                 <label htmlFor="pinCheck" className="text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
                   গুরুত্বপূর্ণ নোটিশ হিসেবে উপরে পিন করে রাখুন
                 </label>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200/70 dark:border-blue-800/60 text-blue-800 dark:text-blue-300 text-[11px] leading-relaxed flex items-center gap-2">
-                <Mail className="w-4 h-4 text-blue-600 shrink-0" />
+              <div className="p-3.5 rounded-2xl bg-orange-50 dark:bg-orange-950/50 border border-orange-200/70 dark:border-orange-800/60 text-orange-800 dark:text-orange-300 text-[11px] leading-relaxed flex items-center gap-2">
+                <Mail className="w-4 h-4 text-orange-600 shrink-0" />
                 <span>এই নোটিশটি পাবলিশ হওয়া মাত্রই ক্লাসের সকল এনরোল্ড সদস্যের ইমেইলে পাঠিয়ে দেওয়া হবে।</span>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-[#262b34]">
                 <button
                   type="button"
                   onClick={() => setShowAnnounceModal(false)}
@@ -1342,7 +1342,7 @@ export default function BatchClassroomPage({
                 <button
                   type="submit"
                   disabled={submittingAnnounce}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all"
                 >
                   {submittingAnnounce ? 'প্রকাশ করা হচ্ছে...' : 'পাবলিশ ও ইমেইল পাঠান'}
                 </button>

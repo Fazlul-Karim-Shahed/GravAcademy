@@ -346,9 +346,9 @@ export default function TakeExamPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-rose-600/10 border-2 border-rose-500/20 border-t-rose-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500">প্রশ্নপত্র প্রস্তুত হচ্ছে...</p>
         </div>
       </div>
@@ -357,8 +357,8 @@ export default function TakeExamPage({
 
   if (error || !exam) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 px-4">
-        <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center shadow-lg">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 px-4">
+        <div className="max-w-md mx-auto bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] text-center shadow-lg">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">পরীক্ষায় প্রবেশ নিষেধ</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
@@ -366,7 +366,7 @@ export default function TakeExamPage({
           </p>
           <Link
             href={`/classroom/${batchId}/exams`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>এক্সাম রুমে ফিরে যান</span>
@@ -377,14 +377,14 @@ export default function TakeExamPage({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-28">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
-      <div className="sticky top-[4.5rem] sm:top-20 z-40 w-[98%] mx-auto rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 py-3 shadow-sm scroll-mt-24">
+      <div className="sticky top-[4.5rem] sm:top-20 z-40 w-[98%] mx-auto rounded-2xl bg-white/95 dark:bg-[#111318]/95 backdrop-blur-md border border-slate-200 dark:border-[#262b34] py-3 shadow-xs scroll-mt-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
               href={`/classroom/${batchId}/exams`}
-              className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors"
+              className="p-1.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
               title="বের হয়ে যান"
             >
               <ArrowLeft className="w-4 h-4 text-slate-600 dark:text-slate-300" />
@@ -408,10 +408,10 @@ export default function TakeExamPage({
           {/* Countdown Clock */}
           {timeLeft !== null && (
             <div
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black text-xs sm:text-sm shadow-sm transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black text-xs sm:text-sm shadow-xs transition-all ${
                 timeLeft < 300
                   ? 'bg-rose-500 text-white animate-pulse'
-                  : 'bg-slate-900 text-white dark:bg-slate-800 border border-slate-700'
+                  : 'bg-slate-900 text-white dark:bg-[#151921] border border-slate-700 dark:border-[#262b34]'
               }`}
             >
               <Timer className="w-4 h-4" />
@@ -461,7 +461,7 @@ export default function TakeExamPage({
             <button
               type="button"
               onClick={() => setActionError('')}
-              className="text-rose-600 hover:text-rose-800 font-black px-2"
+              className="text-rose-600 hover:text-rose-800 font-black px-2 cursor-pointer"
             >
               ✕
             </button>
@@ -470,8 +470,8 @@ export default function TakeExamPage({
 
         {/* Exam Instructions Banner */}
         {exam.instructions && (
-          <div className="mb-6 p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-xs text-blue-900 dark:text-blue-300 flex items-start gap-3">
-            <HelpCircle className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+          <div className="mb-6 p-4 rounded-2xl bg-orange-50/70 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/60 text-xs text-orange-900 dark:text-orange-200 flex items-start gap-3">
+            <HelpCircle className="w-4 h-4 text-orange-600 mt-0.5 shrink-0" />
             <div className="leading-relaxed">
               <span className="font-black">পরীক্ষার্থীদের জন্য সাধারণ নির্দেশনা: </span>
               {exam.instructions}
@@ -527,13 +527,13 @@ export default function TakeExamPage({
           {exam.examType === 'system_questions' &&
             (exam.questionMode === 'mcq' || exam.questionMode === 'both') &&
             mcqQuestions.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                <div className="pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
+              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 sm:p-8 shadow-sm">
+                <div className="pb-4 border-b border-slate-100 dark:border-[#262b34] mb-6">
                   <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <FileCheck className="w-5 h-5 text-blue-600" />
+                    <FileCheck className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                     <span>বহুনির্বাচনি প্রশ্ন (MCQ Section)</span>
                   </h2>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     প্রতিটি প্রশ্নের জন্য সঠিক বৃত্ত / অপশনে ক্লিক করুন (মোট {mcqQuestions.length} টি প্রশ্ন)
                   </p>
                 </div>
@@ -542,27 +542,27 @@ export default function TakeExamPage({
                   {mcqQuestions.map((q, idx) => (
                     <div
                       key={q._id}
-                      className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800"
+                      className="p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]"
                     >
                       <div className="flex items-start justify-between gap-3 mb-3">
                         <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-relaxed">
-                          <span className="text-blue-600 dark:text-blue-400 font-bold mr-1.5">
+                          <span className="text-orange-600 dark:text-orange-400 font-bold mr-1.5">
                             {idx + 1}.
                           </span>
                           {q.questionText}
                         </h3>
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shrink-0">
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-200/60 dark:border-orange-800/60 shrink-0">
                           {q.marks} নম্বর
                         </span>
                       </div>
 
                       {/* Optional Question Image Attachment */}
                       {q.imageUrl && (
-                        <div className="my-3 max-w-md rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                        <div className="my-3 max-w-md rounded-xl overflow-hidden border border-slate-200 dark:border-[#262b34]">
                           <img
                             src={q.imageUrl}
                             alt={`Question ${idx + 1} Diagram`}
-                            className="w-full max-h-72 object-contain bg-white dark:bg-slate-900 p-2"
+                            className="w-full max-h-72 object-contain bg-white dark:bg-[#111318] p-2"
                           />
                         </div>
                       )}
@@ -578,15 +578,15 @@ export default function TakeExamPage({
                               onClick={() => handleSelectOption(q._id, opt.optionId)}
                               className={`flex flex-col gap-2 p-3 rounded-xl border text-left transition-all ${
                                 isSelected
-                                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/70 text-blue-900 dark:text-blue-200 shadow-sm ring-1 ring-blue-600'
-                                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300'
+                                  ? 'border-orange-600 bg-orange-50 dark:bg-orange-950/70 text-orange-900 dark:text-orange-200 shadow-sm ring-1 ring-orange-600'
+                                  : 'border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-300'
                               }`}
                             >
                               <div className="flex items-center gap-3">
                                 <div
                                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                                     isSelected
-                                      ? 'border-blue-600 bg-blue-600 text-white'
+                                      ? 'border-orange-600 bg-orange-600 text-white'
                                       : 'border-slate-300 dark:border-slate-600'
                                   }`}
                                 >
@@ -601,7 +601,7 @@ export default function TakeExamPage({
                                   <img
                                     src={opt.imageUrl}
                                     alt={`Option ${optIdx + 1}`}
-                                    className="max-h-28 rounded-lg object-contain border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-1"
+                                    className="max-h-28 rounded-lg object-contain border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] p-1"
                                   />
                                 </div>
                               )}
@@ -620,13 +620,13 @@ export default function TakeExamPage({
             (exam.questionMode === 'cq' || exam.questionMode === 'both') &&
             exam.cqQuestions &&
             exam.cqQuestions.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-                <div className="pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
+              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 sm:p-8 shadow-sm">
+                <div className="pb-4 border-b border-slate-100 dark:border-[#262b34] mb-6">
                   <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-purple-600" />
+                    <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                     <span>সৃজনশীল / রচনামূলক প্রশ্ন (CQ Section)</span>
                   </h2>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     নিচে টেক্সট বক্সে উত্তর লিখুন অথবা খাতায় লিখে নিচে এক সাথে ছবি / PDF আপলোড করুন
                   </p>
                 </div>
@@ -635,16 +635,16 @@ export default function TakeExamPage({
                   {exam.cqQuestions.map((q, idx) => (
                     <div
                       key={idx}
-                      className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-3"
+                      className="p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] space-y-3"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-relaxed">
-                          <span className="text-purple-600 dark:text-purple-400 font-bold mr-1.5">
+                          <span className="text-orange-600 dark:text-orange-400 font-bold mr-1.5">
                             CQ {idx + 1}.
                           </span>
                           {q.questionText}
                         </h3>
-                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 shrink-0">
+                        <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-200/60 dark:border-orange-800/60 shrink-0">
                           {q.marks} নম্বর
                         </span>
                       </div>
@@ -654,7 +654,7 @@ export default function TakeExamPage({
                         placeholder="আপনার উত্তর এখানে টাইপ করুন (অথবা নিচে সম্পূর্ণ উত্তরপত্র আপলোড করতে পারেন)..."
                         value={cqAnswers[idx] || ''}
                         onChange={(e) => handleCqTextChange(idx, e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       />
                     </div>
                   ))}
@@ -666,13 +666,13 @@ export default function TakeExamPage({
           {(exam.examType === 'upload_paper' ||
             exam.questionMode === 'cq' ||
             exam.questionMode === 'both') && (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
-              <div className="pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
+            <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 sm:p-8 shadow-sm">
+              <div className="pb-4 border-b border-slate-100 dark:border-[#262b34] mb-6">
                 <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <UploadCloud className="w-5 h-5 text-emerald-600" />
+                  <UploadCloud className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   <span>উত্তরপত্রের ছবি বা PDF আপলোড (Answer Sheet Upload)</span>
                 </h2>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   খাতায় লেখা উত্তরের ছবি তুলুন বা PDF বানিয়ে এখানে আপলোড করুন
                 </p>
               </div>
@@ -697,7 +697,7 @@ export default function TakeExamPage({
                       accept="image/*,application/pdf"
                       onChange={handleAnswerDocUpload}
                       disabled={submitting || uploadingDoc}
-                      className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer disabled:opacity-60"
+                      className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700 cursor-pointer disabled:opacity-60"
                     />
                   </div>
                   {selectedAnswerFile && (
@@ -711,14 +711,14 @@ export default function TakeExamPage({
                     placeholder="https://drive.google.com/..."
                     value={studentDocumentUrl}
                     onChange={(e) => setStudentDocumentUrl(e.target.value)}
-                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white"
+                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-xs text-slate-900 dark:text-white"
                   />
                 </div>
 
                 {selectedAnswerFile && (
-                  <div className="flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-xs">
-                    <div className="min-w-0 flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold">
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                  <div className="flex min-w-0 max-w-full items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-[#111318] border border-orange-300 dark:border-orange-800 text-xs">
+                    <div className="min-w-0 flex items-center gap-2 text-orange-700 dark:text-orange-300 font-bold">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-orange-500" />
                       <span className="truncate">সিলেক্টেড: {selectedAnswerFile.name}</span>
                     </div>
                     <button type="button" onClick={handleRemoveAnswerFile} className="shrink-0 text-rose-600 hover:text-rose-700 font-bold">বাদ দিন</button>
@@ -726,16 +726,16 @@ export default function TakeExamPage({
                 )}
 
                 {studentDocumentUrl && (
-                  <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 text-xs flex items-center justify-between">
-                    <span className="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <div className="p-3 rounded-xl bg-white dark:bg-[#111318] border border-orange-300 dark:border-orange-800 text-xs flex items-center justify-between">
+                    <span className="font-bold text-orange-700 dark:text-orange-300 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-orange-500" />
                       উত্তরপত্র যুক্ত করা হয়েছে
                     </span>
                     <a
                       href={studentDocumentUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-blue-600 underline font-semibold"
+                      className="text-orange-600 underline font-semibold"
                     >
                       উত্তরপত্র প্রিভিউ
                     </a>
@@ -747,13 +747,13 @@ export default function TakeExamPage({
 
           {/* SUBMIT BUTTON BAR */}
           <div className="flex items-center justify-between pt-4">
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে সংরক্ষিত রয়েছে
             </span>
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-950/25 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>{submitting ? 'জমা দেওয়া হচ্ছে...' : 'পরীক্ষা সম্পন্ন ও জমা দিন'}</span>
@@ -765,7 +765,7 @@ export default function TakeExamPage({
       {/* Non-blocking confirm-submit modal (replaces blocking window.confirm()) */}
       {showConfirmSubmit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-[#262b34] shadow-2xl">
             <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mb-2">
               পরীক্ষা জমা দেওয়া নিশ্চিত করুন
             </h3>
@@ -776,7 +776,7 @@ export default function TakeExamPage({
               <button
                 type="button"
                 onClick={() => setShowConfirmSubmit(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-[#1f242d] transition-colors"
               >
                 বাতিল
               </button>
@@ -786,7 +786,7 @@ export default function TakeExamPage({
                   setShowConfirmSubmit(false);
                   submitFinalExam();
                 }}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-colors shadow-sm shadow-orange-950/20"
               >
                 হ্যাঁ, জমা দিন
               </button>

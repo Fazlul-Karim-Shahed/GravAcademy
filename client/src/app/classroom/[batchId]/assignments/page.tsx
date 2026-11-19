@@ -355,12 +355,12 @@ export default function AssignmentRoomPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] pb-20">
       {/* Hero Section */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-lg shadow-orange-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-orange-900/15 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
@@ -371,7 +371,7 @@ export default function AssignmentRoomPage({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-center gap-3 pt-1 min-w-0">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-                <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-orange-400" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
@@ -387,7 +387,7 @@ export default function AssignmentRoomPage({
               {isTeacherOrAdmin && (
                 <Link
                   href={`/classroom/${batchId}/assignments/create`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-md shadow-indigo-600/20 active:scale-95 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-md shadow-orange-950/25 active:scale-95 transition-all cursor-pointer"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>নতুন অ্যাসাইনমেন্ট</span>
@@ -402,7 +402,7 @@ export default function AssignmentRoomPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm font-semibold text-slate-500">অ্যাসাইনমেন্ট লোড হচ্ছে...</p>
           </div>
         ) : error ? (
@@ -411,7 +411,7 @@ export default function AssignmentRoomPage({
             <span>{error}</span>
           </div>
         ) : assignments.length === 0 ? (
-          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs">
+          <div className="text-center py-20 bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-8 shadow-xs">
             <FileText className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-800 dark:text-white">এখনো কোনো অ্যাসাইনমেন্ট প্রকাশ করা হয়নি</h3>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
@@ -428,7 +428,7 @@ export default function AssignmentRoomPage({
               return (
                 <div
                   key={assignment._id}
-                  className="bg-white dark:bg-slate-900 rounded-[1.35rem] border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-lg transition-all flex flex-col justify-between"
+                  className="bg-white dark:bg-[#111318] rounded-[1.35rem] border border-slate-200 dark:border-[#262b34] p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-lg transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
@@ -482,7 +482,7 @@ export default function AssignmentRoomPage({
                                 fileName: 'প্রশ্নপত্র / এটাচমেন্ট',
                               })
                             }
-                            className="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5 cursor-pointer text-xs"
+                            className="font-bold text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1.5 cursor-pointer text-xs"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>প্রিভিউ দেখুন</span>
@@ -492,7 +492,7 @@ export default function AssignmentRoomPage({
 
                       {/* Student view: Submission Status */}
                       {!isTeacherOrAdmin && (
-                        <div className="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+                        <div className="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/60 dark:border-[#262b34]">
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-[11px] font-semibold text-slate-500">আপনার অবস্থা:</span>
                             {mySub ? (
@@ -507,15 +507,15 @@ export default function AssignmentRoomPage({
                             )}
                           </div>
                           {mySub?.isEvaluated && (
-                            <div className="flex items-center justify-between pt-1 border-t border-slate-200/40 dark:border-slate-700/40">
+                            <div className="flex items-center justify-between pt-1 border-t border-slate-200/40 dark:border-[#262b34]">
                               <span className="text-[11px] font-semibold text-slate-500">প্রাপ্ত মার্কস:</span>
-                              <span className="text-xs font-black text-purple-600 dark:text-purple-400">
+                              <span className="text-xs font-black text-orange-600 dark:text-orange-400">
                                 {mySub.score} / {assignment.totalMarks}
                               </span>
                             </div>
                           )}
                           {mySub?.feedback && (
-                            <p className="text-[11px] text-slate-600 dark:text-slate-300 italic mt-1 bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <p className="text-[11px] text-slate-600 dark:text-slate-300 italic mt-1 bg-white dark:bg-[#111318] p-2 rounded-lg border border-slate-200 dark:border-[#262b34]">
                               মন্তব্য: "{mySub.feedback}"
                             </p>
                           )}
@@ -526,7 +526,7 @@ export default function AssignmentRoomPage({
                       {isTeacherOrAdmin && assignment.submissionStats && (
                         <div className="flex items-center justify-between pt-2 text-[11px] font-semibold text-slate-500">
                           <span>জমা পড়েছে: {assignment.submissionStats.total} টি</span>
-                          <span className="text-purple-600 dark:text-purple-400 font-bold">
+                          <span className="text-orange-600 dark:text-orange-400 font-bold">
                             মূল্যায়ন হয়েছে: {assignment.submissionStats.evaluated} টি
                           </span>
                         </div>
@@ -535,19 +535,19 @@ export default function AssignmentRoomPage({
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                  <div className="mt-5 pt-3 border-t border-slate-100 dark:border-[#262b34] flex items-center gap-2">
                     {isTeacherOrAdmin ? (
                       <>
                         <Link
                           href={`/classroom/${batchId}/assignments/${assignment._id}/submissions`}
-                          className="flex-1 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                          className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                         >
                           <FileCheck className="w-3.5 h-3.5" />
                           <span>সাবমিশন ও মূল্যায়ন ({assignment.submissionStats?.total || 0})</span>
                         </Link>
                         <Link
                           href={`/classroom/${batchId}/assignments/${assignment._id}/edit`}
-                          className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+                          className="p-2 rounded-xl border border-slate-200 dark:border-[#262b34] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-600 dark:text-slate-300 transition-colors"
                           title="অ্যাসাইনমেন্ট সম্পাদনা"
                         >
                           <Edit className="w-4 h-4" />
@@ -565,7 +565,7 @@ export default function AssignmentRoomPage({
                       <button
                         type="button"
                         disabled
-                        className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-800 flex items-center justify-center gap-1.5"
+                        className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-[#151921] flex items-center justify-center gap-1.5"
                       >
                         <Clock className="w-3.5 h-3.5" />
                           <span>জমা দেওয়ার সময় শেষ</span>
@@ -575,10 +575,10 @@ export default function AssignmentRoomPage({
                         href={`/classroom/${batchId}/assignments/${assignment._id}/submit`}
                         className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                           mySub?.isEvaluated
-                            ? 'bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 cursor-pointer'
+                            ? 'bg-orange-50 hover:bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-200 dark:border-orange-800 cursor-pointer'
                             : mySub
-                            ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-200 cursor-pointer'
-                            : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer'
+                            ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-[#151921] dark:text-slate-200 cursor-pointer'
+                            : 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white shadow-md shadow-orange-950/25 active:scale-95 cursor-pointer'
                         }`}
                       >
                         <UploadCloud className="w-3.5 h-3.5" />
@@ -602,7 +602,7 @@ export default function AssignmentRoomPage({
       {/* ================= MODAL: Teacher Create / Edit Assignment ================= */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl p-6 sm:p-7 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] w-full max-w-2xl p-6 sm:p-7 shadow-2xl relative max-h-[92vh] overflow-y-auto">
             <button
               onClick={() => setShowCreateModal(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
@@ -611,7 +611,7 @@ export default function AssignmentRoomPage({
             </button>
 
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-              <PlusCircle className="w-5 h-5 text-emerald-600" />
+              <PlusCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span>{editingAssignmentId ? 'অ্যাসাইনমেন্ট পরিবর্তন করুন' : 'নতুন অ্যাসাইনমেন্ট প্রকাশ করুন'}</span>
             </h3>
 
@@ -626,7 +626,7 @@ export default function AssignmentRoomPage({
                   placeholder="যেমন: মহাকর্ষ ও বলের প্রথম সূত্রের সমস্যা সমাধান"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-white dark:bg-[#151921] text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                 />
               </div>
 
@@ -655,7 +655,7 @@ export default function AssignmentRoomPage({
                     min={1}
                     value={formData.totalMarks}
                     onChange={(e) => setFormData({ ...formData, totalMarks: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-white dark:bg-[#151921] text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                   />
                 </div>
                 <div>
@@ -668,7 +668,7 @@ export default function AssignmentRoomPage({
                     min={0}
                     value={formData.passMarks}
                     onChange={(e) => setFormData({ ...formData, passMarks: Number(e.target.value) })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-white dark:bg-[#151921] text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                   />
                 </div>
               </div>
@@ -682,7 +682,7 @@ export default function AssignmentRoomPage({
                   required
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-white dark:bg-[#151921] text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                 />
               </div>
 
@@ -705,11 +705,11 @@ export default function AssignmentRoomPage({
                   className="hidden"
                   />
                   {uploadingAttachment && (
-                    <span className="text-xs font-bold text-emerald-600 animate-pulse">আপলোড হচ্ছে...</span>
+                    <span className="text-xs font-bold text-orange-600 animate-pulse">আপলোড হচ্ছে...</span>
                   )}
                 </div>
                 {formData.attachmentUrl && (
-                  <p className="text-[11px] text-emerald-600 mt-1 truncate">সংযুক্ত ফাইল লিংক যুক্ত হয়েছে</p>
+                  <p className="text-[11px] text-orange-600 mt-1 truncate">সংযুক্ত ফাইল লিংক যুক্ত হয়েছে</p>
                 )}
               </div>
 
@@ -719,7 +719,7 @@ export default function AssignmentRoomPage({
                   id="lateSub"
                   checked={formData.allowLateSubmission}
                   onChange={(e) => setFormData({ ...formData, allowLateSubmission: e.target.checked })}
-                  className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4"
+                  className="rounded text-orange-600 focus:ring-orange-500 w-4 h-4"
                 />
                 <label htmlFor="lateSub" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   ডেডলাইনের পরেও লেইট সাবমিশন গ্রহণ করার অনুমতি দিন
@@ -730,14 +730,14 @@ export default function AssignmentRoomPage({
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] text-slate-700 dark:text-slate-300 text-xs font-bold"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submittingAssignment}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all"
                 >
                   {submittingAssignment ? 'সংরক্ষণ হচ্ছে...' : 'অ্যাসাইনমেন্ট প্রকাশ করুন'}
                 </button>
@@ -750,7 +750,7 @@ export default function AssignmentRoomPage({
       {/* ================= MODAL: Student Submit Assignment ================= */}
       {activeAssignmentForSubmit && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-lg p-6 shadow-2xl relative">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] w-full max-w-lg p-6 shadow-2xl relative">
             <button
               onClick={() => setActiveAssignmentForSubmit(null)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
@@ -759,7 +759,7 @@ export default function AssignmentRoomPage({
             </button>
 
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
-              <UploadCloud className="w-5 h-5 text-emerald-600" />
+              <UploadCloud className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span>অ্যাসাইনমেন্ট জমা দিন</span>
             </h3>
             <p className="text-xs text-slate-500 mb-4">{activeAssignmentForSubmit.title}</p>
@@ -774,7 +774,7 @@ export default function AssignmentRoomPage({
                   placeholder="আপনার অ্যাসাইনমেন্টের ব্যাখ্যা বা টেক্সট উত্তর এখানে লিখতে পারেন..."
                   value={studentNotes}
                   onChange={(e) => setStudentNotes(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-white dark:bg-[#151921] text-sm focus:ring-2 focus:ring-orange-500 outline-none"
                 />
               </div>
 
@@ -798,7 +798,7 @@ export default function AssignmentRoomPage({
                   className="hidden"
                 />
                 {uploadingStudentDoc && (
-                  <p className="text-xs font-bold text-emerald-600 animate-pulse mt-1">ফাইল ক্লাউডে আপলোড হচ্ছে...</p>
+                  <p className="text-xs font-bold text-orange-600 animate-pulse mt-1">ফাইল ক্লাউডে আপলোড হচ্ছে...</p>
                 )}
                 {studentFileName && (
                   <p className="hidden text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
@@ -812,14 +812,14 @@ export default function AssignmentRoomPage({
                 <button
                   type="button"
                   onClick={() => setActiveAssignmentForSubmit(null)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] text-slate-700 dark:text-slate-300 text-xs font-bold"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submittingStudentWork || uploadingStudentDoc}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{submittingStudentWork ? 'জমা দেওয়া হচ্ছে...' : 'নিশ্চিত জমা দিন'}</span>
@@ -833,11 +833,11 @@ export default function AssignmentRoomPage({
       {/* ================= MODAL: Teacher Review & Evaluation ================= */}
       {activeAssignmentForReview && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-4xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] w-full max-w-4xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#262b34]">
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileCheck className="w-5 h-5 text-purple-600" />
+                  <FileCheck className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   <span>অ্যাসাইনমেন্ট সাবমিশন রিভিউ ও গ্রেডিং</span>
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -855,7 +855,7 @@ export default function AssignmentRoomPage({
             <div className="flex-1 overflow-y-auto py-4 space-y-4">
               {loadingSubmissions ? (
                 <div className="text-center py-10">
-                  <div className="w-6 h-6 border-3 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                  <div className="w-6 h-6 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                   <p className="text-xs text-slate-500 font-semibold">শিক্ষার্থীদের সাবমিশন লোড হচ্ছে...</p>
                 </div>
               ) : submissionsList.length === 0 ? (
@@ -869,11 +869,11 @@ export default function AssignmentRoomPage({
                   return (
                     <div
                       key={sub._id}
-                      className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col gap-3"
+                      className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] flex flex-col gap-3"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs">
+                          <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 font-bold flex items-center justify-center text-xs">
                             {sub.gravId?.name?.charAt(0) || 'S'}
                           </div>
                           <div>
@@ -906,7 +906,7 @@ export default function AssignmentRoomPage({
 
                       {/* Content */}
                       {sub.submissionText && (
-                        <div className="text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <div className="text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-[#111318] p-3 rounded-xl border border-slate-200 dark:border-[#262b34]">
                           {sub.submissionText}
                         </div>
                       )}
@@ -923,7 +923,7 @@ export default function AssignmentRoomPage({
                                 fileName: sub.fileName || 'ডকুমেন্ট',
                               })
                             }
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 text-xs font-bold transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/50 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-900 text-orange-600 dark:text-orange-400 text-xs font-bold transition-colors cursor-pointer"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>ফাইল প্রিভিউ দেখুন ({sub.fileName || 'ডকুমেন্ট'})</span>
@@ -933,7 +933,7 @@ export default function AssignmentRoomPage({
 
                       {/* Grading Form / Display */}
                       {isGradingThis ? (
-                        <div className="mt-2 p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 space-y-3">
+                        <div className="mt-2 p-3 rounded-xl bg-orange-50/60 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 space-y-3">
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -945,7 +945,7 @@ export default function AssignmentRoomPage({
                                 max={activeAssignmentForReview.totalMarks}
                                 value={gradeScore}
                                 onChange={(e) => setGradeScore(Number(e.target.value))}
-                                className="w-full px-3 py-1.5 rounded-lg border border-purple-300 dark:border-purple-700 bg-white dark:bg-slate-800 text-xs font-bold outline-none"
+                                className="w-full px-3 py-1.5 rounded-lg border border-orange-300 dark:border-orange-700 bg-white dark:bg-[#151921] text-xs font-bold outline-none focus:ring-1 focus:ring-orange-500"
                               />
                             </div>
                             <div>
@@ -957,7 +957,7 @@ export default function AssignmentRoomPage({
                                 placeholder="যেমন: চমৎকার উপস্থাপন, ৩ নং সমীকরণটি পুনরায় দেখুন"
                                 value={gradeFeedback}
                                 onChange={(e) => setGradeFeedback(e.target.value)}
-                                className="w-full px-3 py-1.5 rounded-lg border border-purple-300 dark:border-purple-700 bg-white dark:bg-slate-800 text-xs outline-none"
+                                className="w-full px-3 py-1.5 rounded-lg border border-orange-300 dark:border-orange-700 bg-white dark:bg-[#151921] text-xs outline-none focus:ring-1 focus:ring-orange-500"
                               />
                             </div>
                           </div>
@@ -965,7 +965,7 @@ export default function AssignmentRoomPage({
                             <button
                               type="button"
                               onClick={() => setGradingSubmissionId(null)}
-                              className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-xs font-bold"
+                              className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-[#151921] text-xs font-bold"
                             >
                               বাতিল
                             </button>
@@ -973,7 +973,7 @@ export default function AssignmentRoomPage({
                               type="button"
                               disabled={savingGrade}
                               onClick={() => handleSaveGrade(sub._id)}
-                              className="px-4 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
+                              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25"
                             >
                               {savingGrade ? 'সংরক্ষণ হচ্ছে...' : 'গ্রেড কনফার্ম করুন'}
                             </button>
@@ -993,7 +993,7 @@ export default function AssignmentRoomPage({
                               setGradeScore(sub.score || 0);
                               setGradeFeedback(sub.feedback || '');
                             }}
-                            className="ml-auto px-3 py-1.5 rounded-lg bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:text-purple-300 text-purple-700 text-xs font-bold transition-all cursor-pointer"
+                            className="ml-auto px-3 py-1.5 rounded-lg bg-orange-100 hover:bg-orange-200 dark:bg-orange-950/60 dark:text-orange-300 text-orange-700 text-xs font-bold transition-all cursor-pointer"
                           >
                             {sub.isEvaluated ? 'গ্রেড সম্পাদন করুন' : 'নম্বর দিন (Grade)'}
                           </button>

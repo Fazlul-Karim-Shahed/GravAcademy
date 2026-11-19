@@ -163,25 +163,25 @@ function AdminBatchesContent() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              <Layers className="w-7 h-7 text-blue-600 dark:text-blue-500" /> Batch Management
+              <Layers className="w-7 h-7 text-orange-600 dark:text-orange-400" /> Batch Management
             </h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
             <Link
               href="/admin/courses"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-800 shadow-2xs transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
             >
               Manage Courses
             </Link>
             <Link
               href="/admin/batches/new"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               <PlusCircle className="w-4 h-4" /> Create New Batch
             </Link>
@@ -206,12 +206,12 @@ function AdminBatchesContent() {
         )}
 
         {/* Filter Bar */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+        <div className="bg-white dark:bg-[#111318] rounded-2xl p-4 sm:p-5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-3 w-full md:w-auto">
             {/* ১. ক্লাস অনুযায়ী ফিল্টার */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">
-                <GraduationCap className="w-4 h-4 text-indigo-500" />
+                <GraduationCap className="w-4 h-4 text-orange-500" />
                 <span>ক্লাস:</span>
               </div>
               <select
@@ -227,7 +227,7 @@ function AdminBatchesContent() {
                     }
                   }
                 }}
-                className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer min-w-0"
+                className="flex-1 sm:flex-initial bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer min-w-0"
               >
                 <option value="all">সকল ক্লাস (All Classes)</option>
                 {classesWithCourses.map((cls) => (
@@ -239,12 +239,12 @@ function AdminBatchesContent() {
             </div>
 
             {/* সেপারেটর পাইপ */}
-            <span className="hidden sm:inline-block w-px h-5 bg-slate-200 dark:bg-slate-800 shrink-0" />
+            <span className="hidden sm:inline-block w-px h-5 bg-slate-200 dark:border-[#262b34] shrink-0" />
 
             {/* ২. কোর্স অনুযায়ী ফিল্টার */}
             <div className="flex items-center gap-2 w-full sm:w-auto min-w-0">
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">
-                <Filter className="w-4 h-4 text-blue-500" />
+                <Filter className="w-4 h-4 text-orange-500" />
                 <span>কোর্স:</span>
               </div>
 
@@ -261,7 +261,7 @@ function AdminBatchesContent() {
                     }
                   }
                 }}
-                className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 cursor-pointer w-full sm:max-w-xs min-w-0 truncate"
+                className="flex-1 sm:flex-initial bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer w-full sm:max-w-xs min-w-0 truncate"
               >
                 <option value="all">সকল কোর্স (All Courses)</option>
                 {availableCourses.map((c) => (
@@ -290,7 +290,7 @@ function AdminBatchesContent() {
 
           <div className="text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">
             মোট ব্যাচ:{' '}
-            <span className="text-blue-600 dark:text-blue-400 font-extrabold">
+            <span className="text-orange-600 dark:text-orange-400 font-extrabold">
               {filteredBatches.length}
             </span>{' '}
             টি
@@ -303,12 +303,12 @@ function AdminBatchesContent() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-56 rounded-3xl bg-white dark:bg-slate-900/60 animate-pulse border border-slate-200/80 dark:border-slate-800"
+                className="h-56 rounded-3xl bg-white dark:bg-[#111318]/60 animate-pulse border border-slate-200/80 dark:border-[#262b34]"
               />
             ))}
           </div>
         ) : filteredBatches.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl text-center py-16 px-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl text-center py-16 px-4 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
             <Layers className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
               {selectedCourseId !== 'all'
@@ -324,14 +324,14 @@ function AdminBatchesContent() {
               {selectedCourseId !== 'all' && (
                 <button
                   onClick={() => setSelectedCourseId('all')}
-                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
                 >
                   সকল ব্যাচ দেখুন
                 </button>
               )}
               <Link
                 href={`/admin/batches/new${selectedCourseId !== 'all' ? `?courseId=${selectedCourseId}` : ''}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
               >
                 <PlusCircle className="w-4 h-4" /> Create Batch
               </Link>
@@ -341,18 +341,18 @@ function AdminBatchesContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {filteredBatches.map((batch, idx) => {
               const batchAccents = [
-                'from-blue-600 via-indigo-600 to-violet-700',
-                'from-violet-600 via-purple-600 to-fuchsia-700',
-                'from-emerald-600 via-teal-600 to-cyan-700',
-                'from-amber-500 via-orange-600 to-rose-600',
-                'from-cyan-600 via-sky-600 to-indigo-700',
+                'from-orange-600 via-amber-600 to-orange-700',
+                'from-amber-600 via-orange-600 to-red-600',
+                'from-orange-500 via-rose-600 to-orange-700',
+                'from-emerald-600 via-teal-600 to-emerald-700',
+                'from-blue-600 via-indigo-600 to-blue-700',
               ];
               const accentGradient = batchAccents[idx % batchAccents.length];
 
               return (
                 <div
                   key={batch._id}
-                  className="group relative bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs hover:shadow-2xl hover:-translate-y-1 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                  className="group relative bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] shadow-xs hover:shadow-2xl hover:-translate-y-1 hover:border-orange-500/30 dark:hover:border-orange-500/30 transition-all duration-300 flex flex-col justify-between overflow-hidden"
                 >
                   {/* Subtle Top Ambient Gradient Line */}
                   <div className={`h-1.5 w-full bg-gradient-to-r ${accentGradient} opacity-90`} />
@@ -360,8 +360,8 @@ function AdminBatchesContent() {
                   <div className="p-6 flex flex-col flex-1">
                     {/* Top Badges Row */}
                     <div className="flex items-center justify-between gap-2 mb-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-black">
-                        <BookOpen className="w-3.5 h-3.5 text-blue-500" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200/80 dark:border-orange-900/50 text-orange-700 dark:text-orange-300 text-xs font-black">
+                        <BookOpen className="w-3.5 h-3.5 text-orange-500" />
                         {batch.courseId?.gradeLevel || 'Class 6 - 12'}
                       </span>
 
@@ -381,7 +381,7 @@ function AdminBatchesContent() {
 
                     {/* Batch Name & Course Title */}
                     <div className="mb-4 flex-1">
-                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-1.5">
+                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-1 mb-1.5">
                         {batch.name}
                       </h3>
                       <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 font-medium">
@@ -391,23 +391,23 @@ function AdminBatchesContent() {
 
                     {/* Schedule Pill */}
                     {batch.scheduleText ? (
-                      <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-3 bg-slate-50 dark:bg-slate-950/60 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800/80">
-                        <Calendar className="w-4 h-4 text-indigo-500 shrink-0" />
+                      <div className="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-3 bg-slate-50 dark:bg-[#151921] p-2.5 rounded-2xl border border-slate-100 dark:border-[#262b34]">
+                        <Calendar className="w-4 h-4 text-orange-500 shrink-0" />
                         <span className="font-semibold truncate">{batch.scheduleText}</span>
                       </div>
                     ) : (
-                      <div className="text-xs text-slate-400 flex items-center gap-2 mb-3 bg-slate-50 dark:bg-slate-950/40 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800/60 italic">
+                      <div className="text-xs text-slate-400 flex items-center gap-2 mb-3 bg-slate-50 dark:bg-[#151921]/40 p-2.5 rounded-2xl border border-slate-100 dark:border-[#262b34]/60 italic">
                         <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                         <span>শিডিউল নির্ধারিত হয়নি</span>
                       </div>
                     )}
 
                     {/* Capacity & Enrolled Students 2-Column / Grid Info */}
-                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-950/70 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-[#151921] p-3 rounded-2xl border border-slate-100 dark:border-[#262b34]">
                       <div>
                         <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">এনরোল্ড শিক্ষার্থী</span>
-                        <span className="text-xs sm:text-sm font-black text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <span className="text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                           <span>{batch.enrolledStudentCount ?? 0} জন</span>
                         </span>
                       </div>
@@ -421,7 +421,7 @@ function AdminBatchesContent() {
                   </div>
 
                   {/* Card Action Footer */}
-                  <div className="px-6 py-4 bg-slate-50/80 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+                  <div className="px-6 py-4 bg-slate-50/80 dark:bg-[#151921]/50 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/classroom/${batch._id}`}
@@ -434,7 +434,7 @@ function AdminBatchesContent() {
 
                       <Link
                         href={`/admin/batches/${batch._id}/curriculum`}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs transition-colors"
                       >
                         <Layers className="w-3.5 h-3.5" />
                         <span>কারিকুলাম</span>
@@ -444,7 +444,7 @@ function AdminBatchesContent() {
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/admin/batches/${batch._id}/edit`}
-                        className="p-2 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors"
+                        className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
                         title="Edit Batch Details"
                       >
                         <Edit3 className="w-4 h-4" />
@@ -452,7 +452,7 @@ function AdminBatchesContent() {
 
                       <Link
                         href={`/admin/batches/new?cloneFrom=${batch._id}`}
-                        className="p-2 rounded-xl text-slate-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-slate-800 transition-colors"
+                        className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
                         title="Duplicate & Create New Batch"
                       >
                         <Copy className="w-4 h-4" />
@@ -460,7 +460,7 @@ function AdminBatchesContent() {
 
                       <button
                         onClick={() => handleDeleteBatch(batch._id, batch.name)}
-                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition-colors"
+                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-[#151921] transition-colors"
                         title="Delete Batch"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -482,7 +482,7 @@ export default function AdminBatchesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 flex items-center justify-center">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 flex items-center justify-center">
           <div className="text-xs font-bold text-slate-400">লোড হচ্ছে...</div>
         </div>
       }

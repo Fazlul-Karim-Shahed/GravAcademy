@@ -37,7 +37,7 @@ export default function ProfileViewPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-xs font-bold text-slate-400">প্রোফাইল লোড হচ্ছে...</div>
       </div>
     );
@@ -45,12 +45,12 @@ export default function ProfileViewPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex flex-col items-center justify-center p-4">
         <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-2">আপনি লগইন করেননি</h2>
         <p className="text-xs text-slate-500 mb-4">প্রোফাইল দেখার জন্য অনুগ্রহ করে লগইন করুন।</p>
         <Link
           href="/login"
-          className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
         >
           লগইন পেজে যান
         </Link>
@@ -69,14 +69,14 @@ export default function ProfileViewPage() {
   const joinedDate = (user as any).createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-GB') : '—';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb / Header */}
         <div className="flex items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              <User className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+              <User className="w-7 h-7 text-orange-600 dark:text-orange-400" />
               <span>আমার প্রোফাইল</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -86,7 +86,7 @@ export default function ProfileViewPage() {
 
           <Link
             href="/profile/edit"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 hover:scale-102 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 hover:scale-102 transition-all cursor-pointer"
           >
             <Edit3 className="w-4 h-4" />
             <span>প্রোফাইল এডিট করুন</span>
@@ -94,9 +94,9 @@ export default function ProfileViewPage() {
         </div>
 
         {/* Hero Profile Card */}
-        <div className="relative rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-xs overflow-hidden mb-8">
+        <div className="relative rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-8 shadow-xs overflow-hidden mb-8">
           {/* Ambient Glow */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 dark:bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
             <UserAvatar
@@ -104,7 +104,7 @@ export default function ProfileViewPage() {
               avatarUrl={user.avatarUrl}
               role={user.role}
               size="xl"
-              className="w-24 h-24 sm:w-28 sm:h-28 text-2xl border-2 border-white dark:border-slate-800 shadow-lg"
+              className="w-24 h-24 sm:w-28 sm:h-28 text-2xl border-2 border-white dark:border-[#262b34] shadow-lg"
             />
 
             <div className="flex-1 min-w-0">
@@ -112,7 +112,7 @@ export default function ProfileViewPage() {
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white truncate">
                   {user.name}
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-200/60 dark:border-orange-800/60">
                   {roleTitle}
                 </span>
                 {user.teacherDetails?.badge && (
@@ -126,10 +126,10 @@ export default function ProfileViewPage() {
               {/* ID & Basic Info */}
               <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs text-slate-500 dark:text-slate-400 mt-2">
                 {user.gravId && (
-                  <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/60 px-3 py-1 rounded-xl border border-slate-200/70 dark:border-slate-800">
-                    <Hash className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-[#151921] px-3 py-1 rounded-xl border border-slate-200/70 dark:border-[#262b34]">
+                    <Hash className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
                     <span className="font-semibold text-slate-600 dark:text-slate-300">Grav ID:</span>
-                    <span className="font-mono font-bold text-blue-700 dark:text-blue-300 select-all">
+                    <span className="font-mono font-bold text-orange-700 dark:text-orange-300 select-all">
                       {user.gravId}
                     </span>
                   </div>
@@ -162,13 +162,13 @@ export default function ProfileViewPage() {
 
         {/* Printable identity card */}
         <style jsx global>{`@media print { body * { visibility: hidden !important; } #identity-card-sheet, #identity-card-sheet * { visibility: visible !important; } #identity-card-sheet { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; } }`}</style>
-        <section className="mb-8 rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+        <section className="mb-8 rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">আপনার ID Card</h3>
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">পরিচয়পত্রটি print করে ব্যবহার করতে পারেন।</p>
             </div>
-            <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 print:hidden"><FileText className="h-4 w-4" /> Print</button>
+            <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-950/25 transition-all print:hidden cursor-pointer"><FileText className="h-4 w-4" /> Print</button>
           </div>
           <div id="identity-card-sheet" style={{ colorScheme: 'light' }} className="mx-auto grid w-full max-w-[620px] grid-cols-1 justify-items-center gap-6 bg-transparent text-black sm:grid-cols-2 sm:items-start sm:gap-5">
             <div className="relative h-[390px] w-[245px] overflow-hidden bg-white shadow-xl ring-1 ring-slate-200 print:shadow-none">
@@ -195,14 +195,14 @@ export default function ProfileViewPage() {
         {/* ROLE-SPECIFIC DETAILED SECTION */}
         {user.role === 'teacher' && (
           <div className="space-y-6">
-            <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
+            <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-7 shadow-xs">
               <h3 className="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <GraduationCap className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 <span>শিক্ষকতা ও অ্যাকাডেমিক তথ্যাবলি</span>
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     শিক্ষাপ্রতিষ্ঠান (University / College)
                   </span>
@@ -211,7 +211,7 @@ export default function ProfileViewPage() {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     বিভাগ / ডিগ্রি (Department)
                   </span>
@@ -220,7 +220,7 @@ export default function ProfileViewPage() {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     শিক্ষকতার অভিজ্ঞতা (Experience)
                   </span>
@@ -229,7 +229,7 @@ export default function ProfileViewPage() {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     মোট শিক্ষার্থী ও ক্লাস সংখ্যা
                   </span>
@@ -249,7 +249,7 @@ export default function ProfileViewPage() {
                     user.teacherDetails.specialistSubjects.map((sub, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800"
+                        className="px-3 py-1 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 font-bold text-xs border border-orange-200 dark:border-orange-800"
                       >
                         {sub}
                       </span>
@@ -262,7 +262,7 @@ export default function ProfileViewPage() {
 
               {/* CV Document Link */}
               {user.teacherDetails?.cvUrl && (
-                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span className="text-xs font-bold text-slate-700 dark:text-slate-200">সিভি / জীবনবৃত্তান্ত</span>
@@ -285,14 +285,14 @@ export default function ProfileViewPage() {
         {/* STUDENT PROFILE SPECIFICS */}
         {user.role === 'student' && (
           <div className="space-y-6">
-            <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
+            <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-7 shadow-xs">
               <h3 className="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                <School className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <School className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 <span>অ্যাকাডেমিক ও অভিভাবক পরিচিতি</span>
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     স্কুল বা কলেজ
                   </span>
@@ -301,7 +301,7 @@ export default function ProfileViewPage() {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     বর্তমান শ্রেণি (Grade Level)
                   </span>
@@ -310,7 +310,7 @@ export default function ProfileViewPage() {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     বিভাগ (Group)
                   </span>
@@ -319,7 +319,7 @@ export default function ProfileViewPage() {
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                     অভিভাবকের নাম ও যোগাযোগ
                   </span>

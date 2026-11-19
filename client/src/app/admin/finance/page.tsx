@@ -630,9 +630,9 @@ export default function AdminFinancePage() {
     : students.slice(0, 8);
 
   if (loadingSettings) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
-  if (!isFeatureEnabled('finance', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950"><ComingSoonCard feature="Finance Management" /></div>;
+  if (!isFeatureEnabled('finance', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-[#0b0d12]"><ComingSoonCard feature="Finance Management" /></div>;
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Non-blocking action notice/error banners (replace blocking alert()) */}
@@ -668,18 +668,18 @@ export default function AdminFinancePage() {
         )}
 
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 transition-colors shadow-2xs"
+              className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 transition-colors shadow-2xs"
               title="ড্যাশবোর্ডে ফিরে যান"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-500/20">
+                <span className="p-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25">
                   <DollarSign className="w-6 h-6" />
                 </span>
                 ফাইন্যান্স ম্যানেজমেন্ট (Finance Management)
@@ -691,15 +691,15 @@ export default function AdminFinancePage() {
             {can('finance.view') && (
               <Link
                 href="/admin/finance/company-expenses"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] hover:border-orange-300 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
               >
-                <Building2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <Building2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 Company Expense
               </Link>
             )}
             <Link
               href="/admin/admissions"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               নতুন পেমেন্ট / বকেয়া গ্রহণ
@@ -715,7 +715,7 @@ export default function AdminFinancePage() {
             className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
               cardFilterType === 'total'
                 ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-600 ring-2 ring-emerald-500/20'
-                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-800/60'
+                : 'bg-white dark:bg-[#111318] border-slate-200/80 dark:border-[#262b34] hover:border-emerald-200 dark:hover:border-emerald-800/60'
             }`}
           >
             <div>
@@ -745,7 +745,7 @@ export default function AdminFinancePage() {
             className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
               cardFilterType === 'today'
                 ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-400 dark:border-blue-600 ring-2 ring-blue-500/20'
-                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800/60'
+                : 'bg-white dark:bg-[#111318] border-slate-200/80 dark:border-[#262b34] hover:border-blue-200 dark:hover:border-blue-800/60'
             }`}
           >
             <div>
@@ -783,7 +783,7 @@ export default function AdminFinancePage() {
             className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
               cardFilterType === 'due'
                 ? 'bg-rose-50/80 dark:bg-rose-950/50 border-rose-400 dark:border-rose-600 ring-2 ring-rose-500/20'
-                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-rose-200 dark:hover:border-rose-800/60'
+                : 'bg-white dark:bg-[#111318] border-slate-200/80 dark:border-[#262b34] hover:border-rose-200 dark:hover:border-rose-800/60'
             }`}
           >
             <div>
@@ -808,7 +808,7 @@ export default function AdminFinancePage() {
           </div>
 
           {/* Card 4: Method Breakdown */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+          <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] shadow-xs flex flex-col justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               মাধ্যমভিত্তিক আদায়
             </span>
@@ -820,12 +820,12 @@ export default function AdminFinancePage() {
                 }}
                 className={`p-1.5 rounded-xl cursor-pointer transition-all border ${
                   selectedMethod === 'cash'
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs'
-                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-750'
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600 shadow-xs'
+                    : 'bg-slate-50 dark:bg-[#151921] border-slate-200/60 dark:border-[#262b34] hover:bg-slate-100 dark:hover:bg-[#1c222d]'
                 }`}
                 title="ক্যাশ লেনদেন ফিল্টার করতে ক্লিক করুন"
               >
-                <span className={`text-[10px] block font-bold ${selectedMethod === 'cash' ? 'opacity-80' : 'text-slate-400'}`}>
+                <span className={`text-[10px] block font-bold ${selectedMethod === 'cash' ? 'opacity-90 text-white' : 'text-slate-400'}`}>
                   ক্যাশ
                 </span>
                 <span className="font-extrabold text-[11px] block mt-0.5 truncate">
@@ -860,7 +860,7 @@ export default function AdminFinancePage() {
                 }}
                 className={`p-1.5 rounded-xl cursor-pointer transition-all border ${
                   selectedMethod === 'nagad'
-                    ? 'bg-orange-600 text-white border-orange-600 shadow-xs ring-2 ring-orange-500/20'
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white border-orange-600 shadow-xs ring-2 ring-orange-500/20'
                     : 'bg-orange-50/70 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200/60 dark:border-orange-800/50 hover:bg-orange-100'
                 }`}
                 title="নগদ লেনদেন ফিল্টার করতে ক্লিক করুন"
@@ -897,7 +897,7 @@ export default function AdminFinancePage() {
         </div>
 
         {/* Date Filter & Control Bar */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 mb-6 shadow-xs flex flex-col gap-4">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-4 mb-6 shadow-xs flex flex-col gap-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Search input */}
             <form onSubmit={handleSearchSubmit} className="relative w-full lg:w-80">
@@ -907,7 +907,7 @@ export default function AdminFinancePage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="রিসিট নং, শিক্ষার্থী, আইডি বা TrxID..."
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </form>
 
@@ -934,8 +934,8 @@ export default function AdminFinancePage() {
                   }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     dateRangePreset === d.id
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                      : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1c222d]'
                   }`}
                 >
                   {d.label}
@@ -956,7 +956,7 @@ export default function AdminFinancePage() {
 
           {/* Custom Date Pickers (Shown when 'custom' is selected) */}
           {dateRangePreset === 'custom' && (
-            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100 dark:border-[#262b34] text-xs">
               <span className="font-bold text-slate-500">তারিখ নির্বাচন:</span>
               <div className="flex items-center gap-2">
                 <span className="text-slate-400">হতে</span>
@@ -967,7 +967,7 @@ export default function AdminFinancePage() {
                     setStartDate(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white"
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -979,14 +979,14 @@ export default function AdminFinancePage() {
                     setEndDate(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white"
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white"
                 />
               </div>
             </div>
           )}
 
           {/* Payment Method Pills */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 overflow-x-auto">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-[#262b34] overflow-x-auto">
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
                 <Filter className="w-3.5 h-3.5" /> মাধ্যম:
@@ -1006,8 +1006,8 @@ export default function AdminFinancePage() {
                   }}
                   className={`px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                     selectedMethod === m.id
-                      ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-2xs'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-2xs'
+                      : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1c222d]'
                   }`}
                 >
                   {m.label}
@@ -1017,21 +1017,21 @@ export default function AdminFinancePage() {
 
             <button
               onClick={fetchPayments}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-orange-600 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
               title="রিফ্রেশ"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-blue-500' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-orange-500' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Transactions & Receipts Table */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] overflow-hidden shadow-xs">
           {/* Mobile Card View (< md) */}
-          <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
+          <div className="block md:hidden divide-y divide-slate-100 dark:divide-[#262b34]">
             {loading ? (
               <div className="py-12 text-center text-slate-400 text-xs">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-500" />
+                <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-orange-500" />
                 পেমেন্ট ডাটা লোড হচ্ছে...
               </div>
             ) : groupedPayments.length === 0 ? (
@@ -1053,12 +1053,12 @@ export default function AdminFinancePage() {
                   <div key={group.key} className="p-4 space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <span className="font-mono font-bold text-xs text-blue-600 dark:text-blue-400 select-all block">
+                        <span className="font-mono font-bold text-xs text-orange-600 dark:text-orange-400 select-all block">
                           {latestP.receiptNo}
                         </span>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <span className="text-[11px] text-slate-400">{payDate}</span>
-                          <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300">
                             {latestP.paymentMethod === 'bkash'
                               ? '📱 বিকাশ'
                               : latestP.paymentMethod === 'nagad'
@@ -1115,7 +1115,7 @@ export default function AdminFinancePage() {
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl text-xs space-y-1">
+                    <div className="bg-slate-50 dark:bg-[#151921] p-2.5 rounded-xl text-xs space-y-1 border border-slate-100 dark:border-[#262b34]">
                       <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center justify-between">
                         <span>{group.gravId?.name || 'অজ্ঞাত'}</span>
                         <span className="font-mono text-[10px] text-slate-400">Grav ID: #{group.gravId?.gravId || '—'}</span>
@@ -1144,7 +1144,7 @@ export default function AdminFinancePage() {
                             setCollectAmount(group.totalDue || 0);
                             setIsCollectModalOpen(true);
                           }}
-                          className="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer"
+                          className="flex-1 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer"
                         >
                           <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
                         </button>
@@ -1164,19 +1164,19 @@ export default function AdminFinancePage() {
                       {group.totalAmountPaid > 0 && (
                         <button
                           onClick={() => handleOpenReceiptWithHistory(group)}
-                          className="flex-1 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center gap-1 border border-blue-200/60 dark:border-blue-800/60 cursor-pointer"
+                          className="flex-1 py-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 text-xs font-bold flex items-center justify-center gap-1 border border-orange-200/60 dark:border-orange-800/60 cursor-pointer"
                         >
                           <Printer className="w-3.5 h-3.5" /> রিসিট
                         </button>
                       )}
                       <button
                         onClick={() => handleOpenDetailsWithHistory(group)}
-                        className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                        className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1c222d] text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1 border border-slate-200 dark:border-[#262b34] cursor-pointer"
                       >
                         {loadingHistoryKey === group.key ? (
-                          <RefreshCw className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+                          <RefreshCw className="w-3.5 h-3.5 text-orange-500 animate-spin" />
                         ) : (
-                          <Eye className="w-3.5 h-3.5 text-blue-500" />
+                          <Eye className="w-3.5 h-3.5 text-orange-500" />
                         )} Details
                       </button>
                     </div>
@@ -1189,7 +1189,7 @@ export default function AdminFinancePage() {
           {/* Desktop Table View (hidden on mobile, visible on md+) */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-200/80 dark:border-slate-800">
+              <thead className="bg-slate-50/80 dark:bg-[#151921]/60 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-200/80 dark:border-[#262b34]">
                 <tr>
                   <th className="py-4 px-6">রিসিট নং ও তারিখ</th>
                   <th className="py-4 px-6">শিক্ষার্থী</th>
@@ -1201,11 +1201,11 @@ export default function AdminFinancePage() {
                   <th className="py-4 px-6 text-center">Details</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">
                 {loading ? (
                   <tr>
                     <td colSpan={8} className="py-16 text-center text-slate-400 text-xs">
-                      <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-500" />
+                      <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-orange-500" />
                       পেমেন্ট ডাটা লোড হচ্ছে...
                     </td>
                   </tr>
@@ -1229,17 +1229,17 @@ export default function AdminFinancePage() {
                     return (
                       <tr
                         key={group.key}
-                        className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                        className="hover:bg-slate-50/80 dark:hover:bg-[#151921]/40 transition-colors"
                       >
                         {/* Receipt No & Date */}
                         <td className="py-4 px-6">
-                          <span className="font-mono font-bold text-xs text-blue-600 dark:text-blue-400 select-all block">
+                          <span className="font-mono font-bold text-xs text-orange-600 dark:text-orange-400 select-all block">
                             {latestP.receiptNo}
                           </span>
                           <span className="text-[11px] text-slate-400 mt-0.5 block">
                             {payDate}
                           </span>
-                          <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300">
                             {latestP.paymentMethod === 'bkash'
                               ? '📱 বিকাশ'
                               : latestP.paymentMethod === 'nagad'
@@ -1373,7 +1373,7 @@ export default function AdminFinancePage() {
                           {group.totalAmountPaid > 0 ? (
                             <button
                               onClick={() => handleOpenReceiptWithHistory(group)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 text-orange-700 dark:text-orange-300 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60 transition-colors cursor-pointer"
                               title="মানি রিসিট দেখুন ও প্রিন্ট করুন"
                             >
                               <Printer className="w-3.5 h-3.5" /> রিসিট
@@ -1387,13 +1387,13 @@ export default function AdminFinancePage() {
                         <td className="py-4 px-6 text-center">
                           <button
                             onClick={() => handleOpenDetailsWithHistory(group)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/70 dark:border-slate-700 transition-colors cursor-pointer shadow-2xs"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1c222d] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/70 dark:border-[#262b34] transition-colors cursor-pointer shadow-2xs"
                             title="শিক্ষার্থী ও পেমেন্ট হিস্ট্রি দেখুন"
                           >
                             {loadingHistoryKey === group.key ? (
-                              <RefreshCw className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+                              <RefreshCw className="w-3.5 h-3.5 text-orange-500 animate-spin" />
                             ) : (
-                              <Eye className="w-3.5 h-3.5 text-blue-500" />
+                              <Eye className="w-3.5 h-3.5 text-orange-500" />
                             )} Details
                           </button>
                         </td>
@@ -1406,17 +1406,17 @@ export default function AdminFinancePage() {
           </div>
 
           {/* Pagination Footer */}
-          <div className="p-4 bg-slate-50/60 dark:bg-slate-800/40 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="p-4 bg-slate-50/60 dark:bg-[#151921]/40 border-t border-slate-200/80 dark:border-[#262b34] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
             <span className="text-slate-500 font-medium">
               সর্বমোট <strong className="text-slate-900 dark:text-white">{totalCount}</strong> টি রেকর্ডের মধ্যে{' '}
-              পৃষ্ঠা <strong className="text-blue-600 dark:text-blue-400">{currentPage}</strong> / {totalPages || 1}
+              পৃষ্ঠা <strong className="text-orange-600 dark:text-orange-400">{currentPage}</strong> / {totalPages || 1}
             </span>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1 || loading}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-[#151921] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" /> পূর্ববর্তী
               </button>
@@ -1424,7 +1424,7 @@ export default function AdminFinancePage() {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages || loading}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-slate-700 dark:text-slate-200 font-bold hover:bg-slate-50 dark:hover:bg-[#151921] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 পরবর্তী <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -1437,9 +1437,9 @@ export default function AdminFinancePage() {
       {/* Collect Due Payment Modal */}
       {isCollectModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 sm:p-8 overflow-y-auto max-h-[90vh]">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl shadow-2xl border border-slate-200 dark:border-[#262b34] max-w-lg w-full p-6 sm:p-8 overflow-y-auto max-h-[90vh]">
             <h2 className="text-xl font-black text-slate-900 dark:text-white mb-1 flex items-center gap-2">
-              <PlusCircle className="w-5 h-5 text-emerald-500" />
+              <PlusCircle className="w-5 h-5 text-orange-500" />
               পেমেন্ট / বকেয়া কিস্তি গ্রহণ
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
@@ -1459,9 +1459,9 @@ export default function AdminFinancePage() {
                   শিক্ষার্থী নির্বাচন করুন <span className="text-rose-500">*</span>
                 </label>
                 {selectedStudent ? (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 text-xs">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-orange-50/70 dark:bg-orange-950/40 border border-orange-200/80 dark:border-orange-800/60 text-xs">
                     <div>
-                      <span className="font-extrabold text-blue-700 dark:text-blue-300">
+                      <span className="font-extrabold text-orange-700 dark:text-orange-300">
                         {selectedStudent.name}
                       </span>
                       <span className="font-mono text-slate-500 dark:text-slate-400 ml-2">
@@ -1480,12 +1480,12 @@ export default function AdminFinancePage() {
                   <div>
                     <input
                       type="text"
-                  placeholder="নাম, ফোন বা Grav ID লিখে খুঁজুন..."
+                      placeholder="নাম, ফোন বা Grav ID লিখে খুঁজুন..."
                       value={studentSearch}
                       onChange={(e) => setStudentSearch(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 mb-2"
                     />
-                    <div className="max-h-36 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1">
+                    <div className="max-h-36 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-[#262b34] border border-slate-200 dark:border-[#262b34] rounded-xl p-1">
                       {filteredStudentsForSelect.length === 0 ? (
                         <div className="text-xs text-slate-400 p-2 text-center">
                           কোনো শিক্ষার্থী পাওয়া যায়নি
@@ -1495,7 +1495,7 @@ export default function AdminFinancePage() {
                           <div
                             key={s._id}
                             onClick={() => setSelectedStudent(s)}
-                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer rounded-lg text-xs flex items-center justify-between"
+                            className="p-2 hover:bg-slate-100 dark:hover:bg-[#151921] cursor-pointer rounded-lg text-xs flex items-center justify-between"
                           >
                             <span className="font-bold text-slate-900 dark:text-white">
                               {s.name}
@@ -1530,7 +1530,7 @@ export default function AdminFinancePage() {
                       }
                     }
                   }}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="">-- ব্যাচ নির্বাচন করুন (ঐচ্ছিক) --</option>
                   {batches.map((b) => (
@@ -1560,7 +1560,7 @@ export default function AdminFinancePage() {
                       ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
                       : isDue
                       ? 'bg-rose-50 dark:bg-rose-950/50 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200'
-                      : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                      : 'bg-slate-50 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-300'
                   }`}>
                     <div>
                       <div className="font-extrabold flex items-center gap-1.5">
@@ -1612,7 +1612,7 @@ export default function AdminFinancePage() {
                     value={collectAmount}
                     onChange={(e) => setCollectAmount(e.target.value)}
                     placeholder="টাকার পরিমাণ লিখুন"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold"
                   />
                 </div>
 
@@ -1623,7 +1623,7 @@ export default function AdminFinancePage() {
                   <select
                     value={collectMethod}
                     onChange={(e) => setCollectMethod(e.target.value as any)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="cash">💵 সরাসরি ক্যাশ (Cash)</option>
                     <option value="bkash">📱 পার্সোনাল বিকাশ (bKash)</option>
@@ -1646,7 +1646,7 @@ export default function AdminFinancePage() {
                     value={collectTrxId}
                     onChange={(e) => setCollectTrxId(e.target.value)}
                     placeholder="যেমন: 8X7A... বা রিসিট নং"
-                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
@@ -1659,7 +1659,7 @@ export default function AdminFinancePage() {
                     value={collectSender}
                     onChange={(e) => setCollectSender(e.target.value)}
                     placeholder="যেমন: 01712..."
-                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -1681,7 +1681,7 @@ export default function AdminFinancePage() {
                     value={collectDocUrl}
                     onChange={(e) => setCollectDocUrl(e.target.value)}
                     placeholder="https://drive.google.com/..."
-                    className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
                   />
 
                   <FileUploadField
@@ -1692,32 +1692,6 @@ export default function AdminFinancePage() {
                     maxSizeMb={20}
                     disabled={uploadingCollectDoc}
                   />
-                  <label
-                    className={`hidden shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                      uploadingCollectDoc
-                        ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                        : 'bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                    }`}
-                  >
-                    <input
-                      type="file"
-                      accept="image/*,.pdf,.doc,.docx"
-                      onChange={handleCollectFileUpload}
-                      disabled={uploadingCollectDoc}
-                      className="hidden"
-                    />
-                    {uploadingCollectDoc ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-600" />
-                        আপলোড হচ্ছে...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-3.5 h-3.5" />
-                        ডিভাইস থেকে ফাইল
-                      </>
-                    )}
-                  </label>
                 </div>
 
                 {collectDocSuccess && (
@@ -1737,23 +1711,23 @@ export default function AdminFinancePage() {
                   value={collectNotes}
                   onChange={(e) => setCollectNotes(e.target.value)}
                   placeholder="যেমন: ২য় কিস্তি আদায়..."
-                  className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#262b34]">
                 <button
                   type="button"
                   onClick={() => setIsCollectModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                 >
                   বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={collectSubmitting}
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md transition-all disabled:opacity-60 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-extrabold shadow-md shadow-orange-950/25 transition-all disabled:opacity-60 cursor-pointer"
                 >
                   {collectSubmitting ? 'পেমেন্ট জমা হচ্ছে...' : 'পেমেন্ট নিশ্চিত করুন ও রিসিট দিন'}
                 </button>
@@ -1766,7 +1740,7 @@ export default function AdminFinancePage() {
       {/* Refund / Excess Payment Adjustment Modal */}
       {refundTargetGroup && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 sm:p-8 overflow-y-auto max-h-[90vh]">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl shadow-2xl border border-slate-200 dark:border-[#262b34] max-w-lg w-full p-6 sm:p-8 overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between mb-1">
               <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <RotateCcw className="w-5 h-5 text-amber-500" />
@@ -1842,7 +1816,7 @@ export default function AdminFinancePage() {
                     value={refundAmount}
                     onChange={(e) => setRefundAmount(e.target.value)}
                     placeholder="যেমন: ৪০০"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-bold"
                   />
                   <span className="text-[10px] text-slate-400 mt-1 block">
                     (সর্বোচ্চ ৳{Math.abs(refundTargetGroup.totalDue).toLocaleString('bn-BD')})
@@ -1856,7 +1830,7 @@ export default function AdminFinancePage() {
                   <select
                     value={refundMethod}
                     onChange={(e) => setRefundMethod(e.target.value as any)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="cash">💵 সরাসরি ক্যাশ ফেরত (Cash)</option>
                     <option value="bkash">📱 বিকাশ সেন্ট (bKash)</option>
@@ -1879,7 +1853,7 @@ export default function AdminFinancePage() {
                     value={refundTrxId}
                     onChange={(e) => setRefundTrxId(e.target.value)}
                     placeholder="যেমন: BKASH9X7..."
-                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
@@ -1892,7 +1866,7 @@ export default function AdminFinancePage() {
                     value={refundSender}
                     onChange={(e) => setRefundSender(e.target.value)}
                     placeholder="যেমন: 01712..."
-                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -1907,16 +1881,16 @@ export default function AdminFinancePage() {
                   value={refundNotes}
                   onChange={(e) => setRefundNotes(e.target.value)}
                   placeholder="যেমন: কম টাকার কোর্সে শিফট করায় অতিরিক্ত টাকা ফেরত দেওয়া হলো"
-                  className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#262b34]">
                 <button
                   type="button"
                   onClick={() => setRefundTargetGroup(null)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                 >
                   বাতিল
                 </button>
@@ -1947,11 +1921,11 @@ export default function AdminFinancePage() {
       {/* Student Details & Payment History Modal */}
       {activeDetailsGroup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50">
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-[#262b34] bg-slate-50/50 dark:bg-[#151921]/60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/70 border border-orange-200 dark:border-orange-800 flex items-center justify-center text-orange-600 dark:text-orange-400">
                   <User className="w-5 h-5" />
                 </div>
                 <div>
@@ -1965,7 +1939,7 @@ export default function AdminFinancePage() {
               </div>
               <button
                 onClick={() => setActiveDetailsGroup(null)}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1974,13 +1948,13 @@ export default function AdminFinancePage() {
             {/* Modal Content */}
             <div className="p-6 space-y-6 overflow-y-auto">
               {/* Basic Student Info Card */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 space-y-3">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200/80 dark:border-[#262b34] space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
                       {activeDetailsGroup.gravId?.name || 'অজ্ঞাত শিক্ষার্থী'}
                     </h4>
-                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                    <span className="font-mono text-xs font-bold text-orange-600 dark:text-orange-400">
                       Grav ID: #{activeDetailsGroup.gravId?.gravId || 'N/A'}
                     </span>
                   </div>
@@ -1999,7 +1973,7 @@ export default function AdminFinancePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 dark:border-[#262b34] text-xs">
                   {activeDetailsGroup.gravId?.phone && (
                     <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                       <Phone className="w-3.5 h-3.5 text-slate-400" />
@@ -2122,10 +2096,10 @@ export default function AdminFinancePage() {
               <div>
                 <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-blue-500" /> পেমেন্ট কিস্তি হিস্ট্রি ({activeDetailsGroup.payments.length} টি)
+                    <Calendar className="w-3.5 h-3.5 text-orange-500" /> পেমেন্ট কিস্তি হিস্ট্রি ({activeDetailsGroup.payments.length} টি)
                   </span>
                   {loadingHistoryKey && (
-                    <span className="text-[11px] text-blue-500 flex items-center gap-1 font-normal lowercase">
+                    <span className="text-[11px] text-orange-500 flex items-center gap-1 font-normal lowercase">
                       <RefreshCw className="w-3 h-3 animate-spin" /> সব কিস্তি লোড হচ্ছে...
                     </span>
                   )}
@@ -2146,11 +2120,11 @@ export default function AdminFinancePage() {
                     return (
                       <div
                         key={p._id || idx}
-                        className="p-3.5 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-850 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                        className="p-3.5 rounded-2xl border border-slate-200/70 dark:border-[#262b34] bg-white dark:bg-[#151921] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                            <span className="font-mono text-xs font-bold text-orange-600 dark:text-orange-400">
                               {p.receiptNo}
                             </span>
                             <span className="text-[11px] text-slate-400">
@@ -2159,7 +2133,7 @@ export default function AdminFinancePage() {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-600 dark:text-slate-300">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-slate-100 dark:bg-slate-800 text-[11px]">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-slate-100 dark:bg-[#111318] text-[11px]">
                               {p.paymentMethod === 'bkash'
                                 ? '📱 বিকাশ'
                                 : p.paymentMethod === 'bank_transfer'
@@ -2187,7 +2161,7 @@ export default function AdminFinancePage() {
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-[#262b34]">
                           <div className="text-right">
                             <span className="text-base font-black text-emerald-600 dark:text-emerald-400 block">
                               ৳{p.amountPaid?.toLocaleString('bn-BD')}
@@ -2207,7 +2181,7 @@ export default function AdminFinancePage() {
                                   setActiveReceipt(p);
                                   setActiveReceiptPayments([p]);
                                 }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/70 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/70 hover:bg-orange-100 text-orange-700 dark:text-orange-300 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60 transition-colors cursor-pointer"
                                 title="শুধুমাত্র এই কিস্তির রিসিট দেখুন"
                               >
                                 <Printer className="w-3 h-3" /> রিসিট
@@ -2235,14 +2209,14 @@ export default function AdminFinancePage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/50 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-200 dark:border-[#262b34] bg-slate-50/50 dark:bg-[#151921]/60 flex items-center justify-between">
               <span className="text-xs text-slate-400">
                 Grav ID: #{activeDetailsGroup.gravId?.gravId || 'N/A'}
               </span>
               <button
                 type="button"
                 onClick={() => setActiveDetailsGroup(null)}
-                className="px-5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-slate-200 dark:bg-[#151921] hover:bg-slate-300 dark:hover:bg-[#1c222d] text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
               >
                 বন্ধ করুন
               </button>
@@ -2254,7 +2228,7 @@ export default function AdminFinancePage() {
       {/* Generic confirm dialog (non-blocking, replaces window.confirm()) */}
       {confirmDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-[#262b34] shadow-2xl">
             <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white mb-4 whitespace-pre-line">
               {confirmDialog.message}
             </h3>
@@ -2262,7 +2236,7 @@ export default function AdminFinancePage() {
               <button
                 type="button"
                 onClick={() => setConfirmDialog(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-[#1c222d] transition-colors"
               >
                 বাতিল
               </button>

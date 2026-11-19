@@ -597,24 +597,24 @@ export default function AdminAdmissionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200/80 dark:border-[#262b34]">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Link
                 href="/admin"
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> অ্যাডমিন ড্যাশবোর্ড
               </Link>
               <span className="text-slate-400">/</span>
-              <span className="text-xs font-semibold text-slate-500">ভর্তি মডিউল</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">ভর্তি মডিউল</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+              <span className="p-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/20">
                 <UserPlus className="w-6 h-6" />
               </span>
               ম্যানুয়াল শিক্ষার্থী ভর্তি (Admin Admission)
@@ -624,9 +624,9 @@ export default function AdminAdmissionsPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/admin/batches"
-              className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors flex items-center gap-1.5"
             >
-              <Layers className="w-4 h-4 text-indigo-500" /> ব্যাচসমূহ
+              <Layers className="w-4 h-4 text-orange-500" /> ব্যাচসমূহ
             </Link>
           </div>
         </div>
@@ -636,10 +636,10 @@ export default function AdminAdmissionsPage() {
           
           {/* LEFT: Admission Form (7 cols on lg) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/80 dark:border-slate-800 p-5 sm:p-8 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <div className="flex items-center justify-between pb-5 mb-6 border-b border-slate-100 dark:border-slate-800">
+            <div className="bg-white dark:bg-[#111318] rounded-[28px] border border-slate-200/80 dark:border-[#262b34] p-5 sm:p-8 shadow-sm">
+              <div className="flex items-center justify-between pb-5 mb-6 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-orange-600 animate-pulse"></span>
                   <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                     শিক্ষার্থীর ভর্তির তথ্য ফরম
                   </h2>
@@ -656,7 +656,7 @@ export default function AdminAdmissionsPage() {
               )}
 
               {/* Admission Mode Switcher: New vs Existing Student */}
-              <div className="mb-6 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl flex items-center gap-1.5 border border-slate-200/80 dark:border-slate-700">
+              <div className="mb-6 p-1.5 bg-slate-100 dark:bg-[#151921] rounded-2xl flex items-center gap-1.5 border border-slate-200/80 dark:border-[#262b34]">
                 <button
                   type="button"
                   onClick={() => {
@@ -665,7 +665,7 @@ export default function AdminAdmissionsPage() {
                   }}
                   className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     admissionMode === 'new'
-                      ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                      ? 'bg-white dark:bg-[#111318] text-orange-600 dark:text-orange-400 shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -674,7 +674,7 @@ export default function AdminAdmissionsPage() {
                     name="admissionMode"
                     checked={admissionMode === 'new'}
                     onChange={() => {}}
-                    className="w-4 h-4 text-blue-600 cursor-pointer pointer-events-none"
+                    className="w-4 h-4 text-orange-600 cursor-pointer pointer-events-none"
                   />
                   <span>নতুন শিক্ষার্থী (New Student)</span>
                 </button>
@@ -684,7 +684,7 @@ export default function AdminAdmissionsPage() {
                   onClick={() => setAdmissionMode('existing')}
                   className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     admissionMode === 'existing'
-                      ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                      ? 'bg-white dark:bg-[#111318] text-orange-600 dark:text-orange-400 shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -693,7 +693,7 @@ export default function AdminAdmissionsPage() {
                     name="admissionMode"
                     checked={admissionMode === 'existing'}
                     onChange={() => {}}
-                    className="w-4 h-4 text-blue-600 cursor-pointer pointer-events-none"
+                    className="w-4 h-4 text-orange-600 cursor-pointer pointer-events-none"
                   />
                   <span>ইতিমধ্যে একাউন্ট আছে (Existing Student)</span>
                 </button>
@@ -701,10 +701,10 @@ export default function AdminAdmissionsPage() {
 
               {/* Existing Student Search & Picker (Visible when admissionMode === 'existing') */}
               {admissionMode === 'existing' && (
-                <div className="mb-6 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80">
+                <div className="mb-6 p-4 rounded-2xl bg-orange-50/40 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/60">
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                      <Search className="w-3.5 h-3.5 text-blue-600" />
+                      <Search className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
                       শিক্ষার্থী খুঁজুন ও নির্বাচন করুন <span className="text-rose-500">*</span>
                     </label>
                     {selectedExistingStudent && (
@@ -719,13 +719,13 @@ export default function AdminAdmissionsPage() {
                   </div>
 
                   {selectedExistingStudent ? (
-                    <div className="p-3 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-xl flex items-center justify-between">
+                    <div className="p-3 bg-white dark:bg-[#111318] border border-orange-300 dark:border-orange-800 rounded-xl flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <UserAvatar name={selectedExistingStudent.name} size="md" />
                         <div>
                           <div className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                             <span>{selectedExistingStudent.name}</span>
-                            <span className="text-[11px] px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono">
+                            <span className="text-[11px] px-2 py-0.5 rounded-md bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 font-mono">
                               #{selectedExistingStudent.gravId}
                             </span>
                           </div>
@@ -746,11 +746,11 @@ export default function AdminAdmissionsPage() {
                         value={existingStudentSearch}
                         onChange={(e) => setExistingStudentSearch(e.target.value)}
                         placeholder="নাম, Grav ID, ফোন নম্বর বা ইমেইল লিখুন..."
-                        className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                       {/* Suggestion dropdown: Only appears when user types something */}
                       {existingStudentSearch.trim() !== '' && (
-                        <div className="mt-2 max-h-48 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-1 bg-white dark:bg-slate-900 shadow-lg">
+                        <div className="mt-2 max-h-48 overflow-y-auto space-y-1 divide-y divide-slate-100 dark:divide-[#262b34] border border-slate-200 dark:border-[#262b34] rounded-xl p-1 bg-white dark:bg-[#111318] shadow-lg">
                           {existingStudents
                             .filter((s) => {
                               const q = existingStudentSearch.toLowerCase().trim();
@@ -766,7 +766,7 @@ export default function AdminAdmissionsPage() {
                               <div
                                 key={s._id}
                                 onClick={() => handleSelectExistingStudent(s)}
-                                className="p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/50 cursor-pointer rounded-lg text-xs flex items-center justify-between transition-colors"
+                                className="p-2.5 hover:bg-orange-50 dark:hover:bg-orange-950/40 cursor-pointer rounded-lg text-xs flex items-center justify-between transition-colors"
                               >
                                 <div>
                                   <span className="font-bold text-slate-900 dark:text-white block">
@@ -776,7 +776,7 @@ export default function AdminAdmissionsPage() {
                                     {s.phone || s.email || 'যোগাযোগ নেই'}
                                   </span>
                                 </div>
-                                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300">
                                   #{s.gravId}
                                 </span>
                               </div>
@@ -807,7 +807,7 @@ export default function AdminAdmissionsPage() {
                 {/* 1. Student Personal Information */}
                 <div>
                   <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-blue-500" /> ১. শিক্ষার্থীর মৌলিক তথ্য
+                    <GraduationCap className="w-4 h-4 text-orange-500" /> ১. শিক্ষার্থীর মৌলিক তথ্য
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Student Name */}
@@ -822,10 +822,10 @@ export default function AdminAdmissionsPage() {
                         placeholder="যেমন: সাকিব আল হাসান"
                         required
                         disabled={admissionMode === 'existing' && !!selectedExistingStudent}
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
                           admissionMode === 'existing' && selectedExistingStudent
-                            ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-not-allowed'
-                            : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                            ? 'bg-slate-100 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                            : 'bg-slate-50 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white'
                         }`}
                       />
                     </div>
@@ -843,10 +843,10 @@ export default function AdminAdmissionsPage() {
                           onChange={(e) => setStudentPhone(e.target.value)}
                           placeholder="017XXXXXXXX"
                           disabled={admissionMode === 'existing' && !!selectedExistingStudent}
-                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
                             admissionMode === 'existing' && selectedExistingStudent
-                              ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-not-allowed'
-                              : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                              ? 'bg-slate-100 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                              : 'bg-slate-50 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white'
                           }`}
                         />
                       </div>
@@ -866,10 +866,10 @@ export default function AdminAdmissionsPage() {
                           onChange={(e) => setStudentEmail(e.target.value)}
                           placeholder="student@example.com"
                           disabled={admissionMode === 'existing' && !!selectedExistingStudent}
-                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                          className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
                             admissionMode === 'existing' && selectedExistingStudent
-                              ? 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-not-allowed'
-                              : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white'
+                              ? 'bg-slate-100 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-600 dark:text-slate-300 cursor-not-allowed'
+                              : 'bg-slate-50 dark:bg-[#151921] border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white'
                           }`}
                         />
                       </div>
@@ -890,14 +890,14 @@ export default function AdminAdmissionsPage() {
                         value={schoolOrCollege}
                         onChange={(e) => setSchoolOrCollege(e.target.value)}
                         placeholder="যেমন: নটর ডেম কলেজ"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                       />
                     </div>
 
                     {/* Grade Level Dropdown (from created academic classes) */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
-                        <span>শ্রেণি / ক্লাস <span className="text-blue-500">*</span></span>
+                        <span>শ্রেণি / ক্লাস <span className="text-orange-500">*</span></span>
                         {gradeLevel && (
                           <button
                             type="button"
@@ -911,7 +911,7 @@ export default function AdminAdmissionsPage() {
                       <select
                         value={gradeLevel}
                         onChange={(e) => setGradeLevel(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-medium"
                       >
                         <option value="">-- শ্রেণি / ক্লাস নির্বাচন করুন --</option>
                         {academicClasses.map((cls) => (
@@ -925,13 +925,13 @@ export default function AdminAdmissionsPage() {
                 </div>
 
                 {/* 2. Course & Batch Selection */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-                      <BookOpen className="w-4 h-4 text-indigo-500" /> ২. কোর্স ও ব্যাচ নির্বাচন
+                      <BookOpen className="w-4 h-4 text-orange-500" /> ২. কোর্স ও ব্যাচ নির্বাচন
                     </h3>
                     {gradeLevel && (
-                      <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/70 px-2.5 py-0.5 rounded-lg border border-blue-200/60 dark:border-blue-800/60">
+                      <span className="text-[11px] font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/70 px-2.5 py-0.5 rounded-lg border border-orange-200/60 dark:border-orange-800/60">
                         {gradeLevel}-এর কোর্স ও ব্যাচ
                       </span>
                     )}
@@ -945,7 +945,7 @@ export default function AdminAdmissionsPage() {
                       <select
                         value={selectedCourseId}
                         onChange={(e) => setSelectedCourseId(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                       >
                         <option value="">-- {gradeLevel ? `${gradeLevel}-এর সব কোর্স` : 'সব কোর্স থেকে দেখুন'} --</option>
                         {filteredCourses.map((c) => (
@@ -965,7 +965,7 @@ export default function AdminAdmissionsPage() {
                         value={selectedBatchId}
                         onChange={(e) => handleBatchChange(e.target.value)}
                         required
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-medium"
                       >
                         <option value="">-- ব্যাচ নির্বাচন করুন --</option>
                         {filteredBatches.map((b) => {
@@ -982,9 +982,9 @@ export default function AdminAdmissionsPage() {
                 </div>
 
                 {/* 3. Fee & Payment Status */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-emerald-500" /> ৩. ভর্তি ফি ও পেমেন্ট বিবরণী
+                    <CreditCard className="w-4 h-4 text-orange-500" /> ৩. ভর্তি ফি ও পেমেন্ট বিবরণী
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Payment Fee */}
@@ -999,7 +999,7 @@ export default function AdminAdmissionsPage() {
                           min="0"
                           value={paymentFee}
                           onChange={(e) => setPaymentFee(e.target.value)}
-                          className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold"
+                          className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-semibold"
                         />
                       </div>
                     </div>
@@ -1012,7 +1012,7 @@ export default function AdminAdmissionsPage() {
                       <select
                         value={paymentStatus}
                         onChange={(e) => setPaymentStatus(e.target.value as any)}
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold ${
+                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-bold ${
                           paymentStatus === 'paid'
                             ? 'bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
                             : paymentStatus === 'partial'
@@ -1034,7 +1034,7 @@ export default function AdminAdmissionsPage() {
                       <select
                         value={paymentMethod}
                         onChange={(e) => setPaymentMethod(e.target.value as any)}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-medium"
                       >
                         <option value="cash">💵 সরাসরি ক্যাশ (Cash)</option>
                         <option value="bkash">📱 পার্সোনাল বিকাশ (bKash)</option>
@@ -1059,7 +1059,7 @@ export default function AdminAdmissionsPage() {
                         value={transactionId}
                         onChange={(e) => setTransactionId(e.target.value)}
                         placeholder={paymentMethod === 'cash' ? 'যেমন: Slip-01' : 'যেমন: 9J3K8... বা প্রেরক নম্বর'}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-mono"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-mono"
                       />
                     </div>
 
@@ -1080,7 +1080,7 @@ export default function AdminAdmissionsPage() {
                           value={documentUrl}
                           onChange={(e) => setDocumentUrl(e.target.value)}
                           placeholder="গুগল ড্রাইভ লিংক বা ফাইলের URL..."
-                          className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 transition-all font-mono"
+                          className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 transition-all font-mono"
                         />
 
                         {/* File Upload Button */}
@@ -1101,32 +1101,6 @@ export default function AdminAdmissionsPage() {
                           maxSizeMb={20}
                           disabled={uploadingDoc}
                         />
-                        {false && <label
-                          className={`hidden relative shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                            uploadingDoc
-                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                              : 'bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                          }`}
-                        >
-                          <input
-                            type="file"
-                            accept="image/*,.pdf,.doc,.docx"
-                            onChange={handleDocumentFileUpload}
-                            disabled={uploadingDoc}
-                            className="hidden"
-                          />
-                          {uploadingDoc ? (
-                            <>
-                              <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-600" />
-                              আপলোড হচ্ছে...
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-3.5 h-3.5" />
-                              ডিভাইস থেকে ফাইল দিন
-                            </>
-                          )}
-                        </label>}
                       </div>
 
                     </div>
@@ -1141,7 +1115,7 @@ export default function AdminAdmissionsPage() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="যেমন: অফিসে এসে প্রদান করা হয়েছে..."
-                        className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
                       />
                     </div>
                   </div>
@@ -1152,7 +1126,7 @@ export default function AdminAdmissionsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white font-extrabold text-sm shadow-md shadow-blue-500/20 flex items-center justify-center gap-2.5 transition-all disabled:opacity-60 cursor-pointer"
+                    className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-[0.99] text-white font-extrabold text-sm shadow-md shadow-orange-950/20 flex items-center justify-center gap-2.5 transition-all disabled:opacity-60 cursor-pointer"
                   >
                     {submitting ? (
                       <>
@@ -1214,7 +1188,7 @@ export default function AdminAdmissionsPage() {
                       fetchRecentAdmissions(e.target.value);
                     }}
                     placeholder="নাম, Grav ID বা ফোন দিয়ে খুঁজুন..."
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -1231,7 +1205,7 @@ export default function AdminAdmissionsPage() {
               <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
                 {loadingAdmissions ? (
                   <div className="py-12 text-center text-slate-400 text-xs">
-                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-500" />
+                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-orange-500" />
                     তালিকা লোড হচ্ছে...
                   </div>
                 ) : recentAdmissions.length === 0 ? (
@@ -1242,7 +1216,7 @@ export default function AdminAdmissionsPage() {
                   recentAdmissions.map((adm) => (
                     <div
                       key={adm._id}
-                      className="p-3 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between gap-3 group"
+                      className="p-3 rounded-xl bg-slate-50/60 dark:bg-[#151921]/60 hover:bg-slate-100/70 dark:hover:bg-[#151921] border border-slate-100 dark:border-[#262b34]/50 transition-colors flex items-center justify-between gap-3 group"
                     >
                       {/* Left: Info */}
                       <div className="min-w-0 flex-1">
@@ -1302,7 +1276,7 @@ export default function AdminAdmissionsPage() {
         {/* MODAL: CANCEL ENROLLMENT CONFIRMATION */}
         {admissionToCancel && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7">
+            <div className="relative w-full max-w-md bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-2xl p-6 sm:p-7">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                   <AlertTriangle className="w-5 h-5" />
@@ -1317,14 +1291,14 @@ export default function AdminAdmissionsPage() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 mb-4 space-y-1.5 text-xs">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34] mb-4 space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500">শিক্ষার্থী:</span>
                   <span className="font-bold text-slate-900 dark:text-white">{admissionToCancel.student?.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Grav ID:</span>
-                  <span className="font-mono font-bold text-blue-600 dark:text-blue-400">#{admissionToCancel.gravId || 'N/A'}</span>
+                  <span className="font-mono font-bold text-orange-600 dark:text-orange-400">#{admissionToCancel.gravId || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">ব্যাচ:</span>
@@ -1345,7 +1319,7 @@ export default function AdminAdmissionsPage() {
                   type="button"
                   disabled={cancellingAdmission}
                   onClick={() => setAdmissionToCancel(null)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                 >
                   বাতিল
                 </button>
@@ -1376,13 +1350,13 @@ export default function AdminAdmissionsPage() {
         {/* SUCCESS CONFIRMATION MODAL WITH CREDENTIALS */}
         {successModalData && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 overflow-hidden">
+            <div className="relative w-full max-w-lg bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-2xl p-6 sm:p-8 overflow-hidden">
               
               {/* Background gradient decorative glow */}
-              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-48 h-48 bg-gradient-to-br from-emerald-400/20 to-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-48 h-48 bg-gradient-to-br from-orange-400/20 to-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-800/50">
+                <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-200 dark:border-orange-800/50">
                   <CheckCircle className="w-6 h-6" />
                 </div>
                 <div>
@@ -1398,7 +1372,7 @@ export default function AdminAdmissionsPage() {
               </div>
 
               {/* Student Credentials Box */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 dark:from-slate-800/80 dark:to-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 mb-6 space-y-3.5">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/40 dark:from-[#151921] dark:to-orange-950/20 border border-orange-200/60 dark:border-orange-900/40 mb-6 space-y-3.5">
                 
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
@@ -1419,14 +1393,14 @@ export default function AdminAdmissionsPage() {
                 </div>
 
                 {/* Grav ID Field with Copy Button */}
-                <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                <div className="pt-2 border-t border-slate-200/60 dark:border-[#262b34]">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                    <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
                       লগইন Grav ID
                     </span>
                     <button
                       onClick={() => copyToClipboard(successModalData.student.gravId, 'id')}
-                      className="text-xs text-slate-500 hover:text-blue-600 flex items-center gap-1 font-semibold"
+                      className="text-xs text-slate-500 hover:text-orange-600 flex items-center gap-1 font-semibold"
                     >
                       {copiedId ? (
                         <>
@@ -1439,7 +1413,7 @@ export default function AdminAdmissionsPage() {
                       )}
                     </button>
                   </div>
-                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-base font-extrabold text-blue-600 dark:text-blue-400 tracking-wider">
+                  <div className="p-3 rounded-xl bg-white dark:bg-[#0b0d12] border border-slate-200 dark:border-[#262b34] font-mono text-base font-extrabold text-orange-600 dark:text-orange-400 tracking-wider">
                     {successModalData.student.gravId}
                   </div>
                 </div>
@@ -1447,12 +1421,12 @@ export default function AdminAdmissionsPage() {
                 {/* Default Password Field with Copy Button */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                    <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
                       ডিফল্ট পাসওয়ার্ড (Password = Grav ID)
                     </span>
                     <button
                       onClick={() => copyToClipboard(successModalData.student.gravId, 'pass')}
-                      className="text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 font-semibold"
+                      className="text-xs text-slate-500 hover:text-orange-600 flex items-center gap-1 font-semibold"
                     >
                       {copiedPass ? (
                         <>
@@ -1465,7 +1439,7 @@ export default function AdminAdmissionsPage() {
                       )}
                     </button>
                   </div>
-                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-mono text-base font-extrabold text-indigo-600 dark:text-indigo-400 tracking-wider">
+                  <div className="p-3 rounded-xl bg-white dark:bg-[#0b0d12] border border-slate-200 dark:border-[#262b34] font-mono text-base font-extrabold text-orange-600 dark:text-orange-400 tracking-wider">
                     {successModalData.student.gravId}
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
@@ -1520,7 +1494,7 @@ export default function AdminAdmissionsPage() {
                   onClick={() => setSuccessModalData(null)}
                   className={`w-full ${
                     successModalData.payment ? 'sm:w-1/2' : ''
-                  } py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-colors`}
+                  } py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold text-sm shadow-md shadow-orange-950/25 transition-all`}
                 >
                   ঠিক আছে, সম্পন্ন করুন
                 </button>

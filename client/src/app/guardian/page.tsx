@@ -96,15 +96,15 @@ export default function GuardianPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors py-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Welcome Banner */}
-        <div className="rounded-2xl p-6 mb-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div className="rounded-2xl p-6 mb-6 border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-orange-600 dark:bg-orange-400" />
+              <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
                 অভিভাবক পোর্টাল
               </span>
             </div>
@@ -129,7 +129,7 @@ export default function GuardianPortalPage() {
         )}
 
         {!loading && !error && students.length === 0 && (
-          <div className="rounded-3xl p-10 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs text-center">
+          <div className="rounded-3xl p-10 bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs text-center">
             <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">কোনো শিক্ষার্থী লিংক করা নেই</h3>
             <p className="text-xs text-slate-500 mt-1.5 max-w-sm mx-auto">
@@ -141,11 +141,11 @@ export default function GuardianPortalPage() {
         {!loading && students.length > 0 && (
           <div className="space-y-8">
             {students.map((student) => (
-              <div key={student._id} className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div key={student._id} className="rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] overflow-hidden">
                 {/* Student Header */}
-                <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-[#262b34]">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl">
+                    <div className="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-950/60 border border-orange-200/80 dark:border-orange-800/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xl">
                       {student.name?.slice(0, 2).toUpperCase() || '??'}
                     </div>
                     <div>
@@ -162,7 +162,7 @@ export default function GuardianPortalPage() {
                   <div className="flex items-center gap-6">
                     <div>
                       <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">গড় স্কোর</span>
-                      <span className="text-base font-bold text-blue-600 dark:text-blue-400">
+                      <span className="text-base font-bold text-orange-600 dark:text-orange-400">
                         {student.examSummary.averageScorePercent !== null
                           ? `${student.examSummary.averageScorePercent}%`
                           : '—'}
@@ -171,7 +171,7 @@ export default function GuardianPortalPage() {
                     <button
                       type="button"
                       onClick={() => openPaymentModal(student)}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 text-xs font-bold transition-colors border border-emerald-200/70 dark:border-emerald-800"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-950/70 text-orange-700 dark:text-orange-300 text-xs font-bold transition-colors border border-orange-200/70 dark:border-orange-800 cursor-pointer"
                     >
                       <Wallet className="w-3.5 h-3.5" />
                       পেমেন্ট দেখুন
@@ -183,14 +183,14 @@ export default function GuardianPortalPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
                   <div>
                     <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                      <BookOpen className="w-3.5 h-3.5 text-indigo-500" /> ভর্তিকৃত ব্যাচ
+                      <BookOpen className="w-3.5 h-3.5 text-orange-500" /> ভর্তিকৃত ব্যাচ
                     </h4>
                     {student.batches.length === 0 ? (
                       <p className="text-xs text-slate-400">কোনো সক্রিয় ভর্তি নেই</p>
                     ) : (
                       <div className="space-y-2">
                         {student.batches.map((b) => (
-                          <div key={b.batchId} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 text-xs">
+                          <div key={b.batchId} className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] text-xs">
                             <div className="font-bold text-slate-900 dark:text-white">{b.batchName}</div>
                             <div className="text-slate-500 dark:text-slate-400">{b.courseName}</div>
                           </div>
@@ -201,7 +201,7 @@ export default function GuardianPortalPage() {
 
                   <div>
                     <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                      <FileCheck2 className="w-3.5 h-3.5 text-purple-500" /> সাম্প্রতিক পরীক্ষার ফলাফল
+                      <FileCheck2 className="w-3.5 h-3.5 text-orange-500" /> সাম্প্রতিক পরীক্ষার ফলাফল
                     </h4>
                     {student.examSummary.recentResults.length === 0 ? (
                       <p className="text-xs text-slate-400">কোনো পরীক্ষার ফলাফল পাওয়া যায়নি</p>
@@ -210,7 +210,7 @@ export default function GuardianPortalPage() {
                         {student.examSummary.recentResults.map((r) => (
                           <div
                             key={r.examId}
-                            className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between"
+                            className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] flex items-center justify-between"
                           >
                             <span className="text-xs font-bold text-slate-900 dark:text-white truncate pr-2">
                               {r.examTitle}
@@ -242,22 +242,22 @@ export default function GuardianPortalPage() {
       {/* Payment History Modal */}
       {paymentModalStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[80vh] flex flex-col">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-lg w-full border border-slate-200 dark:border-[#262b34] shadow-2xl max-h-[80vh] flex flex-col">
+            <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
               <h3 className="text-sm font-black text-slate-900 dark:text-white">
                 "{paymentModalStudent.name}" এর পেমেন্ট হিস্ট্রি
               </h3>
               <button
                 type="button"
                 onClick={() => setPaymentModalStudent(null)}
-                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-[#151921] flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {paymentSummary && (
-              <div className="p-4 border-b border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-3">
+              <div className="p-4 border-b border-slate-100 dark:border-[#262b34] grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-center">
                   <div className="text-xs text-slate-500">মোট পরিশোধিত</div>
                   <div className="text-base font-bold text-emerald-600">৳{paymentSummary.totalPaid?.toLocaleString('bn-BD')}</div>
@@ -276,7 +276,7 @@ export default function GuardianPortalPage() {
                 <div className="text-center py-10 text-slate-400 text-xs font-medium">কোনো পেমেন্ট রেকর্ড নেই</div>
               ) : (
                 payments.map((p) => (
-                  <div key={p._id} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                  <div key={p._id} className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] flex items-center justify-between text-xs">
                     <div>
                       <div className="font-bold text-slate-900 dark:text-white">{p.receiptNo}</div>
                       <div className="text-slate-500">{formatBDDate(p.paidAt || p.createdAt)}</div>

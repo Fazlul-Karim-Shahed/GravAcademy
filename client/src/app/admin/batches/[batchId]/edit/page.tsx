@@ -169,9 +169,9 @@ export default function EditBatchPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ব্যাচের তথ্য লোড হচ্ছে...</p>
         </div>
       </div>
@@ -179,21 +179,21 @@ export default function EditBatchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-6 flex items-center justify-between">
           <Link
             href="/admin/batches"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Batch Management
           </Link>
 
           <Link
             href={`/admin/batches/${batchId}/curriculum`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 text-xs font-bold transition-colors"
           >
             <Layers className="w-3.5 h-3.5" />
             <span>Manage Curriculum</span>
@@ -202,7 +202,7 @@ export default function EditBatchPage() {
 
         {/* Page Title */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 text-blue-700 dark:text-blue-400 text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-950/40 border border-orange-200/80 dark:border-orange-900/50 text-orange-700 dark:text-orange-400 text-xs font-semibold mb-3">
             <Layers className="w-3.5 h-3.5" /> Batch Configuration
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -226,7 +226,7 @@ export default function EditBatchPage() {
         )}
 
         {/* Edit Form */}
-        <div className="bg-white dark:bg-slate-900/90 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Batch Name */}
@@ -240,14 +240,14 @@ export default function EditBatchPage() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Class 10 Physics - Special Final Revision Batch"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               />
             </div>
 
             {/* Class & Course Selection */}
-            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 space-y-4">
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200/80 dark:border-[#262b34] space-y-4">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-xs uppercase tracking-wider">
-                <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>Class & Course Assignment</span>
               </div>
 
@@ -260,7 +260,7 @@ export default function EditBatchPage() {
                   <select
                     value={selectedClass}
                     onChange={(e) => setSelectedClass(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
                   >
                     <option value="All">All Classes ({availableClasses.length})</option>
                     {availableClasses.map((cls) => (
@@ -280,7 +280,7 @@ export default function EditBatchPage() {
                     required
                     value={form.courseId}
                     onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
                   >
                     <option value="">Select a Course ({filteredCourses.length})</option>
                     {filteredCourses.map((c) => (
@@ -294,14 +294,14 @@ export default function EditBatchPage() {
             </div>
 
             {/* Status Selection */}
-            <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40 sm:p-5">
+            <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-[#262b34] dark:bg-[#151921] sm:p-5">
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">ব্যাচের সময়কাল</h2>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শেষের তারিখ course-এর মেয়াদ থেকে হিসাব হবে।</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ *
-                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-[#262b34] dark:bg-[#111318] focus:ring-2 focus:ring-orange-500" />
                 </label>
                 <p className="self-end pb-3 text-sm text-slate-500 dark:text-slate-400">নির্বাচিত course: {courses.find((course) => course._id === form.courseId)?.durationMonths ? `${courses.find((course) => course._id === form.courseId)?.durationMonths} মাস` : 'মেয়াদ নির্ধারিত নেই'}</p>
               </div>
@@ -315,7 +315,7 @@ export default function EditBatchPage() {
               <select
                 value={form.status}
                 onChange={(e) => { setStatusTouched(true); setForm({ ...form, status: e.target.value }); }}
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               >
                 <option value="draft">Draft (Private setup)</option>
                 <option value="upcoming">Upcoming (Scheduled for launch)</option>
@@ -340,14 +340,14 @@ export default function EditBatchPage() {
                     const raw = e.target.value;
                     setForm({ ...form, capacity: raw === '' ? 0 : Number(raw) });
                   }}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors font-bold"
+                  className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors font-bold"
                 />
                 <span className="text-[10px] text-slate-400 block mt-1">ব্যাচে সর্বোচ্চ কতজন শিক্ষার্থী ভর্তি হতে পারবে</span>
               </div>
             </div>
 
             {/* Structured Weekly Class Schedule Builder */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-950/70 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
               <WeeklyScheduleBuilder
                 slots={form.weeklySchedule}
                 onChange={(newSlots) => {
@@ -359,7 +359,7 @@ export default function EditBatchPage() {
                 }}
               />
 
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#262b34]">
                 <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
                   Generated / Custom Schedule Summary Text
                 </label>
@@ -368,23 +368,23 @@ export default function EditBatchPage() {
                   value={form.scheduleText}
                   onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
                   placeholder="e.g. শনি (19:00 - 20:30), রবি (20:00 - 21:30)"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-6 border-t border-slate-100 dark:border-[#262b34]">
               <Link
                 href="/admin/batches"
-                className="w-full sm:w-auto text-center px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="w-full sm:w-auto text-center px-5 py-3 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
               >
                 <Save className="w-4 h-4" />
                 <span>{submitting ? 'Saving Changes...' : 'Save Batch Details'}</span>

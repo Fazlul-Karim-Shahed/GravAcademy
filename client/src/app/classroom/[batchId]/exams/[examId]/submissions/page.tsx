@@ -171,9 +171,9 @@ export default function ExamSubmissionsPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
       {/* Header */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             {exam?.title || 'খাতা মূল্যায়ন ও মার্কিং'}
@@ -187,8 +187,8 @@ export default function ExamSubmissionsPage({
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
           <div className="py-20 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-purple-600/10 border-2 border-purple-500/20 border-t-purple-600 animate-spin mx-auto" />
-            <p className="text-xs font-bold text-slate-500">সাবমিশন তালিকা লোড হচ্ছে...</p>
+            <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400">সাবমিশন তালিকা লোড হচ্ছে...</p>
           </div>
         ) : error ? (
           <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-3xl p-8 text-center max-w-lg mx-auto">
@@ -196,7 +196,7 @@ export default function ExamSubmissionsPage({
             <p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error}</p>
           </div>
         ) : submissions.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center max-w-lg mx-auto shadow-sm">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-12 text-center max-w-lg mx-auto shadow-sm">
             <Users className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">
               এখনও কোনো শিক্ষার্থী উত্তরপত্র জমা দেয়নি
@@ -206,12 +206,12 @@ export default function ExamSubmissionsPage({
             </p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] overflow-hidden shadow-sm">
             {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
+                  <tr className="bg-slate-50 dark:bg-[#151921] border-b border-slate-200 dark:border-[#262b34] text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                     <th className="py-3.5 px-4">শিক্ষার্থী</th>
                     <th className="py-3.5 px-4">জমার সময়</th>
                     <th className="py-3.5 px-4 text-center">MCQ স্কোর</th>
@@ -221,11 +221,11 @@ export default function ExamSubmissionsPage({
                     <th className="py-3.5 px-4 text-right">অ্যাকশন</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                <tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">
                   {submissions.map((sub) => (
                     <tr
                       key={sub._id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                      className="hover:bg-slate-50/80 dark:hover:bg-[#151921] transition-colors"
                     >
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
@@ -238,25 +238,25 @@ export default function ExamSubmissionsPage({
                             <div className="font-bold text-slate-900 dark:text-white">
                               {sub.gravId?.name}
                             </div>
-                            <div className="text-[11px] text-slate-500">
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">
                               {sub.gravId?.gravId ? `#${sub.gravId.gravId}` : sub.gravId?.email}
                             </div>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 text-slate-500">
+                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400">
                         {formatBDTime(sub.submittedAt, {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-blue-600 dark:text-blue-400">
+                      <td className="py-3.5 px-4 text-center font-bold text-orange-600 dark:text-orange-400">
                         {sub.mcqScore}
                       </td>
 
-                      <td className="py-3.5 px-4 text-center font-bold text-purple-600 dark:text-purple-400">
+                      <td className="py-3.5 px-4 text-center font-bold text-orange-600 dark:text-orange-400">
                         {sub.cqScore}
                       </td>
 
@@ -279,7 +279,7 @@ export default function ExamSubmissionsPage({
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => router.push(`/classroom/${batchId}/exams/${examId}/submissions/${sub._id}`)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold transition-all shadow-sm"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold transition-all shadow-sm shadow-orange-950/20"
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>{sub.isEvaluated ? 'পুনর্মূল্যায়ন' : 'মূল্যায়ন করুন'}</span>
@@ -292,7 +292,7 @@ export default function ExamSubmissionsPage({
             </div>
 
             {/* Mobile Submissions Cards (<md) */}
-            <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="block md:hidden divide-y divide-slate-100 dark:divide-[#262b34]">
               {submissions.map((sub) => (
                 <div key={sub._id} className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
@@ -306,7 +306,7 @@ export default function ExamSubmissionsPage({
                         <div className="font-black text-sm text-slate-900 dark:text-white">
                           {sub.gravId?.name}
                         </div>
-                        <div className="text-[11px] text-slate-500">
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
                           {sub.gravId?.gravId ? `#${sub.gravId.gravId}` : sub.gravId?.email}
                         </div>
                       </div>
@@ -322,24 +322,24 @@ export default function ExamSubmissionsPage({
                     )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center">
+                  <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-[#151921] p-2.5 rounded-xl text-center">
                     <div>
-                      <div className="text-[10px] text-slate-500 font-semibold">MCQ</div>
-                      <div className="text-xs font-black text-blue-600 dark:text-blue-400">{sub.mcqScore}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">MCQ</div>
+                      <div className="text-xs font-black text-orange-600 dark:text-orange-400">{sub.mcqScore}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500 font-semibold">CQ</div>
-                      <div className="text-xs font-black text-purple-600 dark:text-purple-400">{sub.cqScore}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">CQ</div>
+                      <div className="text-xs font-black text-orange-600 dark:text-orange-400">{sub.cqScore}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500 font-semibold">মোট</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">মোট</div>
                       <div className="text-xs font-black text-slate-900 dark:text-white">{sub.totalScore}/{exam?.totalMarks}</div>
                     </div>
                   </div>
 
                   <button
                     onClick={() => router.push(`/classroom/${batchId}/exams/${examId}/submissions/${sub._id}`)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs transition-all shadow-sm"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-xs transition-all shadow-sm shadow-orange-950/20"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     <span>{sub.isEvaluated ? 'পুনর্মূল্যায়ন করুন' : 'মূল্যায়ন করুন'}</span>
@@ -354,19 +354,19 @@ export default function ExamSubmissionsPage({
       {/* EVALUATION MODAL / DRAWER */}
       {selectedSub && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-3xl overflow-hidden shadow-2xl my-8">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] w-full max-w-3xl overflow-hidden shadow-2xl my-8">
+            <div className="p-6 border-b border-slate-100 dark:border-[#262b34] flex items-center justify-between">
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white">
                   শিক্ষার্থীর খাতা মূল্যায়ন: {selectedSub.gravId?.name}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   MCQ স্বয়ংক্রিয়ভাবে মূল্যায়িত হয়েছে ({selectedSub.mcqScore} নম্বর)। CQ ও ডকুমেন্টের নম্বর দিন।
                 </p>
               </div>
               <button
                 onClick={() => setSelectedSub(null)}
-                className="text-slate-400 hover:text-slate-600 p-2 text-sm font-bold"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 text-sm font-bold"
               >
                 ✕
               </button>
@@ -375,24 +375,24 @@ export default function ExamSubmissionsPage({
             <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
               {/* If Student submitted Document / PDF */}
               {selectedSub.studentDocumentUrl && (
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                      <FileText className="w-4 h-4 text-emerald-500" />
+                      <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                       শিক্ষার্থীর আপলোড করা উত্তরপত্র
                     </span>
                     <a
                       href={selectedSub.studentDocumentUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 underline font-semibold"
+                      className="inline-flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400 underline font-semibold"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                       <span>সম্পূর্ণ ভিউ করুন</span>
                     </a>
                   </div>
 
-                  <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 h-64 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                  <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-[#262b34] h-64 bg-slate-100 dark:bg-[#111318] flex items-center justify-center">
                     <iframe
                       src={getDrivePreviewUrl(selectedSub.studentDocumentUrl)}
                       className="w-full h-full border-0"
@@ -411,9 +411,9 @@ export default function ExamSubmissionsPage({
                   {selectedSub.cqAnswers.map((cq) => (
                     <div
                       key={cq.questionIndex}
-                      className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-xs"
+                      className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs"
                     >
-                      <div className="font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      <div className="font-bold text-orange-600 dark:text-orange-400 mb-1">
                         প্রশ্ন #{cq.questionIndex + 1}:
                       </div>
                       <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
@@ -425,7 +425,7 @@ export default function ExamSubmissionsPage({
               )}
 
               {/* Marks Input & Feedback */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/60">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-orange-50/40 dark:bg-orange-950/20 border border-orange-200/60 dark:border-orange-800/40">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                     CQ / লিখিত অংশের নম্বর (সর্বোচ্চ {getCqMaxMarks(selectedSub)}) <span className="text-rose-500">*</span>
@@ -442,9 +442,9 @@ export default function ExamSubmissionsPage({
                       const clamped = Number.isFinite(raw) ? Math.min(Math.max(raw, 0), cqMax) : 0;
                       setEvalCqScore(clamped);
                     }}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-slate-900 dark:text-white text-xs font-bold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                     মোট নম্বর হবে: {(selectedSub.mcqScore || 0) + Number(evalCqScore)}
                   </p>
                 </div>
@@ -458,17 +458,17 @@ export default function ExamSubmissionsPage({
                     placeholder="যেমন: খাতার উপস্থাপনা সুন্দর ছিল। আরও অনুশীলন প্রয়োজন।"
                     value={evalFeedback}
                     onChange={(e) => setEvalFeedback(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-800/30">
+            <div className="p-4 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-[#151921]/50">
               <button
                 type="button"
                 onClick={() => setSelectedSub(null)}
-                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold"
+                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-[#1f242d] text-slate-700 dark:text-slate-200 text-xs font-bold"
               >
                 বন্ধ করুন
               </button>
@@ -477,7 +477,7 @@ export default function ExamSubmissionsPage({
                 type="button"
                 disabled={savingEval}
                 onClick={handleSaveEvaluation}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50"
               >
                 {saveSuccess ? (
                   <>

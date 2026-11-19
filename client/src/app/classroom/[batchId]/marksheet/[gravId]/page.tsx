@@ -116,11 +116,11 @@ export default function StudentMarksheetPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
@@ -130,7 +130,7 @@ export default function StudentMarksheetPage({
         <div className="max-w-5xl mx-auto relative z-10">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-              <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+              <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-orange-400" />
             </div>
             <div className="min-w-0">
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight truncate">
@@ -146,8 +146,8 @@ export default function StudentMarksheetPage({
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6">
         {loading ? (
-          <div className="py-20 flex flex-col items-center gap-3 text-sm font-semibold text-slate-500">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          <div className="py-20 flex flex-col items-center gap-3 text-sm font-semibold text-slate-500 dark:text-slate-400">
+            <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
             Marksheet প্রস্তুত হচ্ছে...
           </div>
         ) : error || !student ? (
@@ -157,73 +157,73 @@ export default function StudentMarksheetPage({
           </div>
         ) : (
           <div className="space-y-6">
-            <section className="rounded-3xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm p-1 sm:p-3 md:p-6">
+            <section className="rounded-3xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-sm p-1 sm:p-3 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3 min-w-0">
                   {student.student.avatarUrl ? (
-                    <img src={student.student.avatarUrl} alt={student.student.name} className="w-14 h-14 rounded-2xl object-cover border border-purple-200 dark:border-purple-800" />
+                    <img src={student.student.avatarUrl} alt={student.student.name} className="w-14 h-14 rounded-2xl object-cover border border-orange-200 dark:border-orange-800" />
                   ) : (
-                    <div className="w-14 h-14 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 flex items-center justify-center text-xl font-black">
+                    <div className="w-14 h-14 rounded-2xl bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 flex items-center justify-center text-xl font-black">
                       {student.student.name.charAt(0)}
                     </div>
                   )}
                   <div className="min-w-0">
                     <h2 className="text-lg sm:text-xl font-black truncate">{student.student.name}</h2>
-                    <p className="text-xs text-slate-500 truncate">{student.student.gravId || student.student.email}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{student.student.gravId || student.student.email}</p>
                   </div>
                 </div>
                 <div className="text-left sm:text-right">
-                  <span className="text-xs font-bold text-slate-500">Overall</span>
-                  <div className="text-3xl font-black text-purple-600 dark:text-purple-400">{student.summary.percentage}%</div>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Overall</span>
+                  <div className="text-3xl font-black text-orange-600 dark:text-orange-400">{student.summary.percentage}%</div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900">
-                  <p className="text-[11px] font-bold text-purple-700 dark:text-purple-300">মোট অর্জন</p>
-                  <p className="text-xl font-black mt-1">{student.summary.grandTotalObtained} / {student.summary.grandTotalPossible}</p>
+                <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200/60 dark:border-orange-900/60">
+                  <p className="text-[11px] font-bold text-orange-700 dark:text-orange-300">মোট অর্জন</p>
+                  <p className="text-xl font-black text-orange-900 dark:text-orange-100 mt-1">{student.summary.grandTotalObtained} / {student.summary.grandTotalPossible}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900">
-                  <p className="text-[11px] font-bold text-blue-700 dark:text-blue-300">Exam score</p>
-                  <p className="text-xl font-black mt-1">{student.summary.totalObtainedExamMarks} / {student.summary.totalPossibleExamMarks}</p>
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                  <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Exam score</p>
+                  <p className="text-xl font-black text-orange-600 dark:text-orange-400 mt-1">{student.summary.totalObtainedExamMarks} / {student.summary.totalPossibleExamMarks}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
-                  <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">Assignment score</p>
-                  <p className="text-xl font-black mt-1">{student.summary.totalObtainedAssignmentMarks} / {student.summary.totalPossibleAssignmentMarks}</p>
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                  <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Assignment score</p>
+                  <p className="text-xl font-black text-orange-600 dark:text-orange-400 mt-1">{student.summary.totalObtainedAssignmentMarks} / {student.summary.totalPossibleAssignmentMarks}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
-                  <p className="text-[11px] font-bold text-amber-700 dark:text-amber-300">Grade</p>
-                  <p className="text-xl font-black mt-1">{getGrade(student.summary.percentage)}</p>
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                  <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Grade</p>
+                  <p className="text-xl font-black text-slate-900 dark:text-slate-100 mt-1">{getGrade(student.summary.percentage)}</p>
                 </div>
               </div>
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <section className="rounded-3xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm p-1 sm:p-3 md:p-6">
+              <section className="rounded-3xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-sm p-1 sm:p-3 md:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="flex items-center gap-2 text-sm font-black"><FileText className="w-4 h-4 text-blue-600" /> Exam ফলাফল</h3>
-                  <span className="text-[11px] text-slate-500">{student.summary.examsAttempted}/{student.summary.totalExams} attempted</span>
+                  <h3 className="flex items-center gap-2 text-sm font-black"><FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" /> Exam ফলাফল</h3>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">{student.summary.examsAttempted}/{student.summary.totalExams} attempted</span>
                 </div>
                 <div className="space-y-3">
-                  {student.exams.length === 0 ? <p className="text-xs text-slate-500 py-6 text-center">কোনো exam পাওয়া যায়নি</p> : student.exams.map((exam) => (
-                    <div key={exam.examId} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-3">
-                      <div className="min-w-0"><p className="text-xs font-bold truncate">{exam.title}</p><p className="text-[11px] text-slate-500 mt-1">Pass: {exam.passMarks}</p></div>
-                      {exam.attempted ? <span className={`shrink-0 text-xs font-black ${exam.passed ? 'text-emerald-600' : 'text-rose-600'}`}>{exam.obtainedMarks} / {exam.totalMarks} {exam.passed ? <CheckCircle2 className="inline w-3.5 h-3.5" /> : <XCircle className="inline w-3.5 h-3.5" />}</span> : <span className="text-[11px] text-slate-400">অংশ নেয়নি</span>}
+                  {student.exams.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400 py-6 text-center">কোনো exam পাওয়া যায়নি</p> : student.exams.map((exam) => (
+                    <div key={exam.examId} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] flex items-center justify-between gap-3">
+                      <div className="min-w-0"><p className="text-xs font-bold truncate">{exam.title}</p><p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Pass: {exam.passMarks}</p></div>
+                      {exam.attempted ? <span className={`shrink-0 text-xs font-black ${exam.passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{exam.obtainedMarks} / {exam.totalMarks} {exam.passed ? <CheckCircle2 className="inline w-3.5 h-3.5" /> : <XCircle className="inline w-3.5 h-3.5" />}</span> : <span className="text-[11px] text-slate-400">অংশ নেয়নি</span>}
                     </div>
                   ))}
                 </div>
               </section>
 
-              <section className="rounded-3xl md:bg-white md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm p-1 sm:p-3 md:p-6">
+              <section className="rounded-3xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-sm p-1 sm:p-3 md:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="flex items-center gap-2 text-sm font-black"><Award className="w-4 h-4 text-purple-600" /> Assignment ফলাফল</h3>
-                  <span className="text-[11px] text-slate-500">{student.summary.assignmentsSubmitted}/{student.summary.totalAssignments} submitted</span>
+                  <h3 className="flex items-center gap-2 text-sm font-black"><Award className="w-4 h-4 text-orange-600 dark:text-orange-400" /> Assignment ফলাফল</h3>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">{student.summary.assignmentsSubmitted}/{student.summary.totalAssignments} submitted</span>
                 </div>
                 <div className="space-y-3">
-                  {student.assignments.length === 0 ? <p className="text-xs text-slate-500 py-6 text-center">কোনো assignment পাওয়া যায়নি</p> : student.assignments.map((assignment) => (
-                    <div key={assignment.assignmentId} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-                      <div className="flex items-center justify-between gap-3"><p className="text-xs font-bold truncate">{assignment.title}</p>{assignment.submitted ? assignment.isEvaluated ? <span className="text-xs font-black text-purple-600 shrink-0">{assignment.obtainedMarks} / {assignment.totalMarks}</span> : <span className="text-[11px] text-amber-600 shrink-0">চেক বাকি</span> : <span className="text-[11px] text-slate-400 shrink-0">জমা হয়নি</span>}</div>
-                      {assignment.feedback && <p className="text-[11px] text-purple-600 dark:text-purple-400 mt-2 italic">“{assignment.feedback}”</p>}
+                  {student.assignments.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400 py-6 text-center">কোনো assignment পাওয়া যায়নি</p> : student.assignments.map((assignment) => (
+                    <div key={assignment.assignmentId} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                      <div className="flex items-center justify-between gap-3"><p className="text-xs font-bold truncate">{assignment.title}</p>{assignment.submitted ? assignment.isEvaluated ? <span className="text-xs font-black text-orange-600 dark:text-orange-400 shrink-0">{assignment.obtainedMarks} / {assignment.totalMarks}</span> : <span className="text-[11px] text-amber-600 shrink-0">চেক বাকি</span> : <span className="text-[11px] text-slate-400 shrink-0">জমা হয়নি</span>}</div>
+                      {assignment.feedback && <p className="text-[11px] text-orange-600 dark:text-orange-400 mt-2 italic">“{assignment.feedback}”</p>}
                       {assignment.annotatedFileUrl && <button type="button" onClick={() => setPreviewDoc({ isOpen: true, url: assignment.annotatedFileUrl!, title: `${assignment.title} - চেকড খাতা`, fileName: assignment.annotatedFileName || 'checked_script.png' })} className="inline-flex items-center gap-1.5 mt-2 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:underline"><Eye className="w-3 h-3" /> খাতা দেখুন</button>}
                     </div>
                   ))}

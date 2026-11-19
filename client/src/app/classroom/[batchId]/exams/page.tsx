@@ -186,12 +186,12 @@ export default function ExamRoomPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
       {/* Header Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
@@ -203,7 +203,7 @@ export default function ExamRoomPage({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-center gap-3.5 pt-1 min-w-0">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
-                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-orange-300" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
@@ -235,7 +235,7 @@ export default function ExamRoomPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
           <div className="py-20 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-rose-600/10 border-2 border-rose-500/20 border-t-rose-600 animate-spin mx-auto" />
+            <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
             <p className="text-xs font-bold text-slate-500">পরীক্ষার তালিকা লোড হচ্ছে...</p>
           </div>
         ) : error ? (
@@ -244,7 +244,7 @@ export default function ExamRoomPage({
             <p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error}</p>
           </div>
         ) : exams.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center max-w-lg mx-auto shadow-sm">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-12 text-center max-w-lg mx-auto shadow-xs">
             <FileText className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">
               এখনও কোনো পরীক্ষা যোগ করা হয়নি
@@ -255,7 +255,7 @@ export default function ExamRoomPage({
             {isTeacherOrAdmin && (
               <Link
                 href={`/classroom/${batchId}/exams/create`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-md"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>প্রথম এক্সাম তৈরি করুন</span>
@@ -271,12 +271,12 @@ export default function ExamRoomPage({
               return (
                 <div
                   key={exam._id}
-                  className={`bg-white dark:bg-slate-900 rounded-[1.35rem] border p-5 sm:p-6 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group ${
+                  className={`bg-white dark:bg-[#111318] rounded-[1.35rem] border p-5 sm:p-6 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group ${
                     timing.state === 'RUNNING'
-                      ? 'border-emerald-200 dark:border-emerald-900/80'
+                      ? 'border-orange-500/60 dark:border-orange-500/50 shadow-xs'
                       : timing.state === 'UPCOMING'
                       ? 'border-amber-200 dark:border-amber-900/70'
-                      : 'border-slate-200 dark:border-slate-800'
+                      : 'border-slate-200 dark:border-[#262b34]'
                   }`}
                 >
                   {/* Top Status Badges */}
@@ -288,9 +288,9 @@ export default function ExamRoomPage({
                             attempt.isEvaluated
                               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                               : attempt.status === 'in_progress'
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 animate-pulse'
+                              ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20 animate-pulse'
                               : attempt.status === 'timeout'
-                              ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                              ? 'bg-slate-100 dark:bg-[#151921] text-slate-500 dark:text-slate-400 border-slate-200 dark:border-[#262b34]'
                               : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
                           }`}
                         >
@@ -306,8 +306,8 @@ export default function ExamRoomPage({
                           </span>
                         </span>
                       ) : timing.state === 'RUNNING' ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 animate-pulse">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 animate-pulse">
+                          <span className="w-2 h-2 rounded-full bg-orange-500" />
                           <span>চলমান পরীক্ষা</span>
                         </span>
                       ) : timing.state === 'UPCOMING' ? (
@@ -316,12 +316,12 @@ export default function ExamRoomPage({
                           <span>{timing.badge} ({timing.startsInText})</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-[#151921] text-slate-500 dark:text-slate-400">
                           <span>সময় সমাপ্ত</span>
                         </span>
                       )}
 
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50">
+                      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border border-orange-200/50 dark:border-orange-800/50">
                         {exam.examType === 'upload_paper'
                           ? 'পেপার আপলোড'
                           : exam.questionMode === 'both'
@@ -332,7 +332,7 @@ export default function ExamRoomPage({
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors pl-1">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 leading-snug group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors pl-1">
                       {exam.title}
                     </h3>
 
@@ -343,39 +343,39 @@ export default function ExamRoomPage({
                     )}
 
                     {/* Metadata Badges */}
-                    <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 mb-5 border border-slate-100 dark:border-slate-800 text-xs">
+                    <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-slate-50/80 dark:bg-[#151921] mb-5 border border-slate-100 dark:border-[#262b34] text-xs">
                       <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                        <Timer className="w-3.5 h-3.5 text-blue-500" />
+                        <Timer className="w-3.5 h-3.5 text-orange-500" />
                         <span><strong>{exam.durationMinutes} মিনিট</strong></span>
                       </div>
                       <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                         <Award className="w-3.5 h-3.5 text-amber-500" />
                         <span><strong>{exam.totalMarks} নম্বর</strong></span>
                       </div>
-                      <div className="col-span-2 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200/60 dark:border-slate-700/60 pt-2 mt-1">
-                        <Calendar className="w-3.5 h-3.5 text-purple-500" />
+                      <div className="col-span-2 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200/60 dark:border-[#262b34] pt-2 mt-1">
+                        <Calendar className="w-3.5 h-3.5 text-orange-500" />
                         <span className="truncate">শুরু: {formatBanglaDate(exam.startWindow)}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom Actions based on Role & Student Attempt State */}
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="pt-3 border-t border-slate-100 dark:border-[#262b34]">
                     {isTeacherOrAdmin ? (
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/classroom/${batchId}/exams/${exam._id}/submissions`}
-                          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all"
+                          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs transition-all"
                         >
                           <Users className="w-4 h-4" />
                           <span>খাতা ও রেজাল্ট</span>
                         </Link>
                         <Link
                           href={`/classroom/${batchId}/exams/${exam._id}/edit`}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-slate-700"
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-[#262b34]"
                           title="প্রশ্নপত্র এডিট করুন"
                         >
-                          <FileText className="w-4 h-4 text-blue-500" />
+                          <FileText className="w-4 h-4 text-orange-500" />
                           <span>এডিট</span>
                         </Link>
                       </div>
@@ -393,7 +393,7 @@ export default function ExamRoomPage({
                         </div>
                         <Link
                           href={`/classroom/${batchId}/exams/${exam._id}/result`}
-                          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all"
+                          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200/60 dark:border-[#262b34]"
                         >
                           <span>বিস্তারিত রেজাল্ট দেখুন</span>
                           <ChevronRight className="w-3.5 h-3.5" />
@@ -403,7 +403,7 @@ export default function ExamRoomPage({
                       // Active Exam: Student can take it!
                       <Link
                         href={`/classroom/${batchId}/exams/${exam._id}/take`}
-                        className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-600/30 active:scale-95 transition-all"
+                        className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-lg shadow-orange-950/25 active:scale-95 transition-all"
                       >
                         <FileCheck className="w-4 h-4" />
                         <span>পরীক্ষা শুরু করুন</span>
@@ -412,7 +412,7 @@ export default function ExamRoomPage({
                       // Upcoming Exam: Locked with message
                       <button
                         disabled
-                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-bold cursor-not-allowed"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-400 dark:text-slate-500 text-xs font-bold cursor-not-allowed border border-slate-200/60 dark:border-[#262b34]"
                       >
                         <Clock className="w-4 h-4" />
                         <span>নির্ধারিত সময়ে উন্মুক্ত হবে ({timing.startsInText})</span>
@@ -421,7 +421,7 @@ export default function ExamRoomPage({
                       // Ended
                       <button
                         disabled
-                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-bold cursor-not-allowed"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-400 dark:text-slate-500 text-xs font-bold cursor-not-allowed border border-slate-200/60 dark:border-[#262b34]"
                       >
                         <AlertCircle className="w-4 h-4" />
                         <span>পরীক্ষার নির্ধারিত সময় অতিক্রান্ত</span>

@@ -107,10 +107,10 @@ export default function StudentExamResultPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
-          <p className="text-xs font-bold text-slate-500">ফলাফল তৈরি হচ্ছে...</p>
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ফলাফল তৈরি হচ্ছে...</p>
         </div>
       </div>
     );
@@ -118,8 +118,8 @@ export default function StudentExamResultPage({
 
   if (error || !result) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 px-4">
-        <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center shadow-lg">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 px-4">
+        <div className="max-w-md mx-auto bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] text-center shadow-lg">
           <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">ফলাফল পাওয়া যায়নি</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
@@ -127,7 +127,7 @@ export default function StudentExamResultPage({
           </p>
           <Link
             href={`/classroom/${batchId}/exams`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>এক্সাম রুমে ফিরে যান</span>
@@ -141,9 +141,9 @@ export default function StudentExamResultPage({
   const percentage = Math.round((attempt.totalScore / exam.totalMarks) * 100) || 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
       {/* Top Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             {exam.title}
@@ -156,14 +156,14 @@ export default function StudentExamResultPage({
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* SCORE CARD */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             {/* Score circle / Big text */}
-            <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/60 border border-blue-100 dark:border-slate-700">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-[#151921] dark:to-[#1a1f2c] border border-orange-100 dark:border-[#262b34]">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 প্রাপ্ত মোট নম্বর
               </span>
-              <div className="text-4xl sm:text-5xl font-black text-blue-600 dark:text-blue-400 mt-2 mb-1">
+              <div className="text-4xl sm:text-5xl font-black text-orange-600 dark:text-orange-400 mt-2 mb-1">
                 {attempt.totalScore}
                 <span className="text-xl font-bold text-slate-400"> / {exam.totalMarks}</span>
               </div>
@@ -189,29 +189,29 @@ export default function StudentExamResultPage({
             {/* Breakdown */}
             <div className="md:col-span-2 space-y-4">
               <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                  <div className="text-slate-500 font-bold mb-1">MCQ নম্বর</div>
-                  <div className="text-lg font-black text-blue-600 dark:text-blue-400">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
+                  <div className="text-slate-500 dark:text-slate-400 font-bold mb-1">MCQ নম্বর</div>
+                  <div className="text-lg font-black text-orange-600 dark:text-orange-400">
                     {attempt.mcqScore}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                  <div className="text-slate-500 font-bold mb-1">CQ / লিখিত নম্বর</div>
-                  <div className="text-lg font-black text-purple-600 dark:text-purple-400">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
+                  <div className="text-slate-500 dark:text-slate-400 font-bold mb-1">CQ / লিখিত নম্বর</div>
+                  <div className="text-lg font-black text-orange-600 dark:text-orange-400">
                     {attempt.isEvaluated ? attempt.cqScore : 'মূল্যায়ন চলছে'}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                  <div className="text-slate-500 font-bold mb-1">পাস মার্ক</div>
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
+                  <div className="text-slate-500 dark:text-slate-400 font-bold mb-1">পাস মার্ক</div>
                   <div className="text-lg font-black text-slate-700 dark:text-slate-300">
                     {exam.passMarks}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                  <div className="text-slate-500 font-bold mb-1">মূল্যায়ন করেছেন</div>
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]">
+                  <div className="text-slate-500 dark:text-slate-400 font-bold mb-1">মূল্যায়ন করেছেন</div>
                   <div className="text-sm font-black text-slate-700 dark:text-slate-300 truncate">
                     {attempt.evaluatedBy?.name || 'শিক্ষক'}
                   </div>
@@ -220,9 +220,9 @@ export default function StudentExamResultPage({
 
               {/* Teacher Feedback Banner */}
               {attempt.teacherFeedback && (
-                <div className="p-4 rounded-2xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900 text-xs">
-                  <div className="font-bold text-purple-900 dark:text-purple-300 mb-1 flex items-center gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5 text-purple-600" />
+                <div className="p-4 rounded-2xl bg-orange-50/70 dark:bg-orange-950/30 border border-orange-200/60 dark:border-orange-900/60 text-xs">
+                  <div className="font-bold text-orange-900 dark:text-orange-300 mb-1 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
                     <span>শিক্ষকের মন্তব্য ও দিকনির্দেশনা:</span>
                   </div>
                   <p className="text-slate-700 dark:text-slate-300 leading-relaxed font-semibold">
@@ -236,17 +236,17 @@ export default function StudentExamResultPage({
 
         {/* Answer key withheld notice (more attempts remain) */}
         {attempt.annotatedFileUrl && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-emerald-200 dark:border-emerald-900/60 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-5 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between gap-3 mb-4">
               <div>
-                <h3 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-emerald-600" />চেকড খাতা</h3>
-                <p className="text-xs text-slate-500 mt-1">শিক্ষকের annotation সহ আপনার উত্তরপত্র</p>
+                <h3 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />চেকড খাতা</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">শিক্ষকের annotation সহ আপনার উত্তরপত্র</p>
               </div>
-              <a href={attempt.annotatedFileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-xs font-black transition-colors">
+              <a href={attempt.annotatedFileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-3 py-2 text-xs font-black transition-colors shadow-sm shadow-orange-950/20">
                 খুলুন
               </a>
             </div>
-            <iframe src={getDrivePreviewUrl(attempt.annotatedFileUrl)} title="Checked exam script" className="w-full h-[420px] rounded-2xl border border-emerald-100 dark:border-emerald-900/60 bg-slate-100 dark:bg-slate-800" />
+            <iframe src={getDrivePreviewUrl(attempt.annotatedFileUrl)} title="Checked exam script" className="w-full h-[420px] rounded-2xl border border-slate-200 dark:border-[#262b34] bg-slate-100 dark:bg-[#151921]" />
           </div>
         )}
 
@@ -260,9 +260,9 @@ export default function StudentExamResultPage({
 
         {/* DETAILED MCQ ANSWERS PREVIEW */}
         {questions && questions.length > 0 && !answerKeyWithheld && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-8 shadow-sm">
             <h3 className="text-base font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-blue-600" />
+              <CheckCircle2 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span>MCQ উত্তরপত্রের বিস্তারিত বিশ্লেষণ</span>
             </h3>
 
@@ -281,7 +281,7 @@ export default function StudentExamResultPage({
                         ? 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/30 dark:bg-emerald-950/20'
                         : studentAns?.selectedOptionId
                         ? 'border-rose-200 dark:border-rose-900/60 bg-rose-50/30 dark:bg-rose-950/20'
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40'
+                        : 'border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921]'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
@@ -320,7 +320,7 @@ export default function StudentExamResultPage({
                                 ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 border border-emerald-300'
                                 : isStudentPicked
                                 ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-900 dark:text-rose-200 border border-rose-300'
-                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                : 'bg-white dark:bg-[#151921] text-slate-600 dark:text-slate-400'
                             }`}
                           >
                             <span>{opt.text}</span>

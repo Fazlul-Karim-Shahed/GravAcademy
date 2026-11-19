@@ -74,12 +74,12 @@ export default function AuditLogsPage() {
 
   if (user && user.role !== 'superadmin') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
-        <div className="max-w-md text-center bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center px-4">
+        <div className="max-w-md text-center bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] shadow-sm">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">শুধুমাত্র সুপারএডমিন অ্যাক্সেস</h2>
           <p className="text-xs text-slate-500 mb-6">অডিট লগ দেখার অনুমতি শুধুমাত্র সুপারএডমিনের আছে।</p>
-          <Link href="/admin" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+          <Link href="/admin" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all">
             <ArrowLeft className="w-4 h-4" /> ড্যাশবোর্ডে ফিরে যান
           </Link>
         </div>
@@ -88,19 +88,19 @@ export default function AuditLogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 hover:text-blue-600 transition-colors shadow-2xs"
+              className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 transition-colors shadow-2xs"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-2xl bg-rose-600 text-white shadow-md shadow-rose-500/20">
+                <span className="p-2.5 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/20">
                   <ShieldCheck className="w-6 h-6" />
                 </span>
                 অডিট লগ (Audit Log)
@@ -111,14 +111,14 @@ export default function AuditLogsPage() {
           <button
             type="button"
             onClick={loadLogs}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1c222c] border border-transparent dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" /> রিফ্রেশ
           </button>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] shadow-sm overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -126,13 +126,13 @@ export default function AuditLogsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="ইমেইল, অ্যাকশন, রিসোর্স বা মেটাডেটা খুঁজুন..."
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
             <select
               value={actionFilter}
               onChange={(e) => setActionFilter(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+              className="bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               <option value="all">সব অ্যাকশন</option>
               {actionTypes.map((a) => (
@@ -153,7 +153,7 @@ export default function AuditLogsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 uppercase text-[10px]">
+                  <tr className="border-b border-slate-200 dark:border-[#262b34] text-slate-500 uppercase text-[10px]">
                     <th className="py-3 px-4">সময়</th>
                     <th className="py-3 px-4">অ্যাকশন</th>
                     <th className="py-3 px-4">করেছেন</th>
@@ -161,14 +161,14 @@ export default function AuditLogsPage() {
                     <th className="py-3 px-4">বিস্তারিত</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                <tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">
                   {filteredLogs.map((log) => (
-                    <tr key={log._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                    <tr key={log._id} className="hover:bg-slate-50 dark:hover:bg-[#151921]/60">
                       <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
                         {formatBDDateTime(log.createdAt, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[10px]">
+                        <span className="px-2 py-0.5 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 font-bold text-[10px]">
                           {ACTION_LABELS[log.action] || log.action}
                         </span>
                       </td>

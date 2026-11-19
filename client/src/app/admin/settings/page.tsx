@@ -225,15 +225,15 @@ export default function AdminSettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Simple Clean Header */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 transition-colors"
+              className="w-9 h-9 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 dark:hover:border-orange-500/40 transition-colors"
               title="ড্যাশবোর্ডে ফিরে যান"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -250,7 +250,7 @@ export default function AdminSettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Left Sidebar Menu */}
-          <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl p-2 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-1">
+          <div className="lg:col-span-3 bg-white dark:bg-[#111318] rounded-2xl p-2 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -258,10 +258,10 @@ export default function AdminSettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-colors ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/20'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -271,7 +271,7 @@ export default function AdminSettingsPage() {
                   {tab.count !== undefined && tab.count > 0 && (
                     <span
                       className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                        isActive ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-[#151921] text-slate-500'
                       }`}
                     >
                       {tab.count}
@@ -286,20 +286,20 @@ export default function AdminSettingsPage() {
           <div className="lg:col-span-9 min-w-0">
             
             {activeTab === 'features' && user?.role === 'superadmin' && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
-                <div className="p-5 border-b border-slate-100 dark:border-slate-800">
-                  <h2 className="text-base font-extrabold">Feature Release Control</h2>
-                  <p className="text-xs text-slate-500 mt-1">Admin ও অন্যান্য role-এর জন্য কোন module প্রকাশিত থাকবে তা নিয়ন্ত্রণ করুন। Superadmin সবসময় সব feature দেখতে পারবেন।</p>
+              <div className="bg-white dark:bg-[#111318] rounded-2xl border border-slate-200/90 dark:border-[#262b34] shadow-2xs overflow-hidden">
+                <div className="p-5 border-b border-slate-100 dark:border-[#262b34]">
+                  <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Feature Release Control</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Admin ও অন্যান্য role-এর জন্য কোন module প্রকাশিত থাকবে তা নিয়ন্ত্রণ করুন। Superadmin সবসময় সব feature দেখতে পারবেন।</p>
                 </div>
                 <div className="p-5 space-y-3">
                   {Object.entries(FEATURE_FLAG_LABELS).map(([key, label]) => (
-                    <label key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-slate-800 p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                      <span><span className="font-bold text-sm block">{label}</span><span className="text-xs text-slate-400">{featureFlags[key] ? 'Published and visible to permitted users' : 'Hidden from non-superadmin users'}</span></span>
-                      <input type="checkbox" className="h-5 w-5 accent-blue-600" checked={featureFlags[key] !== false} onChange={(e) => setFeatureFlags((prev) => ({ ...prev, [key]: e.target.checked }))} />
+                    <label key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-[#262b34] p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#151921]/50 transition-colors">
+                      <span><span className="font-bold text-sm block text-slate-900 dark:text-white">{label}</span><span className="text-xs text-slate-400">{featureFlags[key] ? 'Published and visible to permitted users' : 'Hidden from non-superadmin users'}</span></span>
+                      <input type="checkbox" className="h-5 w-5 accent-orange-600 rounded" checked={featureFlags[key] !== false} onChange={(e) => setFeatureFlags((prev) => ({ ...prev, [key]: e.target.checked }))} />
                     </label>
                   ))}
                   <div className="flex items-center gap-3 pt-3">
-                    <button onClick={handleSaveFeatures} disabled={savingFeatures} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold disabled:opacity-60">{savingFeatures ? 'Saving...' : 'Save Feature Visibility'}</button>
+                    <button onClick={handleSaveFeatures} disabled={savingFeatures} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 disabled:opacity-60 cursor-pointer transition-all">{savingFeatures ? 'Saving...' : 'Save Feature Visibility'}</button>
                     {featureSaveSuccess && <span className="text-xs text-emerald-600 font-bold">Saved successfully</span>}
                   </div>
                 </div>
@@ -308,9 +308,9 @@ export default function AdminSettingsPage() {
 
             {/* TAB: USERS */}
             {activeTab === 'users' && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+              <div className="bg-white dark:bg-[#111318] rounded-2xl border border-slate-200/90 dark:border-[#262b34] shadow-2xs overflow-hidden">
                 {/* Panel Header */}
-                <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
                       ইউজার তালিকা ও পারমিশন
@@ -330,14 +330,14 @@ export default function AdminSettingsPage() {
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         placeholder="নাম বা আইডি..."
-                        className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-8 pr-3 py-2 w-44 sm:w-52 focus:outline-none focus:border-blue-500"
+                        className="bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl pl-8 pr-3 py-2 w-44 sm:w-52 focus:outline-none focus:border-orange-500"
                       />
                     </div>
 
                     <select
                       value={selectedRole}
                       onChange={(e) => handleRoleChange(e.target.value)}
-                      className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-2.5 py-2 focus:outline-none focus:border-blue-500 cursor-pointer"
+                      className="bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs rounded-xl px-2.5 py-2 focus:outline-none focus:border-orange-500 cursor-pointer"
                     >
                       <option value="all">সকল রোল</option>
                       <option value="admin">Admin</option>
@@ -350,7 +350,7 @@ export default function AdminSettingsPage() {
                 </div>
 
                 {/* Mobile Card View (< md) */}
-                <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
+                <div className="block md:hidden divide-y divide-slate-100 dark:divide-[#262b34]">
                   {loadingUsers ? (
                     <div className="text-center py-10 text-slate-400 text-xs">
                       লোড হচ্ছে...
@@ -374,7 +374,7 @@ export default function AdminSettingsPage() {
                               <div className="font-bold text-sm text-slate-900 dark:text-white truncate">
                                 {u.name}
                               </div>
-                              <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold block">
+                              <span className="font-mono text-[11px] text-orange-600 dark:text-orange-400 font-bold block">
                                 Grav ID: {u.gravId || '—'}
                               </span>
                             </div>
@@ -382,10 +382,10 @@ export default function AdminSettingsPage() {
                           <span
                             className={`px-2 py-0.5 rounded-md font-bold uppercase text-[10px] shrink-0 ${
                               u.role === 'admin' || u.role === 'superadmin'
-                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                                 : u.role === 'teacher'
                                 ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
-                                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                                : 'bg-slate-100 text-slate-600 dark:bg-[#151921] dark:text-slate-400'
                             }`}
                           >
                             {u.role}
@@ -401,9 +401,9 @@ export default function AdminSettingsPage() {
                           {u.role === 'student' && <button type="button" disabled={!u.phone} onClick={() => { setMessageRecipient(u); setWhatsAppFeedback(''); }} className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-3 py-1.5 font-bold text-emerald-700 disabled:opacity-40 dark:bg-emerald-950/50 dark:text-emerald-300"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</button>}
                           <Link
                             href={`/admin/users/${u._id}/permissions`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-200 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors"
                           >
-                            <Key className="w-3.5 h-3.5 text-blue-500" />
+                            <Key className="w-3.5 h-3.5 text-orange-500" />
                             <span>পারমিশন</span>
                             <ChevronRight className="w-3 h-3 text-slate-400" />
                           </Link>
@@ -418,7 +418,7 @@ export default function AdminSettingsPage() {
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-400 font-semibold uppercase text-[11px]">
+                      <tr className="border-b border-slate-100 dark:border-[#262b34] bg-slate-50/50 dark:bg-[#151921]/60 text-slate-400 font-semibold uppercase text-[11px]">
                         <th className="py-3 px-4">ইউজার</th>
                         <th className="py-3 px-4">Grav ID</th>
                         <th className="py-3 px-3">রোল</th>
@@ -426,7 +426,7 @@ export default function AdminSettingsPage() {
                         <th className="py-3 px-4 text-right">অ্যাকশন</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">
                       {loadingUsers ? (
                         <tr>
                           <td colSpan={5} className="text-center py-10 text-slate-400">
@@ -441,7 +441,7 @@ export default function AdminSettingsPage() {
                         </tr>
                       ) : (
                         users.map((u) => (
-                          <tr key={u._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                          <tr key={u._id} className="hover:bg-slate-50/80 dark:hover:bg-[#151921]/40 transition-colors">
                             {/* User Avatar + Name */}
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2.5">
@@ -459,7 +459,7 @@ export default function AdminSettingsPage() {
 
                             {/* Grav ID Column */}
                             <td className="py-3 px-4 whitespace-nowrap">
-                              <span className="font-mono font-bold text-xs px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
+                              <span className="font-mono font-bold text-xs px-2 py-1 rounded-lg bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-500/20 select-all">
                                 {u.gravId || '—'}
                               </span>
                             </td>
@@ -469,10 +469,10 @@ export default function AdminSettingsPage() {
                               <span
                                 className={`px-2 py-0.5 rounded-md font-bold uppercase text-[10px] ${
                                   u.role === 'admin' || u.role === 'superadmin'
-                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                    ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                                     : u.role === 'teacher'
                                     ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
-                                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                                    : 'bg-slate-100 text-slate-600 dark:bg-[#151921] dark:text-slate-400'
                                 }`}
                               >
                                 {u.role}
@@ -492,7 +492,7 @@ export default function AdminSettingsPage() {
                               {u.role === 'student' && <button type="button" disabled={!u.phone} onClick={() => { setMessageRecipient(u); setWhatsAppFeedback(''); }} className="mr-2 inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700 disabled:opacity-40 dark:bg-emerald-950/50 dark:text-emerald-300"><MessageCircle className="h-3.5 w-3.5" />WhatsApp</button>}
                               <Link
                                 href={`/admin/users/${u._id}/permissions`}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-semibold text-xs transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 font-semibold text-xs transition-colors"
                               >
                                 <span>পারমিশন</span>
                                 <ChevronRight className="w-3 h-3" />
@@ -507,16 +507,16 @@ export default function AdminSettingsPage() {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="p-3.5 px-4 bg-slate-50/60 dark:bg-slate-950/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 text-xs">
+                  <div className="p-3.5 px-4 bg-slate-50/60 dark:bg-[#151921]/40 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between gap-3 text-xs">
                     <div className="text-slate-500 dark:text-slate-400">
-                      পৃষ্ঠা <span className="font-bold text-slate-800 dark:text-slate-200">{page}</span> / {totalPages}
+                      পৃষ্ঠা <span className="font-bold text-orange-600 dark:text-orange-400">{page}</span> / {totalPages}
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page <= 1 || loadingUsers}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-[#1a202c] transition-colors"
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
                         <span>আগেরটি</span>
@@ -536,10 +536,10 @@ export default function AdminSettingsPage() {
                                 <button
                                   onClick={() => setPage(pNum)}
                                   disabled={loadingUsers}
-                                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-all ${
                                     page === pNum
-                                      ? 'bg-blue-600 text-white shadow-xs'
-                                      : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                                      : 'hover:bg-slate-200 dark:hover:bg-[#151921] text-slate-600 dark:text-slate-400'
                                   }`}
                                 >
                                   {pNum}
@@ -552,7 +552,7 @@ export default function AdminSettingsPage() {
                       <button
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                         disabled={page >= totalPages || loadingUsers}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-[#1a202c] transition-colors"
                       >
                         <span>পরেরটি</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -565,8 +565,8 @@ export default function AdminSettingsPage() {
 
             {/* TAB: HOMEPAGE SETTINGS */}
             {activeTab === 'homepage' && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200/90 dark:border-slate-800 shadow-2xs text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
+              <div className="bg-white dark:bg-[#111318] rounded-2xl p-8 border border-slate-200/90 dark:border-[#262b34] shadow-2xs text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto">
                   <Home className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
@@ -580,7 +580,7 @@ export default function AdminSettingsPage() {
 
             {/* TAB: GENERAL SETTINGS */}
             {activeTab === 'general' && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-6">
+              <div className="bg-white dark:bg-[#111318] rounded-2xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-6">
                 <div>
                   <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
                     সাধারণ সেটিংস ও ব্র্যান্ডিং
@@ -604,7 +604,7 @@ export default function AdminSettingsPage() {
 
                 <form onSubmit={handleSaveSiteSettings} className="space-y-6">
                   {/* Live Logo Preview Box */}
-                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200/80 dark:border-[#262b34] flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
                     <div className="space-y-1 text-center sm:text-left">
                       <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
                         লাইভ প্রিভিউ (বর্তমান লোগো)
@@ -614,11 +614,11 @@ export default function AdminSettingsPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-sm">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 ${
                         (logoPreviewUrl || formatDriveImageUrl(logoUrl))
                           ? 'bg-transparent shadow-none'
-                          : 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+                          : 'bg-gradient-to-tr from-orange-600 to-orange-500 text-white font-bold shadow-md shadow-orange-950/20'
                       }`}>
                         {(logoPreviewUrl || formatDriveImageUrl(logoUrl)) ? (
                           <img
@@ -670,7 +670,7 @@ export default function AdminSettingsPage() {
                         value={siteName}
                         onChange={(e) => setSiteName(e.target.value)}
                         placeholder="Grav Academy"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
 
@@ -683,7 +683,7 @@ export default function AdminSettingsPage() {
                         value={siteTagline}
                         onChange={(e) => setSiteTagline(e.target.value)}
                         placeholder="ক্লাস ৬ – ১২ একাডেমিক কেয়ার"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
                   </div>
@@ -693,7 +693,7 @@ export default function AdminSettingsPage() {
                     <button
                       type="submit"
                       disabled={savingSettings}
-                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-blue-500/20 disabled:opacity-50 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-95 text-white font-bold text-xs shadow-md shadow-orange-950/25 disabled:opacity-50 transition-all cursor-pointer"
                     >
                       {savingSettings ? (
                         <>
@@ -714,19 +714,19 @@ export default function AdminSettingsPage() {
 
             {/* TAB: NOTIFICATIONS */}
             {activeTab === 'notifications' && (
-              <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-4">
+              <div className="bg-white dark:bg-[#111318] rounded-2xl p-6 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-4">
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                   WhatsApp সংযোগ
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
                   ইমেইল সফলভাবে পাঠানো হলে নিবন্ধিত ফোন নম্বরে একই বার্তা WhatsApp-এ পাঠানোর চেষ্টা হবে। সংযোগ না থাকলে WhatsApp বার্তা যাবে না।
                 </p>
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+                <div className="rounded-xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921]/60 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                       অবস্থা: {whatsAppStatus?.state === 'ready' ? 'সংযুক্ত' : whatsAppStatus?.state === 'qr' ? 'QR স্ক্যান করুন' : whatsAppStatus?.state === 'starting' ? 'সংযোগ হচ্ছে' : whatsAppStatus?.state === 'disconnected' ? 'বিচ্ছিন্ন' : whatsAppStatus?.state === 'error' ? 'সমস্যা হয়েছে' : 'লোড হচ্ছে'}
                     </p>
-                    <button type="button" onClick={() => void checkWhatsAppStatus()} disabled={checkingWhatsApp} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-white disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">
+                    <button type="button" onClick={() => void checkWhatsAppStatus()} disabled={checkingWhatsApp} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-[#262b34] px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-[#151921] disabled:opacity-50 transition-colors">
                       <RefreshCw className={`h-3.5 w-3.5 ${checkingWhatsApp ? 'animate-spin' : ''}`} /> স্ট্যাটাস চেক করুন
                     </button>
                   </div>
@@ -754,15 +754,15 @@ export default function AdminSettingsPage() {
       </div>
       {messageRecipient && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4" role="dialog" aria-modal="true" aria-label="WhatsApp মেসেজ">
-          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl dark:bg-slate-900">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] p-5 shadow-xl">
             <div className="flex items-start justify-between gap-3">
-              <div><h2 className="font-bold text-slate-900 dark:text-white">WhatsApp মেসেজ</h2><p className="text-sm text-slate-500">{messageRecipient.name} · {messageRecipient.phone}</p></div>
-              <button type="button" onClick={() => setMessageRecipient(null)} className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100" aria-label="বন্ধ করুন">×</button>
+              <div><h2 className="font-bold text-slate-900 dark:text-white">WhatsApp মেসেজ</h2><p className="text-sm text-slate-500 dark:text-slate-400">{messageRecipient.name} · {messageRecipient.phone}</p></div>
+              <button type="button" onClick={() => setMessageRecipient(null)} className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-[#151921]" aria-label="বন্ধ করুন">×</button>
             </div>
-            <textarea value={whatsAppMessage} onChange={(event) => setWhatsAppMessage(event.target.value)} maxLength={2000} rows={5} placeholder="মেসেজ লিখুন" className="mt-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 outline-none focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
-            {whatsAppFeedback && <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">{whatsAppFeedback}</p>}
+            <textarea value={whatsAppMessage} onChange={(event) => setWhatsAppMessage(event.target.value)} maxLength={2000} rows={5} placeholder="মেসেজ লিখুন" className="mt-4 w-full rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] p-3 text-sm text-slate-900 dark:text-white outline-none focus:border-emerald-500" />
+            {whatsAppFeedback && <p className="mt-2 text-xs text-slate-600 dark:text-slate-300" role="status">{whatsAppFeedback}</p>}
             <div className="mt-4 flex justify-end gap-2">
-              <button type="button" onClick={() => setMessageRecipient(null)} className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600">বন্ধ করুন</button>
+              <button type="button" onClick={() => setMessageRecipient(null)} className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921]">বন্ধ করুন</button>
               <button type="button" disabled={sendingWhatsApp || !whatsAppMessage.trim()} onClick={sendStudentWhatsApp} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{sendingWhatsApp ? 'পাঠানো হচ্ছে...' : 'পাঠান'}</button>
             </div>
           </div>

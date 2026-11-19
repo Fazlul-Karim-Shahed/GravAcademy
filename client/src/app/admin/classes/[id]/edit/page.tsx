@@ -173,9 +173,9 @@ export default function EditClassPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
             ক্লাসের তথ্য লোড হচ্ছে...
           </p>
@@ -185,7 +185,7 @@ export default function EditClassPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
@@ -193,7 +193,7 @@ export default function EditClassPage() {
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
             <Link
               href="/admin/classes"
-              className="hover:text-blue-600 flex items-center gap-1.5 transition-colors"
+              className="hover:text-orange-600 dark:hover:text-orange-400 flex items-center gap-1.5 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>সকল ক্লাস</span>
@@ -208,7 +208,7 @@ export default function EditClassPage() {
             <Link
               href={`/classes/${getClassSlug(targetClass)}`}
               target="_blank"
-              className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1.5"
+              className="text-xs font-bold text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1.5"
             >
               <span>লাইভ ক্লাস পেজ দেখুন</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -220,7 +220,7 @@ export default function EditClassPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Academic Management
               </span>
@@ -247,12 +247,12 @@ export default function EditClassPage() {
 
         {/* Main Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/90 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="bg-white dark:bg-[#111318] rounded-[28px] border border-slate-200 dark:border-[#262b34] p-6 sm:p-8 shadow-sm space-y-6">
             
             {/* Section 1: Basic Information */}
             <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-                <GraduationCap className="w-4 h-4 text-blue-600" />
+              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
+                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>মৌলিক তথ্য</span>
               </h2>
 
@@ -268,7 +268,7 @@ export default function EditClassPage() {
                     value={classNameInput}
                     onChange={(e) => setClassNameInput(e.target.value)}
                     placeholder="e.g. Class 6, Class 10, HSC"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-semibold"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-semibold"
                   />
                   <p className="text-[11px] text-slate-400 mt-1">
                     নাম পরিবর্তন করলে ফিল্টারিং ও ইউআরএল স্বয়ংক্রিয়ভাবে সিঙ্ক হবে।
@@ -289,7 +289,7 @@ export default function EditClassPage() {
                       setClassOrderInput(raw === '' ? 0 : Number(raw));
                     }}
                     placeholder="1, 2, 3..."
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-bold"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-bold"
                   />
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default function EditClassPage() {
                   value={classSubtitleInput}
                   onChange={(e) => setClassSubtitleInput(e.target.value)}
                   placeholder="e.g. ৬ষ্ঠ শ্রেণির পূর্ণাঙ্গ ফাউন্ডেশন ও নতুন কারিকুলাম প্রস্তুতি"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -318,15 +318,15 @@ export default function EditClassPage() {
                   value={classDescInput}
                   onChange={(e) => setClassDescInput(e.target.value)}
                   placeholder="e.g. নতুন শিক্ষাক্রমের আলোকে কনসেপ্ট ক্লিয়ারিং, এক্টিভিটি ও হ্যান্ডস-অন প্রজেক্ট ভিত্তিক শিখন।"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
 
             {/* Section 2: Curriculum Highlights & Features */}
             <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-                <Sparkles className="w-4 h-4 text-purple-600" />
+              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
+                <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>কারিকুলাম ও ফিচারসমূহ</span>
               </h2>
 
@@ -343,7 +343,7 @@ export default function EditClassPage() {
                   value={classHighlightsInput}
                   onChange={(e) => setClassHighlightsInput(e.target.value)}
                   placeholder="অধ্যায়ভিত্তিক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস&#10;স্ট্যান্ডার্ড লেকচার শিট ও স্মার্ট নোটস"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono leading-relaxed"
                 />
               </div>
 
@@ -360,7 +360,7 @@ export default function EditClassPage() {
                   value={classFeaturesInput}
                   onChange={(e) => setClassFeaturesInput(e.target.value)}
                   placeholder="অভিজ্ঞ মেন্টর প্যানেল | অভিজ্ঞ শিক্ষকদের সরাসরি দিকনির্দেশনা&#10;ডিজিটাল নোটস | প্রতিটি অধ্যায়ের পিডিএফ শিট"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono leading-relaxed"
                 />
               </div>
 
@@ -377,23 +377,23 @@ export default function EditClassPage() {
                   value={classFaqsInput}
                   onChange={(e) => setClassFaqsInput(e.target.value)}
                   placeholder="ক্লাস কীভাবে হবে? | গুগল মিটের মাধ্যমে সরাসরি লাইভে হবে।&#10;রেকর্ডিং থাকবে কি? | হ্যাঁ, ক্লাসরুমে ফুল এইচডি রেকর্ডিং থাকবে।"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono leading-relaxed"
                 />
               </div>
             </div>
 
             {/* Submit / Cancel Actions */}
-            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+            <div className="pt-6 border-t border-slate-100 dark:border-[#262b34] flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
               <Link
                 href="/admin/classes"
-                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-colors"
+                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] text-xs font-bold transition-colors"
               >
                 বাতিল করুন
               </Link>
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto text-center px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-black shadow-md shadow-blue-500/25 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full sm:w-auto text-center px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? 'সংরক্ষণ হচ্ছে...' : 'পরিবর্তন সংরক্ষণ করুন'}
               </button>

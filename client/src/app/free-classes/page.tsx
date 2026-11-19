@@ -139,23 +139,23 @@ export default function FreeClassesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
         
         {/* Deep space radial ambient lighting & celestial nebula glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-blue-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
-        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-purple-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-amber-500/10 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-orange-600/10 rounded-full blur-[90px] pointer-events-none -z-10" />
 
         {/* Twinkling Cosmic Stars & Shooting Star */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute top-[14%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[24%] left-[20%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
           <div className="absolute top-[12%] right-[16%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
+          <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-200 animate-star-twinkle-slow" />
           <span className="shooting-star meteor-1" />
           <span className="shooting-star meteor-3" />
         </div>
@@ -165,7 +165,7 @@ export default function FreeClassesPage() {
             <div>
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
                 ফ্রি লাইভ ক্লাস ও{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300 pt-1 pb-2 px-1">
                   স্পেশাল সেমিনার
                 </span>
               </h1>
@@ -183,14 +183,14 @@ export default function FreeClassesPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="ক্লাসের নাম বা শিক্ষক খুঁজুন..."
-                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-indigo-400 rounded-2xl pl-10 pr-9 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-400/30 transition-all font-medium shadow-inner"
+                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-orange-400 rounded-2xl pl-10 pr-9 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500/30 transition-all font-medium shadow-inner"
                 />
               </div>
 
               {canManageLive && (
                 <Link
                   href="/free-classes/new"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-lg shadow-blue-500/25 hover:scale-102 transition-all shrink-0"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-lg shadow-orange-950/25 hover:scale-102 transition-all shrink-0"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>নতুন ক্লাস যোগ করুন</span>
@@ -213,8 +213,8 @@ export default function FreeClassesPage() {
             </span>
           </div>
           {searchQuery && (
-            <div className="px-3 py-1 rounded-lg bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-800 text-xs">
-              সার্চ ফিল্টার: <span className="text-blue-600 dark:text-blue-400 font-bold">"{searchQuery}"</span>
+            <div className="px-3 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200/60 dark:border-orange-800/60 text-xs">
+              সার্চ ফিল্টার: <span className="text-orange-600 dark:text-orange-400 font-bold">"{searchQuery}"</span>
             </div>
           )}
         </div>
@@ -234,9 +234,9 @@ export default function FreeClassesPage() {
             ))}
           </div>
         ) : filteredClasses.length === 0 ? (
-          <div className="bg-white/85 dark:bg-slate-900/80 backdrop-blur-xl rounded-[34px] text-center py-16 px-6 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl max-w-lg mx-auto my-8">
-            <div className="w-16 h-16 rounded-2xl bg-blue-100/80 dark:bg-blue-950/60 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800">
-              <Video className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+          <div className="bg-white/85 dark:bg-[#111318]/90 backdrop-blur-xl rounded-[34px] text-center py-16 px-6 border-2 border-slate-200/90 dark:border-[#262b34] shadow-xl max-w-lg mx-auto my-8">
+            <div className="w-16 h-16 rounded-2xl bg-orange-100/80 dark:bg-orange-950/60 flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-800">
+              <Video className="w-8 h-8 text-orange-600 dark:text-orange-400" />
             </div>
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">বর্তমানে কোনো ফ্রি ক্লাস নেই</h3>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6 leading-relaxed">
@@ -245,7 +245,7 @@ export default function FreeClassesPage() {
             {canManageLive && (
               <Link
                 href="/free-classes/new"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-md shadow-orange-950/25 transition-all"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>নতুন ফ্রি ক্লাস তৈরি করুন</span>
@@ -350,20 +350,20 @@ export default function FreeClassesPage() {
                     {/* Card Content Body */}
                     <div className="px-3.5 sm:px-4 pb-3 pt-3.5">
                       {/* Class Title */}
-                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2">
                         {cls.title}
                       </h3>
 
                       {/* Teacher name if present */}
                       <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        <Users className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <Users className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                         <span className="truncate">মেন্টর: {cls.teacherId?.name || 'অনলাইন ফ্যাকাল্টি'}</span>
                       </div>
 
                       {/* Cute Schedule & Duration Pills */}
                       <div className="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800/80 space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                          <div className="w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
                             <Calendar className="w-3.5 h-3.5" />
                           </div>
                           <span>তারিখ: {formattedDate} • {formattedTime}</span>
@@ -380,11 +380,11 @@ export default function FreeClassesPage() {
 
                   {/* Admin Controls */}
                   {canManageLive && (
-                    <div className="px-4 py-2 bg-slate-100/70 dark:bg-slate-900/90 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-end gap-2 text-xs">
+                    <div className="px-4 py-2 bg-slate-100/70 dark:bg-[#151921] border-t border-slate-200/60 dark:border-[#262b34] flex items-center justify-end gap-2 text-xs">
                       <button
                         type="button"
                         onClick={() => handleOpenEdit(cls)}
-                        className="inline-flex items-center gap-1 font-bold text-blue-600 dark:text-blue-400 hover:underline p-1"
+                        className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 hover:underline p-1"
                         title="এডিট করুন"
                       >
                         <Edit className="w-3.5 h-3.5" />
@@ -403,7 +403,7 @@ export default function FreeClassesPage() {
                   )}
 
                   {/* Card Bottom: Direct Join CTA */}
-                  <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3 shadow-inner">
+                  <div className="p-3.5 sm:p-4 mt-1 rounded-[24px] border border-slate-200/70 dark:border-[#262b34] bg-slate-50/80 dark:bg-[#151921] flex items-center justify-between gap-3 shadow-inner">
                     <div>
                       <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
                         সম্পূর্ণ উন্মুক্ত
@@ -417,7 +417,7 @@ export default function FreeClassesPage() {
                       href={cls.meetingUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="py-2.5 px-4.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black text-xs shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/35 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102"
+                      className="py-2.5 px-4.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-xs shadow-md shadow-orange-950/25 transition-all flex items-center gap-1.5 shrink-0 group-hover:scale-102"
                     >
                       <span>ক্লাসে যোগ দিন</span>
                       <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -437,7 +437,7 @@ export default function FreeClassesPage() {
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <span className="w-2.5 h-2.5 rounded-full bg-orange-600" />
                 <h3 className="text-lg font-black text-slate-900 dark:text-white">
                   ফ্রি ক্লাস এডিট করুন
                 </h3>
@@ -460,7 +460,7 @@ export default function FreeClassesPage() {
                   required
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -473,8 +473,6 @@ export default function FreeClassesPage() {
                 helperText="ফ্রি ক্লাসের থাম্বনেইল ছবি সরাসরি ড্রাইভে আপলোড করুন।"
               />
 
-
-
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   ক্লাসের সময়কাল (মিনিট)
@@ -484,7 +482,7 @@ export default function FreeClassesPage() {
                   min="15"
                   value={editDuration}
                   onChange={(e) => setEditDuration(Number(e.target.value))}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -499,7 +497,7 @@ export default function FreeClassesPage() {
                 <button
                   type="submit"
                   disabled={savingEdit}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:from-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/20 transition-all disabled:opacity-50"
                 >
                   {savingEdit ? 'সংরক্ষণ হচ্ছে...' : 'পরিবর্তন সংরক্ষণ করুন'}
                 </button>

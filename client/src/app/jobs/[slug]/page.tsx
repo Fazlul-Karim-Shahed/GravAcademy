@@ -106,7 +106,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center py-20 text-slate-500 text-sm">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center py-20 text-slate-500 text-sm">
         বিজ্ঞপ্তির বিস্তারিত লোড হচ্ছে...
       </div>
     );
@@ -114,13 +114,13 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center py-20 px-4 text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex flex-col items-center justify-center py-20 px-4 text-center">
         <Briefcase className="w-16 h-16 text-slate-300 dark:text-slate-700 mb-4" />
         <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">জব সার্কুলারটি পাওয়া যায়নি</h1>
         <p className="text-sm text-slate-500 mb-6">বিজ্ঞপ্তিটি মুছে ফেলা হতে পারে বা লিংকটি ভুল হয়েছে।</p>
         <Link
           href="/jobs"
-          className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md transition-colors"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/20 transition-all"
         >
           সকল জব সার্কুলার দেখুন
         </Link>
@@ -138,15 +138,15 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     : false;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
         <div className="flex items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-blue-600 transition-colors">হোম</Link>
+            <Link href="/" className="hover:text-orange-600 transition-colors">হোম</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <Link href="/jobs" className="hover:text-blue-600 transition-colors">জব সার্কুলার</Link>
+            <Link href="/jobs" className="hover:text-orange-600 transition-colors">জব সার্কুলার</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-slate-800 dark:text-slate-200 line-clamp-1 max-w-[200px] sm:max-w-xs">
               {job.title}
@@ -172,7 +172,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
         </div>
 
         {/* Main Circular Header Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-10 shadow-xs mb-8">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-10 shadow-xs mb-8">
           
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span
@@ -188,13 +188,13 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
             )}
 
             {job.featured && (
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-amber-500 text-white flex items-center gap-1">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-orange-500 text-white flex items-center gap-1">
                 ★ হট জব
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 mb-2">
+          <div className="flex items-center gap-2 text-sm font-bold text-orange-600 dark:text-orange-400 mb-2">
             <Building className="w-4 h-4 shrink-0" />
             <span>{job.organizationName}</span>
           </div>
@@ -216,7 +216,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
                 href={job.officialWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs sm:text-sm font-extrabold shadow-md shadow-orange-950/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <span>অনলাইনে আবেদন করুন</span>
                 <ExternalLink className="w-4 h-4" />
@@ -343,10 +343,10 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
             {job.customFields.map((field, idx) => (
               <div
                 key={idx}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs"
+                className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs"
               >
                 <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
+                  <span className="w-2 h-2 rounded-full bg-orange-600" />
                   {field.label}
                 </h3>
                 <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
@@ -359,9 +359,9 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
         {/* Full Rich Description */}
         {job.fullDescriptionHtml && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs mb-8">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800 mb-6 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-500" /> সার্কুলারের বিস্তারিত বিজ্ঞপ্তি
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs mb-8">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-[#1e222a] mb-6 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-orange-500" /> সার্কুলারের বিস্তারিত বিজ্ঞপ্তি
             </h2>
 
             <div
@@ -373,11 +373,11 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
         {/* Circular Image (if provided) */}
         {job.circularImageUrl && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs mb-8">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800 mb-6 flex items-center gap-2">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs mb-8">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-[#1e222a] mb-6 flex items-center gap-2">
               <FileText className="w-5 h-5 text-emerald-500" /> সার্কুলারের মূল নোটিশ / ছবি
             </h2>
-            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex justify-center">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] flex justify-center">
               <img
                 src={job.circularImageUrl}
                 alt={job.title}

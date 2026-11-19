@@ -240,25 +240,25 @@ export default function AdminUsersPage() {
     { id: 'employee', label: 'কর্মচারী (Employee)' },
   ];
 
-  if (loadingSettings) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
-  if (!isFeatureEnabled('userManagement', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-slate-950"><ComingSoonCard feature="User Management" /></div>;
+  if (loadingSettings) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0d12]">লোড হচ্ছে...</div>;
+  if (!isFeatureEnabled('userManagement', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-[#0b0d12]"><ComingSoonCard feature="User Management" /></div>;
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 transition-colors shadow-2xs"
+              className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 dark:hover:border-orange-500/40 transition-colors shadow-2xs"
               title="ড্যাশবোর্ডে ফিরে যান"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+                <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-500 text-white shadow-md shadow-orange-950/20">
                   <Users className="w-6 h-6" />
                 </span>
                 ইউজার ম্যানেজমেন্ট (User Management)
@@ -270,14 +270,14 @@ export default function AdminUsersPage() {
             <button
               type="button"
               onClick={() => setShowCreateStaffModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
+              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus className="w-4 h-4 text-orange-500" />
               <span>নতুন স্টাফ তৈরি করুন</span>
             </button>
             <Link
               href="/admin/admissions"
-              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs flex items-center gap-2 transition-colors"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 flex items-center gap-2 transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>নতুন শিক্ষার্থী ভর্তি</span>
@@ -293,8 +293,8 @@ export default function AdminUsersPage() {
               onClick={() => handleRoleChange(pill.id)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 selectedRole === pill.id
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800'
+                  ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                  : 'bg-white dark:bg-[#111318] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] border border-slate-200/80 dark:border-[#262b34]'
               }`}
             >
               {pill.label}
@@ -303,14 +303,14 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Main Users Table Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] shadow-sm overflow-hidden">
           
           {/* Card Top Control Bar */}
-          <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>সকল ইউজার অ্যাকাউন্ট</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-bold border border-blue-200/60 dark:border-blue-800/60">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold border border-orange-500/20">
                   {totalCount} জন
                 </span>
               </h2>
@@ -326,14 +326,14 @@ export default function AdminUsersPage() {
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="নাম বা Grav ID লিখে খুঁজুন..."
-                  className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 w-60 sm:w-72 focus:outline-none focus:border-blue-500"
+                  className="bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 w-60 sm:w-72 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={handleSearch}
-                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1a202c] border border-slate-200/80 dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
               >
                 খুঁজুন
               </button>
@@ -341,7 +341,7 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Mobile Card View (< md) */}
-          <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
+          <div className="block md:hidden divide-y divide-slate-100 dark:divide-[#262b34]">
             {loadingUsers ? (
               <div className="text-center py-12 text-slate-400 font-medium text-xs">
                 ইউজার তালিকা লোড হচ্ছে...
@@ -362,7 +362,7 @@ export default function AdminUsersPage() {
                         size="md"
                       />
                       <div className="min-w-0">
-                        <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 truncate transition-colors">
+                        <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-400 truncate transition-colors">
                           {u.name}
                         </Link>
                         <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
@@ -373,12 +373,12 @@ export default function AdminUsersPage() {
                     <span
                       className={`shrink-0 px-2.5 py-0.5 rounded-lg font-bold uppercase text-[10px] tracking-wide inline-block ${
                         u.role === 'admin' || u.role === 'superadmin'
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60'
+                          ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                           : u.role === 'teacher'
                           ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60'
                           : u.role === 'guardian'
                           ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60'
-                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/60'
+                          : 'bg-slate-100 text-slate-600 dark:bg-[#151921] dark:text-slate-400 border border-slate-200/60 dark:border-[#262b34]'
                       }`}
                     >
                       {u.role === 'admin'
@@ -395,8 +395,8 @@ export default function AdminUsersPage() {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/60">
-                    <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold">
+                  <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-[#151921]/60 p-2.5 rounded-xl border border-slate-100 dark:border-[#262b34]">
+                    <span className="font-mono text-[11px] text-orange-600 dark:text-orange-400 font-bold">
                       Grav ID: {u.gravId || '—'}
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
@@ -416,16 +416,16 @@ export default function AdminUsersPage() {
                     </button>
                   )}
 
-                  <Link href={`/admin/users/${u._id}`} className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-bold text-xs transition-colors border border-blue-200/70 dark:border-blue-800">
+                  <Link href={`/admin/users/${u._id}`} className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20">
                     <Eye className="w-3.5 h-3.5" />
                     <span>প্রোফাইল</span>
                   </Link>
 
                   <Link
                     href={`/admin/users/${u._id}/permissions`}
-                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-slate-700 shadow-2xs"
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-200 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-[#262b34] shadow-2xs"
                   >
-                    <Key className="w-3.5 h-3.5 text-blue-500" />
+                    <Key className="w-3.5 h-3.5 text-orange-500" />
                     <span>পারমিশন ও অ্যাক্সেস কন্ট্রোল</span>
                     <ChevronRight className="w-3 h-3 ml-auto text-slate-400" />
                   </Link>
@@ -438,7 +438,7 @@ export default function AdminUsersPage() {
                         setDeleteTarget(u);
                       }}
                       disabled={deletinggravId === u._id}
-                      className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-bold text-xs transition-colors border border-rose-200/70 dark:border-rose-800 shadow-2xs disabled:opacity-50"
+                      className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-bold text-xs transition-colors border border-rose-200/70 dark:border-rose-800 shadow-2xs disabled:opacity-50 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>ডিলিট</span>
@@ -453,7 +453,7 @@ export default function AdminUsersPage() {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 text-slate-400 font-bold uppercase text-[11px] tracking-wider">
+                <tr className="border-b border-slate-100 dark:border-[#262b34] bg-slate-50/50 dark:bg-[#151921]/60 text-slate-400 font-bold uppercase text-[11px] tracking-wider">
                   <th className="py-3.5 px-4 sm:px-6">ইউজার</th>
                   <th className="py-3.5 px-4">Grav ID</th>
                   <th className="py-3.5 px-4">যোগাযোগ (Email / Phone)</th>
@@ -462,7 +462,7 @@ export default function AdminUsersPage() {
                   <th className="py-3.5 px-4 sm:px-6 text-right">অ্যাকশন</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">
                 {loadingUsers ? (
                   <tr>
                     <td colSpan={6} className="text-center py-14 text-slate-400 font-medium">
@@ -477,7 +477,7 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : (
                   users.map((u) => (
-                    <tr key={u._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                    <tr key={u._id} className="hover:bg-slate-50/80 dark:hover:bg-[#151921]/40 transition-colors">
                       {/* Avatar + Name */}
                       <td className="py-3.5 px-4 sm:px-6">
                         <div className="flex items-center gap-3">
@@ -488,7 +488,7 @@ export default function AdminUsersPage() {
                             size="md"
                           />
                           <div className="min-w-0">
-                            <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 truncate transition-colors">
+                            <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-400 truncate transition-colors">
                               {u.name}
                             </Link>
                           </div>
@@ -497,7 +497,7 @@ export default function AdminUsersPage() {
 
                       {/* Grav ID */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="font-mono font-bold text-xs px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 select-all">
+                        <span className="font-mono font-bold text-xs px-2.5 py-1 rounded-xl bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-500/20 select-all">
                           {u.gravId || '—'}
                         </span>
                       </td>
@@ -521,12 +521,12 @@ export default function AdminUsersPage() {
                         <span
                           className={`px-2.5 py-1 rounded-lg font-bold uppercase text-[10px] tracking-wide inline-block ${
                             u.role === 'admin' || u.role === 'superadmin'
-                              ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60'
+                              ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                               : u.role === 'teacher'
                               ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/60'
                               : u.role === 'guardian'
                               ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60'
-                              : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/60'
+                              : 'bg-slate-100 text-slate-600 dark:bg-[#151921] dark:text-slate-400 border border-slate-200/60 dark:border-[#262b34]'
                           }`}
                         >
                           {u.role === 'admin'
@@ -557,7 +557,7 @@ export default function AdminUsersPage() {
                           <Link
                             href={`/admin/users/${u._id}`}
                             title="প্রোফাইল দেখুন"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-bold text-xs transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>প্রোফাইল</span>
@@ -574,9 +574,9 @@ export default function AdminUsersPage() {
                           )}
                           <Link
                             href={`/admin/users/${u._id}/permissions`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-xs transition-colors shadow-2xs"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-[#262b34] shadow-2xs"
                           >
-                            <Key className="w-3.5 h-3.5" />
+                            <Key className="w-3.5 h-3.5 text-orange-500" />
                             <span>পারমিশন ও কন্ট্রোল</span>
                             <ChevronRight className="w-3 h-3" />
                           </Link>
@@ -589,7 +589,7 @@ export default function AdminUsersPage() {
                               }}
                               disabled={deletinggravId === u._id}
                               title="ইউজার ডিলিট"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-600 dark:text-rose-300 transition-colors shadow-2xs disabled:opacity-50"
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-600 dark:text-rose-300 transition-colors shadow-2xs disabled:opacity-50 cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -605,16 +605,16 @@ export default function AdminUsersPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="p-4 sm:px-6 bg-slate-50/60 dark:bg-slate-950/40 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 text-xs">
+            <div className="p-4 sm:px-6 bg-slate-50/60 dark:bg-[#151921]/40 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between gap-3 text-xs">
               <div className="text-slate-500 dark:text-slate-400 font-medium">
-                পৃষ্ঠা <span className="font-bold text-slate-800 dark:text-slate-200">{page}</span> / {totalPages} (মোট {totalCount} জন)
+                পৃষ্ঠা <span className="font-bold text-orange-600 dark:text-orange-400">{page}</span> / {totalPages} (মোট {totalCount} জন)
               </div>
 
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1 || loadingUsers}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-2xs"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-[#1a202c] transition-colors shadow-2xs"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                   <span>পূর্ববর্তী</span>
@@ -633,10 +633,10 @@ export default function AdminUsersPage() {
                           <button
                             onClick={() => setPage(pNum)}
                             disabled={loadingUsers}
-                            className={`w-7 h-7 rounded-xl text-xs font-bold transition-colors ${
+                            className={`w-7 h-7 rounded-xl text-xs font-bold transition-all ${
                               page === pNum
-                                ? 'bg-blue-600 text-white'
-                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+                                ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#151921]'
                             }`}
                           >
                             {pNum}
@@ -649,7 +649,7 @@ export default function AdminUsersPage() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages || loadingUsers}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-2xs"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-700 dark:text-slate-300 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-[#1a202c] transition-colors shadow-2xs"
                 >
                   <span>পরবর্তী</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -663,9 +663,9 @@ export default function AdminUsersPage() {
 
       {/* Create Staff Account Modal (Teacher / Guardian / Employee) */}
       {showCreateStaffModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs px-4">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-md w-full border border-slate-200 dark:border-[#262b34] shadow-2xl">
+            <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
               <h3 className="text-sm font-black text-slate-900 dark:text-white">নতুন স্টাফ অ্যাকাউন্ট তৈরি করুন</h3>
               <button
                 type="button"
@@ -673,7 +673,7 @@ export default function AdminUsersPage() {
                   setShowCreateStaffModal(false);
                   resetStaffForm();
                 }}
-                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-[#151921] flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -692,10 +692,10 @@ export default function AdminUsersPage() {
                       key={r.id}
                       type="button"
                       onClick={() => setStaffRole(r.id)}
-                      className={`py-2 rounded-xl text-xs font-bold transition-colors ${
+                      className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         staffRole === r.id
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                          ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1a202c]'
                       }`}
                     >
                       {r.label}
@@ -712,7 +712,7 @@ export default function AdminUsersPage() {
                   value={staffName}
                   onChange={(e) => setStaffName(e.target.value)}
                   placeholder="যেমন: রাকিব আল হাসান"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -727,7 +727,7 @@ export default function AdminUsersPage() {
                     value={staffEmail}
                     onChange={(e) => setStaffEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
                 <div>
@@ -738,7 +738,7 @@ export default function AdminUsersPage() {
                     value={staffPhone}
                     onChange={(e) => setStaffPhone(e.target.value)}
                     placeholder="017XXXXXXXX"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
               </div>
@@ -755,7 +755,7 @@ export default function AdminUsersPage() {
                   value={staffPassword}
                   onChange={(e) => setStaffPassword(e.target.value)}
                   placeholder="কমপক্ষে ৬ অক্ষর"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -769,7 +769,7 @@ export default function AdminUsersPage() {
               <button
                 type="submit"
                 disabled={creatingStaff}
-                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {creatingStaff ? 'তৈরি হচ্ছে...' : 'অ্যাকাউন্ট তৈরি করুন'}
               </button>
@@ -780,27 +780,27 @@ export default function AdminUsersPage() {
 
       {/* Guardian <-> Student Link Modal */}
       {linkModalGuardian && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs px-4">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-lg w-full border border-slate-200 dark:border-[#262b34] shadow-2xl max-h-[85vh] flex flex-col">
+            <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white">
                   "{linkModalGuardian.name}" এর জন্য শিক্ষার্থী লিংক করুন
                 </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   এই অভিভাবক শুধু নিচে নির্বাচিত শিক্ষার্থীদের তথ্য দেখতে পারবেন
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setLinkModalGuardian(null)}
-                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-[#151921] flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="p-4 border-b border-slate-100 dark:border-[#262b34]">
               <div className="relative">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
@@ -808,7 +808,7 @@ export default function AdminUsersPage() {
                   value={linkStudentSearch}
                   onChange={(e) => setLinkStudentSearch(e.target.value)}
                   placeholder="নাম বা আইডি দিয়ে শিক্ষার্থী খুঁজুন..."
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
@@ -826,19 +826,19 @@ export default function AdminUsersPage() {
                       key={s._id}
                       className={`flex items-center gap-3 p-2.5 rounded-xl border cursor-pointer transition-colors ${
                         checked
-                          ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800'
-                          : 'bg-slate-50 dark:bg-slate-950/40 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
+                          ? 'bg-orange-50 dark:bg-orange-950/30 border-orange-300 dark:border-orange-800/60'
+                          : 'bg-slate-50 dark:bg-[#151921]/40 border-transparent hover:border-slate-200 dark:hover:border-[#262b34]'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleStudentSelection(s._id)}
-                        className="w-4 h-4 accent-blue-600"
+                        className="w-4 h-4 accent-orange-600 rounded"
                       />
                       <div className="min-w-0">
                         <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{s.name}</div>
-                        <div className="text-[11px] text-slate-500">#{s.gravId || '—'}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">#{s.gravId || '—'}</div>
                       </div>
                     </label>
                   );
@@ -850,15 +850,15 @@ export default function AdminUsersPage() {
               <div className="px-4 pb-2 text-xs text-rose-600 font-bold">{linkError}</div>
             )}
 
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-medium">
+            <div className="p-4 border-t border-slate-200 dark:border-[#262b34] flex items-center justify-between">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 {selectedgravIds.length} জন নির্বাচিত
               </span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setLinkModalGuardian(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-[#1a202c] transition-colors cursor-pointer"
                 >
                   বাতিল
                 </button>
@@ -866,7 +866,7 @@ export default function AdminUsersPage() {
                   type="button"
                   disabled={savingLink || loadingLinkModal}
                   onClick={saveGuardianLinks}
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {savingLink ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
                 </button>
@@ -877,9 +877,9 @@ export default function AdminUsersPage() {
       )}
 
       {deleteTarget && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/55 px-4">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-start gap-3">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/60 backdrop-blur-xs px-4">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-start gap-3">
               <div className="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
@@ -897,7 +897,7 @@ export default function AdminUsersPage() {
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={Boolean(deletinggravId)}
-                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 dark:hover:bg-[#1a202c] transition-colors disabled:opacity-50 cursor-pointer"
               >
                 বাতিল
               </button>
@@ -905,7 +905,7 @@ export default function AdminUsersPage() {
                 type="button"
                 onClick={handleDeleteUser}
                 disabled={Boolean(deletinggravId)}
-                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {deletinggravId ? 'ডিলিট হচ্ছে...' : 'স্থায়ীভাবে ডিলিট'}
               </button>

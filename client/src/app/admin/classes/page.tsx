@@ -246,14 +246,14 @@ export default function AdminClassesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Clean, Sleek, Professional Top Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-slate-200/80 dark:border-slate-800/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-slate-200/80 dark:border-[#262b34]">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Academic Hierarchy
               </span>
@@ -266,14 +266,14 @@ export default function AdminClassesPage() {
           <div className="flex items-center gap-2.5 shrink-0">
             <Link
               href="/admin/courses"
-              className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-800 flex items-center gap-2 transition-colors shadow-2xs"
+              className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] flex items-center gap-2 transition-colors shadow-2xs"
             >
               <BookOpen className="w-4 h-4 text-slate-500" />
               <span>Courses</span>
             </Link>
             <Link
               href="/admin/classes/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Add Class</span>
@@ -303,11 +303,11 @@ export default function AdminClassesPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse" />
+              <div key={i} className="h-64 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] animate-pulse" />
             ))}
           </div>
         ) : classes.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl text-center py-16 px-4 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="bg-white dark:bg-[#111318] rounded-2xl text-center py-16 px-4 border border-slate-200 dark:border-[#262b34] shadow-xs">
             <GraduationCap className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-900 dark:text-white">কোনো শ্রেণি তৈরি করা হয়নি</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
@@ -315,7 +315,7 @@ export default function AdminClassesPage() {
             </p>
             <button
               onClick={handleOpenCreateClass}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               Add First Class
             </button>
@@ -325,37 +325,24 @@ export default function AdminClassesPage() {
             {classes.map((cls, idx) => {
               const classCourses = getCoursesForClass(cls.name);
 
-              // Vibrant modern accent themes for visual hierarchy
               const themeAccents = [
                 {
-                  accentBar: 'from-blue-600 to-indigo-600',
-                  badgeBg: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20',
-                  iconBg: 'bg-blue-600 text-white shadow-blue-500/30',
-                  tagBg: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-900/40',
+                  accentBar: 'from-orange-600 to-amber-600',
+                  badgeBg: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20',
+                  iconBg: 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-orange-950/30',
+                  tagBg: 'bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200/60 dark:border-orange-900/40',
                 },
                 {
-                  accentBar: 'from-purple-600 to-pink-600',
-                  badgeBg: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20',
-                  iconBg: 'bg-purple-600 text-white shadow-purple-500/30',
-                  tagBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200/60 dark:border-purple-900/40',
-                },
-                {
-                  accentBar: 'from-emerald-600 to-teal-600',
-                  badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
-                  iconBg: 'bg-emerald-600 text-white shadow-emerald-500/30',
-                  tagBg: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-900/40',
-                },
-                {
-                  accentBar: 'from-amber-500 to-orange-600',
+                  accentBar: 'from-amber-600 to-orange-600',
                   badgeBg: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
-                  iconBg: 'bg-amber-500 text-white shadow-amber-500/30',
+                  iconBg: 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-amber-950/30',
                   tagBg: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-900/40',
                 },
                 {
-                  accentBar: 'from-cyan-600 to-blue-600',
-                  badgeBg: 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/20',
-                  iconBg: 'bg-cyan-600 text-white shadow-cyan-500/30',
-                  tagBg: 'bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border-cyan-200/60 dark:border-cyan-900/40',
+                  accentBar: 'from-orange-500 to-orange-700',
+                  badgeBg: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20',
+                  iconBg: 'bg-gradient-to-r from-orange-500 to-orange-700 text-white shadow-orange-950/30',
+                  tagBg: 'bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border-orange-200/60 dark:border-orange-900/40',
                 },
               ];
               const theme = themeAccents[idx % themeAccents.length];
@@ -363,7 +350,7 @@ export default function AdminClassesPage() {
               return (
                 <div
                   key={cls._id}
-                  className="group relative bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between"
+                  className="group relative bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-orange-500/40 dark:hover:border-orange-500/40 transition-all duration-300 flex flex-col justify-between"
                 >
                   {/* Top colored gradient stripe */}
                   <div className={`h-1.5 w-full bg-gradient-to-r ${theme.accentBar}`} />
@@ -376,7 +363,7 @@ export default function AdminClassesPage() {
                           <GraduationCap className="w-5 h-5" />
                         </div>
                         <div>
-                          <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                             {cls.name}
                           </h3>
                         </div>
@@ -386,14 +373,14 @@ export default function AdminClassesPage() {
                       <div className="flex items-center gap-1 shrink-0">
                         <Link
                           href={`/admin/classes/${cls._id || cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/edit`}
-                          className="p-2 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
+                          className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-all"
                           title="Edit Class Details"
                         >
                           <Edit className="w-4 h-4" />
                         </Link>
                         <button
                           onClick={() => setDeleteConfirmClass(cls)}
-                          className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition-all"
+                          className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-[#151921] transition-all"
                           title="Delete Class (Safe Reassignment)"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -410,26 +397,26 @@ export default function AdminClassesPage() {
                     {/* Class Stats Summary */}
                     <div className="py-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                       <span>যুক্ত কোর্সসমূহ:</span>
-                      <span className="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                      <span className="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-[#151921] px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#262b34]">
                         {classCourses.length} Courses
                       </span>
                     </div>
                   </div>
 
                   {/* Card Bottom CTA */}
-                  <div className="px-6 py-4 bg-slate-50/70 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                  <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#151921]/50 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between text-xs">
                     <Link
                       href={`/classes/${cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                       target="_blank"
-                      className="font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1.5 transition-colors"
+                      className="font-bold text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 flex items-center gap-1.5 transition-colors"
                       title="ওয়েবসাইটের লাইভ ডেডিকেটেড পেজটি দেখুন"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                      <Sparkles className="w-3.5 h-3.5 text-orange-500" />
                       <span>লাইভ পেজ</span>
                     </Link>
                     <Link
                       href={`/admin/courses?grade=${encodeURIComponent(cls.name)}`}
-                      className="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+                      className="font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors"
                     >
                       <span>কোর্সগুলো দেখুন ({classCourses.length})</span>
                       <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
@@ -444,11 +431,11 @@ export default function AdminClassesPage() {
         {/* CLASS CREATE / EDIT MODAL */}
         {showClassModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 dark:border-[#262b34] shadow-2xl relative max-h-[90vh] overflow-y-auto">
               
-              <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-orange-600" />
                   <h3 className="text-lg font-black text-slate-900 dark:text-white">
                     {editingClass ? `Edit Class: ${editingClass.name}` : 'Add New Academic Class'}
                   </h3>
@@ -474,17 +461,17 @@ export default function AdminClassesPage() {
                     value={classNameInput}
                     onChange={(e) => setClassNameInput(e.target.value)}
                     placeholder="e.g. Class 10, Class 9, HSC 2026, Admission"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                   />
                   {editingClass && (
                     <div className="flex items-center justify-between mt-1.5">
-                      <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium">
+                      <p className="text-[11px] text-orange-600 dark:text-orange-400 font-medium">
                         নাম পরিবর্তন করলে এই ক্লাসের অন্তর্ভুক্ত সব কোর্সে স্বয়ংক্রিয়ভাবে আপডেট হবে।
                       </p>
                       <Link
                         href={`/classes/${editingClass.slug || editingClass.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                         target="_blank"
-                        className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
+                        className="text-[11px] font-bold text-orange-600 dark:text-orange-400 hover:underline inline-flex items-center gap-1"
                       >
                         <span>লাইভ পেজ দেখুন</span>
                         <ArrowLeft className="w-3 h-3 rotate-180" />
@@ -503,7 +490,7 @@ export default function AdminClassesPage() {
                     value={classSubtitleInput}
                     onChange={(e) => setClassSubtitleInput(e.target.value)}
                     placeholder="e.g. ১০ম শ্রেণির এসএসসি গোল্ডেন এ+ টার্গেট প্রোগ্রাম"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -517,7 +504,7 @@ export default function AdminClassesPage() {
                     value={classOrderInput}
                     onChange={(e) => setClassOrderInput(Number(e.target.value))}
                     placeholder="1, 2, 3..."
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -531,7 +518,7 @@ export default function AdminClassesPage() {
                     value={classDescInput}
                     onChange={(e) => setClassDescInput(e.target.value)}
                     placeholder="e.g. টেস্ট পরীক্ষা ও বোর্ড পরীক্ষায় শতভাগ সফলতার জন্য টেস্ট পেপার সলভ ও মডেল টেস্ট।"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -546,7 +533,7 @@ export default function AdminClassesPage() {
                     value={classHighlightsInput}
                     onChange={(e) => setClassHighlightsInput(e.target.value)}
                     placeholder="অধ্যায়ভিত্তিক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস&#10;স্ট্যান্ডার্ড লেকচার শিট ও নোটস&#10;সাপ্তাহিক মডেল টেস্ট"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono"
                   />
                 </div>
 
@@ -561,7 +548,7 @@ export default function AdminClassesPage() {
                     value={classFeaturesInput}
                     onChange={(e) => setClassFeaturesInput(e.target.value)}
                     placeholder="লাইভ ক্লাস | অভিজ্ঞ শিক্ষকদের সাথে সরাসরি প্রশ্নোত্তর&#10;ডিজিটাল নোটস | প্রতিটি অধ্যায়ের গোছানো পিডিএফ"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono"
                   />
                 </div>
 
@@ -576,23 +563,23 @@ export default function AdminClassesPage() {
                     value={classFaqsInput}
                     onChange={(e) => setClassFaqsInput(e.target.value)}
                     placeholder="ক্লাস কীভাবে হবে? | গুগল মিটের মাধ্যমে লাইভে হবে।&#10;রেকর্ডিং থাকবে কি? | হ্যাঁ ক্লাসরুমে থাকবে।"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono"
                   />
                 </div>
 
                 {/* Submit Actions */}
-                <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-slate-800">
+                <div className="pt-4 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setShowClassModal(false)}
-                    className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingClass}
-                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50"
                   >
                     {submittingClass ? 'Saving...' : editingClass ? 'Save Changes' : 'Create Class'}
                   </button>
@@ -605,7 +592,7 @@ export default function AdminClassesPage() {
         {/* DELETE CONFIRMATION MODAL */}
         {deleteConfirmClass && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-[#262b34] shadow-2xl">
               <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4">
                 <Trash2 className="w-6 h-6" />
               </div>
@@ -620,7 +607,7 @@ export default function AdminClassesPage() {
                 <button
                   type="button"
                   onClick={() => setDeleteConfirmClass(null)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921]"
                 >
                   Cancel
                 </button>

@@ -183,12 +183,12 @@ export default function StudentAssignmentSubmitPage({
   const mySub = assignment?.mySubmission;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
       {/* Shared classroom header */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-lg shadow-orange-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-orange-900/15 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
@@ -199,7 +199,7 @@ export default function StudentAssignmentSubmitPage({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-center gap-3 pt-1 min-w-0">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-                <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
+                <UploadCloud className="w-6 h-6 sm:w-7 sm:h-7 text-orange-400" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
@@ -217,7 +217,7 @@ export default function StudentAssignmentSubmitPage({
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm font-semibold text-slate-500">অ্যাসাইনমেন্টের তথ্য লোড হচ্ছে...</p>
           </div>
         ) : error || !assignment ? (
@@ -299,7 +299,7 @@ export default function StudentAssignmentSubmitPage({
               )}
 
               {/* Submission Form Card */}
-              <div className="lg:bg-white lg:dark:bg-slate-900 lg:rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-slate-800 lg:p-7 lg:shadow-sm">
+              <div className="lg:bg-white lg:dark:bg-[#111318] lg:rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-[#262b34] lg:p-7 lg:shadow-sm">
                 <h2 className="text-base font-bold text-slate-900 dark:text-white mb-1">
                   আপনার উত্তর
                 </h2>
@@ -336,19 +336,19 @@ export default function StudentAssignmentSubmitPage({
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       খাতা বা ফাইল সংযুক্ত করুন
                     </label>
-                    <div className="min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                    <div className="min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
                       <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input
                           type="file"
                           onChange={(event) => handleSelectedFileChange(event.target.files?.[0] || null)}
                           disabled={submittingWork}
-                          className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
+                          className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700 cursor-pointer"
                         />
                       </div>
 
                       {selectedFile ? (
-                        <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800/60 text-xs">
-                          <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
+                        <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-[#111318] border border-orange-200 dark:border-orange-800/60 text-xs">
+                          <span className="flex min-w-0 items-center gap-2 text-orange-600 dark:text-orange-400 font-bold">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             <span className="truncate">সিলেক্টেড ফাইল: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
                           </span>
@@ -361,7 +361,7 @@ export default function StudentAssignmentSubmitPage({
                           </button>
                         </div>
                       ) : existingFileUrl ? (
-                        <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs">
+                        <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-xs">
                           <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             <span className="truncate">আগে জমা দেওয়া ফাইল: {existingFileName || 'ডকুমেন্ট ফাইল'}</span>
@@ -377,7 +377,7 @@ export default function StudentAssignmentSubmitPage({
                                   fileName: existingFileName || 'ডকুমেন্ট ফাইল',
                                 })
                               }
-                              className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold shrink-0 cursor-pointer"
+                              className="text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1 font-semibold shrink-0 cursor-pointer"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               <span>প্রিভিউ দেখুন</span>
@@ -406,20 +406,20 @@ export default function StudentAssignmentSubmitPage({
                   <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
                     <Link
                       href={`/classroom/${batchId}/assignments`}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold text-center"
+                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222d] text-slate-700 dark:text-slate-300 text-xs font-bold text-center"
                     >
                       ফিরে যান
                     </Link>
                     {mySub?.isEvaluated ? (
-                      <div className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-bold flex items-center gap-2 cursor-not-allowed border border-slate-200 dark:border-slate-700">
-                        <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                      <div className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-400 dark:text-slate-500 text-xs font-bold flex items-center gap-2 cursor-not-allowed border border-slate-200 dark:border-[#262b34]">
+                        <CheckCircle2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                         <span>মূল্যায়ন সম্পন্ন (সাবমিশন লক করা)</span>
                       </div>
                     ) : (
                       <button
                         type="submit"
                         disabled={submittingWork || (isOverdue && !assignment.allowLateSubmission && !mySub)}
-                        className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
                         {submittingWork ? (
                           <>
@@ -441,28 +441,28 @@ export default function StudentAssignmentSubmitPage({
 
             {/* Right 1 Col: Assignment Meta & Guidelines */}
             <div className="space-y-5">
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 shadow-xs space-y-4">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Info className="w-4 h-4 text-blue-500" />
+                  <Info className="w-4 h-4 text-orange-500" />
                   <span>অ্যাসাইনমেন্টের বিবরণ</span>
                 </h3>
 
                 <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#262b34]">
                     <span className="flex items-center gap-1.5 text-slate-500">
-                      <Award className="w-3.5 h-3.5 text-purple-500" /> মোট নম্বর:
+                      <Award className="w-3.5 h-3.5 text-orange-500" /> মোট নম্বর:
                     </span>
                     <span className="font-bold text-slate-900 dark:text-white">{assignment.totalMarks}</span>
                   </div>
 
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#262b34]">
                     <span className="flex items-center gap-1.5 text-slate-500">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> পাস নম্বর:
                     </span>
                     <span className="font-bold text-slate-900 dark:text-white">{assignment.passMarks}</span>
                   </div>
 
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#262b34]">
                     <span className="flex items-center gap-1.5 text-slate-500">
                       <Calendar className="w-3.5 h-3.5 text-amber-500" /> শেষ সময়:
                     </span>
@@ -495,7 +495,7 @@ export default function StudentAssignmentSubmitPage({
 
                 {/* Question attachment file if teacher provided */}
                 {assignment.attachmentUrl && (
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="pt-3 border-t border-slate-100 dark:border-[#262b34]">
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       শিক্ষকের প্রশ্নপত্র / ফাইল:
                     </label>
@@ -509,7 +509,7 @@ export default function StudentAssignmentSubmitPage({
                           fileName: 'প্রশ্নপত্র / এটাচমেন্ট',
                         })
                       }
-                      className="w-full flex items-center justify-between p-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/50 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold transition-colors cursor-pointer"
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/50 dark:hover:bg-orange-900/50 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 text-xs font-bold transition-colors cursor-pointer"
                     >
                       <span className="flex items-center gap-2 truncate">
                         <File className="w-4 h-4 shrink-0" />
@@ -523,7 +523,7 @@ export default function StudentAssignmentSubmitPage({
 
               {/* Instructions rendering */}
               {assignment.description && (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
+                <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 shadow-xs">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                     শিক্ষকের নির্দেশনাবলী
                   </h3>

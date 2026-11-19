@@ -133,27 +133,27 @@ function AdminCoursesContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              <BookOpen className="w-7 h-7 text-blue-600 dark:text-blue-400" /> Course Management
+              <BookOpen className="w-7 h-7 text-orange-600 dark:text-orange-400" /> Course Management
             </h1>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
             <Link
               href="/admin/classes"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-800 shadow-2xs transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
             >
-              <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" /> Manage Classes
+              <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" /> Manage Classes
             </Link>
             <Link
               href="/admin/courses/new"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold shadow-xs transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:from-orange-800 active:to-orange-900 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               <PlusCircle className="w-4 h-4" /> Add New Course
             </Link>
@@ -178,7 +178,7 @@ function AdminCoursesContent() {
         )}
 
         {/* Filter / Search Bar */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+        <div className="bg-white dark:bg-[#111318] rounded-2xl p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4 border border-slate-200 dark:border-[#262b34] shadow-xs">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -188,14 +188,14 @@ function AdminCoursesContent() {
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && fetchCourses()}
                 placeholder="Search courses..."
-                className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl pl-9.5 pr-3.5 py-2.5 w-64 focus:outline-none focus:border-blue-500"
+                className="bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl pl-9.5 pr-3.5 py-2.5 w-64 focus:outline-none focus:border-orange-500"
               />
             </div>
 
             <select
               value={selectedGrade}
               onChange={(e) => setSelectedGrade(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer"
+              className="bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs font-medium rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer"
             >
               <option value="all">All Class Levels</option>
               {gradeOptions.map((g) => (
@@ -208,12 +208,12 @@ function AdminCoursesContent() {
             <button
               type="button"
               onClick={fetchCourses}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors border border-transparent dark:border-[#262b34]"
             >
               Filter
             </button>
             {selectedGrade !== 'all' && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 text-xs font-bold">
                 <span>Class: {selectedGrade}</span>
                 <button
                   type="button"
@@ -236,11 +236,11 @@ function AdminCoursesContent() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 animate-pulse" />
+              <div key={i} className="h-56 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] animate-pulse" />
             ))}
           </div>
         ) : courses.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl text-center py-16 px-4 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+          <div className="bg-white dark:bg-[#111318] rounded-2xl text-center py-16 px-4 border border-slate-200 dark:border-[#262b34] shadow-xs">
             <BookOpen className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-900 dark:text-white">No courses created yet</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
@@ -248,7 +248,7 @@ function AdminCoursesContent() {
             </p>
             <Link
               href="/admin/courses/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               <PlusCircle className="w-4 h-4" /> Add Course
             </Link>
@@ -256,37 +256,24 @@ function AdminCoursesContent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {courses.map((course, idx) => {
-              // Curated glowing gradients with refined hues
               const cardThemes = [
                 {
-                  gradient: 'from-blue-600 via-indigo-600 to-violet-800',
-                  accent: 'blue',
-                  tagBg: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/20',
-                  glow: 'group-hover:shadow-blue-500/10',
+                  gradient: 'from-orange-600 via-amber-600 to-orange-700',
+                  accent: 'orange',
+                  tagBg: 'bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/20',
+                  glow: 'group-hover:shadow-orange-950/20',
                 },
                 {
-                  gradient: 'from-violet-600 via-purple-600 to-fuchsia-700',
-                  accent: 'purple',
-                  tagBg: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/20',
-                  glow: 'group-hover:shadow-purple-500/10',
-                },
-                {
-                  gradient: 'from-emerald-600 via-teal-600 to-cyan-800',
-                  accent: 'emerald',
-                  tagBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-                  glow: 'group-hover:shadow-emerald-500/10',
-                },
-                {
-                  gradient: 'from-amber-500 via-orange-600 to-rose-600',
+                  gradient: 'from-amber-600 via-orange-600 to-amber-700',
                   accent: 'amber',
                   tagBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/20',
-                  glow: 'group-hover:shadow-amber-500/10',
+                  glow: 'group-hover:shadow-orange-950/20',
                 },
                 {
-                  gradient: 'from-cyan-600 via-sky-600 to-indigo-700',
-                  accent: 'sky',
-                  tagBg: 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/20',
-                  glow: 'group-hover:shadow-sky-500/10',
+                  gradient: 'from-orange-500 via-rose-600 to-orange-700',
+                  accent: 'rose',
+                  tagBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20',
+                  glow: 'group-hover:shadow-orange-950/20',
                 },
               ];
               const theme = cardThemes[idx % cardThemes.length];
@@ -294,7 +281,7 @@ function AdminCoursesContent() {
               return (
                 <div
                   key={course._id}
-                  className={`group relative bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs hover:shadow-2xl ${theme.glow} hover:-translate-y-1 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between overflow-hidden backdrop-blur-xs`}
+                  className={`group relative bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-xs hover:shadow-2xl ${theme.glow} hover:-translate-y-1 hover:border-orange-500/40 dark:hover:border-orange-500/40 transition-all duration-300 flex flex-col justify-between overflow-hidden backdrop-blur-xs`}
                 >
                   {/* Subtle Top Accent Ambient Line */}
                   <div className={`h-1 w-full bg-gradient-to-r ${theme.gradient} opacity-90`} />
@@ -331,7 +318,7 @@ function AdminCoursesContent() {
                       {/* Floating Header Badges */}
                       <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10 pointer-events-none">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-950/75 backdrop-blur-md text-white text-[11px] font-black tracking-wide border border-white/15 shadow-md">
-                          <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
+                          <GraduationCap className="w-3.5 h-3.5 text-orange-400" />
                           {course.gradeLevel}
                         </span>
 
@@ -351,7 +338,7 @@ function AdminCoursesContent() {
                     {/* Card Content Body */}
                     <div className="p-5 flex flex-col flex-1">
                       <div className="flex-1">
-                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-4">
+                        <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2 mb-4">
                           {course.title}
                         </h3>
                       </div>
@@ -369,7 +356,7 @@ function AdminCoursesContent() {
                         const hasDiscount = typeof discount === 'number' && discount > 0 && regular > discount;
 
                         return (
-                          <div className="grid grid-cols-3 divide-x divide-slate-200/70 dark:divide-slate-800/80 bg-slate-50 dark:bg-slate-950/60 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800/80 mb-1">
+                          <div className="grid grid-cols-3 divide-x divide-slate-200/70 dark:divide-[#262b34] bg-slate-50 dark:bg-[#151921]/60 p-2.5 rounded-2xl border border-slate-100 dark:border-[#262b34] mb-1">
                             {/* Course Fee */}
                             <div className="px-2 min-w-0">
                               <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight mb-0.5">কোর্স ফি</span>
@@ -404,11 +391,11 @@ function AdminCoursesContent() {
                             {/* Batches */}
                             <Link
                               href={`/admin/batches?courseId=${course._id}`}
-                              className="group/batch block px-2 min-w-0 rounded-xl hover:bg-white dark:hover:bg-slate-900/80 transition-colors"
+                              className="group/batch block px-2 min-w-0 rounded-xl hover:bg-white dark:hover:bg-[#151921] transition-colors"
                               title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
                             >
                               <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight mb-0.5">মোট ব্যাচ</span>
-                              <span className="text-xs font-black text-purple-600 dark:text-purple-400 group-hover/batch:underline truncate block">
+                              <span className="text-xs font-black text-orange-600 dark:text-orange-400 group-hover/batch:underline truncate block">
                                 {batchCount} টি ব্যাচ
                               </span>
                             </Link>
@@ -419,21 +406,21 @@ function AdminCoursesContent() {
                   </div>
 
                   {/* Card Action Footer */}
-                  <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
+                  <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-[#151921]/50 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between gap-3">
                     <Link
                       href={`/courses/${course.slug || course._id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/90 dark:border-slate-700/80 transition-all shadow-2xs hover:shadow-xs group/btn"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] transition-all shadow-2xs hover:shadow-xs group/btn"
                     >
                       <span>ভিউ পেজ</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-blue-500 transition-colors" />
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-orange-500 transition-colors" />
                     </Link>
 
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/admin/courses/${course._id}/edit`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/50 dark:hover:bg-orange-900/50 text-orange-700 dark:text-orange-300 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60 transition-colors"
                         title="Edit Course Details"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -462,9 +449,9 @@ export default function AdminCoursesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 p-6 sm:p-10 flex items-center justify-center">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] p-6 sm:p-10 flex items-center justify-center">
           <div className="text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+            <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্স লোড হচ্ছে...</p>
           </div>
         </div>

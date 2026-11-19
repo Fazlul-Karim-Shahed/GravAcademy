@@ -225,23 +225,23 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center py-20 text-slate-500 text-sm">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center py-20 text-slate-500 text-sm">
         তথ্য লোড করা হচ্ছে...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200/80 dark:border-[#262b34]">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Link
                 href="/admin/jobs"
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> জব সার্কুলার তালিকা
               </Link>
@@ -251,7 +251,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-amber-500 text-white shadow-md shadow-amber-500/20">
+              <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-500 text-white shadow-md shadow-orange-950/20">
                 <Briefcase className="w-6 h-6" />
               </span>
               {isEditing ? 'জব সার্কুলার সম্পাদনা করুন' : 'নতুন জব সার্কুলার পোস্ট করুন'}
@@ -262,9 +262,9 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
             <Link
               href={`/jobs/${savedSlug}`}
               target="_blank"
-              className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors flex items-center gap-1.5"
             >
-              <ExternalLink className="w-4 h-4 text-blue-500" /> প্রিভিউ পেজ দেখুন
+              <ExternalLink className="w-4 h-4 text-orange-500" /> প্রিভিউ পেজ দেখুন
             </Link>
           )}
         </div>
@@ -287,9 +287,9 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
         <form onSubmit={handleSubmit} className="space-y-8">
           
           {/* SECTION 1: PRIMARY INFO */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <Building className="w-5 h-5 text-blue-500" /> ১. সার্কুলার ও প্রতিষ্ঠানের প্রাথমিক তথ্য
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-6">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-[#262b34]">
+              <Building className="w-5 h-5 text-orange-500" /> ১. সার্কুলার ও প্রতিষ্ঠানের প্রাথমিক তথ্য
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -305,7 +305,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="যেমন: বাংলাদেশ রেলওয়ে নিয়োগ বিজ্ঞপ্তি ২০২৬"
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
                 />
               </div>
 
@@ -320,7 +320,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   onChange={(e) => setOrganizationName(e.target.value)}
                   placeholder="যেমন: বাংলাদেশ রেলওয়ে / বাংলাদেশ ব্যাংক"
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -328,14 +328,14 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
                   <span>চাকরির ক্যাটাগরি / সেক্টর <span className="text-rose-500">*</span></span>
-                  <Link href="/admin/jobs" className="text-blue-600 dark:text-blue-400 text-2xs hover:underline font-normal">
+                  <Link href="/admin/jobs" className="text-orange-600 dark:text-orange-400 text-2xs hover:underline font-normal">
                     ক্যাটাগরি ম্যানেজ করুন
                   </Link>
                 </label>
                 <select
                   value={sector}
                   onChange={(e) => setSector(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
                 >
                   {categories.map((c) => (
                     <option key={c._id} value={c.slug}>
@@ -359,7 +359,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   onChange={(e) => setPostName(e.target.value)}
                   placeholder="যেমন: সহকারী স্টেশন মাস্টার, পয়েন্টসম্যান"
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -373,7 +373,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={vacancyCount}
                   onChange={(e) => setVacancyCount(e.target.value)}
                   placeholder="যেমন: ৫৬৩ জন / উল্লেখ নেই"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -387,7 +387,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="যেমন: মন্ত্রণালয়, প্রকৌশল, শিক্ষা, ইত্যাদি"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -401,17 +401,16 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={officialWebsite}
                   onChange={(e) => setOfficialWebsite(e.target.value)}
                   placeholder="http://railway.teletalk.com.bd"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
-
             </div>
           </div>
 
           {/* SECTION 2: REQUIREMENTS & SALARY */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <GraduationCap className="w-5 h-5 text-indigo-500" /> ২. যোগ্যতা, বেতন ও আবেদনের শর্তাবলী
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-6">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-[#262b34]">
+              <GraduationCap className="w-5 h-5 text-orange-500" /> ২. যোগ্যতা, বেতন ও আবেদনের শর্তাবলী
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -426,7 +425,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={educationalQualification}
                   onChange={(e) => setEducationalQualification(e.target.value)}
                   placeholder="যেমন: এসএসসি / এইচএসসি / যেকোনো বিষয়ে স্নাতক"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -440,7 +439,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={salaryScale}
                   onChange={(e) => setSalaryScale(e.target.value)}
                   placeholder="যেমন: গ্রেড-১৫ (৯,৭০০ - ২৩,৪৯০/- টাকা)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -454,7 +453,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={ageLimit}
                   onChange={(e) => setAgeLimit(e.target.value)}
                   placeholder="যেমন: ১৮ হতে ৩০ বছর (কোটাধারীদের ৩২ বছর)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -468,7 +467,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={applicationFee}
                   onChange={(e) => setApplicationFee(e.target.value)}
                   placeholder="যেমন: ২২৩/- টাকা (টেলিটক এসএমএস এর মাধ্যমে)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -482,7 +481,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={experienceRequired}
                   onChange={(e) => setExperienceRequired(e.target.value)}
                   placeholder="যেমন: প্রযোজ্য নয় / ১ বছরের কম্পিউটার টাইপিং"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -496,7 +495,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={sourceOrNewspaper}
                   onChange={(e) => setSourceOrNewspaper(e.target.value)}
                   placeholder="যেমন: দৈনিক ইত্তেফাক, অফিসিয়াল নোটিশ"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -504,9 +503,9 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
           </div>
 
           {/* SECTION 3: IMPORTANT DATES & MEDIA */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <Calendar className="w-5 h-5 text-emerald-500" /> ৩. গুরুত্বপূর্ণ তারিখ ও সার্কুলার ইমেজ / ফাইল
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-6">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-[#262b34]">
+              <Calendar className="w-5 h-5 text-orange-500" /> ৩. গুরুত্বপূর্ণ তারিখ ও সার্কুলার ইমেজ / ফাইল
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -519,7 +518,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   type="date"
                   value={publishDate}
                   onChange={(e) => setPublishDate(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -532,7 +531,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   type="date"
                   value={applicationStartDate}
                   onChange={(e) => setApplicationStartDate(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -546,7 +545,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={applicationDeadline}
                   onChange={(e) => setApplicationDeadline(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold"
                 />
               </div>
 
@@ -562,7 +561,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                     value={circularImageUrl}
                     onChange={(e) => setCircularImageUrl(e.target.value)}
                     placeholder="https://example.com/circular.jpg"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -577,7 +576,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   value={circularPdfUrl}
                   onChange={(e) => setCircularPdfUrl(e.target.value)}
                   placeholder="https://example.com/circular.pdf"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
@@ -585,10 +584,10 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
           </div>
 
           {/* SECTION 4: FULL DESCRIPTION (RICH TEXT EDITOR) */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#262b34]">
               <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-500" /> ৪. সার্কুলারের বিস্তারিত বিবরণ (Rich Text Editor)
+                <FileText className="w-5 h-5 text-orange-500" /> ৪. সার্কুলারের বিস্তারিত বিবরণ (Rich Text Editor)
               </h2>
               <span className="text-xs text-slate-400">ফরম্যাটেড টেক্সট, টেবিল ও লিস্ট সাপোর্ট করে</span>
             </div>
@@ -602,7 +601,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                 value={shortDescription}
                 onChange={(e) => setShortDescription(e.target.value)}
                 placeholder="বিজ্ঞপ্তি সম্পর্কে এক বা দুই লাইনের হাইলাইট যা কার্ডে প্রদর্শিত হবে..."
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
@@ -620,11 +619,11 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
           </div>
 
           {/* SECTION 5: DYNAMIC CUSTOM FIELDS */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#262b34]">
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-500" /> ৫. কাস্টম ইনপুট ফিল্ড (Custom Dynamic Sections)
+                  <Sparkles className="w-5 h-5 text-orange-500" /> ৫. কাস্টম ইনপুট ফিল্ড (Custom Dynamic Sections)
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   বিভিন্ন সার্কুলারের বিশেষ কোনো হেডিং বা কাস্টম তথ্যের জন্য ইচ্ছামতো ফিল্ড যোগ করুন।
@@ -633,14 +632,14 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               <button
                 type="button"
                 onClick={handleAddCustomField}
-                className="px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-200 dark:border-amber-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-3.5 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-xs font-bold border border-orange-500/20 flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Plus className="w-4 h-4" /> কাস্টম ফিল্ড যোগ করুন
               </button>
             </div>
 
             {customFields.length === 0 ? (
-              <div className="py-6 text-center text-xs text-slate-400 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+              <div className="py-6 text-center text-xs text-slate-400 bg-slate-50 dark:bg-[#151921]/40 rounded-2xl border border-dashed border-slate-200 dark:border-[#262b34]">
                 এখনো কোনো কাস্টম ফিল্ড যোগ করা হয়নি। যেমন: &quot;পরীক্ষার মানবন্টন&quot;, &quot;যেসব জেলার প্রার্থীরা আবেদন করতে পারবেন&quot; ইত্যাদি যোগ করতে পারেন।
               </div>
             ) : (
@@ -648,7 +647,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                 {customFields.map((field, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3"
+                    className="p-4 rounded-2xl bg-slate-50/70 dark:bg-[#151921]/50 border border-slate-200 dark:border-[#262b34] space-y-3"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex-1">
@@ -660,7 +659,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                           value={field.label}
                           onChange={(e) => handleUpdateCustomField(idx, 'label', e.target.value)}
                           placeholder="যেমন: পরীক্ষার মানবণ্টন / প্রয়োজনীয় কাগজপত্র"
-                          className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
                         />
                       </div>
                       <button
@@ -682,7 +681,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                         value={field.value}
                         onChange={(e) => handleUpdateCustomField(idx, 'value', e.target.value)}
                         placeholder="এখানে এই হেডলাইনের বিস্তারিত বিবরণ লিখুন..."
-                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
                       />
                     </div>
                   </div>
@@ -692,7 +691,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
           </div>
 
           {/* SECTION 6: PUBLISHING STATUS */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -701,7 +700,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
-                  className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="published">সবার জন্য প্রকাশ করুন (Published)</option>
                   <option value="draft">ড্রাফট রাখুন (Draft)</option>
@@ -715,7 +714,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   id="featured-checkbox"
                   checked={featured}
                   onChange={(e) => setFeatured(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded-md border-slate-300 focus:ring-blue-500"
+                  className="w-4 h-4 text-orange-600 rounded-md border-slate-300 dark:border-[#262b34] focus:ring-orange-500"
                 />
                 <label htmlFor="featured-checkbox" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
                   ফিচার্ড সার্কুলার হিসেবে হাইলাইট করুন
@@ -726,14 +725,14 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <Link
                 href="/admin/jobs"
-                className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-center w-full sm:w-auto"
+                className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors text-center w-full sm:w-auto"
               >
                 বাতিল করুন
               </Link>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold shadow-md flex items-center justify-center gap-2 transition-all disabled:opacity-60 cursor-pointer w-full sm:w-auto"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-extrabold shadow-md shadow-orange-950/25 flex items-center justify-center gap-2 transition-all disabled:opacity-60 cursor-pointer w-full sm:w-auto"
               >
                 <Save className="w-4 h-4" />
                 {submitting ? 'সংরক্ষণ করা হচ্ছে...' : isEditing ? 'আপডেট সম্পন্ন করুন' : 'সার্কুলার প্রকাশ করুন'}

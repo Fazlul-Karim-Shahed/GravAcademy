@@ -440,9 +440,9 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কারিকুলাম ও লেসন লোড হচ্ছে...</p>
         </div>
       </div>
@@ -452,25 +452,25 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
   if (!hierarchy) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 mb-6">
           <Link
             href={user?.role === 'teacher' ? '/teacher' : '/admin/batches'}
-            className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="flex items-center gap-1.5 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> {user?.role === 'teacher' ? 'শিক্ষক প্যানেলে ফিরে যান' : 'Back to Batches'}
           </Link>
           <span>/</span>
           <span className="text-slate-900 dark:text-slate-200 font-semibold">{hierarchy.batch.name}</span>
           <span>/</span>
-          <span className="text-blue-600 dark:text-blue-400">Curriculum</span>
+          <span className="text-orange-600 dark:text-orange-400 font-semibold">Curriculum</span>
         </div>
 
         {/* Fresh Hero Header Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs mb-8">
+        <div className="bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] rounded-2xl p-6 sm:p-8 shadow-xs mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
 
@@ -482,7 +482,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                 <span className="font-semibold text-slate-900 dark:text-white">
                   {hierarchy.batch.courseId?.title}
                 </span>{' '}
-                <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 ml-1.5 font-medium">
+                <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 ml-1.5 font-medium border border-transparent dark:border-[#262b34]">
                   {hierarchy.batch.courseId?.gradeLevel}
                 </span>
               </p>
@@ -493,14 +493,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
               <Link
                 href={`/learn/${hierarchy.batch._id}`}
                 target="_blank"
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222c] text-slate-800 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-[#262b34] transition-colors shadow-2xs"
               >
                 <Eye className="w-4 h-4 text-slate-500 dark:text-slate-400" /> Preview Room
               </Link>
               <button
                 type="button"
                 onClick={() => setModuleModal(true)}
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold transition-colors shadow-xs"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
               >
                 <Plus className="w-4 h-4" /> Add Module
               </button>
@@ -508,9 +508,9 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-[#262b34]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
@@ -520,7 +520,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
@@ -530,7 +530,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                 <FileVideo className="w-5 h-5" />
               </div>
               <div>
@@ -569,8 +569,8 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
         {/* Empty State */}
         {hierarchy.modules.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl text-center py-16 px-6">
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-[#111318] border border-dashed border-slate-300 dark:border-[#262b34] rounded-2xl text-center py-16 px-6">
+            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-[#151921] text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto mb-4">
               <Layers className="w-7 h-7" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Curriculum is currently empty</h3>
@@ -580,7 +580,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             <button
               type="button"
               onClick={() => setModuleModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               <Plus className="w-4 h-4" /> Create First Module
             </button>
@@ -594,12 +594,12 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
               return (
                 <div
                   key={mod._id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all overflow-hidden"
+                  className="bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] rounded-2xl shadow-xs hover:border-orange-500/30 dark:hover:border-orange-500/30 transition-all overflow-hidden"
                 >
                   {/* Module Header Bar */}
-                  <div className="p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-900/90 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="p-5 sm:p-6 bg-slate-50/70 dark:bg-[#151921]/90 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5">
-                      <span className="w-9 h-9 rounded-xl bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center shadow-2xs" title="Module">
+                      <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-600 to-orange-700 text-white flex items-center justify-center shadow-sm" title="Module">
                         <Layers className="w-4 h-4" />
                       </span>
                       <div>
@@ -611,7 +611,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                           <button
                             type="button"
                             onClick={() => setEditModuleModal({ open: true, id: mod._id, title: mod.title })}
-                            className="p-1 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-colors"
+                            className="p-1 rounded-md text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
                             title="Edit Module Title"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -628,7 +628,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                       <button
                         type="button"
                         onClick={() => setSectionModal({ open: true, moduleId: mod._id, moduleTitle: mod.title })}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
                       >
                         <FolderPlus className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                         <span>Section</span>
@@ -636,7 +636,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
                       <Link
                         href={`/admin/batches/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&parent=${encodeURIComponent(mod.title)}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-200/80 dark:border-blue-700/40 shadow-2xs transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-orange-700 dark:text-orange-300 text-xs font-semibold border border-orange-200/80 dark:border-orange-800/50 shadow-2xs transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Lesson</span>
@@ -664,7 +664,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                           {mod.directLessons.map((lesson) => (
                             <div
                               key={lesson._id}
-                              className="group flex items-center justify-between p-3.5 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500/50 transition-all shadow-2xs"
+                              className="group flex items-center justify-between p-3.5 rounded-xl bg-white dark:bg-[#151921]/80 border border-slate-200 dark:border-[#262b34] hover:border-orange-500/40 dark:hover:border-orange-500/50 transition-all shadow-2xs"
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -677,7 +677,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                     </h4>
                                     <Link
                                       href={`/admin/batches/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
-                                      className="opacity-60 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                                      className="opacity-60 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-all"
                                       title="Edit Lesson"
                                     >
                                       <Pencil className="w-3 h-3" />
@@ -720,12 +720,12 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                         {mod.sections.map((sec) => (
                           <div
                             key={sec._id}
-                            className="bg-slate-50/60 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800/80 rounded-xl p-4 transition-colors"
+                            className="bg-slate-50/60 dark:bg-[#151921]/50 border border-slate-200 dark:border-[#262b34]/80 rounded-xl p-4 transition-colors"
                           >
                             {/* Section Header */}
-                            <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-slate-200/60 dark:border-slate-800/60">
+                            <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-slate-200/60 dark:border-[#262b34]/60">
                               <div className="flex items-center gap-2">
-                                <span className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0" title="Section">
+                                <span className="w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0" title="Section">
                                   <BookOpen className="w-3.5 h-3.5" />
                                 </span>
                                 <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
@@ -734,7 +734,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                 <button
                                   type="button"
                                   onClick={() => setEditSectionModal({ open: true, id: sec._id, title: sec.title })}
-                                  className="p-1 rounded text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                  className="p-1 rounded text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                                   title="Edit Section Title"
                                 >
                                   <Pencil className="w-3 h-3" />
@@ -747,7 +747,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                               <div className="flex items-center gap-2">
                                 <Link
                                   href={`/admin/batches/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&sectionId=${sec._id}&parent=${encodeURIComponent(`${mod.title} → ${sec.title}`)}`}
-                                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                                  className="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
                                 >
                                   <Plus className="w-3.5 h-3.5" /> Add Lesson
                                 </Link>
@@ -768,7 +768,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                 {sec.lessons.map((lesson) => (
                                   <div
                                     key={lesson._id}
-                                    className="group flex items-center justify-between p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-2xs"
+                                    className="group flex items-center justify-between p-3 rounded-lg bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 transition-all shadow-2xs"
                                   >
                                     <div className="flex items-center gap-2.5">
                                       <div className="w-7 h-7 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -781,7 +781,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                           </p>
                                           <Link
                                             href={`/admin/batches/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
-                                            className="opacity-50 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                                            className="opacity-50 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-all"
                                             title="Edit Lesson"
                                           >
                                             <Pencil className="w-3 h-3" />
@@ -821,7 +821,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     {/* Zero Lessons/Sections placeholder inside module */}
                     {(!mod.directLessons || mod.directLessons.length === 0) &&
                       (!mod.sections || mod.sections.length === 0) && (
-                        <div className="text-center py-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                        <div className="text-center py-6 border border-dashed border-slate-200 dark:border-[#262b34] rounded-xl">
                           <p className="text-xs text-slate-500 dark:text-slate-400">
                             This module has no sections or direct lessons yet.
                           </p>
@@ -829,7 +829,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                             <button
                               type="button"
                               onClick={() => setSectionModal({ open: true, moduleId: mod._id, moduleTitle: mod.title })}
-                              className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600"
+                              className="text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-orange-600"
                             >
                               + Add Section
                             </button>
@@ -837,7 +837,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                             <button
                               type="button"
                               onClick={() => setLessonModal({ open: true, moduleId: mod._id, parentTitle: mod.title })}
-                              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                              className="text-xs font-semibold text-orange-600 dark:text-orange-400 hover:underline"
                             >
                               + Add Direct Lesson
                             </button>
@@ -855,11 +855,11 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 1: ADD MODULE
            ======================================================== */}
         {moduleModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-white dark:bg-[#111318] rounded-2xl p-6 border border-slate-200 dark:border-[#262b34] shadow-xl animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <Layers className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">Add Curriculum Module</h3>
@@ -883,25 +883,25 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     value={moduleTitle}
                     onChange={(e) => setModuleTitle(e.target.value)}
                     placeholder="e.g. Chapter 3: Newton's Laws of Motion"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                     Modules group related sections and video lessons into a unified chapter.
                   </p>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setModuleModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Save Module'}
                   </button>
@@ -915,11 +915,11 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 1B: EDIT MODULE
            ======================================================== */}
         {editModuleModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-white dark:bg-[#111318] rounded-2xl p-6 border border-slate-200 dark:border-[#262b34] shadow-xl animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <Edit2 className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">Edit Module</h3>
@@ -942,22 +942,22 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     required
                     value={editModuleModal.title}
                     onChange={(e) => setEditModuleModal({ ...editModuleModal, title: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setEditModuleModal({ open: false, id: '', title: '' })}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Update Module'}
                   </button>
@@ -971,11 +971,11 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 2: ADD SECTION
            ======================================================== */}
         {sectionModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-white dark:bg-[#111318] rounded-2xl p-6 border border-slate-200 dark:border-[#262b34] shadow-xl animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <FolderPlus className="w-4 h-4" />
                   </div>
                   <div>
@@ -1006,22 +1006,22 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     value={sectionTitle}
                     onChange={(e) => setSectionTitle(e.target.value)}
                     placeholder="e.g. 3.1 Inertia and Momentum"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setSectionModal({ open: false, moduleId: '' })}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Save Section'}
                   </button>
@@ -1035,11 +1035,11 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 2B: EDIT SECTION
            ======================================================== */}
         {editSectionModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-white dark:bg-[#111318] rounded-2xl p-6 border border-slate-200 dark:border-[#262b34] shadow-xl animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <Edit2 className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">Edit Section</h3>
@@ -1062,22 +1062,22 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     required
                     value={editSectionModal.title}
                     onChange={(e) => setEditSectionModal({ ...editSectionModal, title: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setEditSectionModal({ open: false, id: '', title: '' })}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Update Section'}
                   </button>
@@ -1091,11 +1091,11 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 3: ADD LESSON
            ======================================================== */}
         {lessonModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-            <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
-              <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+            <div className="w-full max-w-3xl bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-[#262b34] shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
+              <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <FileVideo className="w-4 h-4" />
                   </div>
                   <div>
@@ -1126,7 +1126,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     value={lessonForm.title}
                     onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
                     placeholder="e.g. Lecture 1: Concept & Problem Solving"
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
@@ -1139,7 +1139,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     value={lessonForm.youtubeVideoId}
                     onChange={(e) => setLessonForm({ ...lessonForm, youtubeVideoId: e.target.value })}
                     placeholder="e.g. dQw4w9WgXcQ or https://youtu.be/..."
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                     Paste the 11-character video ID or full YouTube link.
@@ -1159,7 +1159,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                 </div>
 
                 {/* Lecture Material Upload Section */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="pt-3 border-t border-slate-100 dark:border-[#262b34]">
                   <div className="flex items-center justify-between mb-2">
                     <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                       সংযুক্ত লেকচার শিট ও ফাইল (PDF / Sheet / Image)
@@ -1178,35 +1178,6 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     maxSizeMb={25}
                     disabled={uploadingFile || submitting}
                   />
-                  <label className="hidden flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
-                    {uploadingFile ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                    ) : (
-                      <Upload className="w-4 h-4 text-blue-600" />
-                    )}
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {uploadingFile ? 'আপলোড হচ্ছে...' : 'ফাইল যুক্ত করুন (PDF, DOCX, JPG/PNG)'}
-                    </span>
-                    <p className="text-[10px] text-slate-400 mt-0.5">সর্বোচ্চ ২৫ মেগাবাইট পর্যন্ত ফাইল সমর্থন করে</p>
-                    <input
-                      type="file"
-                      disabled={uploadingFile}
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          if (file.size <= 25 * 1024 * 1024) {
-                            setPendingLessonFiles((prev) => [...prev, file]);
-                            setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। লেসন সেভ করলে আপলোড হবে।` });
-                          } else {
-                            setMessage({ type: 'error', text: 'ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।' });
-                          }
-                          e.target.value = '';
-                        }
-                      }}
-                    />
-                  </label>
 
                   {/* List of Attached Resources */}
                   {lessonForm.resources && lessonForm.resources.length > 0 && (
@@ -1217,14 +1188,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                       {lessonForm.resources.map((res, rIdx) => (
                         <div
                           key={rIdx}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/80 dark:bg-[#151921]/80 border border-slate-200/80 dark:border-[#262b34] text-xs"
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-2">
-                            <Paperclip className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <Paperclip className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400 shrink-0" />
                             <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
                               {res.title}
                             </span>
-                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-slate-900 px-1.5 py-0.2 rounded">
+                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-[#111318] px-1.5 py-0.2 rounded border border-transparent dark:border-[#262b34]">
                               {res.type}
                             </span>
                           </div>
@@ -1247,18 +1218,18 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   )}
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setLessonModal({ open: false, moduleId: '' })}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || uploadingFile}
-                    className="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : 'Save Lesson'}
                   </button>
@@ -1272,11 +1243,11 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
             MODAL 3B: EDIT LESSON
            ======================================================== */}
         {editLessonModal.open && (
-          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-            <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
-              <div className="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-100 dark:border-slate-800">
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+            <div className="w-full max-w-3xl bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-[#262b34] shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6">
+              <div className="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                     <Edit2 className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">লেসন সম্পাদনা (Edit Lesson)</h3>
@@ -1299,7 +1270,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     required
                     value={editLessonModal.title}
                     onChange={(e) => setEditLessonModal({ ...editLessonModal, title: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
                   />
                 </div>
 
@@ -1312,7 +1283,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     value={editLessonModal.youtubeVideoId}
                     onChange={(e) => setEditLessonModal({ ...editLessonModal, youtubeVideoId: e.target.value })}
                     placeholder="dQw4w9WgXcQ অথবা https://youtu.be/..."
-                    className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
+                    className="w-full bg-white dark:bg-[#151921] border border-slate-300 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
                   />
                 </div>
 
@@ -1329,7 +1300,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                 </div>
 
                 {/* Materials Section in Edit Modal */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="pt-3 border-t border-slate-100 dark:border-[#262b34]">
                   <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
                     সংযুক্ত লেকচার শিট ও ফাইল (PDF / Sheet / Image)
                   </label>
@@ -1346,35 +1317,6 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     maxSizeMb={25}
                     disabled={uploadingFile || submitting}
                   />
-                  <label className="hidden flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500/80 dark:hover:border-blue-500/80 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
-                    {uploadingFile ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                    ) : (
-                      <Upload className="w-4 h-4 text-blue-600" />
-                    )}
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {uploadingFile ? 'আপলোড হচ্ছে...' : 'ফাইল যুক্ত করুন (PDF, DOCX, JPG/PNG)'}
-                    </span>
-                    <p className="text-[10px] text-slate-400 mt-0.5">সর্বোচ্চ ২৫ মেগাবাইট পর্যন্ত ফাইল সমর্থন করে</p>
-                    <input
-                      type="file"
-                      disabled={uploadingFile}
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          if (file.size <= 25 * 1024 * 1024) {
-                            setPendingEditLessonFiles((prev) => [...prev, file]);
-                            setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। লেসন সেভ করলে আপলোড হবে।` });
-                          } else {
-                            setMessage({ type: 'error', text: 'ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।' });
-                          }
-                          e.target.value = '';
-                        }
-                      }}
-                    />
-                  </label>
 
                   {/* List of Attached Resources */}
                   {editLessonModal.resources && editLessonModal.resources.length > 0 && (
@@ -1385,14 +1327,14 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                       {editLessonModal.resources.map((res, rIdx) => (
                         <div
                           key={rIdx}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/80 dark:bg-[#151921]/80 border border-slate-200/80 dark:border-[#262b34] text-xs"
                         >
                           <div className="flex items-center gap-2 min-w-0 pr-2">
-                            <Paperclip className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <Paperclip className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400 shrink-0" />
                             <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
                               {res.title}
                             </span>
-                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-slate-900 px-1.5 py-0.2 rounded">
+                            <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-[#111318] px-1.5 py-0.2 rounded border border-transparent dark:border-[#262b34]">
                               {res.type}
                             </span>
                           </div>
@@ -1415,18 +1357,18 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                   )}
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-[#262b34]">
                   <button
                     type="button"
                     onClick={() => setEditLessonModal({ open: false, id: '', title: '', youtubeVideoId: '', description: '', resources: [] })}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || uploadingFile}
-                    className="px-6 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                    className="px-6 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
                   >
                     {submitting ? 'সংরক্ষণ হচ্ছে...' : 'আপডেট সম্পন্ন করুন'}
                   </button>

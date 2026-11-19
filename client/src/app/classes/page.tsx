@@ -33,11 +33,11 @@ export default function AcademicClassesHubPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors pb-16">
       {/* Cosmic Header Strip */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16 mb-8 sm:mb-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[360px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[360px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
         
         {/* Twinkling Cosmic Stars */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -56,7 +56,7 @@ export default function AcademicClassesHubPage() {
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.3] text-white">
                 শ্রেণিভিত্তিক{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300">
                   একাডেমিক ক্লাস হাব
                 </span>
               </h1>
@@ -67,7 +67,7 @@ export default function AcademicClassesHubPage() {
 
             <Link
               href="/courses"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 active:scale-98 text-white text-xs sm:text-sm font-black shadow-lg shadow-blue-500/30 transition-all border border-white/20"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-98 text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-950/25 transition-all border border-white/20"
             >
               <BookOpen className="w-4 h-4" />
               <span>সকল কোর্স ক্যাটালগ</span>
@@ -92,27 +92,27 @@ export default function AcademicClassesHubPage() {
                 <Link
                   key={cls._id || cls.name}
                   href={`/classes/${slug}`}
-                  className="group block p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-200/80 dark:border-slate-800 hover:border-blue-500/60 dark:hover:border-blue-500/50 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                  className="group block p-6 rounded-3xl bg-white dark:bg-[#111318] border-2 border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-500/50 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden"
                 >
                   <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-700 text-white flex items-center justify-center font-black text-lg shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
                       {idx + 6 <= 12 ? idx + 6 : cls.name.replace(/[^0-9]/g, '') || '🎓'}
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-bold border border-blue-200/60 dark:border-blue-800/60">
+                    <span className="px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60">
                       পূর্ণাঙ্গ সিলেবাস
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex items-center gap-2">
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors flex items-center gap-2">
                     <span>{cls.name}</span>
-                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all" />
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-orange-600 transition-all" />
                   </h3>
 
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">
                     {cls.subtitle || cls.description || `${cls.name}-এর শিক্ষার্থীদের জন্য বিজ্ঞান, গণিত ও বোর্ড সহায়িকা কোর্সসমূহ`}
                   </p>
 
-                  <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
+                  <div className="mt-5 pt-4 border-t border-slate-100 dark:border-[#1e222a] flex items-center justify-between text-xs font-bold text-orange-600 dark:text-orange-400">
                     <span>ক্লাস ও বিষয়সমূহ দেখুন</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>

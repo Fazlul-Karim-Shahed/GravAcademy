@@ -171,9 +171,9 @@ export default function UserPermissionsEditPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
             পারমিশন প্রোফাইল লোড হচ্ছে...
           </p>
@@ -184,8 +184,8 @@ export default function UserPermissionsEditPage() {
 
   if (!targetUser) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 text-center shadow-lg">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-3xl p-8 text-center shadow-lg">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">ব্যবহারকারী পাওয়া যায়নি</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6">
@@ -193,7 +193,7 @@ export default function UserPermissionsEditPage() {
           </p>
           <Link
             href="/admin/settings"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> সেটিংস তালিকায় ফিরে যান
           </Link>
@@ -203,23 +203,23 @@ export default function UserPermissionsEditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-6">
           <Link
             href="/admin/settings"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Settings
           </Link>
         </div>
 
         {/* Top Header Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-xs mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-xs mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-500 text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-md shadow-orange-950/20 overflow-hidden">
               {targetUser.avatarUrl ? (
                 <img src={targetUser.avatarUrl} alt={targetUser.name} className="w-full h-full object-cover" />
               ) : (
@@ -231,7 +231,7 @@ export default function UserPermissionsEditPage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   {targetUser.name}
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
                   {targetUser.role}
                 </span>
               </div>
@@ -248,7 +248,7 @@ export default function UserPermissionsEditPage() {
 
           <div className="flex items-center gap-2 text-xs">
             <span className="text-slate-500 dark:text-slate-400">মোট সক্রিয় পারমিশন:</span>
-            <span className="font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+            <span className="font-bold px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
               {ALL_PERMISSIONS_METADATA.filter((permission) => getPermissionGranted(permission.key)).length} টি সক্রিয়
             </span>
           </div>
@@ -276,9 +276,9 @@ export default function UserPermissionsEditPage() {
         <form onSubmit={handleSave} className="space-y-8">
           
           {/* SECTION 1: Base Platform Role */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
-              <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-[#262b34]">
+              <Shield className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 ১. প্রাইমারি প্ল্যাটফর্ম রোল (Primary Base Role)
               </h2>
@@ -302,8 +302,8 @@ export default function UserPermissionsEditPage() {
                     onClick={() => setSelectedRole(item.role as UserRole)}
                     className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-500 text-blue-900 dark:text-blue-100 shadow-xs'
-                        : 'bg-slate-50 dark:bg-slate-950 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
+                        ? 'bg-orange-500/10 dark:bg-orange-950/30 border-orange-500/60 dark:border-orange-500/50 text-orange-900 dark:text-orange-100 shadow-xs'
+                        : 'bg-slate-50 dark:bg-[#151921]/60 border-slate-200/80 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -311,7 +311,7 @@ export default function UserPermissionsEditPage() {
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                           isSelected
-                            ? 'border-blue-600 bg-blue-600 text-white'
+                            ? 'border-orange-600 bg-orange-600 text-white'
                             : 'border-slate-300 dark:border-slate-600'
                         }`}
                       >
@@ -327,16 +327,16 @@ export default function UserPermissionsEditPage() {
             </div>
 
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-4 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+              <Info className="w-3.5 h-3.5 text-orange-500 shrink-0" />
               নির্বাচিত রোলের ডিফল্ট পারমিশনগুলো তালিকা থেকে চালু বা বন্ধ করতে পারবেন। প্রয়োজন হলে অতিরিক্ত ফিচারও সক্রিয় করতে পারবেন।
             </p>
           </div>
 
           {/* SECTION 2: Granular Feature Matrix */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-slate-800 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-slate-100 dark:border-[#262b34]">
               <div className="flex items-center gap-2">
-                <Key className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <Key className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                   ২. ফিচারভিত্তিক কাস্টম পারমিশন (Granular Permissions Overrides)
                 </h2>
@@ -346,23 +346,23 @@ export default function UserPermissionsEditPage() {
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> ডিফল্ট রোল পারমিশন
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> অতিরিক্ত কাস্টম পারমিশন
+                  <span className="w-2.5 h-2.5 rounded-full bg-orange-600" /> অতিরিক্ত কাস্টম পারমিশন
                 </span>
               </div>
             </div>
 
-            <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-3 dark:border-blue-900/60 dark:bg-blue-950/20">
+            <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-950/20 p-3">
               <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
                 সব permission একসাথে চালু বা বন্ধ করুন
               </span>
-              <span className="flex shrink-0 items-center gap-2 text-[11px] font-bold text-blue-700 dark:text-blue-300">
+              <span className="flex shrink-0 items-center gap-2 text-[11px] font-bold text-orange-700 dark:text-orange-400">
                 <span>সব নির্বাচন</span>
                 <input
                   type="checkbox"
                   checked={allPermissionsSelected}
                   disabled={selectedRole === ROLES.SUPERADMIN}
                   onChange={(event) => setAllPermissionsSelected(event.target.checked)}
-                  className="h-4 w-4 rounded accent-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="h-4 w-4 rounded accent-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </span>
             </label>
@@ -374,10 +374,10 @@ export default function UserPermissionsEditPage() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize shrink-0 transition-colors ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize shrink-0 transition-all cursor-pointer ${
                     activeCategory === cat
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                      : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1a202c]'
                   }`}
                 >
                   {cat === 'all' ? 'সকল ফিচার ক্যাটাগরি' : cat}
@@ -401,8 +401,8 @@ export default function UserPermissionsEditPage() {
                       isRevoked
                         ? 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-200/80 dark:border-rose-800/60 cursor-pointer'
                         : isGranted
-                        ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-400 dark:border-blue-600 cursor-pointer shadow-xs'
-                        : 'bg-slate-50/50 dark:bg-slate-950/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer'
+                        ? 'bg-orange-50/70 dark:bg-orange-950/25 border-orange-400/60 dark:border-orange-500/40 cursor-pointer shadow-xs'
+                        : 'bg-slate-50/50 dark:bg-[#151921]/40 border-slate-200/80 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer'
                     }`}
                   >
                     <div className="flex-1">
@@ -419,7 +419,7 @@ export default function UserPermissionsEditPage() {
                             ডিফল্ট রোল পারমিশন
                           </span>
                         ) : isGrantedCustom ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-orange-100 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200">
                             + অতিরিক্ত পারমিশন
                           </span>
                         ) : null}
@@ -436,7 +436,7 @@ export default function UserPermissionsEditPage() {
                         disabled={selectedRole === ROLES.SUPERADMIN}
                         onChange={() => toggleCustomPermission(perm.key)}
                         onClick={(event) => event.stopPropagation()}
-                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-4 h-4 rounded accent-orange-600 focus:ring-orange-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -446,21 +446,27 @@ export default function UserPermissionsEditPage() {
           </div>
 
           {/* Sticky Footer Bar with Save Button */}
-          {/* Sticky Footer Bar with Save Button */}
-          <div className="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="sticky bottom-4 z-40 bg-white/95 dark:bg-[#111318]/95 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-[#262b34] shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div className="text-xs text-slate-500 dark:text-slate-400">
               <span className="font-semibold text-slate-900 dark:text-white">{targetUser.name}</span> এর জন্য পারমিশন সেভ করতে প্রস্তুত।
             </div>
 
             <div className="flex items-center gap-2.5 w-full sm:w-auto">
               <Link href="/admin/settings" className="flex-1 sm:flex-none">
-                <Button type="button" variant="secondary" size="md" className="w-full">
+                <button
+                  type="button"
+                  className="w-full px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors cursor-pointer"
+                >
                   বাতিল (Cancel)
-                </Button>
+                </button>
               </Link>
-              <Button type="submit" size="md" isLoading={submitting} className="flex-1 sm:flex-none">
-                রোল ও পারমিশন সেভ করুন
-              </Button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {submitting ? 'সংরক্ষণ করা হচ্ছে...' : 'রোল ও পারমিশন সেভ করুন'}
+              </button>
             </div>
           </div>
 

@@ -543,14 +543,14 @@ export default function CreateExamPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
         {/* Header */}
-        <div className="w-[98%] mx-auto flex items-center justify-between px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="w-[98%] mx-auto flex items-center justify-between px-4 py-3 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-xs">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <Link
               href={`/classroom/${batchId}/exams`}
-              className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 transition-colors shadow-sm shrink-0"
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors shadow-xs shrink-0"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
@@ -566,7 +566,7 @@ export default function CreateExamPage({
         </div>
 
         {errorMessage && (
-          <div className="p-3 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2.5 shadow-sm">
+          <div className="p-3 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2.5 shadow-xs">
             <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -574,9 +574,9 @@ export default function CreateExamPage({
 
         <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
           {/* STEP 1: Basic Information */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-8 shadow-sm">
-            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sm:mb-6">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
+          <div className="bg-white dark:bg-[#111318] rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-8 shadow-xs">
+            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-[#262b34] mb-4 sm:mb-6">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-600/10 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
                 ১
               </div>
               <div>
@@ -598,7 +598,7 @@ export default function CreateExamPage({
                   placeholder="যেমন: পদার্থবিজ্ঞান ১ম অধ্যায় - উইকলি মডেল টেস্ট"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -612,7 +612,7 @@ export default function CreateExamPage({
                   required
                   value={durationMinutes}
                   onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -626,7 +626,7 @@ export default function CreateExamPage({
                   required
                   value={totalMarks}
                   onChange={(e) => setTotalMarks(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -639,7 +639,7 @@ export default function CreateExamPage({
                   min="0"
                   value={passMarks}
                   onChange={(e) => setPassMarks(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -653,7 +653,7 @@ export default function CreateExamPage({
                   min="0"
                   value={negativeMarkPerWrong}
                   onChange={(e) => setNegativeMarkPerWrong(Number(e.target.value))}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -667,7 +667,7 @@ export default function CreateExamPage({
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
                 <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">
                   এই সময়ের পূর্বে শিক্ষার্থীরা প্রশ্ন দেখতে পারবে না।
@@ -683,7 +683,7 @@ export default function CreateExamPage({
                   required
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -696,7 +696,7 @@ export default function CreateExamPage({
                   placeholder="যেমন: প্রতিটি প্রশ্নের মান সমান। নির্ধারিত সময়ে উত্তরপত্র সাবমিট করুন।"
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -704,8 +704,8 @@ export default function CreateExamPage({
 
           {/* STEP 2: Question Delivery Method */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-8 shadow-sm">
-            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800 mb-4 sm:mb-6">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-purple-600/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
+            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-[#262b34] mb-4 sm:mb-6">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-600/10 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
                 ২
               </div>
               <div>
@@ -723,8 +723,8 @@ export default function CreateExamPage({
               <label
                 className={`p-3 sm:p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
                   examType === 'upload_paper'
-                    ? 'border-purple-600 bg-purple-50/40 dark:bg-purple-950/20 shadow-sm'
-                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                    ? 'border-orange-600 bg-orange-50/40 dark:bg-orange-950/20 shadow-xs'
+                    : 'border-slate-200 dark:border-[#262b34] hover:border-slate-300'
                 }`}
               >
                 <input
@@ -733,11 +733,11 @@ export default function CreateExamPage({
                   value="upload_paper"
                   checked={examType === 'upload_paper'}
                   onChange={() => setExamType('upload_paper')}
-                  className="mt-0.5 accent-purple-600 shrink-0"
+                  className="mt-0.5 accent-orange-600 shrink-0"
                 />
                 <div className="min-w-0">
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <UploadCloud className="w-4 h-4 text-purple-600 shrink-0" />
+                    <UploadCloud className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
                     <span>প্রশ্নপত্র ফাইল / PDF আপলোড</span>
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -749,8 +749,8 @@ export default function CreateExamPage({
               <label
                 className={`p-3 sm:p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3 ${
                   examType === 'system_questions'
-                    ? 'border-blue-600 bg-blue-50/40 dark:bg-blue-950/20 shadow-sm'
-                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                    ? 'border-orange-600 bg-orange-50/40 dark:bg-orange-950/20 shadow-xs'
+                    : 'border-slate-200 dark:border-[#262b34] hover:border-slate-300'
                 }`}
               >
                 <input
@@ -759,11 +759,11 @@ export default function CreateExamPage({
                   value="system_questions"
                   checked={examType === 'system_questions'}
                   onChange={() => setExamType('system_questions')}
-                  className="mt-0.5 accent-blue-600 shrink-0"
+                  className="mt-0.5 accent-orange-600 shrink-0"
                 />
                 <div className="min-w-0">
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-blue-600 shrink-0" />
+                    <Layers className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
                     <span>সিস্টেমের মাধ্যমে প্রশ্ন তৈরি</span>
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -775,7 +775,7 @@ export default function CreateExamPage({
 
             {/* If Option A: Upload Question Paper */}
             {examType === 'upload_paper' && (
-              <div className="p-4 sm:p-6 rounded-2xl bg-purple-50/30 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-800/60 space-y-4">
+              <div className="p-4 sm:p-6 rounded-2xl bg-orange-50/30 dark:bg-[#151921] border border-orange-200/60 dark:border-[#262b34] space-y-4">
                 <FileUploadField
                   label="প্রশ্নপত্র বা সহায়ক ফাইল"
                   selectedFile={selectedQuestionPaper}
@@ -800,10 +800,10 @@ export default function CreateExamPage({
                     <button
                       type="button"
                       onClick={() => setQuestionMode('mcq')}
-                      className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs font-black transition-all border text-left ${
+                      className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs font-black transition-all border text-left cursor-pointer ${
                         questionMode === 'mcq'
-                          ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                          : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                          ? 'border-orange-600 bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25'
+                          : 'border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <div className="font-black text-xs sm:text-sm mb-0.5 sm:mb-1">১. বহুনির্বাচনি (MCQ)</div>
@@ -813,10 +813,10 @@ export default function CreateExamPage({
                     <button
                       type="button"
                       onClick={() => setQuestionMode('cq')}
-                      className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs font-black transition-all border text-left ${
+                      className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs font-black transition-all border text-left cursor-pointer ${
                         questionMode === 'cq'
-                          ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                          : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                          ? 'border-orange-600 bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25'
+                          : 'border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <div className="font-black text-xs sm:text-sm mb-0.5 sm:mb-1">২. রচনামূলক (CQ)</div>
@@ -826,10 +826,10 @@ export default function CreateExamPage({
                     <button
                       type="button"
                       onClick={() => setQuestionMode('both')}
-                      className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs font-black transition-all border text-left ${
+                      className={`px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs font-black transition-all border text-left cursor-pointer ${
                         questionMode === 'both'
-                          ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                          : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300'
+                          ? 'border-orange-600 bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25'
+                          : 'border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <div className="font-black text-xs sm:text-sm mb-0.5 sm:mb-1">৩. উভয়ই (MCQ + CQ)</div>
@@ -840,17 +840,17 @@ export default function CreateExamPage({
 
                 {/* Section A: MCQ Builder */}
                 {(questionMode === 'mcq' || questionMode === 'both') && (
-                  <div className="border-t border-slate-200/80 dark:border-slate-800 pt-5 sm:pt-6 space-y-4">
+                  <div className="border-t border-slate-200/80 dark:border-[#262b34] pt-5 sm:pt-6 space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-blue-600 shrink-0" />
+                        <FileCheck className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
                         <span>বহুনির্বাচনি প্রশ্নসমূহ (MCQ) - {mcqQuestions.length} টি</span>
                       </h3>
                       <div className="flex items-center gap-2 w-full sm:w-auto">
                         <button
                           type="button"
                           onClick={() => setShowBulkModal(true)}
-                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-all cursor-pointer"
+                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-300 text-xs font-bold border border-orange-200 dark:border-orange-800 hover:bg-orange-100 transition-all cursor-pointer"
                         >
                           <FileSpreadsheet className="w-3.5 h-3.5 shrink-0" />
                           <span>Bulk Paste</span>
@@ -858,7 +858,7 @@ export default function CreateExamPage({
                         <button
                           type="button"
                           onClick={addMcqQuestion}
-                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-all cursor-pointer"
+                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
                         >
                           <Plus className="w-3.5 h-3.5 shrink-0" />
                           <span>MCQ যোগ</span>
@@ -870,11 +870,11 @@ export default function CreateExamPage({
                       {mcqQuestions.map((q, qIdx) => (
                         <div
                           key={qIdx}
-                          className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 relative shadow-sm"
+                          className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] relative shadow-xs"
                         >
                           {/* Card Top: Header & Tools */}
                           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                            <span className="text-xs font-black text-blue-600 dark:text-blue-400">
+                            <span className="text-xs font-black text-orange-600 dark:text-orange-400">
                               প্রশ্ন নং #{qIdx + 1}
                             </span>
                             <div className="flex items-center gap-2">
@@ -886,13 +886,13 @@ export default function CreateExamPage({
                                   step="0.5"
                                   value={q.marks}
                                   onChange={(e) => updateMcqMarks(qIdx, Number(e.target.value))}
-                                  className="w-12 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-center text-xs font-bold"
+                                  className="w-12 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-center text-xs font-bold"
                                 />
                               </div>
                               <button
                                 type="button"
                                 onClick={() => duplicateMcqQuestion(qIdx)}
-                                className="text-slate-500 hover:text-blue-600 p-1 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
+                                className="text-slate-500 hover:text-orange-600 p-1 rounded-lg hover:bg-orange-50 dark:hover:bg-[#111318] transition-colors"
                                 title="প্রশ্ন ক্লোন / ডুপ্লিকেট করুন"
                               >
                                 <Copy className="w-3.5 h-3.5" />
@@ -901,7 +901,7 @@ export default function CreateExamPage({
                                 <button
                                   type="button"
                                   onClick={() => removeMcqQuestion(qIdx)}
-                                  className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-slate-700 transition-colors"
+                                  className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-[#111318] transition-colors"
                                   title="প্রশ্ন মুছুন"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -918,13 +918,13 @@ export default function CreateExamPage({
                               placeholder="প্রশ্ন লিখুন (যেমন: পর্যায় সারণির প্রথম মৌল কোনটি? অথবা নিচের উদ্দীপক বা চিত্রটি লক্ষ্য কর...)"
                               value={q.questionText}
                               onChange={(e) => updateMcqText(qIdx, e.target.value)}
-                              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500"
                             />
 
                             {/* Question Image Attachment Bar */}
                             <div className="flex flex-wrap items-center gap-2 pt-1">
-                              <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-all">
-                                <ImageIcon className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                              <label className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-all border border-slate-200/60 dark:border-[#262b34]">
+                                <ImageIcon className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                                 <span>
                                   {uploadingImageKey === `q_${qIdx}`
                                     ? 'আপলোড হচ্ছে...'
@@ -951,7 +951,7 @@ export default function CreateExamPage({
                               </label>
 
                               {q.imageUrl && (
-                                <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/50 px-2 py-1 rounded-xl border border-blue-200 dark:border-blue-900 max-w-full">
+                                <div className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-950/40 px-2 py-1 rounded-xl border border-orange-200 dark:border-orange-900 max-w-full">
                                   <img
                                     src={q.imageUrl}
                                     alt="Question Diagram"
@@ -961,7 +961,7 @@ export default function CreateExamPage({
                                     href={q.imageUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-[11px] text-blue-600 underline font-semibold truncate max-w-[100px]"
+                                    className="text-[11px] text-orange-600 dark:text-orange-400 underline font-semibold truncate max-w-[100px]"
                                   >
                                     ছবি দেখুন
                                   </a>
@@ -985,7 +985,7 @@ export default function CreateExamPage({
                               <button
                                 type="button"
                                 onClick={() => addOptionToQuestion(qIdx)}
-                                className="text-blue-600 dark:text-blue-400 hover:underline text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                                className="text-orange-600 dark:text-orange-400 hover:underline text-[11px] font-bold flex items-center gap-1 cursor-pointer"
                               >
                                 <Plus className="w-3 h-3" />
                                 <span>আরও অপশন</span>
@@ -1002,7 +1002,7 @@ export default function CreateExamPage({
                                     className={`p-2 sm:p-2.5 rounded-xl border transition-all ${
                                       isCorrect
                                         ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 ring-1 ring-emerald-500'
-                                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                                        : 'border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]'
                                     }`}
                                   >
                                     <div className="flex items-center gap-1.5 sm:gap-2">
@@ -1032,7 +1032,7 @@ export default function CreateExamPage({
                                       {/* Image upload icon for option */}
                                       <label
                                         title="অপশনে ছবি যুক্ত করুন"
-                                        className="cursor-pointer text-slate-400 hover:text-blue-600 p-1 rounded transition-colors shrink-0"
+                                        className="cursor-pointer text-slate-400 hover:text-orange-600 p-1 rounded transition-colors shrink-0"
                                       >
                                         <ImageIcon className="w-3.5 h-3.5" />
                                         <input
@@ -1078,13 +1078,13 @@ export default function CreateExamPage({
                                         <img
                                           src={opt.imageUrl}
                                           alt={`Option ${optIdx + 1}`}
-                                          className="w-7 h-7 object-cover rounded border border-slate-200 dark:border-slate-700 shrink-0"
+                                          className="w-7 h-7 object-cover rounded border border-slate-200 dark:border-[#262b34] shrink-0"
                                         />
                                         <a
                                           href={opt.imageUrl}
                                           target="_blank"
                                           rel="noreferrer"
-                                          className="text-[10px] text-blue-600 underline font-semibold truncate max-w-[100px]"
+                                          className="text-[10px] text-orange-600 dark:text-orange-400 underline font-semibold truncate max-w-[100px]"
                                         >
                                           ছবি প্রিভিউ
                                         </a>
@@ -1110,16 +1110,16 @@ export default function CreateExamPage({
 
                 {/* Section B: CQ / Descriptive Builder */}
                 {(questionMode === 'cq' || questionMode === 'both') && (
-                  <div className="border-t border-slate-200/80 dark:border-slate-800 pt-5 sm:pt-6 space-y-4">
+                  <div className="border-t border-slate-200/80 dark:border-[#262b34] pt-5 sm:pt-6 space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-purple-600 shrink-0" />
+                        <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
                         <span>সৃজনশীল প্রশ্নসমূহ (CQ) - {cqQuestions.length} টি</span>
                       </h3>
                       <button
                         type="button"
                         onClick={addCqQuestion}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-300 text-xs font-bold border border-orange-200 dark:border-orange-800 hover:bg-orange-100 transition-all cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>CQ যোগ করুন</span>
@@ -1130,10 +1130,10 @@ export default function CreateExamPage({
                       {cqQuestions.map((q, cIdx) => (
                         <div
                           key={cIdx}
-                          className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 relative"
+                          className="p-3.5 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] relative shadow-xs"
                         >
                           <div className="flex items-center justify-between gap-2 mb-3">
-                            <span className="text-xs font-black text-purple-600 dark:text-purple-400">
+                            <span className="text-xs font-black text-orange-600 dark:text-orange-400">
                               সৃজনশীল প্রশ্ন #{cIdx + 1}
                             </span>
                             <div className="flex items-center gap-2">
@@ -1144,7 +1144,7 @@ export default function CreateExamPage({
                                   min="1"
                                   value={q.marks}
                                   onChange={(e) => updateCqMarks(cIdx, Number(e.target.value))}
-                                  className="w-12 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-center text-xs font-bold"
+                                  className="w-12 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-center text-xs font-bold"
                                 />
                               </div>
                               {cqQuestions.length > 1 && (
@@ -1166,7 +1166,7 @@ export default function CreateExamPage({
                             placeholder="উদ্দীপক ও প্রশ্ন লিখুন (যেমন: ক. অমুক কি? খ. ব্যাখ্যা কর... ইত্যাদি)"
                             value={q.questionText}
                             onChange={(e) => updateCqText(cIdx, e.target.value)}
-                            className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500"
                           />
                         </div>
                       ))}
@@ -1181,7 +1181,7 @@ export default function CreateExamPage({
           <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-4 pt-3 sm:pt-4">
             <Link
               href={`/classroom/${batchId}/exams`}
-              className="w-full sm:w-auto text-center px-6 py-2.5 sm:py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-all"
+              className="w-full sm:w-auto text-center px-6 py-2.5 sm:py-3 rounded-2xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-[#262b34] transition-all"
             >
               বাতিল করুন
             </Link>
@@ -1189,7 +1189,7 @@ export default function CreateExamPage({
             <button
               type="submit"
               disabled={submitting}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-lg shadow-orange-950/25 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? 'প্রকাশ হচ্ছে...' : 'এক্সাম সম্পন্ন ও প্রকাশ করুন'}</span>
@@ -1200,23 +1200,23 @@ export default function CreateExamPage({
         {/* Modal: Bulk Paste MCQ */}
         {showBulkModal && (
           <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-4 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-2xl w-full p-4 sm:p-8 border border-slate-200 dark:border-[#262b34] shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#262b34]">
                 <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 shrink-0" />
+                  <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400 shrink-0" />
                   <span>একসাথে একাধিক MCQ পেস্ট করুন (Bulk Import)</span>
                 </h3>
                 <button
                   type="button"
                   onClick={() => setShowBulkModal(false)}
-                  className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1"
+                  className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="text-xs text-slate-500 space-y-1 bg-purple-50/60 dark:bg-purple-950/30 p-3 rounded-xl border border-purple-200/50 dark:border-purple-800/50">
-                <div className="font-bold text-purple-700 dark:text-purple-300">ফরম্যাট নির্দেশিকা:</div>
+              <div className="text-xs text-slate-500 space-y-1 bg-orange-50/60 dark:bg-orange-950/30 p-3 rounded-xl border border-orange-200/50 dark:border-orange-800/50">
+                <div className="font-bold text-orange-700 dark:text-orange-300">ফরম্যাট নির্দেশিকা:</div>
                 <div>প্রতিটি প্রশ্নের পর অপশন (A, B, C, D বা ক, খ, গ, ঘ) এবং নিচে সঠিক উত্তর (Ans: B) লিখুন।</div>
                 <div className="text-[11px] font-mono text-slate-600 dark:text-slate-400 mt-1">
                   ১. বাংলাদেশের রাজধানী কোনটি?<br />
@@ -1233,21 +1233,21 @@ export default function CreateExamPage({
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
                 placeholder="এখানে আপনার প্রশ্নগুলো কপি করে পেস্ট করুন..."
-                className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] font-mono text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
               />
 
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowBulkModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] cursor-pointer"
                 >
                   বাতিল
                 </button>
                 <button
                   type="button"
                   onClick={handleBulkParse}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white shadow-md shadow-orange-950/25 cursor-pointer"
                 >
                   প্রশ্নগুলো কনভার্ট করুন
                 </button>
@@ -1255,7 +1255,7 @@ export default function CreateExamPage({
                   type="button"
                   onClick={() => void formatBulkWithAI()}
                   disabled={aiFormatting || !bulkText.trim()}
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white shadow-xs disabled:opacity-50 cursor-pointer"
                 >
                   {aiFormatting ? 'AI সাজাচ্ছে...' : 'AI দিয়ে সাজান'}
                 </button>

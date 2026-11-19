@@ -189,14 +189,14 @@ function CreateBatchContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-6">
           <Link
             href="/admin/batches"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Batch Management
           </Link>
@@ -204,7 +204,7 @@ function CreateBatchContent() {
 
         {/* Page Title */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-400 text-xs font-semibold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-950/40 border border-orange-200/80 dark:border-orange-900/50 text-orange-700 dark:text-orange-400 text-xs font-semibold mb-3">
             {cloneFromId ? <Copy className="w-3.5 h-3.5" /> : <Layers className="w-3.5 h-3.5" />}
             {cloneFromId ? 'Batch Cloning & Duplication' : 'Batch Configuration'}
           </div>
@@ -229,7 +229,7 @@ function CreateBatchContent() {
         )}
 
         {/* Dedicated Form */}
-        <Card className="border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-none p-6 sm:p-8 rounded-2xl">
+        <Card className="border border-slate-200/90 dark:border-[#262b34] bg-white dark:bg-[#111318] shadow-xl shadow-slate-200/40 dark:shadow-none p-6 sm:p-8 rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Batch Name */}
@@ -243,14 +243,14 @@ function CreateBatchContent() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. 2026 Morning Batch Alpha"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               />
             </div>
 
             {/* Academic Hierarchy Selection: Class -> Course */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 space-y-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200/80 dark:border-[#262b34] space-y-4">
               <div className="flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   ১. শ্রেণি ও কোর্স নির্বাচন (Class &rarr; Course)
                 </span>
@@ -265,7 +265,7 @@ function CreateBatchContent() {
                   <select
                     value={selectedClass}
                     onChange={(e) => setSelectedClass(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
                   >
                     <option value="All">All Classes (সব শ্রেণি)</option>
                     {availableClasses.map((ac) => (
@@ -285,7 +285,7 @@ function CreateBatchContent() {
                     required
                     value={form.courseId}
                     onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
                   >
                     <option value="">কোর্স নির্বাচন করুন ({filteredCourses.length})</option>
                     {filteredCourses.map((c) => (
@@ -305,14 +305,14 @@ function CreateBatchContent() {
             </div>
 
             {/* Enrollment Status */}
-            <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/40 sm:p-5">
+            <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-[#262b34] dark:bg-[#151921] sm:p-5">
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">ব্যাচের সময়কাল</h2>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শেষের তারিখ course-এর মেয়াদ থেকে হিসাব হবে।</p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ *
-                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-slate-800 dark:bg-slate-900" />
+                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-[#262b34] dark:bg-[#111318] focus:ring-2 focus:ring-orange-500" />
                 </label>
                 <p className="self-end pb-3 text-sm text-slate-500 dark:text-slate-400">নির্বাচিত course: {courses.find((course) => course._id === form.courseId)?.durationMonths ? `${courses.find((course) => course._id === form.courseId)?.durationMonths} মাস` : 'মেয়াদ নির্ধারিত নেই'}</p>
               </div>
@@ -326,7 +326,7 @@ function CreateBatchContent() {
               <select
                 value={form.status}
                 onChange={(e) => { setStatusTouched(true); setForm({ ...form, status: e.target.value }); }}
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               >
                 <option value="draft">Draft (Private setup)</option>
                 <option value="upcoming">Upcoming (Scheduled for launch)</option>
@@ -351,14 +351,14 @@ function CreateBatchContent() {
                     const raw = e.target.value;
                     setForm({ ...form, capacity: raw === '' ? 0 : Number(raw) });
                   }}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors font-bold"
+                  className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors font-bold"
                 />
                 <span className="text-[10px] text-slate-400 block mt-1">ব্যাচে সর্বোচ্চ কতজন শিক্ষার্থী ভর্তি হতে পারবে</span>
               </div>
             </div>
 
             {/* Structured Weekly Class Schedule Builder */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-950/70 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
               <WeeklyScheduleBuilder
                 slots={form.weeklySchedule}
                 onChange={(newSlots) => {
@@ -370,7 +370,7 @@ function CreateBatchContent() {
                 }}
               />
 
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#262b34]">
                 <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
                   Generated / Custom Schedule Summary Text
                 </label>
@@ -379,14 +379,14 @@ function CreateBatchContent() {
                   value={form.scheduleText}
                   onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
                   placeholder="e.g. শনি (19:00 - 20:30), রবি (20:00 - 21:30)"
-                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
             {/* Zero-Coupling Clone Feature */}
-            <div className="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/20 border border-indigo-200/80 dark:border-indigo-900/40">
-              <div className="flex items-center gap-2 mb-2 text-indigo-700 dark:text-indigo-400 font-bold text-sm">
+            <div className="p-5 rounded-2xl bg-orange-50/60 dark:bg-orange-950/20 border border-orange-200/80 dark:border-orange-900/40">
+              <div className="flex items-center gap-2 mb-2 text-orange-700 dark:text-orange-400 font-bold text-sm">
                 <Copy className="w-4 h-4" />
                 <span>Zero-Coupling Batch Curriculum Duplication</span>
               </div>
@@ -397,7 +397,7 @@ function CreateBatchContent() {
               <select
                 value={form.copyFromBatchId}
                 onChange={(e) => setForm({ ...form, copyFromBatchId: e.target.value })}
-                className="w-full bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-white dark:bg-[#111318] border border-orange-200 dark:border-orange-900/60 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
               >
                 <option value="">Start with blank / fresh syllabus (No cloning)</option>
                 {existingBatches.map((b) => (
@@ -409,7 +409,7 @@ function CreateBatchContent() {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+            <div className="pt-6 border-t border-slate-200/80 dark:border-[#262b34] flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
               <Link href="/admin/batches" className="w-full sm:w-auto">
                 <Button type="button" variant="secondary" size="md" className="w-full sm:w-auto">
                   Cancel
@@ -432,9 +432,9 @@ export default function CreateBatchPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 p-6 sm:p-10 flex items-center justify-center">
+        <div className="min-h-screen bg-slate-50/50 dark:bg-[#0b0d12] p-6 sm:p-10 flex items-center justify-center">
           <div className="text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+            <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ব্যাচ ফর্ম লোড হচ্ছে...</p>
           </div>
         </div>

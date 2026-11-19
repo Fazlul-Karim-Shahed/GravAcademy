@@ -173,12 +173,12 @@ export default function MarksheetPage({
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
       {/* Header Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
@@ -193,7 +193,7 @@ export default function MarksheetPage({
 
               <div className="flex items-center gap-3.5 pt-1 min-w-0">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
-                  <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                  <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-orange-400" />
                 </div>
                 <div className="min-w-0">
                   <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
@@ -213,8 +213,8 @@ export default function MarksheetPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-semibold text-slate-500">মার্কশিট প্রস্তুত হচ্ছে...</p>
+            <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">মার্কশিট প্রস্তুত হচ্ছে...</p>
           </div>
         ) : error ? (
           <div className="p-6 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-sm font-semibold flex items-center gap-3">
@@ -225,49 +225,49 @@ export default function MarksheetPage({
           <div className="space-y-6">
             {/* Student Self View: Prominent Card Display */}
             {!isStaff && studentsData.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
+              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 shadow-sm">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                  <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900">
-                    <span className="text-[11px] font-bold text-purple-700 dark:text-purple-300 uppercase">
+                  <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200/60 dark:border-orange-900/60">
+                    <span className="text-[11px] font-bold text-orange-700 dark:text-orange-300 uppercase">
                       মোট অর্জন
                     </span>
-                    <h3 className="text-2xl font-black text-purple-900 dark:text-purple-100 mt-1">
+                    <h3 className="text-2xl font-black text-orange-900 dark:text-orange-100 mt-1">
                       {studentsData[0].summary.grandTotalObtained} / {studentsData[0].summary.grandTotalPossible}
                     </h3>
-                    <p className="text-[11px] text-purple-600 dark:text-purple-400 mt-0.5">
+                    <p className="text-[11px] text-orange-600 dark:text-orange-400 mt-0.5">
                       সার্বিক সফলতার হার: {studentsData[0].summary.percentage}%
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900">
-                    <span className="text-[11px] font-bold text-blue-700 dark:text-blue-300 uppercase">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase">
                       এক্সাম মার্কস
                     </span>
-                    <h3 className="text-2xl font-black text-blue-900 dark:text-blue-100 mt-1">
+                    <h3 className="text-2xl font-black text-orange-600 dark:text-orange-400 mt-1">
                       {studentsData[0].summary.totalObtainedExamMarks} / {studentsData[0].summary.totalPossibleExamMarks}
                     </h3>
-                    <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       অংশগ্রহণ: {studentsData[0].summary.examsAttempted}/{studentsData[0].summary.totalExams} টি
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
-                    <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 uppercase">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase">
                       অ্যাসাইনমেন্ট স্কোর
                     </span>
-                    <h3 className="text-2xl font-black text-emerald-900 dark:text-emerald-100 mt-1">
+                    <h3 className="text-2xl font-black text-orange-600 dark:text-orange-400 mt-1">
                       {studentsData[0].summary.totalObtainedAssignmentMarks} / {studentsData[0].summary.totalPossibleAssignmentMarks}
                     </h3>
-                    <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       জমা দেওয়া: {studentsData[0].summary.assignmentsSubmitted}/{studentsData[0].summary.totalAssignments} টি
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
-                    <span className="text-[11px] font-bold text-amber-700 dark:text-amber-300 uppercase">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase">
                       গ্রেড অবস্থান
                     </span>
-                    <h3 className="text-2xl font-black text-amber-900 dark:text-amber-100 mt-1">
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-1">
                       {studentsData[0].summary.percentage >= 80
                         ? 'A+'
                         : studentsData[0].summary.percentage >= 70
@@ -280,7 +280,7 @@ export default function MarksheetPage({
                         ? 'C'
                         : 'F'}
                     </h3>
-                    <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       অ্যাকাডেমিক লেটার গ্রেড
                     </p>
                   </div>
@@ -291,7 +291,7 @@ export default function MarksheetPage({
                   {/* Exams Details */}
                   <div className="space-y-3">
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-blue-600" />
+                      <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                       <span>পরীক্ষাসমূহের ফলাফল ({studentsData[0].exams.length})</span>
                     </h4>
                     {studentsData[0].exams.length === 0 ? (
@@ -300,11 +300,11 @@ export default function MarksheetPage({
                       studentsData[0].exams.map((ex) => (
                         <div
                           key={ex.examId}
-                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between"
+                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] flex items-center justify-between"
                         >
                           <div>
                             <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200">{ex.title}</h5>
-                            <span className="text-[11px] text-slate-500">
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
                               পূর্ণমান: {ex.totalMarks} · পাস নম্বর: {ex.passMarks}
                             </span>
                           </div>
@@ -338,7 +338,7 @@ export default function MarksheetPage({
                   {/* Assignments Details */}
                   <div className="space-y-3">
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <Award className="w-4 h-4 text-purple-600" />
+                      <Award className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                       <span>অ্যাসাইনমেন্টসমূহের ফলাফল ({studentsData[0].assignments.length})</span>
                     </h4>
                     {studentsData[0].assignments.length === 0 ? (
@@ -347,15 +347,15 @@ export default function MarksheetPage({
                       studentsData[0].assignments.map((asgn) => (
                         <div
                           key={asgn.assignmentId}
-                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between"
+                          className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] flex items-center justify-between"
                         >
                           <div>
                             <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200">{asgn.title}</h5>
-                            <span className="text-[11px] text-slate-500">
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
                               পূর্ণমান: {asgn.totalMarks} {asgn.isLate && '· (লেইট সাবমিশন)'}
                             </span>
                             {asgn.feedback && (
-                              <p className="text-[11px] text-purple-600 dark:text-purple-400 italic mt-0.5">
+                              <p className="text-[11px] text-orange-600 dark:text-orange-400 italic mt-0.5">
                                 "{asgn.feedback}"
                               </p>
                             )}
@@ -381,7 +381,7 @@ export default function MarksheetPage({
                           <div className="text-right">
                             {asgn.submitted ? (
                               asgn.isEvaluated ? (
-                                <span className="text-xs font-black text-purple-600 dark:text-purple-400">
+                                <span className="text-xs font-black text-orange-600 dark:text-orange-400">
                                   {asgn.obtainedMarks} / {asgn.totalMarks}
                                 </span>
                               ) : (
@@ -401,7 +401,7 @@ export default function MarksheetPage({
 
             {/* Staff / Teacher View: Full Matrix Table with Search */}
             {isStaff && (
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 shadow-sm space-y-5">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="relative w-full sm:w-80">
                     <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -410,19 +410,19 @@ export default function MarksheetPage({
                       placeholder="শিক্ষার্থীর নাম, রোল বা ইমেইল দিয়ে খুঁজুন..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:ring-2 focus:ring-purple-500 outline-none"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-xs focus:ring-2 focus:ring-orange-500 outline-none text-slate-900 dark:text-white"
                     />
                   </div>
 
-                  <div className="text-xs font-semibold text-slate-500">
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     মোট শিক্ষার্থী: <span className="font-bold text-slate-900 dark:text-white">{studentsData.length}</span> জন
                   </div>
                 </div>
 
-                <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-[#262b34]">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 font-bold uppercase tracking-wider text-[11px]">
+                      <tr className="bg-slate-100/80 dark:bg-[#151921] text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-[#262b34] font-bold uppercase tracking-wider text-[11px]">
                         <th className="py-3 px-4">শিক্ষার্থী</th>
                         <th className="py-3 px-4 text-center">পরীক্ষা এটেন্ড</th>
                         <th className="py-3 px-4 text-center">পরীক্ষার প্রাপ্ত নম্বর</th>
@@ -433,7 +433,7 @@ export default function MarksheetPage({
                           <button
                             type="button"
                             onClick={() => setPercentageSort((current) => (current === 'desc' ? 'asc' : 'desc'))}
-                            className="inline-flex items-center justify-center gap-1.5 hover:text-purple-600 dark:hover:text-purple-300 transition-colors cursor-pointer"
+                            className="inline-flex items-center justify-center gap-1.5 hover:text-orange-600 dark:hover:text-orange-400 transition-colors cursor-pointer"
                             title={percentageSort === 'desc' ? 'কম থেকে বেশি' : 'বেশি থেকে কম'}
                           >
                             <span>পার্সেন্টেজ (%)</span>
@@ -443,7 +443,7 @@ export default function MarksheetPage({
                         <th className="py-3 px-4 text-right">অ্যাকশন</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-800 dark:text-slate-200">
+                    <tbody className="divide-y divide-slate-100 dark:divide-[#262b34] font-medium text-slate-800 dark:text-slate-200">
                       {rankedStudents.length === 0 ? (
                         <tr>
                           <td colSpan={8} className="py-8 text-center text-slate-400">
@@ -452,10 +452,10 @@ export default function MarksheetPage({
                         </tr>
                       ) : (
                         rankedStudents.map((row) => (
-                          <tr key={row.student._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                          <tr key={row.student._id} className="hover:bg-slate-50 dark:hover:bg-[#151921] transition-colors">
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold flex items-center justify-center text-xs">
+                                <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 font-bold flex items-center justify-center text-xs">
                                   {row.student.name.charAt(0)}
                                 </div>
                                 <div>
@@ -467,13 +467,13 @@ export default function MarksheetPage({
                             <td className="py-3 px-4 text-center font-bold">
                               {row.summary.examsAttempted} / {row.summary.totalExams}
                             </td>
-                            <td className="py-3 px-4 text-center font-bold text-blue-600 dark:text-blue-400">
+                            <td className="py-3 px-4 text-center font-bold text-orange-600 dark:text-orange-400">
                               {row.summary.totalObtainedExamMarks} / {row.summary.totalPossibleExamMarks}
                             </td>
                             <td className="py-3 px-4 text-center font-bold">
                               {row.summary.assignmentsSubmitted} / {row.summary.totalAssignments}
                             </td>
-                            <td className="py-3 px-4 text-center font-bold text-purple-600 dark:text-purple-400">
+                            <td className="py-3 px-4 text-center font-bold text-orange-600 dark:text-orange-400">
                               {row.summary.totalObtainedAssignmentMarks} / {row.summary.totalPossibleAssignmentMarks}
                             </td>
                             <td className="py-3 px-4 text-center font-black text-slate-900 dark:text-white">
@@ -495,7 +495,7 @@ export default function MarksheetPage({
                             <td className="py-3 px-4 text-right">
                               <Link
                                 href={`/classroom/${batchId}/marksheet/${row.student._id}`}
-                                className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all"
+                                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-sm shadow-orange-950/20"
                               >
                                 বিস্তারিত দেখুন
                               </Link>
@@ -515,7 +515,7 @@ export default function MarksheetPage({
       {/* Detailed Student Transcript Modal */}
       {selectedStudentRow && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] w-full max-w-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedStudentRow(null)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
@@ -524,10 +524,10 @@ export default function MarksheetPage({
             </button>
 
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
-              <Award className="w-5 h-5 text-purple-600" />
+              <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span>{selectedStudentRow.student.name} - মার্কশিট ও বিশ্লেষণ</span>
             </h3>
-            <p className="text-xs text-slate-500 mb-5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
               Grav ID: {selectedStudentRow.student.gravId || selectedStudentRow.student.email} · সামগ্রিক সফলতা: {selectedStudentRow.summary.percentage}%
             </p>
 
@@ -535,18 +535,18 @@ export default function MarksheetPage({
               {/* Exams */}
               <div>
                 <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-blue-500" />
+                  <FileText className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
                   <span>পরীক্ষার ফলাফল তালিকা</span>
                 </h4>
                 <div className="space-y-2">
                   {selectedStudentRow.exams.map((e) => (
                     <div
                       key={e.examId}
-                      className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs"
+                      className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] flex items-center justify-between text-xs"
                     >
                       <div>
                         <div className="font-bold text-slate-900 dark:text-white">{e.title}</div>
-                        <div className="text-[11px] text-slate-500">
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
                           MCQ: {e.mcqScore} · CQ: {e.cqScore} · পাস নম্বর: {e.passMarks}
                         </div>
                       </div>
@@ -567,18 +567,18 @@ export default function MarksheetPage({
               {/* Assignments */}
               <div>
                 <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-purple-500" />
+                  <Award className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
                   <span>অ্যাসাইনমেন্ট মূল্যায়ন তালিকা</span>
                 </h4>
                 <div className="space-y-2">
                   {selectedStudentRow.assignments.map((a) => (
                     <div
                       key={a.assignmentId}
-                      className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs"
+                      className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] flex items-center justify-between text-xs"
                     >
                       <div>
                         <div className="font-bold text-slate-900 dark:text-white">{a.title}</div>
-                        <div className="text-[11px] text-slate-500">
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
                           {a.isLate ? 'লেইট সাবমিশন' : 'সময়মতো জমা'}
                           {a.feedback && ` · মন্তব্য: "${a.feedback}"`}
                         </div>
@@ -604,7 +604,7 @@ export default function MarksheetPage({
                       <div className="font-black text-sm">
                         {a.submitted ? (
                           a.isEvaluated ? (
-                            <span className="text-purple-600">{a.obtainedMarks} / {a.totalMarks}</span>
+                            <span className="text-orange-600 dark:text-orange-400">{a.obtainedMarks} / {a.totalMarks}</span>
                           ) : (
                             <span className="text-amber-500 text-xs font-bold">অমূল্যায়িত</span>
                           )

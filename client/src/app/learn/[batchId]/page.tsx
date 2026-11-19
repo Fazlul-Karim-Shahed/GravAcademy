@@ -152,9 +152,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border-2 border-blue-500/20 border-t-blue-600 animate-spin mx-auto" />
+          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">পাঠ্যক্রম ও লেসন লোড হচ্ছে...</p>
         </div>
       </div>
@@ -163,9 +163,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-20 text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-20 text-center">
         <div className="max-w-md mx-auto px-4">
-          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-slate-400 flex items-center justify-center mx-auto mb-4">
             <BookOpen className="w-7 h-7" />
           </div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">ব্যাচের কারিকুলাম পাওয়া যায়নি</h2>
@@ -174,7 +174,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
           </p>
           <Link
             href="/courses"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> সকল কোর্সে ফিরুন
           </Link>
@@ -189,14 +189,14 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
     (data.batch.assignedTeachers || []).some((teacherId) => teacherId.toString() === user.id);
 
   return (
-    <div className="min-h-screen bg-slate-50/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50/70 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. TOP HEADER (Cosmic Glow Theme) */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white border border-indigo-900/60 shadow-lg shadow-indigo-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white border border-orange-900/40 shadow-lg shadow-orange-950/20">
         {/* Subtle deep space glow in top bar */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-rose-950/40 via-red-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-red-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-blue-900/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
@@ -209,9 +209,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
             <div className="flex items-center gap-3.5 pt-1 min-w-0">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
                 {activeLesson ? (
-                  <FileVideo className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-200" />
+                  <FileVideo className="w-6 h-6 sm:w-7 sm:h-7 text-orange-200" />
                 ) : (
-                  <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-200" />
+                  <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-orange-200" />
                 )}
               </div>
               <div className="min-w-0">
@@ -229,7 +229,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
               {canEditCurriculum && (
                 <Link
                   href={`/admin/batches/${data.batch._id}/curriculum`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   <span>এডিট</span>
@@ -240,7 +240,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md active:scale-95 transition-all"
                 title="ব্যাচ ক্লাসরুম, ডিসকাশন গ্রুপ ও নোটিশ বোর্ড"
               >
-                <MessageSquare className="w-4 h-4 text-emerald-400" />
+                <MessageSquare className="w-4 h-4 text-orange-400" />
                 <span>ভিউ ক্লাসরুম</span>
               </Link>
 
@@ -276,11 +276,11 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                 )}
 
                 {/* Lesson Notes & Overview */}
-                <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+                <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
                   <div className="flex items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-                      <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                      <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
+                      <span className="text-[11px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
                         ক্লাস বিবরণী ও রিসোর্স
                       </span>
                     </div>
@@ -308,9 +308,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                   )}
 
                   {/* Attached Documents / Google Drive Resources */}
-                  <div className="mt-7 pt-6 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="mt-7 pt-6 border-t border-slate-100 dark:border-[#262b34]">
                     <div className="flex items-center gap-2 mb-3.5">
-                      <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         সংযুক্ত লেকচার শিট ও হ্যান্ডনোট
                       </h3>
@@ -321,10 +321,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                         {activeLesson.resources.map((res, i) => (
                           <div
                             key={i}
-                            className="group flex flex-col justify-between p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 hover:border-blue-400/80 dark:hover:border-blue-500/80 transition-all shadow-2xs hover:shadow-xs"
+                            className="group flex flex-col justify-between p-4 rounded-2xl bg-slate-50/80 dark:bg-[#151921]/60 border border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/80 dark:hover:border-orange-500/80 transition-all shadow-2xs hover:shadow-xs"
                           >
                             <div className="flex items-start gap-3 mb-3">
-                              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center shrink-0">
+                              <div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-900/60 flex items-center justify-center shrink-0">
                                 <FileText className="w-4 h-4" />
                               </div>
                               <div className="min-w-0">
@@ -353,7 +353,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                     isFullScreen: false,
                                   });
                                 }}
-                                className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                                className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25 cursor-pointer"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                                 <span>ডকুমেন্ট দেখুন</span>
@@ -371,7 +371,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                     isFullScreen: false,
                                   });
                                 }}
-                                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25 cursor-pointer"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                                 <span>লিংক দেখুন</span>
@@ -391,7 +391,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                 </div>
               </>
             ) : (
-              <div className="p-16 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-center shadow-xs">
+              <div className="p-16 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] text-center shadow-xs">
                 <BookOpen className="w-12 h-12 text-slate-400 mx-auto mb-3" />
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">ক্লাস শুরু করতে তালিকা থেকে নির্বাচন করুন</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">ডানদিকের সিলেবাস মডিউল থেকে যেকোনো অধ্যায়ের পাঠে ক্লিক করুন।</p>
@@ -401,19 +401,19 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
           {/* RIGHT 4 COLS: Modern Playlist Style Curriculum Hierarchy */}
           <div className="lg:col-span-4 sticky top-20 space-y-4">
-            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs">
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
               
               {/* Card Header */}
-              <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+                  <span className="p-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400">
                     <BookOpen className="w-3.5 h-3.5" />
                   </span>
                   <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
                     কোর্স কারিকুলাম
                   </h2>
                 </div>
-                <span className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-[#151921] px-2 py-0.5 rounded-full">
                   {data.modules.length} টি অধ্যায়
                 </span>
               </div>
@@ -428,15 +428,15 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                   {data.modules.map((mod) => (
                     <div
                       key={mod._id}
-                      className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden bg-slate-50/60 dark:bg-slate-950/40"
+                      className="rounded-2xl border border-slate-200/80 dark:border-[#262b34] overflow-hidden bg-slate-50/60 dark:bg-[#151921]/40"
                     >
                       {/* Module Title Button */}
                       <button
                         onClick={() => toggleModule(mod._id)}
-                        className="w-full p-3 flex items-center justify-between text-left hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors"
+                        className="w-full p-3 flex items-center justify-between text-left hover:bg-slate-100/80 dark:hover:bg-[#1c222c] transition-colors"
                       >
                         <div className="flex items-center gap-2 min-w-0 pr-2">
-                          <span className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0" title="Module">
+                          <span className="w-6 h-6 rounded-lg bg-orange-50 dark:bg-orange-950/60 border border-orange-100 dark:border-orange-900/60 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0" title="Module">
                             <Layers className="w-3.5 h-3.5" />
                           </span>
                           <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
@@ -452,7 +452,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
                       {/* Lessons in Module */}
                       {expandedModules[mod._id] && (
-                        <div className="px-2.5 pb-2.5 pt-1 space-y-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900">
+                        <div className="px-2.5 pb-2.5 pt-1 space-y-1 border-t border-slate-200/60 dark:border-[#262b34] bg-white dark:bg-[#111318]">
                           {/* Direct Lessons */}
                           {mod.directLessons?.map((lesson) => {
                             const isSelected = activeLesson?._id === lesson._id;
@@ -462,12 +462,12 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                 onClick={() => setActiveLesson(lesson)}
                                 className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between transition-all ${
                                   isSelected
-                                    ? 'bg-blue-600 text-white font-bold shadow-xs'
-                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium'
+                                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold shadow-xs'
+                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] font-medium'
                                 }`}
                               >
                                 <div className="flex items-center gap-2 truncate">
-                                  <FileVideo className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-emerald-500'}`} />
+                                  <FileVideo className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-orange-500'}`} />
                                   <span className="truncate">{lesson.title}</span>
                                 </div>
                                 {isSelected && (
@@ -479,9 +479,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
                           {/* Nested Sections */}
                           {mod.sections?.map((sec) => (
-                            <div key={sec._id} className="mt-2 pl-2 border-l-2 border-blue-500/30 dark:border-blue-400/20 space-y-1">
+                            <div key={sec._id} className="mt-2 pl-2 border-l-2 border-orange-500/30 dark:border-orange-500/20 space-y-1">
                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1.5 py-0.5">
-                                <BookOpen className="w-3 h-3 text-indigo-500" />
+                                <BookOpen className="w-3 h-3 text-orange-500" />
                                 {sec.title}
                               </span>
                               {sec.lessons?.map((lesson) => {
@@ -492,12 +492,12 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                                     onClick={() => setActiveLesson(lesson)}
                                     className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-all ${
                                       isSelected
-                                        ? 'bg-blue-600 text-white font-bold shadow-xs'
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium'
+                                        ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white font-bold shadow-xs'
+                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#151921] font-medium'
                                     }`}
                                   >
                                     <div className="flex items-center gap-2 truncate">
-                                      <FileVideo className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-emerald-500'}`} />
+                                      <FileVideo className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-orange-500'}`} />
                                       <span className="truncate">{lesson.title}</span>
                                     </div>
                                     {isSelected && (
@@ -525,16 +525,16 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
       {previewDoc?.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
           <div
-            className={`flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden transition-all duration-300 ${
+            className={`flex flex-col bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-2xl overflow-hidden transition-all duration-300 ${
               previewDoc.isFullScreen
                 ? 'fixed inset-2 sm:inset-4 rounded-2xl z-50'
                 : 'w-full max-w-5xl h-[88vh] rounded-3xl'
             }`}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/50">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-200 dark:border-[#262b34] bg-slate-50/80 dark:bg-[#151921]/60">
               <div className="flex items-center gap-2.5 min-w-0 pr-4">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div className="truncate">
@@ -575,10 +575,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
             </div>
 
             {/* Modal Body / Iframe Viewer */}
-            <div className="relative flex-1 w-full h-full bg-slate-100 dark:bg-slate-950">
+            <div className="relative flex-1 w-full h-full bg-slate-100 dark:bg-[#0b0d12]">
               {docLoading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-50/90 dark:bg-slate-900/90 z-10">
-                  <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-slate-50/90 dark:bg-[#111318]/90 z-10">
+                  <Loader2 className="w-8 h-8 text-orange-600 dark:text-orange-400 animate-spin" />
                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                     লেকচার শিট লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...
                   </p>

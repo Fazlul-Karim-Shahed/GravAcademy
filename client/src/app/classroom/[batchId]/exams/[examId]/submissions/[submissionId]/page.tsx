@@ -169,12 +169,12 @@ export default function SubmissionEvaluationPage({
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-sm font-semibold text-slate-500">লোড হচ্ছে...</div>;
-  if (error || !submission || !exam) return <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6"><div className="max-w-md text-center"><AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" /><p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error || 'সাবমিশন পাওয়া যায়নি'}</p></div></div>;
+  if (loading) return <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center text-sm font-semibold text-slate-500 dark:text-slate-400">লোড হচ্ছে...</div>;
+  if (error || !submission || !exam) return <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center p-6"><div className="max-w-md text-center"><AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" /><p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error || 'সাবমিশন পাওয়া যায়নি'}</p></div></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-24">
-      <div className="w-[98%] mx-auto mt-4 rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 border border-indigo-900/60 shadow-xl shadow-indigo-950/20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-24">
+      <div className="w-[98%] mx-auto mt-4 rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <UserAvatar name={submission.gravId.name} avatarUrl={submission.gravId.avatarUrl} size="lg" className="border-2 border-white/30" />
@@ -192,33 +192,33 @@ export default function SubmissionEvaluationPage({
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 grid grid-cols-1 lg:grid-cols-[1.25fr_.75fr] gap-5">
         <section className="space-y-5">
-          {submission.studentDocumentUrl && <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+          {submission.studentDocumentUrl && <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-4 sm:p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-              <h2 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-blue-600" />উত্তরপত্র</h2>
+              <h2 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />উত্তরপত্র</h2>
               <div className="flex items-center gap-3">
                 {submission.annotatedFileUrl && <a href={submission.annotatedFileUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-emerald-600 inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" />চেকড</a>}
-                <a href={submission.studentDocumentUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 inline-flex items-center gap-1">খুলুন <ExternalLink className="w-3.5 h-3.5" /></a>
+                <a href={submission.studentDocumentUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-orange-600 dark:text-orange-400 inline-flex items-center gap-1">খুলুন <ExternalLink className="w-3.5 h-3.5" /></a>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <button type="button" onClick={() => { setAnnotationSourceUrl(annotatedPreviewUrl || savedAnnotatedUrl || submission.annotatedFileUrl || submission.studentDocumentUrl || ''); setShowAnnotator(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 px-3 py-2 text-xs font-black text-rose-700 dark:text-rose-300 hover:bg-rose-100 transition-colors">
+              <button type="button" onClick={() => { setAnnotationSourceUrl(annotatedPreviewUrl || savedAnnotatedUrl || submission.annotatedFileUrl || submission.studentDocumentUrl || ''); setShowAnnotator(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 px-3 py-2 text-xs font-black text-orange-700 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900/60 transition-colors">
                 <PenTool className="w-3.5 h-3.5" />{submission.annotatedFileUrl ? 'এডিট' : 'অ্যানোটেট'}
               </button>
               {annotatedBlob && <span className="text-[11px] font-bold text-amber-600">নতুন annotation save-এর জন্য প্রস্তুত</span>}
             </div>
-            <iframe src={getDrivePreviewUrl(submission.studentDocumentUrl)} title="Answer Script" className="w-full h-[460px] rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800" />
+            <iframe src={getDrivePreviewUrl(submission.studentDocumentUrl)} title="Answer Script" className="w-full h-[460px] rounded-2xl border border-slate-200 dark:border-[#262b34] bg-slate-100 dark:bg-[#151921]" />
           </div>}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm"><h2 className="text-sm font-black mb-4">লিখিত উত্তর</h2>{submission.cqAnswers?.length ? <div className="space-y-3">{submission.cqAnswers.map((answer) => <div key={answer.questionIndex} className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4"><p className="text-[11px] font-black text-purple-600 mb-1">প্রশ্ন {answer.questionIndex + 1}</p><p className="text-sm leading-6 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{answer.answerText || 'কোনো উত্তর নেই'}</p></div>)}</div> : <p className="text-xs text-slate-500">কোনো লিখিত উত্তর জমা দেওয়া হয়নি।</p>}</div>
+          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-5 shadow-sm"><h2 className="text-sm font-black mb-4">লিখিত উত্তর</h2>{submission.cqAnswers?.length ? <div className="space-y-3">{submission.cqAnswers.map((answer) => <div key={answer.questionIndex} className="rounded-2xl bg-slate-50 dark:bg-[#151921] p-4 border border-slate-100 dark:border-[#262b34]"><p className="text-[11px] font-black text-orange-600 dark:text-orange-400 mb-1">প্রশ্ন {answer.questionIndex + 1}</p><p className="text-sm leading-6 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{answer.answerText || 'কোনো উত্তর নেই'}</p></div>)}</div> : <p className="text-xs text-slate-500 dark:text-slate-400">কোনো লিখিত উত্তর জমা দেওয়া হয়নি।</p>}</div>
         </section>
 
-        <aside className="h-fit lg:sticky lg:top-24 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-5"><div><p className="text-[11px] text-slate-500">MCQ স্কোর</p><p className="text-xl font-black text-blue-600">{submission.mcqScore}</p></div><div className="text-right"><p className="text-[11px] text-slate-500">CQ সর্বোচ্চ</p><p className="text-xl font-black text-purple-600">{cqMax}</p></div></div>
-          <label className="block text-xs font-black mb-2">CQ নম্বর</label>
-          <input type="number" min="0" max={cqMax} step="0.5" value={cqScore} onChange={(e) => setCqScore(Math.min(Math.max(Number(e.target.value) || 0, 0), cqMax))} className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-lg font-black focus:outline-none focus:ring-2 focus:ring-purple-500" />
-          <p className="text-[11px] text-slate-500 mt-2">মোট: {(submission.mcqScore || 0) + Number(cqScore)} / {exam.totalMarks}</p>
-          <label className="block text-xs font-black mt-5 mb-2">ফিডব্যাক</label>
-          <textarea rows={5} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="শিক্ষার্থীর জন্য সংক্ষিপ্ত feedback লিখুন" className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" />
-          <button type="button" onClick={handleSave} disabled={saving} className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 text-sm font-black disabled:opacity-60">{saved ? <><Check className="w-4 h-4" />সংরক্ষিত</> : <><Save className="w-4 h-4" />{saving ? 'সংরক্ষণ হচ্ছে...' : 'মূল্যায়ন সংরক্ষণ'}</>}</button>
+        <aside className="h-fit lg:sticky lg:top-24 bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-5"><div><p className="text-[11px] text-slate-500 dark:text-slate-400">MCQ স্কোর</p><p className="text-xl font-black text-orange-600 dark:text-orange-400">{submission.mcqScore}</p></div><div className="text-right"><p className="text-[11px] text-slate-500 dark:text-slate-400">CQ সর্বোচ্চ</p><p className="text-xl font-black text-orange-600 dark:text-orange-400">{cqMax}</p></div></div>
+          <label className="block text-xs font-black mb-2 text-slate-800 dark:text-slate-200">CQ নম্বর</label>
+          <input type="number" min="0" max={cqMax} step="0.5" value={cqScore} onChange={(e) => setCqScore(Math.min(Math.max(Number(e.target.value) || 0, 0), cqMax))} className="w-full rounded-2xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] px-4 py-3 text-lg font-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500" />
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">মোট: {(submission.mcqScore || 0) + Number(cqScore)} / {exam.totalMarks}</p>
+          <label className="block text-xs font-black mt-5 mb-2 text-slate-800 dark:text-slate-200">ফিডব্যাক</label>
+          <textarea rows={5} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="শিক্ষার্থীর জন্য সংক্ষিপ্ত feedback লিখুন" className="w-full rounded-2xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500" />
+          <button type="button" onClick={handleSave} disabled={saving} className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-4 py-3 text-sm font-black shadow-md shadow-orange-950/25 transition-all disabled:opacity-60">{saved ? <><Check className="w-4 h-4" />সংরক্ষিত</> : <><Save className="w-4 h-4" />{saving ? 'সংরক্ষণ হচ্ছে...' : 'মূল্যায়ন সংরক্ষণ'}</>}</button>
         </aside>
       </main>
 

@@ -135,24 +135,24 @@ export default function CoursesCatalogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#080c1a] text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
         
         {/* Deep space radial ambient lighting & celestial nebula glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-rose-950/45 via-red-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-red-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-blue-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
-        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-purple-900/15 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
+        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-amber-500/10 rounded-full blur-[90px] pointer-events-none -z-10" />
+        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-orange-600/10 rounded-full blur-[90px] pointer-events-none -z-10" />
 
         {/* Twinkling Cosmic Stars & Shooting Star */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute top-[12%] left-[8%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[22%] left-[16%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
           <div className="absolute top-[10%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <div className="absolute top-[28%] right-[8%] w-1.5 h-1.5 rounded-full bg-rose-200 animate-star-twinkle-slow" />
-          <div className="absolute top-[35%] left-[45%] w-1 h-1 rounded-full bg-sky-200 animate-star-twinkle-medium" />
+          <div className="absolute top-[28%] right-[8%] w-1.5 h-1.5 rounded-full bg-orange-200 animate-star-twinkle-slow" />
+          <div className="absolute top-[35%] left-[45%] w-1 h-1 rounded-full bg-amber-200 animate-star-twinkle-medium" />
           <span className="shooting-star meteor-1" />
           <span className="shooting-star meteor-3" />
         </div>
@@ -162,7 +162,7 @@ export default function CoursesCatalogPage() {
             <div>
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
                 সকল কোর্স ও{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 pt-1 pb-2 px-1">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300 pt-1 pb-2 px-1">
                   চলতি ব্যাচসমূহ
                 </span>
               </h1>
@@ -179,7 +179,7 @@ export default function CoursesCatalogPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="কোর্সের নাম বা বিষয় দিয়ে খুঁজুন..."
-                className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-indigo-400 rounded-2xl pl-10 pr-9 py-3 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-400/30 transition-all font-medium shadow-inner"
+                className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-orange-400 rounded-2xl pl-10 pr-9 py-3 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500/30 transition-all font-medium shadow-inner"
               />
               {searchQuery && (
                 <button
@@ -204,7 +204,7 @@ export default function CoursesCatalogPage() {
                   onClick={() => setSelectedGrade(g.value)}
                   className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all duration-300 cursor-pointer flex items-center gap-1.5 shrink-0 ${
                     active
-                      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-blue-500/40 border border-white/30'
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/30 border border-white/30'
                       : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10 backdrop-blur-md'
                   }`}
                 >
@@ -235,14 +235,14 @@ export default function CoursesCatalogPage() {
         {/* Course Count / Active Filter Status */}
         <div className="flex items-center justify-between mb-8 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-bold">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
             <span>
               উপলব্ধ কোর্স: <span className="text-slate-900 dark:text-white font-extrabold">{filteredCourses.length}</span> টি
             </span>
           </div>
           {searchQuery && (
-            <div className="px-3 py-1 rounded-lg bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-800 text-xs">
-              সার্চ ফিল্টার: <span className="text-blue-600 dark:text-blue-400 font-bold">"{searchQuery}"</span>
+            <div className="px-3 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200/60 dark:border-orange-800/60 text-xs">
+              সার্চ ফিল্টার: <span className="text-orange-600 dark:text-orange-400 font-bold">"{searchQuery}"</span>
             </div>
           )}
         </div>
@@ -266,7 +266,7 @@ export default function CoursesCatalogPage() {
           </div>
         ) : filteredCourses.length === 0 ? (
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-center py-16 px-4 shadow-xs max-w-md mx-auto my-6">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-3.5">
+            <div className="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-3.5 border border-orange-200/60 dark:border-orange-800/60">
               <BookOpen className="w-7 h-7" />
             </div>
             <h3 className="text-base font-extrabold text-slate-900 dark:text-white">কোনো কোর্স পাওয়া যায়নি</h3>
@@ -276,7 +276,7 @@ export default function CoursesCatalogPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/20 transition-all"
             >
               সকল কোর্স দেখুন
             </button>

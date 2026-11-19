@@ -88,14 +88,14 @@ export default function ScheduleFreeClassPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 transition-colors">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-6">
           <Link
             href="/free-classes"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> ফ্রি ক্লাস তালিকায় ফিরে যান
           </Link>
@@ -130,7 +130,7 @@ export default function ScheduleFreeClassPage() {
         )}
 
         {/* Form Card */}
-        <Card className="border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-none p-6 sm:p-8 rounded-3xl">
+        <Card className="border border-slate-200/90 dark:border-[#262b34] bg-white dark:bg-[#111318] shadow-xl shadow-slate-200/40 dark:shadow-none p-6 sm:p-8 rounded-3xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Session Title */}
@@ -144,7 +144,7 @@ export default function ScheduleFreeClassPage() {
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="যেমন: এসএসসির জন্য ফিজিক্স শেষ মুহূর্তের প্রস্তুতি ও গাইডলাইন"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
+                className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white dark:focus:bg-[#111318] transition-colors"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function ScheduleFreeClassPage() {
                   required
                   value={form.startTime}
                   onChange={(e) => setForm({ ...form, startTime: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
                 />
               </div>
 
@@ -182,7 +182,7 @@ export default function ScheduleFreeClassPage() {
                   step="15"
                   value={form.durationMinutes}
                   onChange={(e) => setForm({ ...form, durationMinutes: Number(e.target.value) })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 transition-colors"
                 />
               </div>
             </div>

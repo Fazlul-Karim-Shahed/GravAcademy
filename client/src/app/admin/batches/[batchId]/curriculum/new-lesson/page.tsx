@@ -127,13 +127,13 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
           <Link
             href={`/admin/batches/${resolvedParams.batchId}/curriculum`}
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> কারিকুলামে ফিরে যান
           </Link>
@@ -161,9 +161,9 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
         )}
 
         {/* Main Editor Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden p-6 sm:p-8">
-          <div className="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-slate-800">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-sm overflow-hidden p-6 sm:p-8">
+          <div className="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-[#262b34]">
+            <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
               <FileVideo className="w-5 h-5" />
             </div>
             <div>
@@ -187,7 +187,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="যেমন: লেকচার ০১: গতি ও ত্বরণ"
-                className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
               />
             </div>
 
@@ -200,7 +200,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
                 value={youtubeVideoId}
                 onChange={(e) => setYoutubeVideoId(e.target.value)}
                 placeholder="dQw4w9WgXcQ অথবা https://youtu.be/..."
-                className="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
+                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
               />
             </div>
 
@@ -217,7 +217,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
             </div>
 
             {/* Materials Upload */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="pt-4 border-t border-slate-100 dark:border-[#262b34]">
               <label className="block text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
                 সংযুক্ত লেকচার শিট ও ফাইল (PDF / Document / Image)
               </label>
@@ -233,29 +233,6 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
                 maxSizeMb={25}
                 disabled={uploadingFile || submitting}
               />
-              <label className="hidden flex items-center justify-center gap-2.5 p-5 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-500 bg-slate-50/60 dark:bg-slate-950/40 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 transition-all cursor-pointer group">
-                {uploadingFile ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-                ) : (
-                  <Upload className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
-                )}
-                <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  {uploadingFile ? 'আপলোড হচ্ছে...' : 'ফাইল যুক্ত করুন (PDF, DOCX, JPG/PNG)'}
-                </span>
-                <input
-                  type="file"
-                  disabled={uploadingFile}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleUploadFile(file);
-                      e.target.value = '';
-                    }
-                  }}
-                />
-              </label>
 
               {resources && resources.length > 0 && (
                 <div className="mt-4 space-y-2">
@@ -265,14 +242,14 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
                   {resources.map((res, rIdx) => (
                     <div
                       key={rIdx}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm"
+                      className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs sm:text-sm"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 pr-3">
-                        <Paperclip className="w-4 h-4 text-blue-600 shrink-0" />
+                        <Paperclip className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
                         <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
                           {res.title}
                         </span>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-[#111318] px-2 py-0.5 rounded border border-slate-200 dark:border-[#262b34]">
                           {res.type}
                         </span>
                       </div>
@@ -293,17 +270,17 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-slate-100 dark:border-[#262b34]">
               <Link
                 href={`/admin/batches/${resolvedParams.batchId}/curriculum`}
-                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
               >
                 বাতিল
               </Link>
               <button
                 type="submit"
                 disabled={submitting || uploadingFile}
-                className="w-full sm:w-auto px-7 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-xs disabled:opacity-50"
+                className="w-full sm:w-auto px-7 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
               >
                 {submitting ? 'সংরক্ষণ হচ্ছে...' : 'লেসন সংরক্ষণ করুন'}
               </button>

@@ -249,14 +249,14 @@ export default function ProfileEditPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
         <div className="text-xs font-bold text-slate-400">লোড হচ্ছে...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Header */}
@@ -264,7 +264,7 @@ export default function ProfileEditPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/profile"
-              className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 shadow-2xs transition-colors"
+              className="w-9 h-9 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 shadow-2xs transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
@@ -282,7 +282,7 @@ export default function ProfileEditPage() {
             type="submit"
             form="profile-edit-form"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all cursor-pointer disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}</span>
@@ -309,9 +309,9 @@ export default function ProfileEditPage() {
         <form id="profile-edit-form" onSubmit={handleSubmit} className="space-y-6">
           
           {/* Avatar & Photo Section */}
-          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs">
+          <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-              <Camera className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <Camera className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>প্রোফাইল ছবি (Avatar / Photo)</span>
             </h3>
 
@@ -322,7 +322,7 @@ export default function ProfileEditPage() {
                   avatarUrl={avatarUrl}
                   role={user.role}
                   size="xl"
-                  className="w-24 h-24 text-2xl shadow-md border-2 border-slate-200 dark:border-slate-800"
+                  className="w-24 h-24 text-2xl shadow-md border-2 border-slate-200 dark:border-[#262b34]"
                 />
                 {uploadingAvatar && (
                   <div className="absolute inset-0 bg-slate-900/75 rounded-full flex flex-col items-center justify-center text-white p-1">
@@ -343,41 +343,18 @@ export default function ProfileEditPage() {
                     maxSizeMb={10}
                     disabled={uploadingAvatar}
                   />
-                  <div className="hidden flex items-center gap-3">
-                    <label className="hidden px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 text-xs font-bold cursor-pointer transition-colors inline-flex items-center gap-2">
-                      {uploadingAvatar ? (
-                        <>
-                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          <span>{avatarProgress > 0 && avatarProgress < 100 ? `আপলোড হচ্ছে ${avatarProgress}%` : 'ড্রাইভে সংরক্ষণ হচ্ছে...'}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="w-3.5 h-3.5" />
-                          <span>ছবি নির্বাচন করুন (JPG, PNG, WebP)</span>
-                        </>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp,image/gif"
-                        onChange={handleAvatarFileUpload}
-                        disabled={uploadingAvatar}
-                        className="hidden"
-                      />
-                    </label>
-                    <span className="text-[11px] text-slate-400 font-medium">সর্বোচ্চ ১০MB</span>
-                  </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="h-px bg-slate-100 dark:bg-slate-800 flex-1" />
+                  <div className="h-px bg-slate-100 dark:border-[#262b34] flex-1" />
                   <span className="text-[10px] font-bold uppercase text-slate-400">অথবা</span>
-                  <div className="h-px bg-slate-100 dark:bg-slate-800 flex-1" />
+                  <div className="h-px bg-slate-100 dark:border-[#262b34] flex-1" />
                 </div>
 
                 {/* Direct image link */}
                 <div>
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1.5 flex items-center gap-1.5">
-                    <LinkIcon className="w-3.5 h-3.5 text-indigo-500" />
+                    <LinkIcon className="w-3.5 h-3.5 text-orange-500" />
                     <span>ছবির ডিরেক্ট ওয়েব লিংক (Image URL):</span>
                   </label>
                   <input
@@ -385,7 +362,7 @@ export default function ProfileEditPage() {
                     value={avatarUrl}
                     onChange={(e) => setAvatarUrl(e.target.value)}
                     placeholder="https://example.com/my-photo.jpg অথবা /images/teacher-1.jpg"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
               </div>
@@ -393,9 +370,9 @@ export default function ProfileEditPage() {
           </div>
 
           {/* Basic Personal Info */}
-          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs space-y-4">
+          <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-              <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <User className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>সাধারণ তথ্য</span>
             </h3>
 
@@ -409,7 +386,7 @@ export default function ProfileEditPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -421,7 +398,7 @@ export default function ProfileEditPage() {
                   type="text"
                   disabled
                   value={user.gravId || '—'}
-                  className="w-full bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono text-xs rounded-xl px-3.5 py-2.5 cursor-not-allowed select-all"
+                  className="w-full bg-slate-100 dark:bg-[#151921]/60 border border-slate-200 dark:border-[#262b34] text-slate-500 dark:text-slate-400 font-mono text-xs rounded-xl px-3.5 py-2.5 cursor-not-allowed select-all"
                 />
               </div>
 
@@ -434,7 +411,7 @@ export default function ProfileEditPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="017xxxxxxxx"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -446,7 +423,7 @@ export default function ProfileEditPage() {
                   type="email"
                   disabled
                   value={user.email || 'ইমেইল নেই'}
-                  className="w-full bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs rounded-xl px-3.5 py-2.5 cursor-not-allowed"
+                  className="w-full bg-slate-100 dark:bg-[#151921]/60 border border-slate-200 dark:border-[#262b34] text-slate-500 dark:text-slate-400 text-xs rounded-xl px-3.5 py-2.5 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -460,16 +437,16 @@ export default function ProfileEditPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="নিজের সম্পর্কে সংক্ষিপ্ত ২-৩ লাইন লিখুন..."
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl p-3.5 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl p-3.5 focus:outline-none focus:border-orange-500"
               />
             </div>
           </div>
 
           {/* TEACHER SPECIFIC FIELDS */}
           {user.role === 'teacher' && (
-            <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs space-y-4">
+            <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs space-y-4">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>শিক্ষক পরিচিতি ও হোমপেজ তথ্য</span>
               </h3>
 
@@ -483,7 +460,7 @@ export default function ProfileEditPage() {
                     value={institution}
                     onChange={(e) => setInstitution(e.target.value)}
                     placeholder="যেমন: বুয়েট (BUET - CSE)"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -496,7 +473,7 @@ export default function ProfileEditPage() {
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
                     placeholder="যেমন: কম্পিউটার সায়েন্স অ্যান্ড ইঞ্জিনিয়ারিং"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -509,7 +486,7 @@ export default function ProfileEditPage() {
                     value={experience}
                     onChange={(e) => setExperience(e.target.value)}
                     placeholder="যেমন: ৮+ বছরের শিক্ষকতা অভিজ্ঞতা"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -522,7 +499,7 @@ export default function ProfileEditPage() {
                     value={badge}
                     onChange={(e) => setBadge(e.target.value)}
                     placeholder="যেমন: মাস্টার ট্রেইনার, সিনিয়র মেন্টর"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -535,7 +512,7 @@ export default function ProfileEditPage() {
                     value={classesCount}
                     onChange={(e) => setClassesCount(e.target.value)}
                     placeholder="যেমন: ৪৫০+ লাইভ ক্লাস"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -548,7 +525,7 @@ export default function ProfileEditPage() {
                     value={studentsCount}
                     onChange={(e) => setStudentsCount(e.target.value)}
                     placeholder="যেমন: ১৫,০০০+"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
               </div>
@@ -565,12 +542,12 @@ export default function ProfileEditPage() {
                     onChange={(e) => setSubjectInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSubject(e))}
                     placeholder="বিষয় লিখে এন্টার চাপুন (যেমন: উচ্চতর গণিত)"
-                    className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:border-blue-500"
+                    className="flex-1 bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2 focus:outline-none focus:border-orange-500"
                   />
                   <button
                     type="button"
                     onClick={handleAddSubject}
-                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25 cursor-pointer"
                   >
                     যুক্ত করুন
                   </button>
@@ -580,13 +557,13 @@ export default function ProfileEditPage() {
                   {specialistSubjects.map((sub, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 text-xs font-bold border border-orange-200 dark:border-orange-800"
                     >
                       <span>{sub}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveSubject(sub)}
-                        className="text-purple-400 hover:text-rose-500 cursor-pointer"
+                        className="text-orange-400 hover:text-rose-500 cursor-pointer"
                       >
                         ×
                       </button>
@@ -605,7 +582,7 @@ export default function ProfileEditPage() {
                   value={cvUrl}
                   onChange={(e) => setCvUrl(e.target.value)}
                   placeholder="https://drive.google.com/file/d/... অথবা ডিরেক্ট পিডিএফ লিংক"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
@@ -613,9 +590,9 @@ export default function ProfileEditPage() {
 
           {/* STUDENT SPECIFIC FIELDS */}
           {user.role === 'student' && (
-            <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs space-y-4">
+            <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs space-y-4">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                <School className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <School className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>অ্যাকাডেমিক ও শিক্ষাপ্রতিষ্ঠান তথ্য</span>
               </h3>
 
@@ -629,7 +606,7 @@ export default function ProfileEditPage() {
                     value={schoolOrCollege}
                     onChange={(e) => setSchoolOrCollege(e.target.value)}
                     placeholder="যেমন: ঢাকা রেসিডেনসিয়াল মডেল কলেজ"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -640,7 +617,7 @@ export default function ProfileEditPage() {
                   <select
                     value={gradeLevel}
                     onChange={(e) => setGradeLevel(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer"
                   >
                     <option value="">শ্রেণি নির্বাচন করুন</option>
                     {academicClasses.map((cls) => (
@@ -658,7 +635,7 @@ export default function ProfileEditPage() {
                   <select
                     value={group}
                     onChange={(e) => setGroup(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer"
                   >
                     <option value="">গ্রুপ নির্বাচন করুন</option>
                     <option value="বিজ্ঞান (Science)">বিজ্ঞান (Science)</option>
@@ -677,7 +654,7 @@ export default function ProfileEditPage() {
                     value={guardianName}
                     onChange={(e) => setGuardianName(e.target.value)}
                     placeholder="পিতা বা মাতার নাম"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
@@ -690,7 +667,7 @@ export default function ProfileEditPage() {
                     value={guardianPhone}
                     onChange={(e) => setGuardianPhone(e.target.value)}
                     placeholder="018xxxxxxxx"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-orange-500"
                   />
                 </div>
               </div>
@@ -701,7 +678,7 @@ export default function ProfileEditPage() {
           <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-4">
             <Link
               href="/profile"
-              className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
+              className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222c] border border-transparent dark:border-[#262b34] text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
             >
               বাতিল
             </Link>
@@ -709,7 +686,7 @@ export default function ProfileEditPage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full sm:w-auto text-center px-7 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto text-center px-7 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all cursor-pointer disabled:opacity-50"
             >
               {saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
             </button>

@@ -103,19 +103,19 @@ export default function AdminUserProfilePage() {
   }, [userId, loadingSettings, canManageUsers, currentUser?.role, isFeatureEnabled]);
 
   if (loadingSettings || loading) {
-    return <main className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-500 dark:bg-slate-950 dark:text-slate-400">প্রোফাইল লোড হচ্ছে...</main>;
+    return <main className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-500 dark:bg-[#0b0d12] dark:text-slate-400">প্রোফাইল লোড হচ্ছে...</main>;
   }
 
   if (!canManageUsers || !isFeatureEnabled('userManagement', currentUser?.role === 'superadmin')) {
-    return <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-sm text-slate-600 dark:bg-slate-950 dark:text-slate-300">এই প্রোফাইল দেখার permission নেই।</main>;
+    return <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 text-sm text-slate-600 dark:bg-[#0b0d12] dark:text-slate-300">এই প্রোফাইল দেখার permission নেই।</main>;
   }
 
   if (error || !profile) {
     return (
-      <main className="min-h-screen bg-slate-50 px-4 py-12 dark:bg-slate-950">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 text-sm text-rose-700 dark:border-rose-900 dark:bg-slate-900 dark:text-rose-300">
+      <main className="min-h-screen bg-slate-50 px-4 py-12 dark:bg-[#0b0d12]">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 text-sm text-rose-700 dark:border-rose-900/60 dark:bg-[#111318] dark:text-rose-300">
           {error || 'ইউজার পাওয়া যায়নি।'}
-          <Link href="/admin/users" className="ml-3 font-bold underline underline-offset-4">ইউজার তালিকায় ফিরুন</Link>
+          <Link href="/admin/users" className="ml-3 font-bold text-orange-600 dark:text-orange-400 underline underline-offset-4">ইউজার তালিকায় ফিরুন</Link>
         </div>
       </main>
     );
@@ -128,28 +128,28 @@ export default function AdminUserProfilePage() {
   const linkedStudentCount = profile.guardianDetails?.linkedGravIds?.length || 0;
 
   return (
-    <main className="min-h-screen bg-slate-50 py-6 text-slate-900 dark:bg-slate-950 dark:text-slate-100 sm:py-10">
+    <main className="min-h-screen bg-slate-50 py-6 text-slate-900 dark:bg-[#0b0d12] dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-3">
-          <Link href="/admin/users" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+          <Link href="/admin/users" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">
             <ArrowLeft className="h-4 w-4" /> ইউজার তালিকা
           </Link>
-          <Link href={`/admin/users/${profile._id}/permissions`} className="rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-800 dark:text-slate-300">Permissions</Link>
+          <Link href={`/admin/users/${profile._id}/permissions`} className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">Permissions</Link>
         </div>
 
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <div className="h-2 bg-gradient-to-r from-blue-600 via-indigo-500 to-emerald-500" />
+        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-[#262b34] dark:bg-[#111318]">
+          <div className="h-2 bg-gradient-to-r from-orange-600 to-orange-700" />
           <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-8">
             <UserAvatar name={profile.name} avatarUrl={profile.avatarUrl} role={profile.role} size="xl" />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-black tracking-tight sm:text-3xl">{profile.name}</h1>
-                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{roleNames[profile.role] || profile.role}</span>
+                <h1 className="text-2xl font-black tracking-tight sm:text-3xl text-slate-900 dark:text-white">{profile.name}</h1>
+                <span className="rounded-full bg-orange-500/10 px-2.5 py-1 text-[11px] font-bold text-orange-600 dark:text-orange-400 border border-orange-500/20">{roleNames[profile.role] || profile.role}</span>
                 <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${profile.status === 'active' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'}`}>{profile.status === 'active' ? 'সক্রিয়' : profile.status}</span>
               </div>
               <p className="mt-1 break-all text-sm text-slate-500 dark:text-slate-400">{profile.email || 'ইমেইল দেওয়া নেই'}</p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                {profile.gravId && <span className="rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1.5 font-mono font-bold text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">Grav ID: {profile.gravId}</span>}
+                {profile.gravId && <span className="rounded-lg border border-orange-500/20 bg-orange-500/10 px-2.5 py-1.5 font-mono font-bold text-orange-600 dark:text-orange-400">Grav ID: {profile.gravId}</span>}
                 <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-semibold ${profile.emailVerified ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'}`}><ShieldCheck className="h-3.5 w-3.5" />{verifiedText}</span>
               </div>
             </div>
@@ -157,9 +157,9 @@ export default function AdminUserProfilePage() {
         </section>
 
         <div className="mt-5 grid gap-5 lg:grid-cols-2">
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-            <h2 className="flex items-center gap-2 text-sm font-black"><UserRound className="h-4 w-4 text-blue-600" /> মৌলিক তথ্য</h2>
-            <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800">
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
+            <h2 className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white"><UserRound className="h-4 w-4 text-orange-600 dark:text-orange-400" /> মৌলিক তথ্য</h2>
+            <div className="mt-3 divide-y divide-slate-100 dark:divide-[#262b34]">
               <InfoItem icon={<Mail className="h-4 w-4" />} label="Email" value={profile.email} />
               <InfoItem icon={<Phone className="h-4 w-4" />} label="Phone" value={profile.phone} />
               <InfoItem icon={<CalendarDays className="h-4 w-4" />} label="Joined" value={joinedDate} />
@@ -168,12 +168,12 @@ export default function AdminUserProfilePage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-            <h2 className="flex items-center gap-2 text-sm font-black"><GraduationCap className="h-4 w-4 text-emerald-600" /> Role details</h2>
-            {profile.studentDetails && <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800"><InfoItem icon={<GraduationCap className="h-4 w-4" />} label="Class / Grade" value={profile.studentDetails.gradeLevel} /><InfoItem icon={<MapPin className="h-4 w-4" />} label="School / College" value={profile.studentDetails.schoolOrCollege} /><InfoItem icon={<UserRound className="h-4 w-4" />} label="Group" value={profile.studentDetails.group} /><InfoItem icon={<Users className="h-4 w-4" />} label="Guardian" value={profile.studentDetails.guardianName} /><InfoItem icon={<Phone className="h-4 w-4" />} label="Guardian phone" value={profile.studentDetails.guardianPhone} /></div>}
-            {profile.teacherDetails && <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800"><InfoItem icon={<MapPin className="h-4 w-4" />} label="Institution" value={profile.teacherDetails.institution} /><InfoItem icon={<GraduationCap className="h-4 w-4" />} label="Department" value={profile.teacherDetails.department} /><InfoItem icon={<CalendarDays className="h-4 w-4" />} label="Experience" value={profile.teacherDetails.experience} /><InfoItem icon={<GraduationCap className="h-4 w-4" />} label="Specialist subjects" value={profile.teacherDetails.specialistSubjects?.join(', ')} /></div>}
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
+            <h2 className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white"><GraduationCap className="h-4 w-4 text-orange-600 dark:text-orange-400" /> Role details</h2>
+            {profile.studentDetails && <div className="mt-3 divide-y divide-slate-100 dark:divide-[#262b34]"><InfoItem icon={<GraduationCap className="h-4 w-4" />} label="Class / Grade" value={profile.studentDetails.gradeLevel} /><InfoItem icon={<MapPin className="h-4 w-4" />} label="School / College" value={profile.studentDetails.schoolOrCollege} /><InfoItem icon={<UserRound className="h-4 w-4" />} label="Group" value={profile.studentDetails.group} /><InfoItem icon={<Users className="h-4 w-4" />} label="Guardian" value={profile.studentDetails.guardianName} /><InfoItem icon={<Phone className="h-4 w-4" />} label="Guardian phone" value={profile.studentDetails.guardianPhone} /></div>}
+            {profile.teacherDetails && <div className="mt-3 divide-y divide-slate-100 dark:divide-[#262b34]"><InfoItem icon={<MapPin className="h-4 w-4" />} label="Institution" value={profile.teacherDetails.institution} /><InfoItem icon={<GraduationCap className="h-4 w-4" />} label="Department" value={profile.teacherDetails.department} /><InfoItem icon={<CalendarDays className="h-4 w-4" />} label="Experience" value={profile.teacherDetails.experience} /><InfoItem icon={<GraduationCap className="h-4 w-4" />} label="Specialist subjects" value={profile.teacherDetails.specialistSubjects?.join(', ')} /></div>}
             {profile.guardianDetails && <div className="mt-3"><InfoItem icon={<Users className="h-4 w-4" />} label="Linked students" value={`${linkedStudentCount} জন`} /></div>}
-            {profile.employeeDetails && <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800"><InfoItem icon={<MapPin className="h-4 w-4" />} label="Department" value={profile.employeeDetails.department} /><InfoItem icon={<Users className="h-4 w-4" />} label="Assigned tasks" value={profile.employeeDetails.assignedTasks?.length ? profile.employeeDetails.assignedTasks.join(', ') : undefined} /></div>}
+            {profile.employeeDetails && <div className="mt-3 divide-y divide-slate-100 dark:divide-[#262b34]"><InfoItem icon={<MapPin className="h-4 w-4" />} label="Department" value={profile.employeeDetails.department} /><InfoItem icon={<Users className="h-4 w-4" />} label="Assigned tasks" value={profile.employeeDetails.assignedTasks?.length ? profile.employeeDetails.assignedTasks.join(', ') : undefined} /></div>}
             {!profile.studentDetails && !profile.teacherDetails && !profile.guardianDetails && !profile.employeeDetails && <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">এই role-এর জন্য অতিরিক্ত তথ্য নেই।</p>}
           </section>
         </div>
