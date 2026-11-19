@@ -31,6 +31,8 @@ import {
   ScrollText,
   Tent,
   BookOpenCheck,
+  Mic,
+  ScreenShare,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
@@ -893,8 +895,8 @@ export default function HomePage() {
                 
                 {/* Feature 1 */}
                 <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-orange-500/25 group-hover/item:scale-108 transition-transform">
-                    ১
+                  <div className="w-10 h-10 rounded-2xl bg-orange-500/10 dark:bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0 group-hover/item:bg-orange-500/20 group-hover/item:scale-105 transition-all">
+                    <Mic className="w-5 h-5" />
                   </div>
                   <div>
                     <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-orange-600 dark:group-hover/item:text-orange-400 transition-colors">
@@ -907,12 +909,12 @@ export default function HomePage() {
                 </div>
 
                 {/* Feature 2 */}
-                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-emerald-500/25 group-hover/item:scale-108 transition-transform">
-                    ২
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-500/10 dark:bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0 group-hover/item:bg-orange-500/20 group-hover/item:scale-105 transition-all">
+                    <ScreenShare className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-emerald-600 dark:group-hover/item:text-emerald-400 transition-colors">
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-orange-600 dark:group-hover/item:text-orange-400 transition-colors">
                       স্ক্রিন শেয়ার ও লাইভ নোটস
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
@@ -922,12 +924,12 @@ export default function HomePage() {
                 </div>
 
                 {/* Feature 3 */}
-                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shrink-0 font-black text-sm shadow-md shadow-amber-500/25 group-hover/item:scale-108 transition-transform">
-                    ৩
+                <div className="group/item p-4 sm:p-4.5 rounded-[24px] bg-white/80 dark:bg-[#111318]/70 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-500/10 dark:bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0 group-hover/item:bg-orange-500/20 group-hover/item:scale-105 transition-all">
+                    <PlayCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-amber-600 dark:group-hover/item:text-amber-400 transition-colors">
+                    <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white group-hover/item:text-orange-600 dark:group-hover/item:text-orange-400 transition-colors">
                       আনলিমিটেড রেকর্ডেড ক্লাস
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
