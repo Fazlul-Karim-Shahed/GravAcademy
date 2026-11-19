@@ -393,7 +393,7 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-amber aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-amber-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-sky aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-sky-400/30 overflow-hidden">
                   
                   {/* Ultra-soft realistic feathered crystal sheen beam */}
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" />
@@ -415,13 +415,13 @@ export default function HomePage() {
                     </div>
                   </div>
                   
-                  <span className="text-[11px] sm:text-xs md:text-sm lg:text-[15px] font-extrabold text-slate-100 mt-2 sm:mt-3 tracking-wide group-hover:text-amber-300 transition-colors z-10">
+                  <span className="text-[11px] sm:text-xs md:text-sm lg:text-[15px] font-extrabold text-slate-100 mt-2 sm:mt-3 tracking-wide group-hover:text-sky-300 transition-colors z-10">
                     HSC ২৬
                   </span>
                 </div>
                 
                 {/* Cute pill badge */}
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-rose-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-blue-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
                   ভার্সিটি ও ইঞ্জি.
                 </div>
               </div>
@@ -516,11 +516,11 @@ export default function HomePage() {
                 }}
                 className="animate-card-in group cursor-pointer flex flex-col items-center"
               >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-orange aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-orange-400/30 overflow-hidden">
+                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-purple aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-purple-400/30 overflow-hidden">
                   
                   <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '12s' }} />
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#fb923c] via-[#ea580c] to-[#c2410c] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
+                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#c084fc] via-[#9333ea] to-[#6b21a8] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
                     <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                     
                     {/* Tilted Artistic Icon on the Right Side as Background */}
@@ -528,7 +528,7 @@ export default function HomePage() {
                       <ScrollText className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
                     </div>
 
-                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-orange-100 uppercase drop-shadow-md z-10">
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-purple-100 uppercase drop-shadow-md z-10">
                       SSC
                     </span>
                     <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
@@ -536,12 +536,12 @@ export default function HomePage() {
                     </div>
                   </div>
                   
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-orange-300 transition-colors z-10">
+                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-purple-300 transition-colors z-10">
                     দশম শ্রেণি
                   </span>
                 </div>
                 
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-orange-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
+                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-700 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-purple-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
                   লাইভ ও রিভিশন
                 </div>
               </div>

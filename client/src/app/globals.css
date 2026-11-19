@@ -702,6 +702,9 @@ html.dark .clean-card:hover {
 .glow-card-teal:hover {
   box-shadow: 0 0 30px rgba(20, 184, 166, 0.45), 0 20px 35px -8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.6);
 }
+.glow-card-purple:hover {
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.45), 0 20px 35px -8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+}
 
 /* ========================================================
    COSMIC STARS & ULKA (SHOOTING STARS / METEORS) ANIMATION
