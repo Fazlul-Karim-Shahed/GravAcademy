@@ -658,27 +658,10 @@ export const uploadAvatar = async (req: AuthenticatedRequest, res: Response) => 
     const ext = file.mimetype.split('/')[1] || 'jpg';
     const sanitizedName = `avatar_${req.user.gravId || req.user._id}_${Date.now()}.${ext === 'jpeg' ? 'jpg' : ext}`;
 
-    let avatarUrl = '';
-    let driveFileId = '';
-
-    try {
-      const { uploadFileToDrive } = await import('../services/googleDriveService');
-      const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
-      driveFileId = driveRes.fileId;
-      avatarUrl = driveRes.webViewLink || (driveFileId.startsWith('local_')
-        ? `${(process.env.SERVER_URL || 'https://gravapi.138.2.92.182.nip.io').replace(/\/$/, '')}/uploads/avatars/${sanitizedName}`
-        : `https://lh3.googleusercontent.com/d/${driveFileId}`);
-    } catch (uploadErr: any) {
-      console.warn('Direct uploadFileToDrive failed, attempting direct local disk write:', uploadErr?.message);
-      const fs = await import('fs');
-      const path = await import('path');
-      const uploadDir = path.resolve(__dirname, '../../public/uploads/avatars');
-      fs.mkdirSync(uploadDir, { recursive: true });
-      fs.writeFileSync(path.join(uploadDir, sanitizedName), file.buffer);
-      const hostUrl = process.env.SERVER_URL || 'https://gravapi.138.2.92.182.nip.io';
-      avatarUrl = `${hostUrl.replace(/\/$/, '')}/uploads/avatars/${sanitizedName}`;
-      driveFileId = `local_${sanitizedName}`;
-    }
+    const { uploadFileToDrive } = await import('../services/googleDriveService');
+    const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
+    const driveFileId = driveRes.fileId;
+    const avatarUrl = `https://lh3.googleusercontent.com/d/${driveFileId}`;
 
     const user = await User.findById(req.user._id);
     if (user) {

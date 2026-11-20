@@ -22,6 +22,10 @@ export const startWhatsApp = () => {
   const sessionPath = process.env.WHATSAPP_SESSION_PATH || path.resolve(process.cwd(), '.wwebjs_auth');
   client = new Client({
     authStrategy: new LocalAuth({ dataPath: sessionPath, clientId: 'gravacademy' }),
+    webVersionCache: {
+      type: 'remote',
+      remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/{version}.html',
+    },
     puppeteer: {
       headless: true,
       ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}),
@@ -79,6 +83,10 @@ export const startWhatsApp = () => {
     state = 'error';
     lastError = error instanceof Error ? error.message : 'Initialization failed';
     console.warn('[WhatsApp] Startup failed:', lastError);
+    const failedClient = client;
+    client = null;
+    void failedClient?.destroy().catch(() => undefined);
+    if (!intentionalDisconnect) setTimeout(() => startWhatsApp(), 10000);
   });
 };
 

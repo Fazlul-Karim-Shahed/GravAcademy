@@ -37,6 +37,8 @@ import {
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { CourseCard } from '@/components/course/CourseCard';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
+import { HeroCardItem, DEFAULT_HERO_CARDS, getHeroCardStyles, HeroCardIcon } from '@/lib/heroCards';
 
 // Convert English numbers to Bengali numerals
 function toBengaliNumerals(num: number | string): string {
@@ -139,6 +141,11 @@ interface Course {
 }
 
 export default function HomePage() {
+  const { settings } = useSiteSettings();
+  const heroCards: HeroCardItem[] = (settings?.heroCards && Array.isArray(settings.heroCards) && settings.heroCards.length > 0)
+    ? settings.heroCards
+    : DEFAULT_HERO_CARDS;
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [selectedClass, setSelectedClass] = useState<string>('All');
@@ -382,250 +389,78 @@ export default function HomePage() {
           {/* GLOSSY CLASS CARDS ROW */}
           <div className="mt-6 sm:mt-10 lg:mt-14">
             <div className="grid grid-cols-3 md:grid-cols-6 gap-x-4 sm:gap-x-6 lg:gap-x-8 gap-y-6 sm:gap-y-8 max-w-[1260px] mx-auto px-1 sm:px-4">
-              
-              {/* Card 1: HSC 26 */}
-              <div 
-                style={{ animationDelay: '100ms' }}
-                onClick={() => {
-                  setSelectedClass('Class 12');
-                  const el = document.getElementById('featured-courses');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="animate-card-in group cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-sky aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-sky-400/30 overflow-hidden">
-                  
-                  {/* Ultra-soft realistic feathered crystal sheen beam */}
-                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" />
-                  
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0369a1] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
-                    {/* Top glass bubble shine */}
-                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
-                    
-                    {/* Tilted Artistic Icon on the Right Side as Background */}
-                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
-                      <Trophy className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
-                    </div>
+              {heroCards.map((card, idx) => {
+                const styles = getHeroCardStyles(card.colorScheme);
+                const isExternal = card.link?.startsWith('http://') || card.link?.startsWith('https://');
+                const cardHref = card.link || '#';
 
-                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-sky-100 uppercase drop-shadow-md z-10">
-                      HSC
-                    </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
-                      <span>২৬</span>
+                const CardContent = (
+                  <div
+                    style={{ animationDelay: `${(idx + 1) * 80 + 20}ms` }}
+                    className="animate-card-in group cursor-pointer flex flex-col items-center w-full transition-transform duration-300 hover:-translate-y-1"
+                  >
+                    <div className={`w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card ${styles.glow} aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 ${styles.border} overflow-hidden`}>
+                      
+                      {/* Ultra-soft realistic feathered crystal sheen beam */}
+                      <div
+                        className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]"
+                        style={{ animationDelay: `${idx * 4}s` }}
+                      />
+                      
+                      <div className={`w-full h-full rounded-[26px] sm:rounded-[32px] ${styles.bubbleBg} p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30`}>
+                        {/* Top glass bubble shine */}
+                        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
+                        
+                        {/* Tilted Artistic Icon on the Right Side as Background */}
+                        <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
+                          <HeroCardIcon name={card.icon} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
+                        </div>
+
+                        <span className={`text-[10px] sm:text-xs font-black tracking-widest ${styles.categoryText} uppercase drop-shadow-md z-10`}>
+                          {card.category}
+                        </span>
+                        <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
+                          <span>{card.mainText}</span>
+                        </div>
+                      </div>
+                      
+                      <span className={`text-[11px] sm:text-xs md:text-sm lg:text-[15px] font-extrabold text-slate-100 mt-2 sm:mt-3 tracking-wide ${styles.hoverTitle} transition-colors z-10 text-center truncate max-w-full px-1`}>
+                        {card.title}
+                      </span>
+                    </div>
+                    
+                    {/* Cute pill badge */}
+                    <div className={`mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full ${styles.badge} text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg whitespace-nowrap group-hover:scale-105 transition-all border border-white/20 text-center truncate max-w-full`}>
+                      {card.badge}
                     </div>
                   </div>
-                  
-                  <span className="text-[11px] sm:text-xs md:text-sm lg:text-[15px] font-extrabold text-slate-100 mt-2 sm:mt-3 tracking-wide group-hover:text-sky-300 transition-colors z-10">
-                    HSC ২৬
-                  </span>
-                </div>
-                
-                {/* Cute pill badge */}
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-blue-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
-                  ভার্সিটি ও ইঞ্জি.
-                </div>
-              </div>
+                );
 
-              {/* Card 2: HSC 27 */}
-              <div 
-                style={{ animationDelay: '180ms' }}
-                onClick={() => {
-                  setSelectedClass('Class 11');
-                  const el = document.getElementById('featured-courses');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="animate-card-in group cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-sky aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-sky-400/30 overflow-hidden">
-                  
-                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '4s' }} />
+                if (isExternal) {
+                  return (
+                    <a
+                      key={card.id || idx}
+                      href={cardHref}
+                      target={card.openInNewTab ? '_blank' : undefined}
+                      rel={card.openInNewTab ? 'noopener noreferrer' : undefined}
+                      className="block no-underline"
+                    >
+                      {CardContent}
+                    </a>
+                  );
+                }
 
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#60a5fa] via-[#2563eb] to-[#1d4ed8] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
-                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
-                    
-                    {/* Tilted Artistic Icon on the Right Side as Background */}
-                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
-                      <Target className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
-                    </div>
-
-                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-blue-100 uppercase drop-shadow-md z-10">
-                      HSC
-                    </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
-                      <span>২৭</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-sky-300 transition-colors z-10">
-                    HSC ২৭
-                  </span>
-                </div>
-                
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-red-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
-                  বোর্ড স্ট্যান্ডার্ড
-                </div>
-              </div>
-
-              {/* Card 3: HSC 28 */}
-              <div 
-                style={{ animationDelay: '260ms' }}
-                onClick={() => {
-                  setSelectedClass('Class 11');
-                  const el = document.getElementById('featured-courses');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="animate-card-in group cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-blue aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-cyan-400/30 overflow-hidden">
-                  
-                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '8s' }} />
-
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#38bdf8] via-[#0284c7] to-[#0f766e] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
-                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
-                    
-                    {/* Tilted Artistic Icon on the Right Side as Background */}
-                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
-                      <Backpack className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
-                    </div>
-
-                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-cyan-100 uppercase drop-shadow-md z-10">
-                      HSC
-                    </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
-                      <span>২৮</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-cyan-300 transition-colors z-10">
-                    HSC ২৮
-                  </span>
-                </div>
-                
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-blue-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
-                  ফুল কোর্স
-                </div>
-              </div>
-
-              {/* Card 4: SSC 27 (দশম শ্রেণি) */}
-              <div 
-                style={{ animationDelay: '340ms' }}
-                onClick={() => {
-                  setSelectedClass('Class 10');
-                  const el = document.getElementById('featured-courses');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="animate-card-in group cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-teal aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-teal-500/30 overflow-hidden">
-                  
-                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '12s' }} />
-
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#14b8a6] via-[#0d9488] to-[#164e63] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
-                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
-                    
-                    {/* Tilted Artistic Icon on the Right Side as Background */}
-                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
-                      <ScrollText className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
-                    </div>
-
-                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-teal-100 uppercase drop-shadow-md z-10">
-                      SSC
-                    </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
-                      <span>২৭</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-teal-300 transition-colors z-10">
-                    দশম শ্রেণি
-                  </span>
-                </div>
-                
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-teal-700 via-emerald-700 to-cyan-800 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-teal-900/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
-                  লাইভ ও রিভিশন
-                </div>
-              </div>
-
-              {/* Card 5: Class 9 (৯ম শ্রেণি) */}
-              <div 
-                style={{ animationDelay: '420ms' }}
-                onClick={() => {
-                  setSelectedClass('Class 9');
-                  const el = document.getElementById('featured-courses');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="animate-card-in group cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-emerald aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-emerald-400/30 overflow-hidden">
-                  
-                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '16s' }} />
-
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#34d399] via-[#059669] to-[#047857] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
-                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
-                    
-                    {/* Tilted Artistic Icon on the Right Side as Background */}
-                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
-                      <Tent className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
-                    </div>
-
-                    <span className="text-[9px] sm:text-[11px] font-black tracking-widest text-emerald-100 uppercase drop-shadow-md z-10">
-                      CLASS
-                    </span>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
-                      <span>৯</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-emerald-300 transition-colors z-10">
-                    ৯ম শ্রেণি
-                  </span>
-                </div>
-                
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-emerald-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
-                  নতুন কারিকুলাম
-                </div>
-              </div>
-
-              {/* Card 6: Class 6, 7, 8 (৬ষ্ঠ - ৮ম শ্রেণি) */}
-              <div 
-                style={{ animationDelay: '500ms' }}
-                onClick={() => {
-                  setSelectedClass('Class 8');
-                  const el = document.getElementById('featured-courses');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="animate-card-in group cursor-pointer flex flex-col items-center"
-              >
-                <div className="w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card glow-card-teal aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 border-teal-400/30 overflow-hidden">
-                  
-                  <div className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]" style={{ animationDelay: '20s' }} />
-
-                  <div className="w-full h-full rounded-[26px] sm:rounded-[32px] bg-gradient-to-b from-[#2dd4bf] via-[#0d9488] to-[#115e59] p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30">
-                    <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
-                    
-                    {/* Tilted Artistic Icon on the Right Side as Background */}
-                    <div className="absolute -right-2 -bottom-2 sm:-right-3 sm:-bottom-3 pointer-events-none opacity-25 sm:opacity-30 group-hover:opacity-45 transition-all duration-300 transform rotate-[-18deg] group-hover:rotate-[-8deg] group-hover:scale-110">
-                      <BookOpenCheck className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
-                    </div>
-
-                    <span className="text-[9px] sm:text-[11px] font-black tracking-widest text-teal-100 uppercase drop-shadow-md z-10">
-                      CLASS
-                    </span>
-                    <div className="text-xl sm:text-2xl md:text-3xl font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5">
-                      <span>৬-৮</span>
-                    </div>
-                  </div>
-                  
-                  <span className="text-[11px] sm:text-xs md:text-sm font-extrabold text-slate-100 mt-1.5 sm:mt-2.5 tracking-wide group-hover:text-teal-300 transition-colors z-10">
-                    জুনিয়র ব্যাচ
-                  </span>
-                </div>
-                
-                <div className="mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-teal-600 via-cyan-600 to-teal-700 text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg shadow-teal-600/30 whitespace-nowrap group-hover:scale-105 transition-all border border-white/20">
-                  ফাউন্ডেশন কোর্স
-                </div>
-              </div>
-
+                return (
+                  <Link
+                    key={card.id || idx}
+                    href={cardHref}
+                    target={card.openInNewTab ? '_blank' : undefined}
+                    className="block no-underline"
+                  >
+                    {CardContent}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 

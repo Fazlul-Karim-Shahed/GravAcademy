@@ -26,6 +26,14 @@ import { useSiteSettings, FEATURE_FLAG_LABELS, DEFAULT_FEATURE_FLAGS } from '@/c
 import { DriveFileUpload, DriveFileUploadHandle } from '@/components/ui/DriveFileUpload';
 import { formatDriveImageUrl } from '@/lib/drive';
 import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
+import {
+  HeroCardItem,
+  DEFAULT_HERO_CARDS,
+  HERO_COLOR_SCHEMES,
+  HERO_ICONS,
+  getHeroCardStyles,
+  HeroCardIcon,
+} from '@/lib/heroCards';
 
 interface UserRecord {
   _id: string;
@@ -116,13 +124,57 @@ export default function AdminSettingsPage() {
   const [savingFeatures, setSavingFeatures] = useState(false);
   const [featureSaveSuccess, setFeatureSaveSuccess] = useState(false);
 
+  // Hero Cards state
+  const [heroCards, setHeroCards] = useState<HeroCardItem[]>(DEFAULT_HERO_CARDS);
+  const [savingHeroCards, setSavingHeroCards] = useState(false);
+  const [heroCardsSaveSuccess, setHeroCardsSaveSuccess] = useState(false);
+  const [heroCardsSaveError, setHeroCardsSaveError] = useState('');
+
+  const updateHeroCardField = (index: number, field: keyof HeroCardItem, value: any) => {
+    setHeroCards((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleSaveHeroCards = async () => {
+    setSavingHeroCards(true);
+    setHeroCardsSaveSuccess(false);
+    setHeroCardsSaveError('');
+    try {
+      const ok = await updateSettings({ heroCards });
+      if (ok) {
+        setHeroCardsSaveSuccess(true);
+        setTimeout(() => setHeroCardsSaveSuccess(false), 3500);
+      } else {
+        setHeroCardsSaveError('সেটিংস সংরক্ষণ করা যায়নি। অনুগ্রহ করে পুনরায় চেষ্টা করুন।');
+      }
+    } catch (err: any) {
+      setHeroCardsSaveError(err?.response?.data?.message || 'সেটিংস সংরক্ষণ ব্যর্থ হয়েছে।');
+    } finally {
+      setSavingHeroCards(false);
+    }
+  };
+
+  const handleResetHeroCards = () => {
+    if (window.confirm('আপনি কি হিরো সেকশনের ৬টি কার্ডের তথ্য ডিফল্ট অবস্থায় ফিরিয়ে নিতে চান?')) {
+      setHeroCards(DEFAULT_HERO_CARDS);
+    }
+  };
+
   useEffect(() => {
     if (settings) {
       setLogoUrl(settings.logoUrl || '');
       setSiteName(settings.siteName || 'Grav Academy');
       setSiteTagline(settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার');
+      if (settings.heroCards && Array.isArray(settings.heroCards) && settings.heroCards.length > 0) {
+        setHeroCards(settings.heroCards);
+      } else {
+        setHeroCards(DEFAULT_HERO_CARDS);
+      }
     }
-      setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...(settings.featureFlags || {}) });
+    setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...(settings.featureFlags || {}) });
   }, [settings]);
 
   const handleSaveSiteSettings = async (e: React.FormEvent) => {
@@ -565,16 +617,327 @@ export default function AdminSettingsPage() {
 
             {/* TAB: HOMEPAGE SETTINGS */}
             {activeTab === 'homepage' && (
-              <div className="bg-white dark:bg-[#111318] rounded-2xl p-8 border border-slate-200/90 dark:border-[#262b34] shadow-2xs text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto">
-                  <Home className="w-6 h-6" />
+              <div className="space-y-6">
+                {/* Header card */}
+                <div className="bg-white dark:bg-[#111318] rounded-2xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-2xs">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                            হিরো সেকশন কার্ড কাস্টমাইজেশন (৬টি কার্ড)
+                          </h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            ওয়েবসাইটের মূল হোমপেজের হিরো সেকশনে প্রদর্শিত ৬টি ৩ডি গ্লসি কার্ডের প্রতিটি ফিল্ড, লিংক, আইকন ও কালার থিম এখান থেকে সম্পূর্ণ নিয়ন্ত্রণ করুন।
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2.5 self-start md:self-auto shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleResetHeroCards}
+                        disabled={savingHeroCards}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-slate-50 hover:bg-slate-100 dark:bg-[#151921] dark:hover:bg-[#1a202c] text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>ডিফল্টে রিসেট</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSaveHeroCards}
+                        disabled={savingHeroCards}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white font-bold text-xs shadow-md shadow-orange-950/20 disabled:opacity-50 transition-all cursor-pointer"
+                      >
+                        {savingHeroCards ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        <span>{savingHeroCards ? 'সংরক্ষণ হচ্ছে...' : 'পরিবর্তন সংরক্ষণ করুন'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {heroCardsSaveSuccess && (
+                    <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2.5 animate-in fade-in duration-200">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                      <span>হিরো সেকশনের ৬টি কার্ড সফলভাবে আপডেট হয়েছে এবং হোমপেজে কার্যকর হয়েছে!</span>
+                    </div>
+                  )}
+
+                  {heroCardsSaveError && (
+                    <div className="mt-4 p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-amber-800 dark:text-amber-300 text-xs font-bold">
+                      {heroCardsSaveError}
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  হোম পেজ সেটিংস
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-                  হোমপেজের কন্টেন্ট, ব্যানার ও সেকশন কন্ট্রোল করার অপশনগুলো পরবর্তী ধাপে যুক্ত করা হবে।
-                </p>
+
+                {/* 6 Cards Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {heroCards.map((card, index) => {
+                    const cardStyles = getHeroCardStyles(card.colorScheme);
+                    const presetLinks = [
+                      { label: 'HSC ২৬', url: '/courses?class=Class%2012' },
+                      { label: 'HSC ২৭', url: '/courses?class=Class%2011' },
+                      { label: 'SSC ২৭', url: '/courses?class=Class%2010' },
+                      { label: '৯ম শ্রেণি', url: '/courses?class=Class%209' },
+                      { label: '৬ষ্ঠ-৮ম', url: '/courses?class=Class%208' },
+                      { label: 'সকল কোর্স', url: '/courses' },
+                      { label: 'সকল ক্লাস', url: '/classes' },
+                      { label: 'ফ্রি ক্লাস', url: '/free-classes' },
+                      { label: 'ভর্তি ফরম', url: '/admissions' },
+                    ];
+
+                    return (
+                      <div
+                        key={card.id || index}
+                        className="bg-white dark:bg-[#111318] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-5 flex flex-col justify-between"
+                      >
+                        {/* Card Header & Live Mini Preview */}
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 pb-4 border-b border-slate-100 dark:border-[#262b34]">
+                          <div className="space-y-1 text-center sm:text-left">
+                            <div className="inline-flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-lg bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 font-black text-xs flex items-center justify-center">
+                                {index + 1}
+                              </span>
+                              <h4 className="font-black text-sm text-slate-900 dark:text-white">
+                                কার্ড {index + 1}: {card.title || 'শিরোনামহীন'}
+                              </h4>
+                            </div>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                              হোমপেজের {index + 1}ম কার্ডের রিয়েল-টাইম প্রিভিউ ডানপাশে প্রদর্শিত হচ্ছে।
+                            </p>
+                          </div>
+
+                          {/* Mini Realistic Glossy Card Preview */}
+                          <div className="shrink-0 flex flex-col items-center">
+                            <div className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+                              লাইভ প্রিভিউ
+                            </div>
+                            <div className="w-[105px] p-2 rounded-[24px] glossy-glass-card aspect-[1/1.12] flex flex-col items-center justify-between border-2 border-slate-700/30 overflow-hidden relative shadow-sm">
+                              <div className={`w-full h-full rounded-[18px] ${cardStyles.bubbleBg} p-2 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30`}>
+                                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[18px] pointer-events-none" />
+                                <div className="absolute -right-2 -bottom-2 pointer-events-none opacity-30 transform rotate-[-18deg]">
+                                  <HeroCardIcon name={card.icon} className="w-10 h-10 text-white" />
+                                </div>
+                                <span className={`text-[8px] font-black tracking-widest ${cardStyles.categoryText} uppercase drop-shadow-md z-10`}>
+                                  {card.category || '—'}
+                                </span>
+                                <div className="text-xl font-black text-white flex items-center justify-center drop-shadow-lg z-10">
+                                  <span>{card.mainText || '—'}</span>
+                                </div>
+                              </div>
+                              <span className="text-[10px] font-extrabold text-slate-100 mt-1.5 tracking-wide text-center truncate max-w-full px-0.5 z-10">
+                                {card.title || '—'}
+                              </span>
+                            </div>
+                            <div className={`mt-1.5 px-2 py-0.5 rounded-full ${cardStyles.badge} text-white text-[8px] font-black shadow-xs whitespace-nowrap text-center max-w-[110px] truncate`}>
+                              {card.badge || '—'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Card Form Inputs */}
+                        <div className="space-y-4">
+                          {/* Row 1: Category & MainText */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                ক্যাটাগরি ট্যাগ (Category)
+                              </label>
+                              <input
+                                type="text"
+                                value={card.category || ''}
+                                onChange={(e) => updateHeroCardField(index, 'category', e.target.value)}
+                                placeholder="যেমন: HSC, SSC, CLASS"
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-semibold"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                মূল সংখ্যা / লেখা (Main Text)
+                              </label>
+                              <input
+                                type="text"
+                                value={card.mainText || ''}
+                                onChange={(e) => updateHeroCardField(index, 'mainText', e.target.value)}
+                                placeholder="যেমন: ২৬, ২৭, ৯, ৬-৮"
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-black"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Row 2: Title & Badge */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                কার্ডের টাইটেল (Title)
+                              </label>
+                              <input
+                                type="text"
+                                value={card.title || ''}
+                                onChange={(e) => updateHeroCardField(index, 'title', e.target.value)}
+                                placeholder="যেমন: HSC ২৬, ৯ম শ্রেণি"
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-bold"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                নিচের পিল ব্যাজ (Badge)
+                              </label>
+                              <input
+                                type="text"
+                                value={card.badge || ''}
+                                onChange={(e) => updateHeroCardField(index, 'badge', e.target.value)}
+                                placeholder="যেমন: ভার্সিটি ও ইঞ্জি."
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-semibold"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Destination Link URL */}
+                          <div className="space-y-1.5">
+                            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                              গন্তব্য লিংক URL (ক্লিক করলে যেখানে যাবে)
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={card.link || ''}
+                                onChange={(e) => updateHeroCardField(index, 'link', e.target.value)}
+                                placeholder="যেমন: /courses?class=Class%2012 বা /classes বা https://..."
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-mono"
+                              />
+                            </div>
+
+                            {/* Preset pills for fast link selection */}
+                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold mr-1">
+                                দ্রুত লিংক দিন:
+                              </span>
+                              {presetLinks.map((preset) => (
+                                <button
+                                  key={preset.url}
+                                  type="button"
+                                  onClick={() => updateHeroCardField(index, 'link', preset.url)}
+                                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all ${
+                                    card.link === preset.url
+                                      ? 'bg-orange-500 text-white shadow-2xs'
+                                      : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-orange-950/40 hover:text-orange-600'
+                                  }`}
+                                >
+                                  {preset.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Row 4: Icon & Color Theme */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                ব্যাকগ্রাউন্ড আইকন (Icon)
+                              </label>
+                              <select
+                                value={card.icon || 'Trophy'}
+                                onChange={(e) => updateHeroCardField(index, 'icon', e.target.value)}
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-semibold"
+                              >
+                                {HERO_ICONS.map((ic) => (
+                                  <option key={ic.id} value={ic.id}>
+                                    {ic.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                কালার স্কিম (Color Theme)
+                              </label>
+                              <select
+                                value={card.colorScheme || 'sky'}
+                                onChange={(e) => updateHeroCardField(index, 'colorScheme', e.target.value)}
+                                className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white focus:outline-hidden focus:border-orange-500 font-semibold"
+                              >
+                                {HERO_COLOR_SCHEMES.map((sch) => (
+                                  <option key={sch.id} value={sch.id}>
+                                    {sch.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Open in new tab toggle */}
+                          <div className="pt-1 flex items-center justify-between">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={!!card.openInNewTab}
+                                onChange={(e) => updateHeroCardField(index, 'openInNewTab', e.target.checked)}
+                                className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 w-3.5 h-3.5"
+                              />
+                              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                                ক্লিক করলে নতুন ট্যাবে খুলবে (Open link in new tab)
+                              </span>
+                            </label>
+
+                            {card.link && (
+                              <a
+                                href={card.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-600 dark:text-orange-400 hover:underline"
+                              >
+                                <span>টেস্ট লিংক</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Bottom Save Bar */}
+                <div className="bg-white dark:bg-[#111318] rounded-2xl p-5 border border-slate-200/90 dark:border-[#262b34] shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    সবগুলো কার্ডের তথ্য পরিবর্তন সম্পন্ন হলে সংরক্ষণ বাটনে ক্লিক করুন।
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleResetHeroCards}
+                      disabled={savingHeroCards}
+                      className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#262b34] bg-slate-50 hover:bg-slate-100 dark:bg-[#151921] dark:hover:bg-[#1a202c] text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                    >
+                      ডিফল্টে রিসেট
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveHeroCards}
+                      disabled={savingHeroCards}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white font-bold text-xs shadow-md shadow-orange-950/20 disabled:opacity-50 transition-all cursor-pointer"
+                    >
+                      {savingHeroCards ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4" />
+                      )}
+                      <span>{savingHeroCards ? 'সংরক্ষণ হচ্ছে...' : 'সব পরিবর্তন সংরক্ষণ করুন'}</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
