@@ -19,6 +19,7 @@ export type CourseCardData = {
 type CourseCardProps = {
   course: CourseCardData;
   className?: string;
+  variant?: 'default' | 'catalog';
 };
 
 function getProgramLabel(gradeLevel?: string) {
@@ -36,7 +37,8 @@ function getClassLabel(gradeLevel?: string) {
   return match ? `CLASS ${match[1]}` : /^\d{1,2}$/.test(value) ? `CLASS ${value}` : value ? value.toUpperCase() : 'CLASS';
 }
 
-export function CourseCard({ course, className = '' }: CourseCardProps) {
+export function CourseCard({ course, className = '', variant = 'default' }: CourseCardProps) {
+  const isCatalog = variant === 'catalog';
   const price = course.discountPrice && course.discountPrice > 0
     ? course.discountPrice
     : course.regularPrice || course.courseFee;
@@ -47,9 +49,9 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
   return (
     <Link
       href={`/courses/${course.slug || course._id}`}
-      className={`group flex flex-col overflow-hidden rounded-[18px] sm:rounded-[22px] border border-slate-200/90 bg-white p-0 shadow-xs transition-all hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-orange-500/50 ${className}`}
+      className={`group flex flex-col overflow-hidden border border-slate-200/90 bg-white p-0 transition-all hover:border-orange-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-orange-500/50 ${isCatalog ? 'rounded-2xl shadow-[0_3px_14px_rgba(15,23,42,0.045)] hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(15,23,42,0.09)]' : 'rounded-[18px] shadow-xs hover:-translate-y-0.5 hover:shadow-lg hover:shadow-orange-500/5 sm:rounded-[22px]'} ${className}`}
     >
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-t-[17px] sm:rounded-t-[21px] bg-[#180a22] border-b border-slate-100 dark:border-slate-800/80">
+      <div className={`relative w-full overflow-hidden border-b border-slate-100 bg-[#180a22] dark:border-slate-800/80 ${isCatalog ? 'aspect-[16/10]' : 'aspect-[16/9] rounded-t-[17px] sm:rounded-t-[21px]'}`}>
         {course.thumbnailUrl ? (
           <img
             src={formatDriveImageUrl(course.thumbnailUrl)}
@@ -57,10 +59,10 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="relative h-full w-full overflow-hidden bg-[#0b1732]">
-            <div className="absolute -left-10 -top-14 h-44 w-72 rounded-full bg-indigo-500/70 blur-3xl" />
-            <div className="absolute left-[28%] -top-10 h-36 w-56 rounded-full bg-violet-400/50 blur-3xl" />
-            <div className="absolute -right-12 top-0 h-36 w-64 rounded-full bg-sky-400/45 blur-3xl" />
+          <div className={`relative h-full w-full overflow-hidden ${isCatalog ? 'bg-[#111827]' : 'bg-[#0b1732]'}`}>
+            <div className={`absolute -left-10 -top-14 h-44 w-72 rounded-full blur-3xl ${isCatalog ? 'bg-orange-600/25' : 'bg-indigo-500/70'}`} />
+            <div className={`absolute left-[28%] -top-10 h-36 w-56 rounded-full blur-3xl ${isCatalog ? 'bg-amber-500/15' : 'bg-violet-400/50'}`} />
+            <div className={`absolute -right-12 top-0 h-36 w-64 rounded-full blur-3xl ${isCatalog ? 'bg-slate-500/20' : 'bg-sky-400/45'}`} />
             <div className="absolute bottom-[-45%] left-[-10%] h-40 w-[120%] rounded-[50%] bg-[#071126] blur-xl" />
             <div className="absolute inset-0 bg-gradient-to-b from-indigo-400/15 via-violet-400/10 to-[#071226]/90" />
             <div className="relative flex h-full flex-col items-center justify-center px-3 text-center">
@@ -82,12 +84,12 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-2.5 sm:p-3.5">
-        <h3 className="ga-course-card-title line-clamp-2 text-xs sm:text-sm md:text-base font-bold sm:font-black leading-tight sm:leading-snug text-slate-900 transition-colors group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">
+      <div className={`flex flex-1 flex-col ${isCatalog ? 'p-4 sm:p-5' : 'p-2.5 sm:p-3.5'}`}>
+        <h3 className={`ga-course-card-title line-clamp-2 font-bold leading-snug text-slate-900 transition-colors group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400 ${isCatalog ? 'text-base sm:text-lg' : 'text-xs sm:text-sm md:text-base sm:font-black'}`}>
           {course.title}
         </h3>
         {course.description && (
-          <p className="mt-1 line-clamp-1 text-[10px] sm:text-xs leading-relaxed text-slate-500 dark:text-slate-400">{course.description}</p>
+          <p className={`mt-1.5 leading-relaxed text-slate-500 dark:text-slate-400 ${isCatalog ? 'line-clamp-2 text-xs sm:text-sm' : 'line-clamp-1 text-[10px] sm:text-xs'}`}>{course.description}</p>
         )}
         <div className="mt-auto pt-2 sm:pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
@@ -101,8 +103,8 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
               <span className="mt-0.5 block text-[11px] sm:text-sm font-black text-emerald-600 dark:text-emerald-400">ফ্রি কোর্স</span>
             )}
           </div>
-          <span className="ga-course-card-action inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-[10.5px] sm:text-xs font-bold shadow-xs transition-all duration-200">
-            ব্যাচ দেখুন <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+          <span className={`ga-course-card-action inline-flex w-full shrink-0 items-center justify-center gap-1 bg-orange-600 font-bold text-white shadow-xs transition-all duration-200 hover:bg-orange-700 sm:w-auto ${isCatalog ? 'rounded-lg px-3.5 py-2 text-xs' : 'rounded-lg px-2.5 py-1.5 text-[10.5px] sm:rounded-xl sm:px-3.5 sm:py-2 sm:text-xs'}`}>
+            {isCatalog ? 'কোর্স দেখুন' : 'ব্যাচ দেখুন'} <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           </span>
         </div>
       </div>
