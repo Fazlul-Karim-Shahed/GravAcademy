@@ -195,6 +195,10 @@ export default function HomePage() {
     selectedClass === 'All'
       ? courses
       : courses.filter((c) => c.gradeLevel.toLowerCase() === selectedClass.toLowerCase());
+  const configuredFeaturedIds = Array.isArray(settings?.featuredCourseIds) ? settings.featuredCourseIds.slice(0, 4) : [];
+  const popularCourses = (configuredFeaturedIds.length > 0
+    ? filteredCourses.filter((course) => configuredFeaturedIds.includes(course._id))
+    : filteredCourses).slice(0, 4);
 
   const faqs = [
     {
@@ -647,7 +651,7 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
-              {filteredCourses.slice(0, 6).map((c: any, idx) => (
+              {popularCourses.map((c: any, idx) => (
                 <CourseCard key={c._id} course={c} className={idx >= 4 ? 'hidden lg:flex' : 'flex'} />
               ))}
             </div>
@@ -668,7 +672,7 @@ export default function HomePage() {
       </section>
 
       {/* 5. VISUAL SECTION 1: LIVE CLASS (Cute, Cosmic & Glossy Glass Aesthetic) */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
+      <section className="relative overflow-hidden border-y border-slate-100/80 bg-slate-50/60 py-20 sm:py-28 dark:border-[#1c212b] dark:bg-[#0d1015]">
         
         {/* Subtle cute ambient glows */}
         <div className="absolute top-1/3 -right-40 w-96 h-96 bg-orange-500/8 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -793,7 +797,7 @@ export default function HomePage() {
       </section>
 
       {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS (Cute Cosmic Glass Aesthetic) */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
+      <section className="relative overflow-hidden border-y border-slate-100/80 bg-slate-50/60 py-20 sm:py-28 dark:border-[#1c212b] dark:bg-[#0d1015]">
         
         {/* Subtle cute ambient glows */}
         <div className="absolute top-1/4 -left-40 w-96 h-96 bg-emerald-500/8 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -1121,7 +1125,11 @@ export default function HomePage() {
       </section>
 
       {/* 10. BOTTOM BANNER / CTA (Full Width Solid Midnight Clean Aesthetic - Same As Footer) */}
-      <section className="relative w-full py-20 sm:py-28 overflow-hidden bg-[#090a0d] border-t border-[#262b34] text-white text-center">
+      <section className="relative w-full overflow-hidden border-t border-[#262b34] bg-black py-20 text-center text-white sm:py-28">
+        <div className="pointer-events-none absolute -left-16 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full border border-orange-400/15 animate-[spin_18s_linear_infinite]" />
+        <div className="pointer-events-none absolute -right-20 top-8 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+        <Target className="pointer-events-none absolute left-8 top-10 h-20 w-20 text-white/[0.04] sm:left-16 sm:h-28 sm:w-28" />
+        <Sparkles className="pointer-events-none absolute bottom-10 right-10 h-16 w-16 text-orange-300/[0.08] sm:right-20" />
 
         <div className="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           

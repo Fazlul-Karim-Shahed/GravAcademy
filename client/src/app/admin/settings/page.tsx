@@ -123,6 +123,8 @@ export default function AdminSettingsPage() {
 
   // Hero Cards state
   const [heroCards, setHeroCards] = useState<HeroCardItem[]>(DEFAULT_HERO_CARDS);
+  const [popularCourses, setPopularCourses] = useState<any[]>([]);
+  const [featuredCourseIds, setFeaturedCourseIds] = useState<string[]>([]);
   const [savingHeroCards, setSavingHeroCards] = useState(false);
   const [heroCardsSaveSuccess, setHeroCardsSaveSuccess] = useState(false);
   const [heroCardsSaveError, setHeroCardsSaveError] = useState('');
@@ -140,7 +142,7 @@ export default function AdminSettingsPage() {
     setHeroCardsSaveSuccess(false);
     setHeroCardsSaveError('');
     try {
-      const ok = await updateSettings({ heroCards });
+      const ok = await updateSettings({ heroCards, featuredCourseIds: featuredCourseIds.slice(0, 4) });
       if (ok) {
         setHeroCardsSaveSuccess(true);
         setTimeout(() => setHeroCardsSaveSuccess(false), 3500);
@@ -170,8 +172,16 @@ export default function AdminSettingsPage() {
       } else {
         setHeroCards(DEFAULT_HERO_CARDS);
       }
+      setFeaturedCourseIds(Array.isArray(settings.featuredCourseIds) ? settings.featuredCourseIds.slice(0, 4) : []);
     }
   }, [settings]);
+
+  useEffect(() => {
+    if (activeTab !== 'homepage') return;
+    api.get('/courses', { params: { isPublished: true } }).then((res) => {
+      if (res.data?.success) setPopularCourses(res.data.data || []);
+    }).catch(() => setPopularCourses([]));
+  }, [activeTab]);
 
   const handleSaveSiteSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -643,6 +653,19 @@ export default function AdminSettingsPage() {
                       {heroCardsSaveError}
                     </div>
                   )}
+                </div>
+
+                <div className="bg-white dark:bg-[#111318] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-[#262b34] shadow-2xs">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div><h3 className="text-base font-black text-slate-900 dark:text-white">জনপ্রিয় কোর্স নির্বাচন</h3><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">হোমপেজে সর্বোচ্চ ৪টি কোর্স দেখানো হবে।</p></div>
+                    <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">{featuredCourseIds.length}/৪</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {popularCourses.map((course) => {
+                      const selected = featuredCourseIds.includes(course._id);
+                      return <label key={course._id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition-colors ${selected ? 'border-orange-400 bg-orange-50/70 dark:border-orange-500/60 dark:bg-orange-950/20' : 'border-slate-200 dark:border-[#262b34]'}`}><input type="checkbox" checked={selected} disabled={!selected && featuredCourseIds.length >= 4} onChange={() => setFeaturedCourseIds((prev) => selected ? prev.filter((id) => id !== course._id) : [...prev, course._id].slice(0, 4))} className="h-4 w-4 accent-orange-600" /><span className="font-semibold text-slate-700 dark:text-slate-200">{course.title}</span></label>;
+                    })}
+                  </div>
                 </div>
 
                 {/* 6 Cards Grid */}

@@ -17,7 +17,6 @@ interface SiteSettingsContextType {
   loading: boolean;
   refreshSettings: () => Promise<void>;
   updateSettings: (newSettings: Partial<SiteSettings>) => Promise<boolean>;
-  featureFlags: Record<string, boolean>;
   isFeatureEnabled: (key: string, isSuperadmin?: boolean) => boolean;
 }
 
@@ -32,7 +31,6 @@ const SiteSettingsContext = createContext<SiteSettingsContextType>({
   loading: true,
   refreshSettings: async () => {},
   updateSettings: async () => false,
-  featureFlags: DEFAULT_FEATURE_FLAGS,
   isFeatureEnabled: () => true,
 });
 
