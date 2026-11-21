@@ -771,11 +771,7 @@ export default function HomePage() {
             <div className="lg:col-span-6 order-2 lg:order-1">
               
               {/* Short & Punchy Header */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-[11px] font-bold tracking-wide text-orange-700 dark:text-orange-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
-                স্মার্ট প্রস্তুতির সঙ্গী
-              </div>
-              <h2 className="mt-4 text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.25] tracking-tight">
+              <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.25] tracking-tight">
                 একসাথে প্রস্তুতি ও{' '}
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                   আত্মবিশ্বাস বৃদ্ধি
