@@ -1127,10 +1127,13 @@ export default function HomePage() {
 
       {/* 10. BOTTOM BANNER / CTA (Full Width Solid Midnight Clean Aesthetic - Same As Footer) */}
       <section className="relative w-full overflow-hidden border-t border-[#262b34] bg-black py-20 text-center text-white sm:py-28">
-        <div className="pointer-events-none absolute -left-16 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full border border-orange-400/15 animate-[spin_18s_linear_infinite]" />
-        <div className="pointer-events-none absolute -right-20 top-8 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
-        <Target className="pointer-events-none absolute left-8 top-10 h-20 w-20 text-white/[0.04] sm:left-16 sm:h-28 sm:w-28" />
-        <Sparkles className="pointer-events-none absolute bottom-10 right-10 h-16 w-16 text-orange-300/[0.08] sm:right-20" />
+        <div className="pointer-events-none absolute -left-16 top-1/2 h-56 w-56 -translate-y-1/2 rounded-full border border-orange-400/25 animate-[spin_18s_linear_infinite]" />
+        <div className="pointer-events-none absolute -right-20 top-8 h-72 w-72 rounded-full bg-orange-500/15 blur-3xl" />
+        <Target className="pointer-events-none absolute left-8 top-10 h-20 w-20 text-white/[0.10] sm:left-16 sm:h-28 sm:w-28" />
+        <Sparkles className="pointer-events-none absolute bottom-10 right-10 h-16 w-16 text-orange-300/[0.16] sm:right-20" />
+        <BookOpen className="pointer-events-none absolute right-[15%] top-10 h-14 w-14 rotate-12 text-orange-200/[0.10] sm:h-20 sm:w-20" />
+        <GraduationCap className="pointer-events-none absolute bottom-8 left-[14%] h-16 w-16 -rotate-12 text-white/[0.09] sm:h-24 sm:w-24" />
+        <Trophy className="pointer-events-none absolute right-[7%] bottom-12 h-12 w-12 -rotate-6 text-amber-300/[0.11] sm:h-16 sm:w-16" />
 
         <div className="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
