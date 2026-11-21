@@ -787,8 +787,8 @@ export default function HomePage() {
                 
                 {/* Highlight Card 1 */}
                 <div className="group/card p-5 rounded-2xl bg-white/90 dark:bg-[#111318]/85 border border-slate-200/80 dark:border-[#262b34] hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-sm hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-amber-500/25 group-hover/card:scale-110 transition-transform">
-                    <Award className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl text-orange-600 dark:text-orange-400 flex items-center justify-center mb-3.5 group-hover/card:text-orange-500 group-hover/card:scale-110 transition-transform">
+                    <Award className="w-6 h-6" strokeWidth={1.8} />
                   </div>
                   <h4 className="text-base font-black text-slate-900 dark:text-white group-hover/card:text-amber-600 dark:group-hover/card:text-amber-400 transition-colors">
                     রিয়েলটাইম লিডারবোর্ড
@@ -800,8 +800,8 @@ export default function HomePage() {
 
                 {/* Highlight Card 2 */}
                 <div className="group/card p-5 rounded-2xl bg-white/90 dark:bg-[#111318]/85 border border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-sm hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-orange-500/25 group-hover/card:scale-110 transition-transform">
-                    <ShieldCheck className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl text-orange-600 dark:text-orange-400 flex items-center justify-center mb-3.5 group-hover/card:text-orange-500 group-hover/card:scale-110 transition-transform">
+                    <ShieldCheck className="w-6 h-6" strokeWidth={1.8} />
                   </div>
                   <h4 className="text-base font-black text-slate-900 dark:text-white group-hover/card:text-orange-600 dark:group-hover/card:text-orange-400 transition-colors">
                     স্মার্ট প্রগ্রেস ট্র্যাকিং
