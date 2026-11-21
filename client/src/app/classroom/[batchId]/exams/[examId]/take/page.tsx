@@ -377,7 +377,7 @@ export default function TakeExamPage({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-28">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
       <div className="sticky top-[4.5rem] sm:top-20 z-40 w-[98%] mx-auto rounded-2xl bg-white/95 dark:bg-[#111318]/95 backdrop-blur-md border border-slate-200 dark:border-[#262b34] py-3 shadow-xs scroll-mt-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">

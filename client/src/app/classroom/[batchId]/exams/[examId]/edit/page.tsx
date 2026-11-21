@@ -605,7 +605,7 @@ export default function EditExamPage({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
         {/* Header */}
         <div className="w-[98%] mx-auto flex items-center justify-between px-4 py-3 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-xs">
