@@ -632,7 +632,9 @@ export default function HomePage() {
       </section>
 
       {/* 5. VISUAL SECTION 1: LIVE CLASS (Cute, Cosmic & Glossy Glass Aesthetic) */}
-      <section className="relative overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-28 dark:border-[#181b20] dark:bg-[#090a0d]">
+      <section className="relative overflow-hidden bg-slate-50 py-20 sm:py-28 dark:bg-[#090a0d]">
+        <div className="absolute -right-40 top-1/4 h-96 w-96 rounded-full bg-orange-500/[0.08] blur-3xl pointer-events-none" />
+        <div className="absolute -left-40 bottom-10 h-96 w-96 rounded-full bg-amber-500/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -753,7 +755,9 @@ export default function HomePage() {
       </section>
 
       {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS (Cute Cosmic Glass Aesthetic) */}
-      <section className="relative overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-28 dark:border-[#181b20] dark:bg-[#090a0d]">
+      <section className="relative overflow-hidden bg-slate-50 py-20 sm:py-28 dark:bg-[#090a0d]">
+        <div className="absolute -left-40 top-1/4 h-96 w-96 rounded-full bg-emerald-500/[0.08] blur-3xl pointer-events-none" />
+        <div className="absolute -right-40 bottom-10 h-96 w-96 rounded-full bg-cyan-500/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -852,7 +856,9 @@ export default function HomePage() {
       </section>
 
       {/* 7. TEACHERS / FACULTY SECTION (Cute Cosmic Glass Aesthetic) */}
-      <section className="relative overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-28 dark:border-[#181b20] dark:bg-[#090a0d]">
+      <section className="relative overflow-hidden bg-slate-50 py-20 sm:py-28 dark:bg-[#090a0d]">
+        <div className="absolute -right-40 top-1/4 h-96 w-96 rounded-full bg-orange-500/[0.07] blur-3xl pointer-events-none" />
+        <div className="absolute -left-40 bottom-1/4 h-96 w-96 rounded-full bg-amber-500/[0.05] blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
