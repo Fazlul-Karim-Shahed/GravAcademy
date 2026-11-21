@@ -39,6 +39,7 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 import { CourseCard } from '@/components/course/CourseCard';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { HeroCardItem, DEFAULT_HERO_CARDS, getHeroCardStyles, HeroCardIcon } from '@/lib/heroCards';
+import { InstructorCard } from '@/lib/instructorCards';
 
 // Convert English numbers to Bengali numerals
 function toBengaliNumerals(num: number | string): string {
@@ -289,6 +290,9 @@ export default function HomePage() {
             (def) => !mappedDbTeachers.some((db) => db.name === def.name)
           ),
         ].slice(0, 4);
+  const configuredInstructorCards: InstructorCard[] = Array.isArray(settings?.instructorCards) && settings.instructorCards.length >= 4
+    ? settings.instructorCards.slice(0, 4)
+    : instructorsList;
 
   return (
     <div className="bg-[#f8fafc] dark:bg-[#090a0d] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-[#ff6a00] selection:text-white transition-colors">
@@ -881,7 +885,7 @@ export default function HomePage() {
 
           {/* Cute Instructors Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
-            {instructorsList.slice(0, 4).map((teacher, idx) => (
+            {configuredInstructorCards.map((teacher, idx) => (
               <div
                 key={idx}
                 className="group relative p-2 sm:p-3.5 rounded-[22px] sm:rounded-[30px] bg-white/90 dark:bg-[#111318]/80 backdrop-blur-xl border sm:border-2 border-slate-200/90 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-orange-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center"

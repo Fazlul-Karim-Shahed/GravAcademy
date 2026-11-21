@@ -34,6 +34,7 @@ import {
   getHeroCardStyles,
   HeroCardIcon,
 } from '@/lib/heroCards';
+import { InstructorCard, DEFAULT_INSTRUCTOR_CARDS } from '@/lib/instructorCards';
 
 interface UserRecord {
   _id: string;
@@ -125,6 +126,7 @@ export default function AdminSettingsPage() {
   const [heroCards, setHeroCards] = useState<HeroCardItem[]>(DEFAULT_HERO_CARDS);
   const [popularCourses, setPopularCourses] = useState<any[]>([]);
   const [featuredCourseIds, setFeaturedCourseIds] = useState<string[]>([]);
+  const [instructorCards, setInstructorCards] = useState<InstructorCard[]>(DEFAULT_INSTRUCTOR_CARDS);
   const [savingHeroCards, setSavingHeroCards] = useState(false);
   const [heroCardsSaveSuccess, setHeroCardsSaveSuccess] = useState(false);
   const [heroCardsSaveError, setHeroCardsSaveError] = useState('');
@@ -142,7 +144,7 @@ export default function AdminSettingsPage() {
     setHeroCardsSaveSuccess(false);
     setHeroCardsSaveError('');
     try {
-      const ok = await updateSettings({ heroCards, featuredCourseIds: featuredCourseIds.slice(0, 4) });
+      const ok = await updateSettings({ heroCards, featuredCourseIds: featuredCourseIds.slice(0, 4), instructorCards: instructorCards.slice(0, 4) });
       if (ok) {
         setHeroCardsSaveSuccess(true);
         setTimeout(() => setHeroCardsSaveSuccess(false), 3500);
@@ -173,6 +175,7 @@ export default function AdminSettingsPage() {
         setHeroCards(DEFAULT_HERO_CARDS);
       }
       setFeaturedCourseIds(Array.isArray(settings.featuredCourseIds) ? settings.featuredCourseIds.slice(0, 4) : []);
+      setInstructorCards(Array.isArray(settings.instructorCards) && settings.instructorCards.length >= 4 ? settings.instructorCards.slice(0, 4) : DEFAULT_INSTRUCTOR_CARDS);
     }
   }, [settings]);
 
@@ -897,6 +900,34 @@ export default function AdminSettingsPage() {
                       </div>
                     );
                   })}
+                </div>
+
+                <div className="bg-white dark:bg-[#111318] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-[#262b34] shadow-2xs">
+                  <div className="mb-5">
+                    <h3 className="text-base font-black text-slate-900 dark:text-white">মেন্টর কার্ড</h3>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">হোমপেজের “যাদের সান্নিধ্যে তোমার স্বপ্নপূরণ” অংশের চারটি কার্ড সম্পাদনা করুন।</p>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {instructorCards.map((card, index) => (
+                      <div key={index} className="rounded-xl border border-slate-200 dark:border-[#262b34] p-4 space-y-3">
+                        <div className="flex items-center justify-between"><span className="text-xs font-black text-slate-700 dark:text-slate-200">কার্ড {index + 1}</span><ImageIcon className="w-4 h-4 text-slate-400" /></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {([
+                            ['name', 'নাম'], ['institution', 'প্রতিষ্ঠান'], ['department', 'বিভাগ'], ['exp', 'অভিজ্ঞতা'],
+                            ['badge', 'ব্যাজ'], ['studentsCount', 'শিক্ষার্থী সংখ্যা'], ['classesCount', 'ক্লাস সংখ্যা'], ['photo', 'ছবির URL'],
+                          ] as const).map(([field, label]) => (
+                            <label key={field} className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                              {label}
+                              <input value={card[field]} onChange={(e) => setInstructorCards((prev) => prev.map((item, i) => i === index ? { ...item, [field]: e.target.value } : item))} className="mt-1 w-full rounded-lg border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] px-3 py-2 text-xs text-slate-900 dark:text-white" />
+                            </label>
+                          ))}
+                        </div>
+                        <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300">বিষয়সমূহ (কমা দিয়ে আলাদা)
+                          <input value={card.subjects.join(', ')} onChange={(e) => setInstructorCards((prev) => prev.map((item, i) => i === index ? { ...item, subjects: e.target.value.split(',').map((v) => v.trim()).filter(Boolean) } : item))} className="mt-1 w-full rounded-lg border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] px-3 py-2 text-xs text-slate-900 dark:text-white" />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Bottom Save Bar */}
