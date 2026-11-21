@@ -761,8 +761,8 @@ export default function HomePage() {
 
       {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS (Cute Cosmic Glass Aesthetic) */}
       <section className="relative overflow-hidden bg-slate-50 py-20 sm:py-28 dark:bg-[#090a0d]">
-        <div className="absolute -left-40 top-1/4 h-96 w-96 rounded-full bg-emerald-500/[0.08] blur-3xl pointer-events-none" />
-        <div className="absolute -right-40 bottom-10 h-96 w-96 rounded-full bg-cyan-500/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute -left-40 top-1/4 h-96 w-96 rounded-full bg-orange-500/[0.08] blur-3xl pointer-events-none" />
+        <div className="absolute -right-40 bottom-10 h-96 w-96 rounded-full bg-amber-500/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -771,13 +771,13 @@ export default function HomePage() {
             <div className="lg:col-span-6 order-2 lg:order-1">
               
               {/* Short & Punchy Header */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold tracking-wide text-emerald-700 dark:text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-[11px] font-bold tracking-wide text-orange-700 dark:text-orange-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
                 স্মার্ট প্রস্তুতির সঙ্গী
               </div>
               <h2 className="mt-4 text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.25] tracking-tight">
                 একসাথে প্রস্তুতি ও{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 dark:from-emerald-400 dark:via-teal-300 dark:to-cyan-400">
+                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-400">
                   আত্মবিশ্বাস বৃদ্ধি
                 </span>
               </h2>
@@ -803,11 +803,11 @@ export default function HomePage() {
                 </div>
 
                 {/* Highlight Card 2 */}
-                <div className="group/card p-5 rounded-2xl bg-white/90 dark:bg-[#111318]/85 border border-slate-200/80 dark:border-[#262b34] hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-sm hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-emerald-500/25 group-hover/card:scale-110 transition-transform">
+                <div className="group/card p-5 rounded-2xl bg-white/90 dark:bg-[#111318]/85 border border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-400/60 shadow-sm hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-orange-500/25 group-hover/card:scale-110 transition-transform">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <h4 className="text-base font-black text-slate-900 dark:text-white group-hover/card:text-emerald-600 dark:group-hover/card:text-emerald-400 transition-colors">
+                  <h4 className="text-base font-black text-slate-900 dark:text-white group-hover/card:text-orange-600 dark:group-hover/card:text-orange-400 transition-colors">
                     স্মার্ট প্রগ্রেস ট্র্যাকিং
                   </h4>
                   <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
@@ -821,7 +821,7 @@ export default function HomePage() {
               <div className="mt-6 sm:mt-8 pt-1 sm:pt-2">
                 <Link
                   href="/register"
-                  className="group inline-flex items-center gap-2 sm:gap-2.5 px-4.5 py-2.5 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 hover:from-emerald-700 hover:to-cyan-800 text-white font-bold sm:font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-102 transition-all duration-300"
+                  className="group inline-flex items-center gap-2 sm:gap-2.5 px-4.5 py-2.5 sm:px-7 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-800 text-white font-bold sm:font-black text-xs sm:text-sm shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-102 transition-all duration-300"
                 >
                   <span>ফ্রি একাউন্ট খুলুন</span>
                   <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
