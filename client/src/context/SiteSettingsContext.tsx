@@ -10,15 +10,7 @@ export interface SiteSettings {
   [key: string]: any;
 }
 
-export const FEATURE_FLAG_LABELS: Record<string, string> = {
-  admissions: 'Admission', courses: 'Course Management', batches: 'Batch Management',
-  freeClasses: 'Free Classes', jobs: 'Job Circulars', userManagement: 'User Management',
-  finance: 'Finance Management', exams: 'Exam Management', assignments: 'Assignment Management',
-  liveClasses: 'Live Classes', reports: 'Reports', auditLogs: 'Audit Logs',
-};
-export const DEFAULT_FEATURE_FLAGS: Record<string, boolean> = Object.fromEntries(
-  Object.keys(FEATURE_FLAG_LABELS).map((key) => [key, true])
-);
+export const DEFAULT_FEATURE_FLAGS: Record<string, boolean> = {};
 
 interface SiteSettingsContextType {
   settings: SiteSettings;
@@ -47,10 +39,7 @@ const SiteSettingsContext = createContext<SiteSettingsContextType>({
 export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
-  const [featureFlags, setFeatureFlags] = useState(DEFAULT_FEATURE_FLAGS);
-  const isFeatureEnabled = useCallback((key: string, isSuperadmin = false) => {
-    return isSuperadmin || featureFlags[key] !== false;
-  }, [featureFlags]);
+  const isFeatureEnabled = useCallback(() => true, []);
 
   const fetchSettings = async () => {
     try {
@@ -60,7 +49,6 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
           ...prev,
           ...res.data.data,
         }));
-        setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...(res.data.data.featureFlags || {}) });
       }
     } catch (err) {
       console.error('Failed to load site settings:', err);
@@ -82,7 +70,6 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
           ...newSettings,
           ...res.data.data,
         }));
-        if (newSettings.featureFlags) setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...newSettings.featureFlags });
         return true;
       }
       return false;
@@ -99,7 +86,6 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         loading,
         refreshSettings: fetchSettings,
         updateSettings,
-        featureFlags,
         isFeatureEnabled,
       }}
     >

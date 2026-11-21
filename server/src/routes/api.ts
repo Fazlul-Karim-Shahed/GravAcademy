@@ -663,13 +663,11 @@ router.delete(
 
 // --- SYSTEM & SITE SETTINGS ROUTES ---
 router.get('/settings', settingCtrl.getSiteSettings);
-router.get('/admin/feature-flags', authenticate, requireRole('superadmin'), settingCtrl.getFeatureFlags);
 router.put(
   '/admin/settings',
   authenticate,
   requireRole('superadmin'),
   settingCtrl.updateSiteSettings
 );
-router.put('/admin/feature-flags', authenticate, requireRole('superadmin'), settingCtrl.updateFeatureFlags);
 
 export default router;

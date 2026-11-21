@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
-import { useSiteSettings, FEATURE_FLAG_LABELS, DEFAULT_FEATURE_FLAGS } from '@/context/SiteSettingsContext';
+import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { DriveFileUpload, DriveFileUploadHandle } from '@/components/ui/DriveFileUpload';
 import { formatDriveImageUrl } from '@/lib/drive';
 import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
@@ -46,7 +46,7 @@ interface UserRecord {
   avatarUrl?: string;
 }
 
-type TabType = 'users' | 'homepage' | 'general' | 'notifications' | 'features';
+type TabType = 'users' | 'homepage' | 'general' | 'notifications';
 type WhatsAppStatus = { state: 'starting' | 'qr' | 'ready' | 'disconnected' | 'error'; qrImage: string | null; lastError: string | null };
 
 export default function AdminSettingsPage() {
@@ -120,9 +120,6 @@ export default function AdminSettingsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState('');
   const logoUploadRef = React.useRef<DriveFileUploadHandle>(null);
-  const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>(DEFAULT_FEATURE_FLAGS);
-  const [savingFeatures, setSavingFeatures] = useState(false);
-  const [featureSaveSuccess, setFeatureSaveSuccess] = useState(false);
 
   // Hero Cards state
   const [heroCards, setHeroCards] = useState<HeroCardItem[]>(DEFAULT_HERO_CARDS);
@@ -174,7 +171,6 @@ export default function AdminSettingsPage() {
         setHeroCards(DEFAULT_HERO_CARDS);
       }
     }
-    setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...(settings.featureFlags || {}) });
   }, [settings]);
 
   const handleSaveSiteSettings = async (e: React.FormEvent) => {
@@ -211,13 +207,6 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleSaveFeatures = async () => {
-    setSavingFeatures(true);
-    const ok = await updateSettings({ featureFlags });
-    setFeatureSaveSuccess(ok);
-    setSavingFeatures(false);
-    if (ok) setTimeout(() => setFeatureSaveSuccess(false), 3500);
-  };
 
   // Users state
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -269,7 +258,6 @@ export default function AdminSettingsPage() {
   };
 
   const tabs = [
-    ...(user?.role === 'superadmin' ? [{ id: 'features' as TabType, label: 'Feature Release Control', icon: Sliders }] : []),
     { id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length },
     { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home },
     ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }] : []),
@@ -337,27 +325,6 @@ export default function AdminSettingsPage() {
           {/* Right Content Panel */}
           <div className="lg:col-span-9 min-w-0">
             
-            {activeTab === 'features' && user?.role === 'superadmin' && (
-              <div className="bg-white dark:bg-[#111318] rounded-2xl border border-slate-200/90 dark:border-[#262b34] shadow-2xs overflow-hidden">
-                <div className="p-5 border-b border-slate-100 dark:border-[#262b34]">
-                  <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Feature Release Control</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Admin ও অন্যান্য role-এর জন্য কোন module প্রকাশিত থাকবে তা নিয়ন্ত্রণ করুন। Superadmin সবসময় সব feature দেখতে পারবেন।</p>
-                </div>
-                <div className="p-5 space-y-3">
-                  {Object.entries(FEATURE_FLAG_LABELS).map(([key, label]) => (
-                    <label key={key} className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-[#262b34] p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#151921]/50 transition-colors">
-                      <span><span className="font-bold text-sm block text-slate-900 dark:text-white">{label}</span><span className="text-xs text-slate-400">{featureFlags[key] ? 'Published and visible to permitted users' : 'Hidden from non-superadmin users'}</span></span>
-                      <input type="checkbox" className="h-5 w-5 accent-orange-600 rounded" checked={featureFlags[key] !== false} onChange={(e) => setFeatureFlags((prev) => ({ ...prev, [key]: e.target.checked }))} />
-                    </label>
-                  ))}
-                  <div className="flex items-center gap-3 pt-3">
-                    <button onClick={handleSaveFeatures} disabled={savingFeatures} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 disabled:opacity-60 cursor-pointer transition-all">{savingFeatures ? 'Saving...' : 'Save Feature Visibility'}</button>
-                    {featureSaveSuccess && <span className="text-xs text-emerald-600 font-bold">Saved successfully</span>}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* TAB: USERS */}
             {activeTab === 'users' && (
               <div className="bg-white dark:bg-[#111318] rounded-2xl border border-slate-200/90 dark:border-[#262b34] shadow-2xs overflow-hidden">

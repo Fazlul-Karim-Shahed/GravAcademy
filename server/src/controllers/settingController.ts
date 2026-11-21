@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Setting } from '../models/Setting';
-import { DEFAULT_FEATURE_FLAGS, FEATURE_FLAG_LABELS } from '../config/featureFlags';
 
 export const getSiteSettings = async (req: Request, res: Response) => {
   try {
@@ -17,7 +16,6 @@ export const getSiteSettings = async (req: Request, res: Response) => {
         siteTagline: settingsMap['siteTagline'] || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার',
         logoUrl: settingsMap['logoUrl'] || '',
         ...settingsMap,
-        featureFlags: { ...DEFAULT_FEATURE_FLAGS, ...(settingsMap.featureFlags || {}) },
       },
     });
   } catch (error: any) {
@@ -60,35 +58,3 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
   }
 };
 
-export const getFeatureFlags = async (_req: Request, res: Response) => {
-  try {
-    const setting = await Setting.findOne({ key: 'featureFlags' }).lean();
-    res.json({
-      success: true,
-      data: {
-        flags: { ...DEFAULT_FEATURE_FLAGS, ...(setting?.value || {}) },
-        labels: FEATURE_FLAG_LABELS,
-      },
-    });
-  } catch (error) {
-    console.error('Failed to get feature flags:', error);
-    res.status(500).json({ success: false, message: 'Failed to load feature controls.' });
-  }
-};
-
-export const updateFeatureFlags = async (req: Request, res: Response) => {
-  try {
-    const current = await Setting.findOne({ key: 'featureFlags' }).lean();
-    const flags = { ...DEFAULT_FEATURE_FLAGS, ...(current?.value || {}) } as Record<string, boolean>;
-    for (const [key, value] of Object.entries(req.body?.flags || {})) {
-      if (Object.prototype.hasOwnProperty.call(DEFAULT_FEATURE_FLAGS, key) && typeof value === 'boolean') {
-        flags[key] = value;
-      }
-    }
-    await Setting.findOneAndUpdate({ key: 'featureFlags' }, { key: 'featureFlags', value: flags }, { upsert: true, new: true });
-    res.json({ success: true, message: 'Feature visibility updated.', data: { flags, labels: FEATURE_FLAG_LABELS } });
-  } catch (error) {
-    console.error('Failed to update feature flags:', error);
-    res.status(500).json({ success: false, message: 'Failed to update feature controls.' });
-  }
-};
