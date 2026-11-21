@@ -79,7 +79,7 @@ export default function AdmissionRequestsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-8 sm:py-10">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-8 sm:py-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>

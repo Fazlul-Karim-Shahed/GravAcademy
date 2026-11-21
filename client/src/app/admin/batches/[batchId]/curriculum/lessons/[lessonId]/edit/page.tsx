@@ -173,7 +173,7 @@ export default function EditLessonPage({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="ga-page min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
