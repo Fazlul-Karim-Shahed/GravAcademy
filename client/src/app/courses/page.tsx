@@ -231,9 +231,14 @@ export default function CoursesCatalogPage() {
 
       {/* 2. MAIN CONTENT BODY */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="mb-8 sm:mb-10 max-w-2xl">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400">শেখার পরবর্তী ধাপ</p>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">তোমার জন্য সঠিক কোর্স বেছে নাও</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">শ্রেণি, বিষয় ও ব্যাচ অনুযায়ী কোর্সগুলো দেখুন এবং নিজের প্রস্তুতির জন্য উপযুক্তটি নির্বাচন করুন।</p>
+        </div>
         
         {/* Course Count / Active Filter Status */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-7 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold">
+        <div className="ga-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-7 rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
             <span>
