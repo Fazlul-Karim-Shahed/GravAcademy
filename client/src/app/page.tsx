@@ -632,7 +632,7 @@ export default function HomePage() {
       </section>
 
       {/* 5. VISUAL SECTION 1: LIVE CLASS (Cute, Cosmic & Glossy Glass Aesthetic) */}
-      <section className="relative overflow-hidden border-y border-orange-100 bg-orange-50 py-20 sm:py-28 dark:border-orange-950/60 dark:bg-[#1d130b]">
+      <section className="relative overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-28 dark:border-[#181b20] dark:bg-[#090a0d]">
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -753,7 +753,7 @@ export default function HomePage() {
       </section>
 
       {/* 6. VISUAL SECTION 2: STUDY COLLABORATION & EXAM READINESS (Cute Cosmic Glass Aesthetic) */}
-      <section className="relative overflow-hidden border-y border-emerald-100 bg-emerald-50 py-20 sm:py-28 dark:border-emerald-950/60 dark:bg-[#071b17]">
+      <section className="relative overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-28 dark:border-[#181b20] dark:bg-[#090a0d]">
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -852,7 +852,7 @@ export default function HomePage() {
       </section>
 
       {/* 7. TEACHERS / FACULTY SECTION (Cute Cosmic Glass Aesthetic) */}
-      <section className="relative overflow-hidden border-y border-orange-100 bg-amber-50 py-20 sm:py-28 dark:border-orange-950/60 dark:bg-[#1b130b]">
+      <section className="relative overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-28 dark:border-[#181b20] dark:bg-[#090a0d]">
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
