@@ -106,7 +106,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center py-20 text-slate-500 text-sm">
+      <div className="ga-page min-h-screen flex items-center justify-center py-20 text-slate-500 text-sm">
         বিজ্ঞপ্তির বিস্তারিত লোড হচ্ছে...
       </div>
     );
@@ -114,7 +114,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex flex-col items-center justify-center py-20 px-4 text-center">
+      <div className="ga-page min-h-screen flex flex-col items-center justify-center py-20 px-4 text-center">
         <Briefcase className="w-16 h-16 text-slate-300 dark:text-slate-700 mb-4" />
         <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">জব সার্কুলারটি পাওয়া যায়নি</h1>
         <p className="text-sm text-slate-500 mb-6">বিজ্ঞপ্তিটি মুছে ফেলা হতে পারে বা লিংকটি ভুল হয়েছে।</p>
@@ -138,7 +138,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     : false;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}

@@ -152,7 +152,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
+      <div className="ga-page min-h-screen flex items-center justify-center">
         <div className="text-center space-y-3">
           <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400">পাঠ্যক্রম ও লেসন লোড হচ্ছে...</p>
@@ -163,7 +163,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-20 text-center">
+      <div className="ga-page min-h-screen py-20 text-center">
         <div className="max-w-md mx-auto px-4">
           <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-slate-400 flex items-center justify-center mx-auto mb-4">
             <BookOpen className="w-7 h-7" />
@@ -189,7 +189,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
     (data.batch.assignedTeachers || []).some((teacherId) => teacherId.toString() === user.id);
 
   return (
-    <div className="min-h-screen bg-slate-50/70 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. TOP HEADER (Cosmic Glow Theme) */}
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white border border-orange-900/40 shadow-lg shadow-orange-950/20">

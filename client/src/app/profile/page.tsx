@@ -37,7 +37,7 @@ export default function ProfileViewPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
+      <div className="ga-page min-h-screen flex items-center justify-center">
         <div className="text-xs font-bold text-slate-400">প্রোফাইল লোড হচ্ছে...</div>
       </div>
     );
@@ -45,7 +45,7 @@ export default function ProfileViewPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex flex-col items-center justify-center p-4">
+      <div className="ga-page min-h-screen flex flex-col items-center justify-center p-4">
         <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-2">আপনি লগইন করেননি</h2>
         <p className="text-xs text-slate-500 mb-4">প্রোফাইল দেখার জন্য অনুগ্রহ করে লগইন করুন।</p>
         <Link
@@ -69,7 +69,7 @@ export default function ProfileViewPage() {
   const joinedDate = (user as any).createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-GB') : '—';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb / Header */}
