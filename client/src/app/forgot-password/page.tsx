@@ -33,10 +33,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-12 text-slate-900 dark:bg-[#0b0d12] dark:text-white">
+    <main className="ga-page min-h-screen px-4 py-12">
       <div className="mx-auto max-w-md">
         <Link href="/login" className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"><ArrowLeft className="h-4 w-4" /> Login</Link>
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-[#262b34] dark:bg-[#111318] sm:p-8">
+        <section className="ga-card p-6 sm:p-8">
           <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 dark:bg-orange-950/50 dark:text-orange-400"><Mail className="h-6 w-6" /></div>
           <h1 className="text-2xl font-black">Password reset</h1>
           <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">আপনার registered Gmail দিন। সেখানে password পরিবর্তনের link পাঠানো হবে।</p>
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
           {error && <div className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">{error}</div>}
           <form onSubmit={submit} className="mt-6 space-y-4">
             <label className="block"><span className="text-xs font-bold text-slate-600 dark:text-slate-300">ইমেইল</span><input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm outline-none focus:border-orange-500 dark:border-[#262b34] dark:bg-[#151921]" placeholder="name@example.com" /></label>
-            <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 py-3 text-sm font-black text-white shadow-md shadow-orange-950/25 disabled:opacity-60 transition-all cursor-pointer">{loading && <Loader2 className="h-4 w-4 animate-spin" />}Link পাঠান</button>
+            <button type="submit" disabled={loading} className="ga-primary-button w-full disabled:opacity-60">{loading && <Loader2 className="h-4 w-4 animate-spin" />}Link পাঠান</button>
           </form>
         </section>
       </div>
