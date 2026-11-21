@@ -69,7 +69,7 @@ export default function DedicatedClassPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
+      <div className="ga-page min-h-screen flex items-center justify-center">
         <div className="w-10 h-10 rounded-full border-2 border-slate-200 border-t-orange-600 animate-spin" />
       </div>
     );
@@ -79,7 +79,7 @@ export default function DedicatedClassPage() {
   const description = academicClass?.description || `${className}-এর জন্য সাজানো কোর্স ও শেখার সুযোগ এক জায়গায়।`;
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 pb-20">
+    <main className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
       <section className="relative overflow-hidden cosmic-hero-bg text-white border-b border-white/10 shadow-lg">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
@@ -108,11 +108,11 @@ export default function DedicatedClassPage() {
 
       <section id="courses-section" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-9 sm:pt-12">
         {courses.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] px-6 py-14 text-center">
+          <div className="ga-card px-6 py-14 text-center">
             <Compass className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
             <h3 className="text-sm font-black text-slate-900 dark:text-white">এই শ্রেণির কোনো কোর্স এখনো নেই</h3>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">নতুন কোর্স প্রকাশ হলে এখানে দেখা যাবে।</p>
-            <Link href="/courses" className="inline-flex items-center gap-1.5 mt-5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-950/20 transition-all">
+            <Link href="/courses" className="ga-primary-button mt-5 text-xs">
               সব কোর্স দেখুন <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
