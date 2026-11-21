@@ -602,12 +602,12 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white">কোনো কোর্স পাওয়া যায়নি</h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 mb-6">এই শ্রেণির জন্য নতুন কোর্স ও ব্যাচ খুব শীঘ্রই লাইভ হবে।</p>
-              <button
-                onClick={() => setSelectedClass('All')}
+              <Link
+                href="/courses"
                 className="px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold sm:font-black shadow-md shadow-orange-950/20 transition-all"
               >
                 সব কোর্স দেখুন
-              </button>
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
