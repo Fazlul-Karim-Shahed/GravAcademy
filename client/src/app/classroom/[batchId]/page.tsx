@@ -442,7 +442,7 @@ export default function BatchClassroomPage({
     <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors pb-16">
       
       {/* 1. TOP HEADER BANNER (Cosmic Theme) */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white pt-6 pb-7 sm:pt-7 sm:pb-8 mb-6 sm:mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
+      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white pt-7 pb-8 sm:pt-8 sm:pb-9 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         {/* Deep space radial ambient lighting */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none -z-10 animate-atmosphere" />
@@ -457,71 +457,59 @@ export default function BatchClassroomPage({
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Breadcrumb / Back Navigation */}
-          <div className="mb-3">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-1.5 text-xs text-orange-200/80 hover:text-white font-bold transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>পূর্ববর্তী পাতায় ফিরে যান</span>
-            </button>
-          </div>
-
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-orange-500/25 text-orange-200 border border-orange-400/40">
-                  {batch.courseId?.gradeLevel || 'একাডেমিক'}
-                </span>
-                {batch.courseId?.subject && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-slate-200 border border-white/15">
-                    {batch.courseId.subject}
-                  </span>
-                )}
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  সক্রিয় ব্যাচ
-                </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight pt-1">
                 {batch.name}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-semibold">
+              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
                 {batch.courseId?.title}
               </p>
             </div>
 
-            {/* Quick Primary Actions in Header */}
-            <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0">
-              {/* Primary Live Class CTA Button */}
+            {/* Quick Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Live Classroom Button */}
               <button
                 type="button"
                 onClick={() => setIsJitsiOpen(true)}
-                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs sm:text-sm font-black shadow-xl shadow-emerald-950/40 hover:shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-black shadow-lg shadow-emerald-600/30 active:scale-95 transition-all cursor-pointer"
                 title="সরাসরি লাইভ ক্লাসে যুক্ত হোন"
               >
-                <div className="w-2.5 h-2.5 rounded-full bg-white animate-ping" />
-                <Video className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>সরাসরি লাইভ ক্লাসে যান</span>
+                <Video className="w-4 h-4" />
+                <span>লাইভ</span>
               </button>
 
               <Link
-                href={`/learn/${batchId}`}
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition-all"
+                href={`/classroom/${batchId}/exams`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white text-xs font-black shadow-lg shadow-rose-500/30 active:scale-95 transition-all"
               >
-                <BookOpen className="w-4 h-4 text-orange-400" />
-                <span>লেকচার</span>
+                <FileText className="w-4 h-4" />
+                <span>এক্সাম</span>
+              </Link>
+
+              {isFeatureEnabled('assignments', user?.role === 'superadmin') && <Link
+                href={`/classroom/${batchId}/assignments`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white text-xs font-black shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
+              >
+                <Award className="w-4 h-4" />
+                <span>অ্যাসাইনমেন্ট</span>
+              </Link>}
+
+              <Link
+                href={`/classroom/${batchId}/marksheet`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black shadow-lg shadow-purple-500/30 active:scale-95 transition-all"
+              >
+                <Award className="w-4 h-4" />
+                <span>মার্কশিট</span>
               </Link>
 
               <Link
-                href={`/classroom/${batchId}/exams`}
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition-all"
+                href={`/learn/${batchId}`}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-black shadow-lg shadow-blue-500/30 active:scale-95 transition-all"
               >
-                <FileText className="w-4 h-4 text-rose-400" />
-                <span>এক্সাম</span>
+                <GraduationCap className="w-4 h-4" />
+                <span>লেকচার</span>
               </Link>
             </div>
           </div>
@@ -533,46 +521,40 @@ export default function BatchClassroomPage({
               <span>{announceNotice}</span>
             </div>
           )}
+
         </div>
       </div>
 
       {/* Classroom section navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {[
-            { key: 'home' as const, label: 'হোম ড্যাশবোর্ড', icon: BookOpen, count: null },
-            { key: 'discussion' as const, label: 'ডিসকাশন গ্রুপ', icon: MessageSquare, count: messages.length },
-            { key: 'announcements' as const, label: 'নোটিশ ও ঘোষণা', icon: Megaphone, count: announcements.length },
-            { key: 'materials' as const, label: 'রিসোর্স ও শিট', icon: FileText, count: materials.length },
+            { key: 'home' as const, label: 'হোম', icon: BookOpen, count: null },
+            { key: 'discussion' as const, label: 'ডিসকাশন', icon: MessageSquare, count: messages.length },
+            { key: 'announcements' as const, label: 'নোটিশ', icon: Megaphone, count: announcements.length },
+            { key: 'materials' as const, label: 'Materials', icon: FileText, count: materials.length },
             {
               key: 'members' as const,
-              label: canViewStudentMembers ? 'শিক্ষক ও সহপাঠী' : 'শিক্ষকবৃন্দ',
+              label: canViewStudentMembers ? 'সদস্য' : 'শিক্ষকবৃন্দ',
               icon: Users,
               count: canViewStudentMembers ? memberCounts.totalMembers : (members.teachers.length || memberCounts.teachersCount),
             },
           ].map((tab) => {
             const Icon = tab.icon;
-            const isCurrent = activeTab === tab.key;
             return (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 title={tab.label}
-                className={`inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-bold shrink-0 transition-all cursor-pointer ${
-                  isCurrent
-                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-sm shadow-orange-950/20'
-                    : 'bg-white dark:bg-[#111318] text-slate-700 dark:text-slate-300 border border-slate-200/90 dark:border-[#262b34] hover:border-orange-400 dark:hover:border-orange-500/60'
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold shrink-0 transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                    : 'bg-white dark:bg-[#111318] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#262b34] hover:border-orange-400'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isCurrent ? 'text-white' : 'text-orange-500'}`} />
-                <span>{tab.label}</span>
-                {tab.count !== null && (
-                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
-                    isCurrent ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-[#1a202c] text-slate-500 dark:text-slate-400'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.count !== null && <span className="hidden sm:inline opacity-70">{tab.count}</span>}
               </button>
             );
           })}
@@ -591,343 +573,55 @@ export default function BatchClassroomPage({
         )}
 
         {activeTab === 'home' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
-            {/* LEFT 8 COLUMNS: Academic Hub, Live Banner & Notices */}
-            <div className="lg:col-span-8 space-y-6">
-
-              {/* 1. Live Class & Routine Hero Action Card */}
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-[#151921] to-[#0f131a] border border-orange-500/30 p-5 sm:p-7 text-white shadow-lg">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-                  <div className="space-y-2 max-w-md">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 border border-orange-400/30 text-[11px] font-bold">
-                      <Clock className="w-3.5 h-3.5 text-orange-400" />
-                      <span>{batch.scheduleText || 'সাপ্তাহিক রুটিন অনুযায়ী ক্লাস পরিচালিত হয়'}</span>
-                    </div>
-                    <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                      আজকের ক্লাসরুম ও লাইভ সেশন
-                    </h3>
-                    <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                      লাইভ ক্লাসে যুক্ত হয়ে শিক্ষকের সাথে সরাসরি প্রশ্নোত্তর করুন এবং পড়ালেখার অগ্রগতি নিশ্চিত করুন।
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => setIsJitsiOpen(true)}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-black shadow-md shadow-emerald-950/40 active:scale-95 transition-all cursor-pointer"
-                    >
-                      <Video className="w-4 h-4" />
-                      <span>লাইভ ক্লাসে যান</span>
-                    </button>
-                    <Link
-                      href={`/learn/${batchId}`}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs font-bold transition-all text-center"
-                    >
-                      <BookOpen className="w-4 h-4 text-orange-400" />
-                      <span>লেকচার দেখুন</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* 2. Four Core Academic Hub Cards (2x2 Grid) */}
-              <div>
-                <div className="flex items-center justify-between mb-3.5">
-                  <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                    একাডেমিক মডিউল
-                  </h3>
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    প্রয়োজনীয় পাতা বেছে নিন
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                  {/* Card 1: Lectures */}
-                  <Link
-                    href={`/learn/${batchId}`}
-                    className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs hover:shadow-lg hover:border-orange-500/60 transition-all flex flex-col justify-between"
-                  >
-                    <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-orange-500/10 group-hover:scale-110 group-hover:-rotate-6 transition-all pointer-events-none" />
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                        <BookOpen className="w-5 h-5" />
-                      </div>
-                      <span className="text-[11px] font-bold text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                        <span>পড়া শুরু করুন</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                        লেকচার ও ক্লাস কনটেন্ট
-                      </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        অধ্যায়ভিত্তিক ভিডিও লেকচার ও ক্লাস নোটস
-                      </p>
-                    </div>
-                  </Link>
-
-                  {/* Card 2: Exams */}
-                  <Link
-                    href={`/classroom/${batchId}/exams`}
-                    className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs hover:shadow-lg hover:border-rose-500/60 transition-all flex flex-col justify-between"
-                  >
-                    <FileText className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-rose-500/10 group-hover:scale-110 group-hover:-rotate-6 transition-all pointer-events-none" />
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-rose-500/10 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-600 group-hover:text-white transition-colors">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                        <span>পরীক্ষা দিন</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                        অনলাইন এক্সাম ও কুইজ
-                      </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        চলতি পরীক্ষায় অংশ নিন ও নিজের প্রস্তুতি যাচাই করুন
-                      </p>
-                    </div>
-                  </Link>
-
-                  {/* Card 3: Assignments */}
-                  <Link
-                    href={`/classroom/${batchId}/assignments`}
-                    className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs hover:shadow-lg hover:border-emerald-500/60 transition-all flex flex-col justify-between"
-                  >
-                    <Award className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 group-hover:scale-110 group-hover:-rotate-6 transition-all pointer-events-none" />
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                        <Award className="w-5 h-5" />
-                      </div>
-                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                        <span>কাজ জমা দিন</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                        অ্যাসাইনমেন্ট ও হোমওয়ার্ক
-                      </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        বাড়ির কাজ জমা দিন এবং শিক্ষকের মূল্যায়ন দেখুন
-                      </p>
-                    </div>
-                  </Link>
-
-                  {/* Card 4: Marksheet */}
-                  <Link
-                    href={`/classroom/${batchId}/marksheet`}
-                    className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs hover:shadow-lg hover:border-purple-500/60 transition-all flex flex-col justify-between"
-                  >
-                    <GraduationCap className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 group-hover:scale-110 group-hover:rotate-6 transition-all pointer-events-none" />
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-500/20 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                        <GraduationCap className="w-5 h-5" />
-                      </div>
-                      <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                        <span>ফলাফল দেখুন</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                        মার্কশিট ও প্রগ্রেস
-                      </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        পরীক্ষার নম্বর, র‌্যাংক ও ব্যক্তিগত অগ্রগতি
-                      </p>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-
-              {/* 3. Recent Notices Section on Home Tab */}
-              <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 sm:p-6 shadow-xs">
-                <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-[#262b34] mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
-                      <Megaphone className="w-4 h-4" />
-                    </div>
-                    <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      ক্লাসরুমের সর্বশেষ নোটিশ
-                    </h3>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('announcements')}
-                    className="text-xs font-bold text-orange-600 dark:text-orange-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>সব নোটিশ ({announcements.length})</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                {announcements.length === 0 ? (
-                  <p className="text-xs text-slate-400 text-center py-4">
-                    বর্তমানে কোনো নতুন নোটিশ নেই।
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {announcements.slice(0, 2).map((item) => (
-                      <div
-                        key={item._id}
-                        className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/80 dark:border-[#262b34] flex items-start gap-3"
-                      >
-                        {item.isPinned && (
-                          <Pin className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <h4 className="font-bold text-xs text-slate-900 dark:text-white truncate">
-                              {item.title}
-                            </h4>
-                            <span className="text-[10px] text-slate-400 shrink-0">
-                              {new Date(item.createdAt).toLocaleDateString('bn-BD')}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
-                            {item.content}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">আপনার ক্লাসরুম</p>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">কী করতে চান?</h2>
             </div>
 
-            {/* RIGHT 4 COLUMNS: Sidebar Widgets */}
-            <div className="lg:col-span-4 space-y-5">
-              
-              {/* Widget 1: Schedule Widget */}
-              <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-lg bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    ক্লাস শিডিউল ও সময়
-                  </h4>
-                </div>
-                <div className="p-3 rounded-xl bg-orange-500/5 dark:bg-orange-950/30 border border-orange-500/20 text-xs font-bold text-orange-700 dark:text-orange-300 leading-relaxed">
-                  {batch.scheduleText || 'সাপ্তাহিক রুটিন অনুযায়ী ক্লাস অনুষ্ঠিত হয়।'}
-                </div>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2">
-                  ক্লাস শুরুর ৫ মিনিট পূর্বে রুমে প্রবেশ করার অনুরোধ করা হচ্ছে।
-                </p>
-              </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <Link href={`/learn/${batchId}`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-orange-400/80 dark:hover:border-orange-500/60 transition-all duration-300 flex flex-col justify-between">
+                <BookOpen className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-orange-500/10 dark:group-hover:text-orange-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/50 group-hover:bg-orange-600 group-hover:text-white transition-colors"><BookOpen className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" /></div>
+                <span className="block text-sm font-bold text-slate-900 dark:text-white">লেকচার</span>
+                <span className="block text-[11px] text-slate-500 mt-1">পড়াশোনা শুরু করুন</span>
+              </Link>
 
-              {/* Widget 2: Teachers Assigned */}
-              <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
-                      <GraduationCap className="w-4 h-4" />
-                    </div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                      দায়িত্বপ্রাপ্ত শিক্ষক ({batch.assignedTeachers?.length || 0})
-                    </h4>
-                  </div>
-                </div>
+              {isFeatureEnabled('assignments', user?.role === 'superadmin') && (
+                <Link href={`/classroom/${batchId}/assignments`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-emerald-400/80 dark:hover:border-emerald-500/60 transition-all duration-300 flex flex-col justify-between">
+                  <Award className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-emerald-500/10 dark:group-hover:text-emerald-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                  <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/50 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Award className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" /></div>
+                  <span className="block text-sm font-bold text-slate-900 dark:text-white">অ্যাসাইনমেন্ট</span>
+                  <span className="block text-[11px] text-slate-500 mt-1">কাজ জমা দিন</span>
+                </Link>
+              )}
 
-                <div className="space-y-2.5">
-                  {batch.assignedTeachers && batch.assignedTeachers.length > 0 ? (
-                    batch.assignedTeachers.map((t) => (
-                      <div
-                        key={t._id}
-                        className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34]"
-                      >
-                        <UserAvatar
-                          name={t.name}
-                          avatarUrl={t.avatarUrl}
-                          role="teacher"
-                          size="sm"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="font-bold text-xs text-slate-900 dark:text-white truncate">
-                            {t.name}
-                          </p>
-                          <p className="text-[10px] text-slate-400 truncate">
-                            {t.email}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-xs text-slate-400 py-1">কোনো শিক্ষক নির্ধারিত নেই।</p>
-                  )}
-                </div>
-              </div>
+              <Link href={`/classroom/${batchId}/exams`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-amber-400/80 dark:hover:border-amber-500/60 transition-all duration-300 flex flex-col justify-between">
+                <FileText className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-amber-500/10 dark:group-hover:text-amber-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50 group-hover:bg-amber-600 group-hover:text-white transition-colors"><FileText className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" /></div>
+                <span className="block text-sm font-bold text-slate-900 dark:text-white">এক্সাম</span>
+                <span className="block text-[11px] text-slate-500 mt-1">পরীক্ষা দিন</span>
+              </Link>
 
-              {/* Widget 3: Discussion Glance */}
-              <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-orange-500/10 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center">
-                      <MessageSquare className="w-4 h-4" />
-                    </div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                      ডিসকাশন গ্রুপ
-                    </h4>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-400">
-                    {messages.length} বার্তা
-                  </span>
-                </div>
-
-                {messages.length > 0 ? (
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-100 dark:border-[#262b34] mb-3">
-                    <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
-                      {messages[messages.length - 1].senderName}:
-                    </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 mt-0.5">
-                      "{messages[messages.length - 1].message}"
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-400 mb-3">এখনো কোনো বার্তা পাঠানো হয়নি।</p>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('discussion')}
-                  className="w-full py-2.5 rounded-xl border border-orange-500/30 hover:border-orange-500 text-orange-600 dark:text-orange-400 text-xs font-bold transition-all flex items-center justify-center gap-1.5 hover:bg-orange-500/5 cursor-pointer"
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>গ্রুপ ডিসকাশনে যান</span>
-                </button>
-              </div>
-
-              {/* Widget 4: Batch Members Count */}
-              <div className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-5 shadow-xs flex items-center justify-between">
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    ক্লাসরুম সদস্য
-                  </h4>
-                  <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-                    {canViewStudentMembers ? memberCounts.totalMembers : (members.teachers.length || memberCounts.teachersCount)}
-                    <span className="text-xs font-normal text-slate-400 ml-1.5">জন</span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('members')}
-                  className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222d] text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer"
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>তালিকা</span>
-                </button>
-              </div>
-
+              <Link href={`/classroom/${batchId}/marksheet`} className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-purple-400/80 dark:hover:border-purple-500/60 transition-all duration-300 flex flex-col justify-between">
+                <GraduationCap className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-purple-500/10 dark:group-hover:text-purple-500/15 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between mb-4"><div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-100 dark:border-purple-900/50 group-hover:bg-purple-600 group-hover:text-white transition-colors"><GraduationCap className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" /></div>
+                <span className="block text-sm font-bold text-slate-900 dark:text-white">মার্কশিট</span>
+                <span className="block text-[11px] text-slate-500 mt-1">ফলাফল দেখুন</span>
+              </Link>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onClick={() => setIsJitsiOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 text-xs font-bold transition-colors">
+                <Video className="w-4 h-4" /> লাইভ ক্লাস
+              </button>
+              <button onClick={() => setActiveTab('announcements')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 border border-transparent dark:border-[#262b34] py-2.5 px-4 text-xs font-bold transition-colors">
+                <Megaphone className="w-4 h-4" /> নোটিশ
+              </button>
+              <button onClick={() => setActiveTab('members')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 border border-transparent dark:border-[#262b34] py-2.5 px-4 text-xs font-bold transition-colors">
+                <Users className="w-4 h-4" /> {canViewStudentMembers ? 'সদস্য' : 'শিক্ষকবৃন্দ'}
+              </button>
+            </div>
           </div>
         )}
 
