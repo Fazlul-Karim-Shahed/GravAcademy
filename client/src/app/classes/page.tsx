@@ -33,7 +33,7 @@ export default function AcademicClassesHubPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors pb-16">
+    <div className="ga-page min-h-screen pb-16 transition-colors">
       {/* Cosmic Header Strip */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16 mb-8 sm:mb-10">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[360px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
@@ -92,7 +92,7 @@ export default function AcademicClassesHubPage() {
                 <Link
                   key={cls._id || cls.name}
                   href={`/classes/${slug}`}
-                  className="group block p-6 rounded-3xl bg-white dark:bg-[#111318] border-2 border-slate-200/80 dark:border-[#262b34] hover:border-orange-500/60 dark:hover:border-orange-500/50 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                  className="ga-card group block p-6 hover:border-orange-500/60 dark:hover:border-orange-500/50 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
                 >
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-700 text-white flex items-center justify-center font-black text-lg shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
