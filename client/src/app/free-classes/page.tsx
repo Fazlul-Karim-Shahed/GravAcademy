@@ -139,7 +139,7 @@ export default function FreeClassesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
@@ -434,7 +434,7 @@ export default function FreeClassesPage() {
       {/* EDIT MODAL WITH DRIVE FILE UPLOAD */}
       {editingClass && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="ga-card max-w-lg w-full p-6 sm:p-7 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-orange-600" />

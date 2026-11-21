@@ -110,7 +110,7 @@ export default function PublicJobCircularsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-12 transition-colors">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-12 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Hero Section */}
@@ -226,7 +226,7 @@ export default function PublicJobCircularsPage() {
                 <Link
                   key={job._id}
                   href={`/jobs/${job.slug}`}
-                  className="group relative flex flex-col justify-between rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs hover:shadow-xl hover:border-orange-500/60 dark:hover:border-orange-500/50 transition-all duration-300"
+                  className="ga-card group relative flex flex-col justify-between p-6 hover:shadow-xl hover:border-orange-500/60 dark:hover:border-orange-500/50 transition-all duration-300"
                 >
                   <div>
                     {/* Header: Sector badge & Expiry Status */}
