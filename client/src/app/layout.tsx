@@ -42,7 +42,7 @@ export default function RootLayout({
           <SiteSettingsProvider>
             <AuthProvider>
               <Navbar />
-              <main className="min-h-[calc(100vh-4rem)]"><FeatureRouteGuard>{children}</FeatureRouteGuard></main>
+              <main className="ga-page min-h-[calc(100vh-4rem)]"><FeatureRouteGuard>{children}</FeatureRouteGuard></main>
             </AuthProvider>
           </SiteSettingsProvider>
         </ThemeProvider>
