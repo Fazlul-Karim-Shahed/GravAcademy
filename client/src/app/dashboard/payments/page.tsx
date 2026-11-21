@@ -75,7 +75,7 @@ export default function StudentPaymentsPage() {
 
         {/* 3 Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] shadow-xs">
+          <div className="ga-card p-5">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               মোট পরিশোধিত
             </span>
@@ -87,7 +87,7 @@ export default function StudentPaymentsPage() {
             </span>
           </div>
 
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] shadow-xs">
+          <div className="ga-card p-5">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               অবশিষ্ট বকেয়া (Due)
             </span>

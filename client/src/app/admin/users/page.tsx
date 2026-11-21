@@ -251,14 +251,14 @@ export default function AdminUsersPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 dark:hover:border-orange-500/40 transition-colors shadow-2xs"
+              className="ga-secondary-button w-10 h-10 p-0 text-slate-500 hover:text-orange-600 dark:hover:text-orange-400"
               title="ড্যাশবোর্ডে ফিরে যান"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-500 text-white shadow-md shadow-orange-950/20">
+                <span className="p-2.5 rounded-xl border border-orange-200/70 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">
                   <Users className="w-6 h-6" />
                 </span>
                 ইউজার ম্যানেজমেন্ট (User Management)

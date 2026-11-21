@@ -358,7 +358,7 @@ export default function TakeExamPage({
   if (error || !exam) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 px-4">
-        <div className="max-w-md mx-auto bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] text-center shadow-lg">
+          <div className="ga-card mx-auto max-w-md p-8 text-center">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">পরীক্ষায় প্রবেশ নিষেধ</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
@@ -379,7 +379,7 @@ export default function TakeExamPage({
   return (
     <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
-      <div className="sticky top-[4.5rem] sm:top-20 z-40 w-[98%] mx-auto rounded-2xl bg-white/95 dark:bg-[#111318]/95 backdrop-blur-md border border-slate-200 dark:border-[#262b34] py-3 shadow-xs scroll-mt-24">
+        <div className="ga-card sticky top-[4.5rem] z-40 mx-auto w-[98%] scroll-mt-24 bg-white/95 py-3 backdrop-blur-md dark:bg-[#111318]/95 sm:top-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link

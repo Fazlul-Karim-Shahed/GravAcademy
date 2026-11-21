@@ -3,5 +3,5 @@
 import CourseAdminForm from '@/components/course/CourseAdminForm';
 
 export default function CreateCoursePage() {
-  return <div className="ga-page min-h-screen"><CourseAdminForm mode="create" /></div>;
+  return <main className="ga-page min-h-screen overflow-x-clip"><CourseAdminForm mode="create" /></main>;
 }

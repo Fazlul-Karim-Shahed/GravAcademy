@@ -390,7 +390,7 @@ export default function BatchClassroomPage({
   if (error || !batch) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 px-4">
-        <div className="max-w-md mx-auto bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] text-center shadow-lg">
+        <div className="ga-card max-w-md mx-auto p-8 text-center">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">প্রবেশাধিকার সংরক্ষিত</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">

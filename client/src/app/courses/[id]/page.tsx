@@ -299,7 +299,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       </section>
 
       <section className="relative z-10 mx-auto -mt-7 max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
+          <div className="ga-card grid overflow-hidden sm:grid-cols-3">
           {teachers.length > 0 && <Stat icon={<Users className="h-5 w-5 text-violet-600" />} label="কোর্সের শিক্ষক" value={`${teachers.length} জন`} />}
           <Stat icon={<Clock3 className="h-5 w-5 text-emerald-600" />} label="ব্যাচের সময়কাল" value={batchDurationLabel} />
           <Stat icon={<CalendarDays className="h-5 w-5 text-orange-500" />} label="Student access" value={accessLabel} />

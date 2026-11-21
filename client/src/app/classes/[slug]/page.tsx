@@ -109,7 +109,7 @@ export default function DedicatedClassPage() {
       <section id="courses-section" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-9 sm:pt-12">
         {courses.length === 0 ? (
           <div className="ga-card px-6 py-14 text-center">
-            <Compass className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+            <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400"><Compass className="h-5 w-5" /></span>
             <h3 className="text-sm font-black text-slate-900 dark:text-white">এই শ্রেণির কোনো কোর্স এখনো নেই</h3>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">নতুন কোর্স প্রকাশ হলে এখানে দেখা যাবে।</p>
             <Link href="/courses" className="ga-primary-button mt-5 text-xs">
@@ -117,7 +117,7 @@ export default function DedicatedClassPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {courses.map((course) => <CourseCard key={course._id} course={{ ...course, gradeLevel: course.gradeLevel || className }} />)}
           </div>
         )}

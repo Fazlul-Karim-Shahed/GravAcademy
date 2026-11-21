@@ -484,7 +484,7 @@ export default function HomePage() {
 
       {/* 3. KEY METRICS SHOWCASE (Compact, Centered, Background Watermark Icons, Scroll-triggered Counter Animation) */}
       <section className="relative z-30 -mt-8 sm:-mt-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-[24px] sm:rounded-[32px] bg-white/95 dark:bg-[#111318]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-[#262b34] shadow-[0_16px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-4 sm:p-5 md:p-6 overflow-hidden">
+        <div className="ga-card relative rounded-2xl p-4 sm:p-5 md:p-6 overflow-hidden">
           {/* Subtle Ambient Glow Blobs */}
           <div className="absolute -top-16 -left-16 w-40 h-40 bg-orange-500/8 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-16 -right-16 w-40 h-40 bg-emerald-500/8 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />

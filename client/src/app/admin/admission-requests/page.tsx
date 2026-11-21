@@ -90,7 +90,7 @@ export default function AdmissionRequestsPage() {
           <Link href="/admin/admissions" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-sm shadow-orange-950/20">Manual Admission</Link>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] w-fit mb-5">
+        <div className="ga-card flex items-center gap-1 p-1 w-fit mb-5">
           {['pending', 'approved', 'rejected', 'all'].map((value) => <button key={value} type="button" onClick={() => setStatus(value)} className={`px-3.5 py-2 rounded-xl text-xs font-bold capitalize transition-all ${status === value ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>{value}</button>)}
         </div>
 

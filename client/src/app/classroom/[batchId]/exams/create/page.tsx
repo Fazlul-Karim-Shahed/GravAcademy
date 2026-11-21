@@ -546,7 +546,7 @@ export default function CreateExamPage({
     <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
         {/* Header */}
-        <div className="w-[98%] mx-auto flex items-center justify-between px-4 py-3 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-xs">
+        <div className="ga-card mx-auto flex w-[98%] items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <Link
               href={`/classroom/${batchId}/exams`}
@@ -574,7 +574,7 @@ export default function CreateExamPage({
 
         <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
           {/* STEP 1: Basic Information */}
-          <div className="bg-white dark:bg-[#111318] rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-8 shadow-xs">
+        <div className="ga-card p-4 sm:p-8">
             <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-[#262b34] mb-4 sm:mb-6">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-600/10 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
                 ১

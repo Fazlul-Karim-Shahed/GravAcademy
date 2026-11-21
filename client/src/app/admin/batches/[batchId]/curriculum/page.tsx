@@ -470,7 +470,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
         </div>
 
         {/* Fresh Hero Header Card */}
-        <div className="bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] rounded-2xl p-6 sm:p-8 shadow-xs mb-8">
+        <div className="ga-card p-6 sm:p-8 mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
 

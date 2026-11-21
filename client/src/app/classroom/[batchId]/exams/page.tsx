@@ -244,7 +244,7 @@ export default function ExamRoomPage({
             <p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error}</p>
           </div>
         ) : exams.length === 0 ? (
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-12 text-center max-w-lg mx-auto shadow-xs">
+          <div className="ga-card mx-auto max-w-lg p-12 text-center">
             <FileText className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">
               এখনও কোনো পরীক্ষা যোগ করা হয়নি
@@ -271,7 +271,7 @@ export default function ExamRoomPage({
               return (
                 <div
                   key={exam._id}
-                  className={`bg-white dark:bg-[#111318] rounded-[1.35rem] border p-5 sm:p-6 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-lg transition-all relative overflow-hidden group ${
+                className={`ga-card group relative flex flex-col justify-between overflow-hidden p-5 transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6 ${
                     timing.state === 'RUNNING'
                       ? 'border-orange-500/60 dark:border-orange-500/50 shadow-xs'
                       : timing.state === 'UPCOMING'

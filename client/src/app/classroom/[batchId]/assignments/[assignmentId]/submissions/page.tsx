@@ -294,7 +294,7 @@ export default function AssignmentSubmissionsPage({
           <>
             {/* KPI Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-xs">
+            <div className="ga-card p-4">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Users className="w-4 h-4 text-orange-500" /> জমা হয়েছে
                 </span>
@@ -303,7 +303,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-xs">
+            <div className="ga-card p-4">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" /> চেকড
                 </span>
@@ -312,7 +312,7 @@ export default function AssignmentSubmissionsPage({
                 </span>
               </div>
 
-              <div className="p-4 rounded-[1.25rem] md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-xs">
+            <div className="ga-card p-4">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5 mb-1">
                   <Clock className="w-4 h-4 text-amber-500" /> বাকি
                 </span>

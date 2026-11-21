@@ -170,7 +170,7 @@ export default function AdminTeacherAttendancePage() {
             </div>
           </div>
           {quickLoading && running.length === 0 ? (
-            <div className="flex min-h-28 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 dark:border-[#262b34] dark:bg-[#111318]"><LoaderCircle className="mr-2 h-5 w-5 animate-spin" /> লোড হচ্ছে</div>
+          <div className="ga-card flex min-h-28 items-center justify-center text-slate-500"><LoaderCircle className="mr-2 h-5 w-5 animate-spin" /> লোড হচ্ছে</div>
           ) : running.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-9 text-center dark:border-[#262b34] dark:bg-[#111318]">
               <Clock3 className="mx-auto mb-2 h-7 w-7 text-slate-400" />

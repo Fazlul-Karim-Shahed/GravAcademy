@@ -172,7 +172,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
         </div>
 
         {/* Main Circular Header Card */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-10 shadow-xs mb-8">
+        <div className="ga-card p-6 sm:p-10 mb-8">
           
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span

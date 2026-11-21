@@ -201,7 +201,7 @@ export default function PublicJobCircularsPage() {
             জব সার্কুলার লোড হচ্ছে...
           </div>
         ) : jobs.length === 0 ? (
-          <div className="py-20 text-center bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-8">
+          <div className="ga-card py-20 text-center p-8">
             <Briefcase className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 mb-1">
               কোনো জব সার্কুলার পাওয়া যায়নি

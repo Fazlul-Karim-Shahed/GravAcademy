@@ -225,7 +225,7 @@ export default function MarksheetPage({
           <div className="space-y-6">
             {/* Student Self View: Prominent Card Display */}
             {!isStaff && studentsData.length > 0 && (
-              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 shadow-sm">
+        <div className="ga-card p-6">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                   <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200/60 dark:border-orange-900/60">
                     <span className="text-[11px] font-bold text-orange-700 dark:text-orange-300 uppercase">

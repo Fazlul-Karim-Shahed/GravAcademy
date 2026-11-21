@@ -59,7 +59,7 @@ export default function EmployeePanelPage() {
   return (
     <div className="ga-page min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Banner */}
-      <div className="rounded-2xl p-6 mb-6 border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
+      <div className="ga-card p-6 mb-6">
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-1.5 text-orange-600 dark:text-orange-400 text-xs font-semibold mb-2">
             <Briefcase className="w-3.5 h-3.5" /> স্টাফ অপারেশন

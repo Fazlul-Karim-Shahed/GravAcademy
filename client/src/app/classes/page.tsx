@@ -67,7 +67,7 @@ export default function AcademicClassesHubPage() {
 
             <Link
               href="/courses"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-98 text-white text-xs sm:text-sm font-black shadow-lg shadow-orange-950/25 transition-all border border-white/20"
+              className="ga-primary-button px-6 py-3 text-xs sm:text-sm"
             >
               <BookOpen className="w-4 h-4" />
               <span>সকল কোর্স ক্যাটালগ</span>
@@ -95,7 +95,7 @@ export default function AcademicClassesHubPage() {
                   className="ga-card group block p-6 hover:border-orange-500/60 dark:hover:border-orange-500/50 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
                 >
                   <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-700 text-white flex items-center justify-center font-black text-lg shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-orange-200 bg-orange-50 text-lg font-black text-orange-700 transition-transform group-hover:scale-105 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-300">
                       {idx + 6 <= 12 ? idx + 6 : cls.name.replace(/[^0-9]/g, '') || '🎓'}
                     </div>
                     <span className="px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60">

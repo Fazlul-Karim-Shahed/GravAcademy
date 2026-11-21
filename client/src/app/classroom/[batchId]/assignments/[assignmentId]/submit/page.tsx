@@ -299,7 +299,7 @@ export default function StudentAssignmentSubmitPage({
               )}
 
               {/* Submission Form Card */}
-              <div className="lg:bg-white lg:dark:bg-[#111318] lg:rounded-[1.5rem] lg:border lg:border-slate-200 lg:dark:border-[#262b34] lg:p-7 lg:shadow-sm">
+          <div className="ga-card p-4 sm:p-6 lg:p-7">
                 <h2 className="text-base font-bold text-slate-900 dark:text-white mb-1">
                   আপনার উত্তর
                 </h2>

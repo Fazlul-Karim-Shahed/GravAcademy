@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
             {hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE) && (
               <Link
                 href="/admin/attendance"
-                className="group relative flex min-h-[136px] flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs transition-all duration-300 hover:border-orange-500/60 hover:shadow-lg dark:border-[#262b34] dark:bg-[#111318] sm:p-5"
+                className="ga-card group relative flex min-h-[136px] flex-col justify-between overflow-hidden p-4 transition-all duration-300 hover:border-orange-500/60 hover:shadow-lg sm:p-5"
               >
                 <CalendarCheck className="pointer-events-none absolute -bottom-3 -right-3 h-24 w-24 text-slate-100 transition-all duration-300 group-hover:scale-110 group-hover:text-orange-500/10 dark:text-slate-800/40 dark:group-hover:text-orange-500/15" />
                 <div className="relative z-10 mb-3 flex items-center justify-between">

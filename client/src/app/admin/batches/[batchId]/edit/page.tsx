@@ -226,7 +226,7 @@ export default function EditBatchPage() {
         )}
 
         {/* Edit Form */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
+        <div className="ga-card p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Batch Name */}

@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import {
   PlayCircle,
   FileText,
@@ -11,7 +12,6 @@ import {
   Bookmark,
   Users,
   Layers,
-  LucideIcon,
 } from 'lucide-react';
 
 export interface CourseCardFeature {
@@ -19,7 +19,7 @@ export interface CourseCardFeature {
   icon?: string;
 }
 
-export const AVAILABLE_FEATURE_ICONS: { [key: string]: { label: string; icon: LucideIcon } } = {
+export const AVAILABLE_FEATURE_ICONS: { [key: string]: { label: string; icon: ComponentType<{ className?: string }> } } = {
   play: { label: 'ভিডিও / লাইভ', icon: PlayCircle },
   sheet: { label: 'লেকচার শিট / নোট', icon: FileText },
   exam: { label: 'টেস্ট / অ্যাসেসমেন্ট', icon: Award },

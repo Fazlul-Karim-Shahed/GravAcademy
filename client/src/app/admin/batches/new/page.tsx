@@ -229,7 +229,7 @@ function CreateBatchContent() {
         )}
 
         {/* Dedicated Form */}
-        <Card className="border border-slate-200/90 dark:border-[#262b34] bg-white dark:bg-[#111318] shadow-xl shadow-slate-200/40 dark:shadow-none p-6 sm:p-8 rounded-2xl">
+        <Card className="ga-card p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Batch Name */}

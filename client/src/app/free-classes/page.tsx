@@ -225,7 +225,7 @@ export default function FreeClassesPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-64 rounded-[32px] bg-white/70 dark:bg-slate-900/70 border-2 border-slate-200/80 dark:border-slate-800/80 animate-pulse p-6 space-y-4"
+                className="ga-card h-64 animate-pulse space-y-4 p-6"
               >
                 <div className="h-5 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
                 <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-800 rounded" />
@@ -234,7 +234,7 @@ export default function FreeClassesPage() {
             ))}
           </div>
         ) : filteredClasses.length === 0 ? (
-          <div className="bg-white/85 dark:bg-[#111318]/90 backdrop-blur-xl rounded-[34px] text-center py-16 px-6 border-2 border-slate-200/90 dark:border-[#262b34] shadow-xl max-w-lg mx-auto my-8">
+          <div className="ga-card mx-auto my-8 max-w-lg px-6 py-16 text-center">
             <div className="w-16 h-16 rounded-2xl bg-orange-100/80 dark:bg-orange-950/60 flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-800">
               <Video className="w-8 h-8 text-orange-600 dark:text-orange-400" />
             </div>
@@ -245,7 +245,7 @@ export default function FreeClassesPage() {
             {canManageLive && (
               <Link
                 href="/free-classes/new"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-md shadow-orange-950/25 transition-all"
+                className="ga-primary-button px-6 py-3 text-xs"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>নতুন ফ্রি ক্লাস তৈরি করুন</span>

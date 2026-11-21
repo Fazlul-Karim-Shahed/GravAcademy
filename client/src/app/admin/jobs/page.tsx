@@ -231,7 +231,7 @@ export default function AdminJobsPage() {
         </div>
 
         {/* Filters and Search Bar */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-5 mb-8 shadow-xs">
+        <div className="ga-card p-5 mb-8">
           <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row items-center gap-4">
             
             {/* Search Input */}

@@ -113,7 +113,7 @@ export default function AdminUserProfilePage() {
   if (error || !profile) {
     return (
       <main className="min-h-screen bg-slate-50 px-4 py-12 dark:bg-[#0b0d12]">
-        <div className="mx-auto max-w-3xl rounded-2xl border border-rose-200 bg-white p-6 text-sm text-rose-700 dark:border-rose-900/60 dark:bg-[#111318] dark:text-rose-300">
+        <div className="ga-card mx-auto max-w-3xl p-6 text-sm text-rose-700 dark:text-rose-300">
           {error || 'ইউজার পাওয়া যায়নি।'}
           <Link href="/admin/users" className="ml-3 font-bold text-orange-600 dark:text-orange-400 underline underline-offset-4">ইউজার তালিকায় ফিরুন</Link>
         </div>

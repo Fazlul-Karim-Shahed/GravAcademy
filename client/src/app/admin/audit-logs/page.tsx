@@ -75,7 +75,7 @@ export default function AuditLogsPage() {
   if (user && user.role !== 'superadmin') {
     return (
       <div className="ga-page min-h-screen flex items-center justify-center px-4">
-        <div className="max-w-md text-center bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] shadow-sm">
+        <div className="ga-card max-w-md text-center p-8">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">শুধুমাত্র সুপারএডমিন অ্যাক্সেস</h2>
           <p className="text-xs text-slate-500 mb-6">অডিট লগ দেখার অনুমতি শুধুমাত্র সুপারএডমিনের আছে।</p>

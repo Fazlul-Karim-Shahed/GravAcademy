@@ -192,7 +192,7 @@ export default function SubmissionEvaluationPage({
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 grid grid-cols-1 lg:grid-cols-[1.25fr_.75fr] gap-5">
         <section className="space-y-5">
-          {submission.studentDocumentUrl && <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-4 sm:p-5 shadow-sm">
+        {submission.studentDocumentUrl && <div className="ga-card p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
               <h2 className="text-sm font-black flex items-center gap-2"><FileText className="w-4 h-4 text-orange-600 dark:text-orange-400" />উত্তরপত্র</h2>
               <div className="flex items-center gap-3">
@@ -211,7 +211,7 @@ export default function SubmissionEvaluationPage({
           <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-5 shadow-sm"><h2 className="text-sm font-black mb-4">লিখিত উত্তর</h2>{submission.cqAnswers?.length ? <div className="space-y-3">{submission.cqAnswers.map((answer) => <div key={answer.questionIndex} className="rounded-2xl bg-slate-50 dark:bg-[#151921] p-4 border border-slate-100 dark:border-[#262b34]"><p className="text-[11px] font-black text-orange-600 dark:text-orange-400 mb-1">প্রশ্ন {answer.questionIndex + 1}</p><p className="text-sm leading-6 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{answer.answerText || 'কোনো উত্তর নেই'}</p></div>)}</div> : <p className="text-xs text-slate-500 dark:text-slate-400">কোনো লিখিত উত্তর জমা দেওয়া হয়নি।</p>}</div>
         </section>
 
-        <aside className="h-fit lg:sticky lg:top-24 bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-5 shadow-sm">
+          <aside className="ga-card h-fit p-5 lg:sticky lg:top-24">
           <div className="flex items-center justify-between mb-5"><div><p className="text-[11px] text-slate-500 dark:text-slate-400">MCQ স্কোর</p><p className="text-xl font-black text-orange-600 dark:text-orange-400">{submission.mcqScore}</p></div><div className="text-right"><p className="text-[11px] text-slate-500 dark:text-slate-400">CQ সর্বোচ্চ</p><p className="text-xl font-black text-orange-600 dark:text-orange-400">{cqMax}</p></div></div>
           <label className="block text-xs font-black mb-2 text-slate-800 dark:text-slate-200">CQ নম্বর</label>
           <input type="number" min="0" max={cqMax} step="0.5" value={cqScore} onChange={(e) => setCqScore(Math.min(Math.max(Number(e.target.value) || 0, 0), cqMax))} className="w-full rounded-2xl border border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] px-4 py-3 text-lg font-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500" />

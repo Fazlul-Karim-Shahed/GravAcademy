@@ -178,7 +178,7 @@ function AdminCoursesContent() {
         )}
 
         {/* Filter / Search Bar */}
-        <div className="bg-white dark:bg-[#111318] rounded-2xl p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4 border border-slate-200 dark:border-[#262b34] shadow-xs">
+        <div className="ga-card p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />

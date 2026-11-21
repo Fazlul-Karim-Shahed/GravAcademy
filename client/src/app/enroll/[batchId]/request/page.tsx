@@ -91,7 +91,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
             <div className="flex flex-wrap justify-center gap-3 mt-7">{user && <Link href="/dashboard" className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/20">Dashboard</Link>}<Link href="/courses" className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold">কোর্স দেখুন</Link></div>
           </div>
         ) : !batch ? (
-          <div className="bg-white dark:bg-[#111318] rounded-3xl p-8 text-center border border-slate-200 dark:border-[#262b34]"><p className="text-sm font-bold">ব্যাচটি পাওয়া যায়নি।</p></div>
+          <div className="ga-card p-8 text-center"><p className="text-sm font-bold">ব্যাচটি পাওয়া যায়নি।</p></div>
         ) : (
           <div className="space-y-5">
             <section className="relative overflow-hidden rounded-[28px] border border-orange-100 dark:border-[#262b34] bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 dark:from-[#111318] dark:via-[#111318] dark:to-[#181b22] p-6 sm:p-8 shadow-[0_16px_45px_rgba(234,88,12,0.08)]">

@@ -808,7 +808,7 @@ export default function AdminFinancePage() {
           </div>
 
           {/* Card 4: Method Breakdown */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] shadow-xs flex flex-col justify-between">
+          <div className="ga-card p-5 flex flex-col justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               মাধ্যমভিত্তিক আদায়
             </span>

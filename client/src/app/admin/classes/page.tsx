@@ -303,7 +303,7 @@ export default function AdminClassesPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-64 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] animate-pulse" />
+              <div key={i} className="ga-card h-64 animate-pulse" />
             ))}
           </div>
         ) : classes.length === 0 ? (

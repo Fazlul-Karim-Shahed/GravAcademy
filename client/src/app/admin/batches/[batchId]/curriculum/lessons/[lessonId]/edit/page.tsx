@@ -204,7 +204,7 @@ export default function EditLessonPage({
         )}
 
         {/* Main Editor Card */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-sm overflow-hidden p-6 sm:p-8">
+        <div className="ga-card overflow-hidden p-6 sm:p-8">
           <div className="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-[#262b34]">
             <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
               <FileVideo className="w-5 h-5" />

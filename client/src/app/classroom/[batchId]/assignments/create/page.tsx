@@ -205,10 +205,10 @@ export default function CreateAssignmentPage({
         )}
 
         {checkingAccess ? (
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-10 text-center text-sm font-semibold text-slate-500">
+          <div className="ga-card p-10 text-center text-sm font-semibold text-slate-500">
             ব্যাচের অনুমতি যাচাই করা হচ্ছে...
           </div>
-        ) : <form onSubmit={handleSubmit} className="rounded-3xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] p-1 sm:p-3 md:p-8 md:shadow-xs space-y-6">
+        ) : <form onSubmit={handleSubmit} className="ga-card space-y-6 p-4 sm:p-6 md:p-8">
           {/* Assignment Title */}
           <div>
             <label className="hidden">

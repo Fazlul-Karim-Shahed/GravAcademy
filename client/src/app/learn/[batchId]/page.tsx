@@ -165,7 +165,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
     return (
       <div className="ga-page min-h-screen py-20 text-center">
         <div className="max-w-md mx-auto px-4">
-          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-slate-400 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200/70 dark:border-orange-900/60 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-4">
             <BookOpen className="w-7 h-7" />
           </div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">ব্যাচের কারিকুলাম পাওয়া যায়নি</h2>

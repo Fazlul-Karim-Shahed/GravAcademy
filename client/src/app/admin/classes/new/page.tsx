@@ -196,7 +196,7 @@ export default function CreateClassPage() {
 
         {/* Main Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white dark:bg-[#111318] rounded-[28px] border border-slate-200 dark:border-[#262b34] p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="ga-card p-6 sm:p-8 space-y-6">
             
             {/* Section 1: Basic Information */}
             <div>

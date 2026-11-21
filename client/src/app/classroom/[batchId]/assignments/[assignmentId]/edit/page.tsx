@@ -231,7 +231,7 @@ export default function EditAssignmentPage({
 
             <form
               onSubmit={handleSubmit}
-              className="space-y-4 sm:space-y-5 md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:rounded-[1.5rem] md:p-7 md:shadow-sm"
+              className="ga-card space-y-4 p-4 sm:space-y-5 sm:p-6 md:p-7"
             >
               <div className="px-1 py-1">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">

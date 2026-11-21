@@ -185,7 +185,7 @@ export default function UserPermissionsEditPage() {
   if (!targetUser) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-3xl p-8 text-center shadow-lg">
+        <div className="ga-card max-w-md w-full p-8 text-center">
           <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">ব্যবহারকারী পাওয়া যায়নি</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6">

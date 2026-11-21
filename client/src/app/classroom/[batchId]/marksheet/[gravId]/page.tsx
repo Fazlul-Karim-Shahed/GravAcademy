@@ -157,7 +157,7 @@ export default function StudentMarksheetPage({
           </div>
         ) : (
           <div className="space-y-6">
-            <section className="rounded-3xl md:bg-white md:dark:bg-[#111318] md:border md:border-slate-200 md:dark:border-[#262b34] md:shadow-sm p-1 sm:p-3 md:p-6">
+        <section className="ga-card p-4 sm:p-5 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3 min-w-0">
                   {student.student.avatarUrl ? (

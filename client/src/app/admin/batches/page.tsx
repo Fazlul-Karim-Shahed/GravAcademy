@@ -206,7 +206,7 @@ function AdminBatchesContent() {
         )}
 
         {/* Filter Bar */}
-        <div className="bg-white dark:bg-[#111318] rounded-2xl p-4 sm:p-5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
+        <div className="ga-card p-4 sm:p-5 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-3 w-full md:w-auto">
             {/* ১. ক্লাস অনুযায়ী ফিল্টার */}
             <div className="flex items-center gap-2 w-full sm:w-auto">

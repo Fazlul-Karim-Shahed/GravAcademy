@@ -119,7 +119,7 @@ export default function StudentExamResultPage({
   if (error || !result) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 px-4">
-        <div className="max-w-md mx-auto bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] text-center shadow-lg">
+          <div className="ga-card mx-auto max-w-md p-8 text-center">
           <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">ফলাফল পাওয়া যায়নি</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
@@ -156,7 +156,7 @@ export default function StudentExamResultPage({
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* SCORE CARD */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-8 shadow-sm">
+        <div className="ga-card p-6 sm:p-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             {/* Score circle / Big text */}
             <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-[#151921] dark:to-[#1a1f2c] border border-orange-100 dark:border-[#262b34]">

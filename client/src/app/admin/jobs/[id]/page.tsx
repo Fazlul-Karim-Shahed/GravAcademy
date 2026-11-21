@@ -2,4 +2,6 @@
 
 import AdminJobFormPage from '../new/page';
 
-export default AdminJobFormPage;
+export default function AdminJobEditPage({ params }: { params: Promise<{ id?: string }> }) {
+  return <AdminJobFormPage params={params} />;
+}

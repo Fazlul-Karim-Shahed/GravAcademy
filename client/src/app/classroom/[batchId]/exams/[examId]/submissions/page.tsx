@@ -196,7 +196,7 @@ export default function ExamSubmissionsPage({
             <p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error}</p>
           </div>
         ) : submissions.length === 0 ? (
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-12 text-center max-w-lg mx-auto shadow-sm">
+          <div className="ga-card mx-auto max-w-lg p-12 text-center">
             <Users className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">
               এখনও কোনো শিক্ষার্থী উত্তরপত্র জমা দেয়নি
@@ -206,7 +206,7 @@ export default function ExamSubmissionsPage({
             </p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] overflow-hidden shadow-sm">
+        <div className="ga-card overflow-hidden">
             {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">

@@ -215,7 +215,7 @@ function Field({ label, children, hint }: { label: string; children: React.React
 }
 
 function Section({ icon, title, description, children }: { icon: React.ReactNode; title: string; description?: string; children: React.ReactNode }) {
-  return <section className="border-0 bg-transparent p-0 shadow-none sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white sm:p-6 sm:shadow-sm sm:dark:border-[#262b34] sm:dark:bg-[#111318]"><div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/50 dark:text-orange-400">{icon}</span><div><h2 className="text-sm font-black text-slate-900 dark:text-white">{title}</h2>{description && <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{description}</p>}</div></div><div className="mt-5">{children}</div></section>;
+  return <section className="ga-card p-4 sm:p-6"><div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">{icon}</span><div><h2 className="text-sm font-black text-slate-900 dark:text-white">{title}</h2>{description && <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{description}</p>}</div></div><div className="mt-5">{children}</div></section>;
 }
 
 export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | 'edit'; courseId?: string }) {
