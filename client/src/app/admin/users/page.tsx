@@ -243,7 +243,7 @@ export default function AdminUsersPage() {
   if (loadingSettings) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0d12]">লোড হচ্ছে...</div>;
   if (!isFeatureEnabled('userManagement', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-[#0b0d12]"><ComingSoonCard feature="User Management" /></div>;
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page min-h-screen py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}

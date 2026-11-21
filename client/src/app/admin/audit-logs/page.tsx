@@ -74,7 +74,7 @@ export default function AuditLogsPage() {
 
   if (user && user.role !== 'superadmin') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center px-4">
+      <div className="ga-page min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md text-center bg-white dark:bg-[#111318] rounded-3xl p-8 border border-slate-200 dark:border-[#262b34] shadow-sm">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">শুধুমাত্র সুপারএডমিন অ্যাক্সেস</h2>
@@ -88,7 +88,7 @@ export default function AuditLogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page min-h-screen py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
           <div className="flex items-center gap-3">

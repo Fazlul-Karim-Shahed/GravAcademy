@@ -182,7 +182,7 @@ export default function CompanyExpensesPage() {
   if (!canView) return <main className="flex min-h-screen items-center justify-center px-4 text-center text-sm text-slate-600 dark:text-slate-300">Company expense দেখার permission নেই।</main>;
 
   return (
-    <main className="min-h-screen bg-slate-50 py-7 text-slate-900 dark:bg-[#0b0d12] dark:text-slate-100 sm:py-10">
+    <main className="ga-page min-h-screen py-7 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <header className="mb-6 flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">

@@ -148,7 +148,7 @@ export default function AdminTeacherAttendancePage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 py-6 text-slate-900 dark:bg-[#0b0d12] dark:text-slate-100 sm:py-10">
+    <main className="ga-page min-h-screen py-6 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <header className="mb-7 flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:flex-row sm:items-end sm:justify-between">
           <div>
