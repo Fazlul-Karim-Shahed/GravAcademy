@@ -230,10 +230,10 @@ export default function CoursesCatalogPage() {
       </div>
 
       {/* 2. MAIN CONTENT BODY */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         
         {/* Course Count / Active Filter Status */}
-        <div className="flex items-center justify-between mb-8 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-bold">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-7 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-semibold">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
             <span>
@@ -253,7 +253,7 @@ export default function CoursesCatalogPage() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-96 rounded-[34px] bg-white/70 dark:bg-slate-900/70 border-2 border-slate-200/80 dark:border-slate-800/80 animate-pulse overflow-hidden p-3"
+                className="ga-card h-96 animate-pulse overflow-hidden p-3"
               >
                 <div className="h-44 bg-slate-200 dark:bg-slate-800 rounded-[26px]" />
                 <div className="p-4 space-y-3">
@@ -276,13 +276,13 @@ export default function CoursesCatalogPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/20 transition-all"
+              className="ga-primary-button text-xs"
             >
               সকল কোর্স দেখুন
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {filteredCourses.map((c: any, idx) => {
               return <CourseCard key={c._id} course={c} />;
 
