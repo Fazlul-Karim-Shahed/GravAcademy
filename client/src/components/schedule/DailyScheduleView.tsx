@@ -115,7 +115,7 @@ export default function DailyScheduleView({
   const currentDayLabel = `${data.dayLabels[activeTab]?.bn} এর ক্লাস`;
 
   return (
-    <div className={`relative min-w-0 max-w-full overflow-hidden mb-8 ${cardless ? 'p-0 bg-transparent border-0 shadow-none' : 'bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl rounded-[32px] p-6 sm:p-7 border-2 border-slate-200/90 dark:border-slate-800/90 shadow-xl'}`}>
+    <div className={`relative min-w-0 max-w-full overflow-hidden mb-8 ${cardless ? 'p-0 bg-transparent border-0 shadow-none' : 'bg-white dark:bg-[#111318] rounded-[28px] p-6 sm:p-7 border border-slate-200/90 dark:border-[#262b34] shadow-lg shadow-slate-200/30 dark:shadow-black/25'}`}>
       {/* Decorative lighting is intentionally omitted in cardless mode. */}
       {!cardless && <>
         <div className="absolute top-0 right-1/4 w-80 h-36 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
@@ -126,7 +126,7 @@ export default function DailyScheduleView({
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">
-            <span className="shrink-0 p-2 rounded-xl bg-gradient-to-br from-indigo-500/15 to-blue-500/20 dark:from-indigo-500/30 dark:to-blue-500/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60 shadow-xs">
+            <span className="shrink-0 p-2 rounded-xl bg-orange-500/10 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/70 dark:border-orange-900/60 shadow-xs">
               <Calendar className="w-5 h-5" />
             </span>
             <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight break-words">
@@ -166,7 +166,7 @@ export default function DailyScheduleView({
               onClick={() => setActiveTab(d.key)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 relative ${
                 isSelected
-                  ? 'bg-blue-600 text-white shadow-xs'
+                  ? 'bg-orange-600 text-white shadow-xs'
                   : isToday
                   ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
                   : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -204,11 +204,11 @@ export default function DailyScheduleView({
         </div>
       ) : (layout === 'table' || (layout === 'auto' && role === 'admin')) ? (
         /* Simple schedule table for admin monitoring */
-        <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#090a0d]">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <tr className="border-b border-slate-200 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-xs font-semibold text-slate-500 dark:text-slate-400">
                   <th className="px-4 py-3">সময়</th>
                   <th className="px-4 py-3">ক্লাস</th>
                   <th className="px-4 py-3">কোর্স</th>
@@ -248,7 +248,7 @@ export default function DailyScheduleView({
                       <td className="px-4 py-3 whitespace-nowrap">
                         <Link
                           href={`/classroom/${item.batchId}`}
-                          className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                          className="inline-flex items-center rounded-lg bg-orange-600 px-3 py-2 text-xs font-semibold text-white hover:bg-orange-700 transition-colors"
                         >
                           Enter Classroom
                         </Link>
