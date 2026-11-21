@@ -766,7 +766,11 @@ export default function HomePage() {
             <div className="lg:col-span-6 order-2 lg:order-1">
               
               {/* Short & Punchy Header */}
-              <h2 className="text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.3] tracking-tight">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[11px] font-bold tracking-wide text-emerald-700 dark:text-emerald-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                স্মার্ট প্রস্তুতির সঙ্গী
+              </div>
+              <h2 className="mt-4 text-2xl sm:text-4xl lg:text-[40px] font-black text-slate-900 dark:text-white leading-[1.25] tracking-tight">
                 একসাথে প্রস্তুতি ও{' '}
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 dark:from-emerald-400 dark:via-teal-300 dark:to-cyan-400">
                   আত্মবিশ্বাস বৃদ্ধি
@@ -778,10 +782,10 @@ export default function HomePage() {
               </p>
 
               {/* 2 Cute Glassmorphic Highlight Cards */}
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 
                 {/* Highlight Card 1 */}
-                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-[#111318]/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
+                <div className="group/card p-5 rounded-2xl bg-white/90 dark:bg-[#111318]/85 border border-slate-200/80 dark:border-[#262b34] hover:border-amber-500/60 dark:hover:border-amber-400/60 shadow-sm hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
                   <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-amber-500/25 group-hover/card:scale-110 transition-transform">
                     <Award className="w-5 h-5" />
                   </div>
@@ -794,7 +798,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Highlight Card 2 */}
-                <div className="group/card p-5 sm:p-5.5 rounded-[28px] bg-white/80 dark:bg-[#111318]/75 backdrop-blur-md border-2 border-slate-200/80 dark:border-[#262b34] hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-xs hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
+                <div className="group/card p-5 rounded-2xl bg-white/90 dark:bg-[#111318]/85 border border-slate-200/80 dark:border-[#262b34] hover:border-emerald-500/60 dark:hover:border-emerald-400/60 shadow-sm hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
                   <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black mb-3.5 shadow-md shadow-emerald-500/25 group-hover/card:scale-110 transition-transform">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
