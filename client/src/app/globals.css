@@ -165,6 +165,22 @@ body.dark {
 .ga-page {
   background: var(--bg-app);
   color: var(--text-main);
+  font-family: var(--font-noto-bengali), var(--font-english), system-ui, sans-serif;
+  font-feature-settings: "kern" 1;
+}
+
+/* Preserve the approved cosmic hero typography while modernizing the rest. */
+.ga-page .cosmic-hero-bg {
+  font-family: var(--font-bangla);
+}
+
+.ga-page :where(h1, h2, h3, h4) {
+  text-wrap: balance;
+  letter-spacing: -0.015em;
+}
+
+.ga-page :where(p, li, label, input, select, textarea, button) {
+  letter-spacing: -0.004em;
 }
 
 .ga-surface {
@@ -234,6 +250,41 @@ body.dark {
 
 .ga-muted {
   color: var(--text-muted);
+}
+
+/* Product-wide visual polish: calm surfaces, restrained elevation and solid CTAs. */
+.ga-page :where(input, select, textarea) {
+  border-radius: 0.75rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.ga-page :where(input, select, textarea):focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.ga-page [class*="bg-gradient-to-r"][class*="from-orange-600"] {
+  background-image: none;
+  background-color: var(--primary);
+  box-shadow: none;
+}
+
+.ga-page [class*="bg-gradient-to-r"][class*="from-orange-600"]:hover {
+  background-color: var(--primary-hover);
+}
+
+.ga-page [class*="bg-white"][class*="border-slate-200"][class*="shadow-xl"],
+.ga-page [class*="bg-white"][class*="border-slate-200"][class*="shadow-lg"] {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.dark .ga-page [class*="dark:bg-[#111318]"][class*="border"] {
+  border-color: var(--border-color);
+}
+
+.dark .ga-page [class*="dark:bg-[#111318]"][class*="shadow"] {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
 
 /* Modern editorial treatment used for the redesigned public catalogue pages. */
