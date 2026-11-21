@@ -83,7 +83,7 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-2.5 sm:p-3.5">
-        <h3 className="line-clamp-2 text-xs sm:text-sm md:text-base font-bold sm:font-black leading-tight sm:leading-snug text-slate-900 transition-colors group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">
+        <h3 className="ga-course-card-title line-clamp-2 text-xs sm:text-sm md:text-base font-bold sm:font-black leading-tight sm:leading-snug text-slate-900 transition-colors group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">
           {course.title}
         </h3>
         {course.description && (
@@ -101,7 +101,7 @@ export function CourseCard({ course, className = '' }: CourseCardProps) {
               <span className="mt-0.5 block text-[11px] sm:text-sm font-black text-emerald-600 dark:text-emerald-400">ফ্রি কোর্স</span>
             )}
           </div>
-          <span className="inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-[10.5px] sm:text-xs font-bold shadow-xs transition-all duration-200">
+          <span className="ga-course-card-action inline-flex w-full sm:w-auto shrink-0 items-center justify-center gap-1 rounded-lg sm:rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-[10.5px] sm:text-xs font-bold shadow-xs transition-all duration-200">
             ব্যাচ দেখুন <ChevronRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           </span>
         </div>

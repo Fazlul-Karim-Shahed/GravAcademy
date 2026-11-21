@@ -236,6 +236,44 @@ body.dark {
   color: var(--text-muted);
 }
 
+/* Modern editorial treatment used for the redesigned public catalogue pages. */
+.ga-modern-page {
+  font-family: var(--font-noto-bengali), var(--font-english), system-ui, sans-serif;
+  font-feature-settings: "kern" 1;
+}
+
+.ga-modern-page .ga-course-card {
+  border-radius: 1rem;
+  border-color: color-mix(in srgb, var(--border-color) 82%, transparent);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+.ga-modern-page .ga-course-card:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border-color));
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+}
+
+.dark .ga-modern-page .ga-course-card {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+}
+
+.ga-modern-page .ga-course-card-title {
+  font-weight: 700;
+  letter-spacing: -0.012em;
+}
+
+.ga-modern-page .ga-course-card-action {
+  border-radius: 0.625rem;
+  background: var(--primary);
+  box-shadow: none;
+}
+
+.ga-modern-page .ga-course-card-action:hover {
+  background: var(--primary-hover);
+}
+
 /* Hide scrollbars cleanly */
 .no-scrollbar::-webkit-scrollbar,
 .scrollbar-none::-webkit-scrollbar {

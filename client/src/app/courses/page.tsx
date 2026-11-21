@@ -135,7 +135,7 @@ export default function CoursesCatalogPage() {
   ];
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-modern-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
@@ -283,7 +283,7 @@ export default function CoursesCatalogPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {filteredCourses.map((c: any, idx) => {
-              return <CourseCard key={c._id} course={c} />;
+              return <CourseCard key={c._id} course={c} className="ga-course-card" />;
 
             })}
           </div>
