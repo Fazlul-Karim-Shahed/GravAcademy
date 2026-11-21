@@ -135,7 +135,7 @@ export default function CoursesCatalogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
       <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
@@ -265,7 +265,7 @@ export default function CoursesCatalogPage() {
             ))}
           </div>
         ) : filteredCourses.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-center py-16 px-4 shadow-xs max-w-md mx-auto my-6">
+          <div className="ga-card text-center py-16 px-4 max-w-md mx-auto my-6">
             <div className="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-3.5 border border-orange-200/60 dark:border-orange-800/60">
               <BookOpen className="w-7 h-7" />
             </div>
