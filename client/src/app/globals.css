@@ -160,6 +160,82 @@ body.dark {
   font-family: var(--font-english);
 }
 
+/* GravAcademy reusable page primitives.
+   Prefer these classes on new/refactored pages so the product keeps one visual language. */
+.ga-page {
+  background: var(--bg-app);
+  color: var(--text-main);
+}
+
+.ga-surface {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.ga-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.dark .ga-card {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.ga-primary-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.625rem 1rem;
+  font-weight: 700;
+  transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+
+.ga-primary-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(234, 88, 12, 0.2);
+}
+
+.ga-secondary-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  padding: 0.625rem 1rem;
+  font-weight: 700;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.ga-secondary-button:hover {
+  border-color: var(--primary);
+  background: var(--bg-surface-soft);
+}
+
+.ga-section-title {
+  color: var(--text-main);
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.ga-muted {
+  color: var(--text-muted);
+}
+
 /* Hide scrollbars cleanly */
 .no-scrollbar::-webkit-scrollbar,
 .scrollbar-none::-webkit-scrollbar {
