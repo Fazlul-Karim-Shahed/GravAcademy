@@ -147,7 +147,7 @@ export default function CreateClassPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 transition-colors">
+    <div className="ga-page min-h-screen py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}

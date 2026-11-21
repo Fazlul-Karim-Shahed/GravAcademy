@@ -225,14 +225,14 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center py-20 text-slate-500 text-sm">
+      <div className="ga-page min-h-screen flex items-center justify-center py-20 text-slate-500 text-sm">
         তথ্য লোড করা হচ্ছে...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}

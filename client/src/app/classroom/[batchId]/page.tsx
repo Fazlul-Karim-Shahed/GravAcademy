@@ -439,7 +439,7 @@ export default function BatchClassroomPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 transition-colors pb-16">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors pb-16">
       
       {/* 1. TOP HEADER BANNER (Cosmic Theme) */}
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white pt-7 pb-8 sm:pt-8 sm:pb-9 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
