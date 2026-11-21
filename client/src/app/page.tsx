@@ -33,6 +33,7 @@ import {
   BookOpenCheck,
   Mic,
   ScreenShare,
+  Sparkles,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
