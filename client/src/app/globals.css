@@ -169,9 +169,9 @@ body.dark {
   font-feature-settings: "kern" 1;
 }
 
-/* Preserve the approved cosmic hero typography while modernizing the rest. */
-.ga-page .cosmic-hero-bg {
-  font-family: var(--font-bangla);
+/* Homepage hero now shares the same editorial typography as the product UI. */
+.ga-page .home-professional-hero {
+  font-family: var(--font-noto-bengali), var(--font-english), system-ui, sans-serif;
 }
 
 .ga-page :where(h1, h2, h3, h4) {
@@ -741,6 +741,43 @@ html.dark .clean-card:hover {
 
 .animate-card-in {
   animation: entranceFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Restrained homepage hero: strong hierarchy, quiet depth and product-like cards. */
+.home-professional-hero {
+  background-color: #080a0e;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 50% 4%, rgba(194, 65, 12, 0.24), transparent 68%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.28), rgba(8, 10, 14, 0) 42%),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: auto, auto, 64px 64px, 64px 64px;
+}
+
+.home-hero-title {
+  color: #fff7ed;
+  text-shadow: 0 8px 30px rgba(234, 88, 12, 0.14);
+}
+
+.home-hero-program-card {
+  min-height: 164px;
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 16px 42px -32px rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.home-hero-program-card:hover {
+  background: rgba(255, 255, 255, 0.085);
+  border-color: rgba(251, 146, 60, 0.5);
+  box-shadow: 0 20px 44px -28px rgba(234, 88, 12, 0.34);
+}
+
+@media (max-width: 639px) {
+  .home-hero-program-card {
+    min-height: 148px;
+  }
 }
 
 /* Starfield background pattern using layered deep space gradients */

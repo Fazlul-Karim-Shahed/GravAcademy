@@ -298,17 +298,15 @@ export default function HomePage() {
   return (
     <div className="ga-page text-slate-900 dark:text-slate-100 min-h-screen selection:bg-[#ff6a00] selection:text-white transition-colors">
 
-      {/* 2. COSMIC GLOWING HORIZON HERO SECTION (Inspired by 10 Minute School) */}
-      <section className="relative overflow-hidden cosmic-hero-bg text-white py-12 md:py-0 md:-mt-20 md:pt-20 lg:-mt-24 lg:pt-24 md:min-h-[calc(100vh+5rem)] lg:min-h-[calc(100vh+6rem)] flex flex-col items-center justify-center">
+      {/* 2. PROFESSIONAL PROGRAM HERO */}
+      <section className="home-professional-hero relative flex min-h-[680px] flex-col items-center justify-center overflow-hidden pb-16 pt-12 text-white md:-mt-20 md:min-h-[760px] md:pb-20 md:pt-32 lg:-mt-24 lg:pt-36">
         
         {/* Deep space radial ambient lighting & warm celestial orange/amber aura */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[550px] bg-gradient-to-b from-orange-950/30 via-amber-950/15 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[400px] h-[300px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
-        <div className="absolute -top-10 right-1/4 w-[400px] h-[300px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+        <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[520px] w-[1100px] -translate-x-1/2 bg-gradient-to-b from-orange-900/20 via-amber-950/10 to-transparent blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-1/4 -z-10 h-[280px] w-[760px] -translate-x-1/2 rounded-full bg-orange-500/8 blur-[120px]" />
 
         {/* 🌟 GLOWING & DIMMING STARS (Twinkling Cosmic Starfield) - Placed above base background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-45">
           {/* Top-left star cluster */}
           <div className="absolute top-[8%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
           <div className="absolute top-[18%] left-[5%] w-1 h-1 rounded-full bg-orange-200 animate-star-twinkle-medium" style={{ animationDelay: '1.2s' }} />
@@ -333,16 +331,14 @@ export default function HomePage() {
           <div className="absolute top-[70%] right-[16%] w-1.5 h-1.5 rounded-full bg-amber-200 animate-star-twinkle-medium" style={{ animationDelay: '1.7s' }} />
 
           {/* 🌠 REALISTIC SHOOTING STARS / METEORS (Natural space streaks with varied speeds) */}
-          <span className="shooting-star meteor-1" />
-          <span className="shooting-star meteor-2" />
-          <span className="shooting-star meteor-3" />
-          <span className="shooting-star meteor-4" />
+          <span className="shooting-star meteor-1 hidden md:block" />
+          <span className="shooting-star meteor-2 hidden md:block" />
         </div>
 
-        <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col justify-center flex-1 py-6 lg:py-10">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center px-4 py-5 text-center sm:px-6 lg:px-8">
           
           {/* Glowing Planetary Horizon Half-Arch (Semi-circular atmospheric curvature) */}
-          <div className="relative mx-auto max-w-4xl pt-2 sm:pt-4 pb-2 sm:pb-4">
+          <div className="relative mx-auto max-w-4xl pb-3 pt-2 sm:pb-5">
             
             {/* The Half-Circle Horizon Curved Arc - Crowned elegantly OVER the top of the heading */}
             <div 
@@ -350,7 +346,7 @@ export default function HomePage() {
                 maskImage: 'radial-gradient(ellipse 65% 65% at 50% 100%, black 40%, transparent 75%)',
                 WebkitMaskImage: 'radial-gradient(ellipse 65% 65% at 50% 100%, black 40%, transparent 75%)',
               }}
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-[15%] w-[120%] sm:w-[95%] h-[160px] rounded-t-[500px] pointer-events-none border-t-[3px] border-orange-400/80 shadow-[0_-12px_36px_10px_rgba(255,106,0,0.35),0_-2px_12px_rgba(255,255,255,0.9)] animate-horizon-glow" 
+              className="hidden"
             />
             
             {/* Atmospheric Warm Amber Air Eclipse Glow Behind the Title (Seamless Radial Blend) */}
@@ -358,7 +354,7 @@ export default function HomePage() {
               style={{
                 background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255, 106, 0, 0.16) 0%, rgba(245, 158, 11, 0.08) 45%, transparent 75%)',
               }}
-              className="absolute -inset-x-20 -inset-y-10 pointer-events-none blur-3xl animate-cosmic-air-1" 
+              className="pointer-events-none absolute -inset-x-20 -inset-y-10 opacity-60 blur-3xl"
             />
 
             {/* Secondary Soft Golden-Luminous Air Wave */}
@@ -366,24 +362,24 @@ export default function HomePage() {
               style={{
                 background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(254, 215, 170, 0.14) 0%, rgba(255, 106, 0, 0.06) 45%, transparent 70%)',
               }}
-              className="absolute -inset-x-10 -inset-y-6 pointer-events-none blur-2xl animate-cosmic-air-2" 
+              className="pointer-events-none absolute -inset-x-10 -inset-y-6 opacity-40 blur-2xl"
             />
 
-            {/* Hero Main Heading with Left-to-Right & Vice Versa Glowing Color Sweep */}
+            {/* Clear, restrained hierarchy consistent with the rest of the site */}
             <div className="relative z-10 px-4">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.25] animate-glow-sweep-title">
+              <h1 className="home-hero-title text-4xl font-black leading-[1.18] tracking-[-0.035em] sm:text-5xl md:text-6xl">
                 লক্ষ্য এবার আকাশছোঁয়া!
               </h1>
 
-              <p className="mt-3.5 text-base sm:text-xl font-bold max-w-xl mx-auto drop-shadow-sm animate-glow-sweep-subtitle">
+              <p className="mx-auto mt-4 max-w-xl text-sm font-semibold leading-7 text-slate-300 sm:text-lg">
                 সেরা গাইডে নিশ্চিত করো তোমার সেরা ফলাফল!
               </p>
             </div>
           </div>
 
-          {/* GLOSSY CLASS CARDS ROW */}
-          <div className="mt-6 sm:mt-10 lg:mt-14">
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-x-4 sm:gap-x-6 lg:gap-x-8 gap-y-6 sm:gap-y-8 max-w-[1260px] mx-auto px-1 sm:px-4">
+          {/* Program cards */}
+          <div className="mt-7 sm:mt-10">
+            <div className="mx-auto grid max-w-[1120px] grid-cols-2 gap-3 px-1 sm:grid-cols-3 sm:gap-4 sm:px-4 lg:grid-cols-6">
               {heroCards.map((card, idx) => {
                 const styles = getHeroCardStyles(card.colorScheme);
                 const isExternal = card.link?.startsWith('http://') || card.link?.startsWith('https://');
@@ -392,17 +388,17 @@ export default function HomePage() {
                 const CardContent = (
                   <div
                     style={{ animationDelay: `${(idx + 1) * 80 + 20}ms` }}
-                    className="animate-card-in group cursor-pointer flex flex-col items-center w-full transition-transform duration-300 hover:-translate-y-1"
+                    className="group flex w-full cursor-pointer flex-col items-center transition-transform duration-200 hover:-translate-y-1"
                   >
-                    <div className={`w-full relative p-2 sm:p-3 rounded-[30px] sm:rounded-[38px] lg:rounded-[44px] glossy-glass-card ${styles.glow} aspect-[1/1.05] sm:aspect-[1/1.12] lg:aspect-[1/1.18] flex flex-col items-center justify-between border-2 ${styles.border} overflow-hidden`}>
+                    <div className={`home-hero-program-card relative flex w-full flex-col items-center justify-between overflow-hidden rounded-2xl border ${styles.border} p-2.5 sm:p-3`}>
                       
                       {/* Ultra-soft realistic feathered crystal sheen beam */}
                       <div
-                        className="absolute -inset-full w-[260%] h-[260%] bg-gradient-to-r from-transparent via-white/5 via-white/35 via-white/10 to-transparent pointer-events-none animate-gloss-beam z-20 blur-[1px]"
+                        className="hidden"
                         style={{ animationDelay: `${idx * 4}s` }}
                       />
                       
-                      <div className={`w-full h-full rounded-[26px] sm:rounded-[32px] ${styles.bubbleBg} p-2.5 sm:p-4 lg:p-5 flex flex-col items-center justify-center relative shadow-inner overflow-hidden border border-white/30`}>
+                      <div className={`relative flex aspect-square w-full flex-col items-center justify-center overflow-hidden rounded-xl border border-white/15 p-2.5 sm:p-3 ${styles.bubbleBg}`}>
                         {/* Top glass bubble shine */}
                         <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-[26px] sm:rounded-t-[32px] pointer-events-none" />
                         
@@ -411,21 +407,21 @@ export default function HomePage() {
                           <HeroCardIcon name={card.icon} className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]" />
                         </div>
 
-                        <span className={`text-[10px] sm:text-xs font-black tracking-widest ${styles.categoryText} uppercase drop-shadow-md z-10`}>
+                        <span className={`z-10 text-[9px] font-black uppercase tracking-[0.12em] sm:text-[10px] ${styles.categoryText}`}>
                           {card.category}
                         </span>
-                        <div className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-black text-white flex items-center justify-center drop-shadow-lg z-10 mt-0.5 sm:mt-1">
+                        <div className="z-10 mt-0.5 flex items-center justify-center text-2xl font-black text-white sm:text-3xl">
                           <span>{card.mainText}</span>
                         </div>
                       </div>
                       
-                      <span className={`text-[11px] sm:text-xs md:text-sm lg:text-[15px] font-extrabold text-slate-100 mt-2 sm:mt-3 tracking-wide ${styles.hoverTitle} transition-colors z-10 text-center truncate max-w-full px-1`}>
+                      <span className={`z-10 mt-2 max-w-full truncate px-1 text-center text-[11px] font-bold text-slate-100 transition-colors sm:text-xs ${styles.hoverTitle}`}>
                         {card.title}
                       </span>
                     </div>
                     
                     {/* Cute pill badge */}
-                    <div className={`mt-1.5 sm:mt-2.5 px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full ${styles.badge} text-white text-[9px] sm:text-[10px] md:text-[11px] font-black shadow-lg whitespace-nowrap group-hover:scale-105 transition-all border border-white/20 text-center truncate max-w-full`}>
+                    <div className={`mt-2 max-w-full truncate rounded-full border border-white/15 px-2.5 py-0.5 text-center text-[9px] font-bold text-white sm:text-[10px] ${styles.badge}`}>
                       {card.badge}
                     </div>
                   </div>
@@ -460,10 +456,10 @@ export default function HomePage() {
           </div>
 
           {/* Action CTAs: Free Class and All Courses Button */}
-          <div className="mt-8 sm:mt-14 lg:mt-20 pb-6 sm:pb-8 lg:pb-12 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3 pb-4 sm:mt-11 sm:gap-4">
             <Link
               href="/free-classes"
-              className="px-5 py-2.5 sm:px-8 sm:py-3.5 rounded-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold sm:font-extrabold text-xs sm:text-base shadow-lg shadow-orange-950/25 hover:shadow-orange-950/40 hover:scale-105 transition-all flex items-center gap-2 sm:gap-2.5"
+              className="ga-primary-button px-6 py-3 text-xs sm:px-7 sm:text-sm"
             >
               <span>ফ্রি ক্লাস (HSC / SSC)</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -471,7 +467,7 @@ export default function HomePage() {
 
             <Link
               href="/courses"
-              className="px-4.5 py-2.5 sm:px-7 sm:py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-base border border-white/20 backdrop-blur-md hover:border-orange-400/40 hover:scale-105 transition-all flex items-center gap-2 sm:gap-2.5 shadow-lg"
+              className="ga-secondary-button border-white/15 bg-white/[0.06] px-6 py-3 text-xs text-white hover:border-orange-300/40 hover:bg-white/10 hover:text-white sm:px-7 sm:text-sm"
             >
               <span>সকল কোর্স দেখুন</span>
               <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-300" />
