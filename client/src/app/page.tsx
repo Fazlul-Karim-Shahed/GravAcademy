@@ -35,7 +35,6 @@ import {
   ScreenShare,
   Sparkles,
 } from 'lucide-react';
-import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { CourseCard } from '@/components/course/CourseCard';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
@@ -149,24 +148,14 @@ export default function HomePage() {
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
-  const [selectedClass, setSelectedClass] = useState<string>('All');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  const [dynamicClasses, setDynamicClasses] = useState<AcademicClassItem[]>([]);
-  const classList = ['All', ...dynamicClasses.map((c) => c.name)];
 
   const [dbTeachers, setDbTeachers] = useState<any[]>([]);
 
   useEffect(() => {
     fetchFeaturedCourses();
-    fetchDynamicClasses();
     fetchTeachers();
   }, []);
-
-  const fetchDynamicClasses = async () => {
-    const list = await getSharedAcademicClasses();
-    setDynamicClasses(list);
-  };
 
   const fetchTeachers = async () => {
     try {
@@ -192,14 +181,10 @@ export default function HomePage() {
     }
   };
 
-  const filteredCourses =
-    selectedClass === 'All'
-      ? courses
-      : courses.filter((c) => c.gradeLevel.toLowerCase() === selectedClass.toLowerCase());
   const configuredFeaturedIds = Array.isArray(settings?.featuredCourseIds) ? settings.featuredCourseIds.slice(0, 4) : [];
   const popularCourses = (configuredFeaturedIds.length > 0
-    ? filteredCourses.filter((course) => configuredFeaturedIds.includes(course._id))
-    : filteredCourses).slice(0, 4);
+    ? courses.filter((course) => configuredFeaturedIds.includes(course._id))
+    : courses).slice(0, 4);
 
   const faqs = [
     {
@@ -602,32 +587,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Class filter: compact, accessible segmented control */}
-            <div
-              role="tablist"
-              aria-label="ক্লাস অনুযায়ী কোর্স বাছাই করুন"
-              className="w-full lg:w-auto flex items-center gap-1 p-1 rounded-2xl bg-slate-100/90 dark:bg-[#111318]/90 border border-slate-200/80 dark:border-[#262b34] shadow-inner overflow-x-auto scrollbar-none max-w-full"
-            >
-              {classList.slice(0, 6).map((cls) => {
-                const isActive = selectedClass === cls;
-                return (
-                  <button
-                    key={cls}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setSelectedClass(cls)}
-                    className={`min-w-max px-3.5 sm:px-4.5 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? 'bg-white dark:bg-[#1a1d24] text-orange-600 dark:text-orange-400 shadow-sm ring-1 ring-orange-500/30 dark:ring-orange-500/30'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-[#181b20]'
-                    }`}
-                  >
-                    {cls === 'All' ? 'সকল শ্রেণি' : cls}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           {/* Courses Grid */}
@@ -636,7 +595,7 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border-2 border-orange-500/20 border-t-orange-500 animate-spin mx-auto" />
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্সগুলো সাজানো হচ্ছে...</p>
             </div>
-          ) : filteredCourses.length === 0 ? (
+          ) : popularCourses.length === 0 ? (
             <div className="text-center py-16 bg-white/70 dark:bg-[#111318]/70 backdrop-blur-xl rounded-[32px] border border-slate-200/80 dark:border-[#262b34] p-8 sm:p-12 max-w-md mx-auto shadow-sm">
               <div className="w-16 h-16 rounded-2xl bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-800">
                 <BookOpen className="w-8 h-8 text-orange-600 dark:text-orange-400" />
