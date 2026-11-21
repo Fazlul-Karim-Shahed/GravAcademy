@@ -170,7 +170,7 @@ export default function TeacherPanelPage() {
             ))}
           </div>
         ) : batches.length === 0 ? (
-          <div className="rounded-3xl p-12 text-center bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
+          <div className="ga-card p-12 text-center">
             <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
             <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
               আপনাকে এখনো কোনো ব্যাচ বা কোর্সে অ্যাসাইন করা হয়নি

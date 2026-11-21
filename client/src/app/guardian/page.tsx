@@ -129,7 +129,7 @@ export default function GuardianPortalPage() {
         )}
 
         {!loading && !error && students.length === 0 && (
-          <div className="rounded-3xl p-10 bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs text-center">
+          <div className="ga-card p-10 text-center">
             <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">কোনো শিক্ষার্থী লিংক করা নেই</h3>
             <p className="text-xs text-slate-500 mt-1.5 max-w-sm mx-auto">
@@ -242,7 +242,7 @@ export default function GuardianPortalPage() {
       {/* Payment History Modal */}
       {paymentModalStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-lg w-full border border-slate-200 dark:border-[#262b34] shadow-2xl max-h-[80vh] flex flex-col">
+          <div className="ga-card max-w-lg w-full max-h-[80vh] flex flex-col">
             <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
               <h3 className="text-sm font-black text-slate-900 dark:text-white">
                 "{paymentModalStudent.name}" এর পেমেন্ট হিস্ট্রি

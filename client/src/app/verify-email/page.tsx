@@ -72,7 +72,7 @@ function VerifyEmailContent() {
           <div className="mx-auto mt-7 max-w-sm space-y-3">
             <form onSubmit={(event) => { event.preventDefault(); void resend(); }} className="flex flex-col gap-2 sm:flex-row">
               <input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="আপনার email address" className="min-h-11 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none focus:border-orange-500 dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
-              <button type="submit" disabled={resending} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-4 text-sm font-bold text-white shadow-md shadow-orange-950/25 transition disabled:opacity-60 cursor-pointer">
+              <button type="submit" disabled={resending} className="ga-primary-button text-sm disabled:opacity-60 cursor-pointer">
                 {resending && <Loader2 className="h-4 w-4 animate-spin" />} নতুন link
               </button>
             </form>

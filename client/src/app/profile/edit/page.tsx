@@ -309,7 +309,7 @@ export default function ProfileEditPage() {
         <form id="profile-edit-form" onSubmit={handleSubmit} className="space-y-6">
           
           {/* Avatar & Photo Section */}
-          <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs">
+          <div className="ga-card p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Camera className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>প্রোফাইল ছবি (Avatar / Photo)</span>
@@ -370,7 +370,7 @@ export default function ProfileEditPage() {
           </div>
 
           {/* Basic Personal Info */}
-          <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs space-y-4">
+          <div className="ga-card p-6 space-y-4">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
               <User className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>সাধারণ তথ্য</span>

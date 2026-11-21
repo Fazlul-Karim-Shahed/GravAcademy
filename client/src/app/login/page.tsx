@@ -94,7 +94,7 @@ function LoginForm() {
           </p>
         </div>
 
-        <div className="rounded-[32px] bg-white/95 dark:bg-[#111318]/95 backdrop-blur-2xl border-2 border-slate-200/80 dark:border-[#262b34] p-7 sm:p-8 shadow-2xl shadow-black/40 text-slate-900 dark:text-white">
+        <div className="ga-card rounded-2xl p-7 sm:p-8 text-slate-900 dark:text-white">
           {error && (
             <div className="mb-5 p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -191,7 +191,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-black text-sm shadow-md shadow-orange-950/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              className="ga-primary-button w-full mt-2 text-sm active:scale-[0.98] cursor-pointer disabled:opacity-60"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <span>সাইন ইন</span>

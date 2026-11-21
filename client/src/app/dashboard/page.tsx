@@ -407,7 +407,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* 4. Helpline & Support Strip */}
-        <div className="order-4 rounded-[30px] p-5 sm:p-6 bg-white/95 dark:bg-[#111318]/95 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+        <div className="ga-card order-4 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 text-white flex items-center justify-center shrink-0 shadow-md shadow-orange-950/25">
               <PhoneCall className="w-5 h-5" />

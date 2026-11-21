@@ -94,7 +94,7 @@ export default function ProfileViewPage() {
         </div>
 
         {/* Hero Profile Card */}
-        <div className="relative rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 sm:p-8 shadow-xs overflow-hidden mb-8">
+        <div className="ga-card relative p-6 sm:p-8 overflow-hidden mb-8">
           {/* Ambient Glow */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 dark:bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -162,7 +162,7 @@ export default function ProfileViewPage() {
 
         {/* Printable identity card */}
         <style jsx global>{`@media print { body * { visibility: hidden !important; } #identity-card-sheet, #identity-card-sheet * { visibility: visible !important; } #identity-card-sheet { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; } }`}</style>
-        <section className="mb-8 rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
+        <section className="ga-card mb-8 p-5 sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">আপনার ID Card</h3>
