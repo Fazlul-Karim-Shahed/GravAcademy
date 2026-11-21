@@ -13,6 +13,7 @@ import {
   FileText,
   CheckCircle2,
   Users,
+  UserPlus,
   Video,
   ChevronRight,
   Award,
@@ -972,8 +973,8 @@ export default function HomePage() {
             
             {/* Step 1 */}
             <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] hover:border-orange-500/70 dark:hover:border-orange-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-orange-500/25 group-hover:scale-110 transition-transform">
-                ১
+              <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-5 border border-orange-200/70 dark:border-orange-800/60 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                <UserPlus className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                 রেজিস্ট্রেশন করুন
@@ -985,8 +986,8 @@ export default function HomePage() {
 
             {/* Step 2 */}
             <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] hover:border-amber-500/70 dark:hover:border-amber-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-amber-500/25 group-hover:scale-110 transition-transform">
-                ২
+              <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-5 border border-amber-200/70 dark:border-amber-800/60 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                <BookOpen className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                 কোর্স ও ব্যাচ পছন্দ করুন
@@ -998,8 +999,8 @@ export default function HomePage() {
 
             {/* Step 3 */}
             <div className="group relative p-6 sm:p-7 rounded-[32px] bg-white/85 dark:bg-[#111318]/80 backdrop-blur-xl border-2 border-slate-200/90 dark:border-[#262b34] hover:border-emerald-500/70 dark:hover:border-emerald-400/70 shadow-lg shadow-slate-200/40 dark:shadow-black/40 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-2 flex flex-col items-center text-center">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-green-600 text-white font-black text-xl flex items-center justify-center mb-5 shadow-lg shadow-emerald-500/25 group-hover:scale-110 transition-transform">
-                ৩
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-5 border border-emerald-200/70 dark:border-emerald-800/60 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <Video className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                 ক্লাস শুরু করুন
