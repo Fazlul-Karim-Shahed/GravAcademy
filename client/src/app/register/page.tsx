@@ -41,7 +41,7 @@ function RegisterForm() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] cosmic-hero-bg text-white flex items-center justify-center px-4 py-12 overflow-hidden">
+    <div className="ga-page relative min-h-[calc(100vh-4rem)] cosmic-hero-bg text-white flex items-center justify-center px-4 py-12 overflow-hidden">
       {/* Deep space radial ambient lighting */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[220px] bg-orange-600/15 rounded-full blur-[90px] pointer-events-none -z-10 animate-atmosphere" />

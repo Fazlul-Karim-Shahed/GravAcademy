@@ -296,7 +296,7 @@ export default function HomePage() {
     : instructorsList;
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-[#090a0d] text-slate-900 dark:text-slate-100 min-h-screen selection:bg-[#ff6a00] selection:text-white transition-colors">
+    <div className="ga-page text-slate-900 dark:text-slate-100 min-h-screen selection:bg-[#ff6a00] selection:text-white transition-colors">
 
       {/* 2. COSMIC GLOWING HORIZON HERO SECTION (Inspired by 10 Minute School) */}
       <section className="relative overflow-hidden cosmic-hero-bg text-white py-12 md:py-0 md:-mt-20 md:pt-20 lg:-mt-24 lg:pt-24 md:min-h-[calc(100vh+5rem)] lg:min-h-[calc(100vh+6rem)] flex flex-col items-center justify-center">

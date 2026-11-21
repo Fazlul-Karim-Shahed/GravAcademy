@@ -74,7 +74,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
   const fee = batch?.courseId?.discountPrice ?? batch?.courseId?.courseFee ?? batch?.courseId?.regularPrice;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] text-slate-900 dark:text-slate-100 py-6 sm:py-10">
+    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-6 sm:py-10">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between gap-4 mb-5">
           <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-orange-600 transition-colors"><ArrowLeft className="w-4 h-4" /> কোর্সে ফিরে যান</Link>

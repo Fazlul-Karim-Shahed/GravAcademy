@@ -56,11 +56,11 @@ function VerifyEmailContent() {
   const iconColor = state === 'success' ? 'text-emerald-600' : state === 'error' ? 'text-rose-500' : 'text-orange-600 dark:text-orange-400';
 
   return (
-    <main className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center bg-slate-50 px-4 py-12 dark:bg-[#0b0d12] sm:py-16">
+    <main className="ga-page flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center px-4 py-12 sm:py-16">
       <div className="mb-7 flex justify-center">
         <SiteLogo size="xl" showText={true} textClassName="text-lg" taglineClassName="text-xs" />
       </div>
-      <section className="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white p-7 text-center shadow-xl shadow-slate-200/50 dark:border-[#262b34] dark:bg-[#111318] dark:shadow-black/20 sm:p-10">
+      <section className="ga-card w-full max-w-md p-7 text-center shadow-xl sm:p-10">
           <div className={`mx-auto mb-5 flex h-12 w-12 items-center justify-center ${iconColor}`}>
             <Icon className={`h-7 w-7 ${state === 'loading' ? 'animate-spin' : ''}`} />
           </div>
