@@ -4,6 +4,7 @@ import QRCode from 'qrcode';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 import { User } from '../models/User';
 import { EnrollmentRequest } from '../models/EnrollmentRequest';
+import { AuditLog } from '../models/AuditLog';
 
 type ConnectionState = 'starting' | 'qr' | 'ready' | 'disconnected' | 'error';
 let client: Client | null = null;
@@ -13,6 +14,14 @@ let lastError: string | null = null;
 let sendQueue: Promise<void> = Promise.resolve();
 const pendingMessages: Array<{ email: string; subject: string; body: string }> = [];
 let intentionalDisconnect = false;
+
+const auditWhatsApp = async (action: string, email: string, metadata: Record<string, any>) => {
+  try {
+    await AuditLog.create({ action, resourceType: 'WhatsApp', actorEmail: email, metadata });
+  } catch (error) {
+    console.warn('[WhatsApp] Audit log failed:', error instanceof Error ? error.message : error);
+  }
+};
 
 export const getWhatsAppStatus = () => ({ state, qrImage, lastError });
 
@@ -125,14 +134,23 @@ const resolvePhone = async (email: string): Promise<string | null> => {
 const enqueueSend = (email: string, subject: string, body: string) => {
   sendQueue = sendQueue.catch(() => undefined).then(async () => {
     try {
-      if (state !== 'ready' || !client) return;
+      if (state !== 'ready' || !client) {
+        pendingMessages.push({ email, subject, body });
+        setTimeout(flushPendingMessages, 5000);
+        return;
+      }
       const phone = await resolvePhone(email);
-      if (!phone) return;
+      if (!phone) {
+        await auditWhatsApp('WHATSAPP_DELIVERY_FAILED', email, { subject, reason: 'No valid phone number found' });
+        return;
+      }
       await client.sendMessage(`${phone}@c.us`, `*${subject}*\n\n${body}`);
+      await auditWhatsApp('WHATSAPP_DELIVERY_SENT', email, { subject, phone: `${phone.slice(0, 4)}******${phone.slice(-2)}` });
       // Limit burst traffic from classroom announcements.
       await new Promise((resolve) => setTimeout(resolve, 1500));
     } catch (error) {
       console.warn('[WhatsApp] Delivery failed for', email, error instanceof Error ? error.message : error);
+      await auditWhatsApp('WHATSAPP_DELIVERY_FAILED', email, { subject, reason: error instanceof Error ? error.message : String(error) });
     }
   });
 };
