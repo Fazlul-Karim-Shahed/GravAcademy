@@ -194,7 +194,11 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`🚀 Grav Academy API Server running on http://localhost:${PORT}`);
     setupSelfPing();
-    startWhatsApp();
+    if (process.env.WHATSAPP_ENABLED !== 'false') {
+      startWhatsApp();
+    } else {
+      console.info('[WhatsApp] Temporarily disabled by WHATSAPP_ENABLED=false');
+    }
     startDatabaseCleanup();
     const checkEmailBounces = async () => {
       try {
