@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { FormPageHeader } from '@/components/ui/FormPageHeader';
 import {
   GraduationCap,
   ArrowLeft,
@@ -188,48 +189,7 @@ export default function EditClassPage() {
     <div className="ga-page ga-admin-page ga-form-page py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Navigation Breadcrumb */}
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-            <Link
-              href="/admin/classes"
-              className="hover:text-orange-600 dark:hover:text-orange-400 flex items-center gap-1.5 transition-colors"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>সকল ক্লাস</span>
-            </Link>
-            <span>/</span>
-            <span className="text-slate-900 dark:text-white font-bold">
-              {targetClass?.name || 'এডিট ক্লাস'}
-            </span>
-          </div>
-
-          {targetClass && (
-            <Link
-              href={`/classes/${getClassSlug(targetClass)}`}
-              target="_blank"
-              className="text-xs font-bold text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1.5"
-            >
-              <span>লাইভ ক্লাস পেজ দেখুন</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-          )}
-        </div>
-
-        {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Academic Management
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              &lsquo;{targetClass?.name}&rsquo; এডিট করুন
-            </h1>
-          </div>
-        </div>
+        <FormPageHeader backHref="/admin/classes" backLabel="Classes" eyebrow="Academic management" title={`‘${targetClass?.name || 'ক্লাস'}’ এডিট করুন`} description="ক্লাসের বিষয়, group ও public information আপডেট করুন।" badge={targetClass ? <Link href={`/classes/${getClassSlug(targetClass)}`} target="_blank" className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">Live page</Link> : undefined} />
 
         {/* Notification Alert */}
         {error && (
