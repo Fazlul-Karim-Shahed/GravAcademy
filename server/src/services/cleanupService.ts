@@ -9,16 +9,13 @@ export interface CleanupResult { auditLogs: number; staleRequests: number; assig
 
 export async function runDatabaseCleanup(): Promise<CleanupResult> {
   const now = Date.now();
-  const auditBefore = new Date(now - 180 * 24 * 60 * 60 * 1000);
-  const requestBefore = new Date(now - 30 * 24 * 60 * 60 * 1000);
-  const reminderBefore = new Date(now - 30 * 24 * 60 * 60 * 1000);
-  const loadTestBefore = new Date(now - 7 * 24 * 60 * 60 * 1000);
+  const retentionBefore = new Date(now - 7 * 24 * 60 * 60 * 1000);
   const [auditLogs, staleRequests, assignmentReminders, examReminders, loadTestMessages] = await Promise.all([
-    AuditLog.deleteMany({ createdAt: { $lt: auditBefore } }),
-    EnrollmentRequest.deleteMany({ status: { $in: ['verification_pending', 'email_failed'] }, createdAt: { $lt: requestBefore } }),
-    AssignmentReminder.deleteMany({ dueDate: { $lt: reminderBefore } }),
-    ExamReminder.deleteMany({ startWindow: { $lt: reminderBefore } }),
-    DiscussionMessage.deleteMany({ content: /^\[LOAD TEST\]/i, createdAt: { $lt: loadTestBefore } }),
+    AuditLog.deleteMany({ createdAt: { $lt: retentionBefore } }),
+    EnrollmentRequest.deleteMany({ status: { $in: ['verification_pending', 'email_failed'] }, createdAt: { $lt: retentionBefore } }),
+    AssignmentReminder.deleteMany({ dueDate: { $lt: retentionBefore } }),
+    ExamReminder.deleteMany({ startWindow: { $lt: retentionBefore } }),
+    DiscussionMessage.deleteMany({ content: /^\[LOAD TEST\]/i, createdAt: { $lt: retentionBefore } }),
   ]);
   const result = { auditLogs: auditLogs.deletedCount, staleRequests: staleRequests.deletedCount, assignmentReminders: assignmentReminders.deletedCount, examReminders: examReminders.deletedCount, loadTestMessages: loadTestMessages.deletedCount };
   await Setting.findOneAndUpdate({ key: 'databaseCleanupLastRun' }, { key: 'databaseCleanupLastRun', value: { at: new Date().toISOString(), result } }, { upsert: true });
