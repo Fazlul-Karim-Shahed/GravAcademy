@@ -1034,25 +1034,21 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
     const ext = file.originalname.split('.').pop() || 'jpg';
     const sanitizedName = `slip_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
 
-    let driveFileId = '';
     const isDriveConfigured =
       process.env.GOOGLE_CLIENT_ID &&
       process.env.GOOGLE_CLIENT_SECRET &&
       process.env.GOOGLE_REFRESH_TOKEN;
 
-    if (isDriveConfigured) {
-      const { uploadFileToDrive } = await import('../services/googleDriveService');
-      const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
-      driveFileId = driveRes.fileId;
-    } else {
-      console.warn('âš ï¸ Google Drive OAuth not configured. Using placeholder.');
-      driveFileId = `stub_drive_${Date.now()}`;
+    if (!isDriveConfigured) {
+      return res.status(503).json({ success: false, message: 'Google Drive is unavailable. File was not saved.' });
     }
 
+    const { uploadFileToDrive } = await import('../services/googleDriveService');
+    const driveRes = await uploadFileToDrive(sanitizedName, file.mimetype, file.buffer);
+    const driveFileId = driveRes.fileId;
+
     // Direct preview/download link
-    const fileUrl = isDriveConfigured
-      ? `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`
-      : `/uploads/slips/${sanitizedName}`;
+    const fileUrl = `https://drive.google.com/file/d/${driveFileId}/view?usp=sharing`;
 
     return res.status(200).json({
       success: true,
