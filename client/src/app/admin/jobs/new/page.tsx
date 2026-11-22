@@ -26,6 +26,8 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import TextEditor from '@/components/ui/TextEditor';
+import { Button } from '@/components/ui';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 
 interface CustomField {
   label: string;
@@ -35,6 +37,15 @@ interface CustomField {
 interface JobPostFormProps {
   params?: Promise<{ id?: string }>;
 }
+
+const jobSections = [
+  { id: 'primary', label: 'Primary info' },
+  { id: 'eligibility', label: 'Qualifications & post' },
+  { id: 'dates', label: 'Timeline & fees' },
+  { id: 'details', label: 'Description & circular' },
+  { id: 'custom', label: 'Custom fields' },
+  { id: 'status', label: 'Publishing status' },
+];
 
 export default function AdminJobFormPage({ params }: JobPostFormProps) {
   const router = useRouter();
@@ -232,67 +243,58 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
   }
 
   return (
-    <div className="ga-page ga-admin-page ga-form-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200/80 dark:border-[#262b34]">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref="/admin/jobs"
+          backLabel="Job circulars"
+          eyebrow="Career management"
+          title={isEditing ? 'জব সার্কুলার সম্পাদনা করুন' : 'নতুন জব সার্কুলার পোস্ট করুন'}
+          description="প্রতিষ্ঠানের তথ্য, পদবি, শিক্ষাগত যোগ্যতা, আবেদনের সময়সূচি ও সার্কুলার ফাইল সাজান।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              {isEditing ? 'Edit circular' : 'New circular'}
+            </span>
+          }
+          action={
+            savedSlug ? (
               <Link
-                href="/admin/jobs"
-                className="text-xs font-semibold text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1"
+                href={`/jobs/${savedSlug}`}
+                target="_blank"
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs transition-colors hover:bg-slate-100 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:bg-[#151921]"
               >
-                <ArrowLeft className="w-3.5 h-3.5" /> জব সার্কুলার তালিকা
+                <ExternalLink className="h-4 w-4 text-orange-500" /> প্রিভিউ পেজ দেখুন
               </Link>
-              <span className="text-slate-400">/</span>
-              <span className="text-xs font-semibold text-slate-500">
-                {isEditing ? 'সার্কুলার সম্পাদনা' : 'নতুন সার্কুলার'}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-              <span className="p-2.5 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-500 text-white shadow-md shadow-orange-950/20">
-                <Briefcase className="w-6 h-6" />
-              </span>
-              {isEditing ? 'জব সার্কুলার সম্পাদনা করুন' : 'নতুন জব সার্কুলার পোস্ট করুন'}
-            </h1>
-          </div>
-
-          {savedSlug && (
-            <Link
-              href={`/jobs/${savedSlug}`}
-              target="_blank"
-              className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors flex items-center gap-1.5"
-            >
-              <ExternalLink className="w-4 h-4 text-orange-500" /> প্রিভিউ পেজ দেখুন
-            </Link>
-          )}
-        </div>
+            ) : undefined
+          }
+        />
 
         {/* Feedback Alerts */}
         {errorMessage && (
-          <div className="p-4 mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
             <div>{errorMessage}</div>
           </div>
         )}
 
         {successMessage && (
-          <div className="p-4 mb-6 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <CheckCircle className="mt-0.5 h-5 w-5 shrink-0" />
             <div>{successMessage}</div>
           </div>
         )}
 
-        <nav className="mb-6 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 bg-white text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-400 sm:grid-cols-6">{['প্রাথমিক','যোগ্যতা','তারিখ','বিবরণ','কাস্টম','প্রকাশনা'].map((label, index) => <span key={label} className={`border-r border-slate-200 px-2 py-3 last:border-r-0 dark:border-[#262b34] ${index === 0 ? 'text-orange-600 dark:text-orange-400' : ''}`}>{label}</span>)}</nav>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* SECTION 1: PRIMARY INFO */}
-        <div className="ga-card p-6 sm:p-8 space-y-6">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-[#262b34]">
-              <Building className="w-5 h-5 text-orange-500" /> ১. সার্কুলার ও প্রতিষ্ঠানের প্রাথমিক তথ্য
-            </h2>
+        <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav heading="Job sections" items={jobSections} />
 
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            {/* SECTION 1: PRIMARY INFO */}
+            <FormSection
+              id="primary"
+              icon={<Building className="h-4 w-4" />}
+              title="সার্কুলার ও প্রতিষ্ঠানের প্রাথমিক তথ্য"
+              description="বিজ্ঞপ্তির শিরোনাম, প্রতিষ্ঠানের নাম এবং অফিসিয়াল ওয়েবসাইট লিংক দিন।"
+            >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               
               {/* Title */}
@@ -406,14 +408,15 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                 />
               </div>
             </div>
-          </div>
+          </FormSection>
 
           {/* SECTION 2: REQUIREMENTS & SALARY */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-6">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-[#262b34]">
-              <GraduationCap className="w-5 h-5 text-orange-500" /> ২. যোগ্যতা, বেতন ও আবেদনের শর্তাবলী
-            </h2>
-
+          <FormSection
+            id="eligibility"
+            icon={<GraduationCap className="h-4 w-4" />}
+            title="যোগ্যতা, বেতন ও আবেদনের শর্তাবলী"
+            description="পদবি, শিক্ষাগত যোগ্যতা, অভিজ্ঞতা এবং বেতন স্কেল নির্ধারণ করুন।"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               
               {/* Educational Qualification */}
@@ -499,16 +502,16 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
-
             </div>
-          </div>
+          </FormSection>
 
           {/* SECTION 3: IMPORTANT DATES & MEDIA */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-6">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-[#262b34]">
-              <Calendar className="w-5 h-5 text-orange-500" /> ৩. গুরুত্বপূর্ণ তারিখ ও সার্কুলার ইমেজ / ফাইল
-            </h2>
-
+          <FormSection
+            id="dates"
+            icon={<Calendar className="h-4 w-4" />}
+            title="গুরুত্বপূর্ণ তারিখ ও সার্কুলার ইমেজ / ফাইল"
+            description="আবেদন শুরুর তারিখ, ডেডলাইন ও সার্কুলার ফাইল লিংক।"
+          >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {/* Publish Date */}
               <div>
@@ -580,18 +583,17 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
-
             </div>
-          </div>
+          </FormSection>
 
           {/* SECTION 4: FULL DESCRIPTION (RICH TEXT EDITOR) */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#262b34]">
-              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-orange-500" /> ৪. সার্কুলারের বিস্তারিত বিবরণ (Rich Text Editor)
-              </h2>
-              <span className="text-xs text-slate-400">ফরম্যাটেড টেক্সট, টেবিল ও লিস্ট সাপোর্ট করে</span>
-            </div>
+          <FormSection
+            id="details"
+            icon={<FileText className="h-4 w-4" />}
+            title="সার্কুলারের বিস্তারিত বিবরণ"
+            description="ফরম্যাটেড টেক্সট, টেবিল ও লিস্ট আকারে সম্পূর্ণ বিজ্ঞপ্তি উল্লেখ করুন।"
+          >
+            <div className="space-y-4">
 
             <div>
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -618,18 +620,17 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               />
             </div>
           </div>
+        </FormSection>
 
-          {/* SECTION 5: DYNAMIC CUSTOM FIELDS */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#262b34]">
-              <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-orange-500" /> ৫. কাস্টম ইনপুট ফিল্ড (Custom Dynamic Sections)
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  বিভিন্ন সার্কুলারের বিশেষ কোনো হেডিং বা কাস্টম তথ্যের জন্য ইচ্ছামতো ফিল্ড যোগ করুন।
-                </p>
-              </div>
+        {/* SECTION 5: DYNAMIC CUSTOM FIELDS */}
+        <FormSection
+          id="custom"
+          icon={<Sparkles className="h-4 w-4" />}
+          title="কাস্টম ইনপুট ফিল্ড"
+          description="বিভিন্ন সার্কুলারের বিশেষ কোনো হেডিং বা কাস্টম তথ্যের জন্য ইচ্ছামতো ফিল্ড যোগ করুন।"
+        >
+          <div className="space-y-4">
+            <div className="flex items-center justify-end">
               <button
                 type="button"
                 onClick={handleAddCustomField}
@@ -690,10 +691,16 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               </div>
             )}
           </div>
+        </FormSection>
 
           {/* SECTION 6: PUBLISHING STATUS */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
+          <FormSection
+            id="status"
+            icon={<CheckCircle className="h-4 w-4" />}
+            title="পাবলিকেশন স্ট্যাটাস ও ভিজিবিলিটি"
+            description="সার্কুলারটি ড্রাফট রাখবেন নাকি সরাসরি শিক্ষার্থীদের জন্য উন্মুক্ত করবেন তা ঠিক করুন।"
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   পাবলিকেশন স্ট্যাটাস
@@ -709,7 +716,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                 </select>
               </div>
 
-              <div className="flex items-center gap-2 mt-5">
+              <div className="flex items-center gap-2 sm:mt-5">
                 <input
                   type="checkbox"
                   id="featured-checkbox"
@@ -722,26 +729,30 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
                 </label>
               </div>
             </div>
+          </FormSection>
 
-            <div className="ga-sticky-action-bar flex items-center gap-3 w-full sm:w-auto">
-              <Link
-                href="/admin/jobs"
-                className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors text-center w-full sm:w-auto"
-              >
-                বাতিল করুন
+          {/* Action Bar */}
+          <div className="ga-sticky-action-bar m-4 sm:m-5">
+            <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
+              বিজ্ঞপ্তিটি সংরক্ষণ করতে নিচের বাটনে চাপুন।
+            </div>
+            <div className="flex gap-2">
+              <Link href="/admin/jobs">
+                <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
+                  বাতিল করুন
+                </Button>
               </Link>
-              <button
+              <Button
                 type="submit"
-                disabled={submitting}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-extrabold shadow-md shadow-orange-950/25 flex items-center justify-center gap-2 transition-all disabled:opacity-60 cursor-pointer w-full sm:w-auto"
+                isLoading={submitting}
+                className="bg-orange-600 font-bold text-white hover:bg-orange-700"
               >
-                <Save className="w-4 h-4" />
-                {submitting ? 'সংরক্ষণ করা হচ্ছে...' : isEditing ? 'আপডেট সম্পন্ন করুন' : 'সার্কুলার প্রকাশ করুন'}
-              </button>
+                <Save className="mr-1.5 h-4 w-4" /> {isEditing ? 'আপডেট সম্পন্ন করুন' : 'সার্কুলার প্রকাশ করুন'}
+              </Button>
             </div>
           </div>
-
-        </form>
+        </div>
+      </form>
 
       </div>
     </div>

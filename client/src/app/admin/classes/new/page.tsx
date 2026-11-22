@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
-import { FormPageHeader } from '@/components/ui/FormPageHeader';
+import { Button } from '@/components/ui';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
   GraduationCap,
   ArrowLeft,
@@ -19,6 +20,11 @@ import {
   saveSharedAcademicClasses,
   AcademicClassItem,
 } from '@/lib/classes';
+
+const classSections = [
+  { id: 'basic', label: 'Basic info' },
+  { id: 'curriculum', label: 'Curriculum & FAQs' },
+];
 
 export default function CreateClassPage() {
   const router = useRouter();
@@ -89,16 +95,9 @@ export default function CreateClassPage() {
           };
         });
 
-      const slug = classNameInput
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-
       const payload = {
         name: classNameInput.trim(),
-        slug,
-        order: Number(classOrderInput) || 0,
+        order: Number(classOrderInput) || 1,
         subtitle: classSubtitleInput.trim(),
         description: classDescInput.trim(),
         curriculumHighlights: highlightsArray,
@@ -106,17 +105,14 @@ export default function CreateClassPage() {
         faqs: faqsArray,
       };
 
-      // 1. Fetch current classes
       const currentClasses = await getSharedAcademicClasses();
-
-      // Check if class name or slug already exists
-      const exists = currentClasses.some(
-        (c) =>
-          c.name.toLowerCase() === payload.name.toLowerCase() ||
-          c.slug === payload.slug
+      const isDuplicate = currentClasses.some(
+        (c) => c.name.toLowerCase() === payload.name.toLowerCase()
       );
-      if (exists) {
-        throw new Error(`"${payload.name}" নামের ক্লাস ইতোমধ্যে তৈরি করা আছে।`);
+      if (isDuplicate) {
+        setError(`"${payload.name}" নামে একটি ক্লাস ইতিমধ্যে বিদ্যমান রয়েছে।`);
+        setSubmitting(false);
+        return;
       }
 
       const newClassItem: AcademicClassItem = {
@@ -147,184 +143,197 @@ export default function CreateClassPage() {
     }
   };
 
+  const inputClass =
+    'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:border-[#262b34] dark:bg-[#151921] dark:text-white';
+  const labelClass = 'mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300';
+
   return (
-    <div className="ga-page ga-admin-page ga-form-page py-10 transition-colors">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <FormPageHeader backHref="/admin/classes" backLabel="Classes" eyebrow="Academic setup" title="নতুন একাডেমিক ক্লাস তৈরি করুন" description="ক্লাসের নাম, group ও বিষয়গুলো এক জায়গা থেকে সাজান।" badge={<span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">New class</span>} />
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref="/admin/classes"
+          backLabel="Classes"
+          eyebrow="Academic setup"
+          title="নতুন একাডেমিক ক্লাস তৈরি করুন"
+          description="ক্লাসের নাম, group ও বিষয়গুলো এক জায়গা থেকে সাজান।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              New class
+            </span>
+          }
+        />
 
         {/* Notification Alert */}
         {error && (
-          <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{success}</span>
           </div>
         )}
 
         {/* Main Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="ga-card p-6 sm:p-8 space-y-6">
-            <nav className="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 text-center text-xs font-bold dark:border-[#262b34]"><span className="border-r border-slate-200 px-3 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">মৌলিক তথ্য</span><span className="px-3 py-3 text-slate-500 dark:text-slate-400">কারিকুলাম</span></nav>
-            
-            {/* Section 1: Basic Information */}
-            <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
-                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                <span>মৌলিক তথ্য</span>
-              </h2>
+        <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav heading="Class sections" items={classSections} />
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Class Name */}
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                    ক্লাসের নাম <span className="text-rose-500">*</span>
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            {/* Section 1: Basic Information */}
+            <FormSection
+              id="basic"
+              icon={<GraduationCap className="h-4 w-4" />}
+              title="মৌলিক তথ্য"
+              description="ক্লাসের নাম, প্রদর্শনের ক্রম এবং পরিচিতিমূলক হেডলাইন নির্ধারণ করুন।"
+            >
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>
+                      ক্লাসের নাম <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={classNameInput}
+                      onChange={(e) => setClassNameInput(e.target.value)}
+                      placeholder="e.g. Class 6, Class 10, HSC"
+                      className={inputClass}
+                    />
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      এই নামের ভিত্তিতেই কোর্সসমূহ ফিল্টার হবে এবং URL স্লাগ স্বয়ংক্রিয় তৈরি হবে।
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      প্রদর্শনের ক্রম (Order)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={classOrderInput === 0 ? '' : classOrderInput}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        setClassOrderInput(raw === '' ? 0 : Number(raw));
+                      }}
+                      placeholder="1, 2, 3..."
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    পেজের মূল শিরোনাম / হেডলাইন (Subtitle)
                   </label>
                   <input
                     type="text"
-                    required
-                    value={classNameInput}
-                    onChange={(e) => setClassNameInput(e.target.value)}
-                    placeholder="e.g. Class 6, Class 10, HSC"
-                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-semibold"
+                    value={classSubtitleInput}
+                    onChange={(e) => setClassSubtitleInput(e.target.value)}
+                    placeholder="e.g. ৬ষ্ঠ শ্রেণির পূর্ণাঙ্গ ফাউন্ডেশন ও নতুন কারিকুলাম প্রস্তুতি"
+                    className={inputClass}
                   />
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    এই নামের ভিত্তিতেই কোর্সসমূহ ফিল্টার হবে এবং URL স্লাগ স্বয়ংক্রিয় তৈরি হবে।
-                  </p>
                 </div>
 
-                {/* Display Order */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                    প্রদর্শনের ক্রম (Order)
+                  <label className={labelClass}>
+                    সংক্ষিপ্ত বিবরণ (Description)
                   </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={classOrderInput === 0 ? '' : classOrderInput}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      setClassOrderInput(raw === '' ? 0 : Number(raw));
-                    }}
-                    placeholder="1, 2, 3..."
-                    className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-bold"
+                  <textarea
+                    rows={3}
+                    value={classDescInput}
+                    onChange={(e) => setClassDescInput(e.target.value)}
+                    placeholder="e.g. নতুন শিক্ষাক্রমের আলোকে কনসেপ্ট ক্লিয়ারিং, এক্টিভিটি ও হ্যান্ডস-অন প্রজেক্ট ভিত্তিক শিখন।"
+                    className={inputClass}
                   />
                 </div>
               </div>
-
-              {/* Subtitle / Program Headline */}
-              <div className="mt-4">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  পেজের মূল শিরোনাম / হেডলাইন (Subtitle)
-                </label>
-                <input
-                  type="text"
-                  value={classSubtitleInput}
-                  onChange={(e) => setClassSubtitleInput(e.target.value)}
-                  placeholder="e.g. ৬ষ্ঠ শ্রেণির পূর্ণাঙ্গ ফাউন্ডেশন ও নতুন কারিকুলাম প্রস্তুতি"
-                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
-                />
-              </div>
-
-              {/* Description */}
-              <div className="mt-4">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  সংক্ষিপ্ত বিবরণ (Description)
-                </label>
-                <textarea
-                  rows={3}
-                  value={classDescInput}
-                  onChange={(e) => setClassDescInput(e.target.value)}
-                  placeholder="e.g. নতুন শিক্ষাক্রমের আলোকে কনসেপ্ট ক্লিয়ারিং, এক্টিভিটি ও হ্যান্ডস-অন প্রজেক্ট ভিত্তিক শিখন।"
-                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
-                />
-              </div>
-            </div>
+            </FormSection>
 
             {/* Section 2: Curriculum Highlights & Features */}
-            <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2 pb-3 mb-4 border-b border-slate-100 dark:border-[#262b34]">
-                <Sparkles className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                <span>কারিকুলাম ও ফিচারসমূহ</span>
-              </h2>
-
-              {/* Curriculum Highlights */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    কারিকুলাম হাইলাইটস (Curriculum Highlights)
-                  </label>
-                  <span className="text-[10px] text-slate-400">প্রতি লাইনে ১টি পয়েন্ট</span>
+            <FormSection
+              id="curriculum"
+              icon={<Sparkles className="h-4 w-4" />}
+              title="কারিকুলাম ও ফিচারসমূহ"
+              description="ক্লাসের বৈশিষ্ট্য, বিশেষ সুবিধা এবং সচরাচর জিজ্ঞাসিত প্রশ্নাবলী যুক্ত করুন।"
+            >
+              <div className="space-y-4">
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label className={labelClass}>
+                      কারিকুলাম হাইলাইটস (Curriculum Highlights)
+                    </label>
+                    <span className="text-[10px] text-slate-400">প্রতি লাইনে ১টি পয়েন্ট</span>
+                  </div>
+                  <textarea
+                    rows={4}
+                    value={classHighlightsInput}
+                    onChange={(e) => setClassHighlightsInput(e.target.value)}
+                    placeholder={'অধ্যায়ভিত্তিক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস\nস্ট্যান্ডার্ড লেকচার শিট ও স্মার্ট নোটস'}
+                    className={`${inputClass} font-mono leading-relaxed`}
+                  />
                 </div>
-                <textarea
-                  rows={4}
-                  value={classHighlightsInput}
-                  onChange={(e) => setClassHighlightsInput(e.target.value)}
-                  placeholder="অধ্যায়ভিত্তিক লাইভ ইন্টারঅ্যাক্টিভ ক্লাস&#10;স্ট্যান্ডার্ড লেকচার শিট ও স্মার্ট নোটস"
-                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono leading-relaxed"
-                />
+
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label className={labelClass}>
+                      মূল ফিচারসমূহ (Key Features)
+                    </label>
+                    <span className="text-[10px] text-slate-400">শিরোনাম | বিবরণ (প্রতি লাইনে)</span>
+                  </div>
+                  <textarea
+                    rows={4}
+                    value={classFeaturesInput}
+                    onChange={(e) => setClassFeaturesInput(e.target.value)}
+                    placeholder={'অভিজ্ঞ মেন্টর প্যানেল | অভিজ্ঞ শিক্ষকদের সরাসরি দিকনির্দেশনা\nডিজিটাল নোটস | প্রতিটি অধ্যায়ের পিডিএফ শিট'}
+                    className={`${inputClass} font-mono leading-relaxed`}
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label className={labelClass}>
+                      সচরাচর জিজ্ঞাসা (Class FAQs)
+                    </label>
+                    <span className="text-[10px] text-slate-400">প্রশ্ন | উত্তর (প্রতি লাইনে)</span>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={classFaqsInput}
+                    onChange={(e) => setClassFaqsInput(e.target.value)}
+                    placeholder={'ক্লাস কীভাবে হবে? | গুগল মিটের মাধ্যমে সরাসরি লাইভে হবে।\nরেকর্ডিং থাকবে কি? | হ্যাঁ, ক্লাসরুমে ফুল এইচডি রেকর্ডিং থাকবে।'}
+                    className={`${inputClass} font-mono leading-relaxed`}
+                  />
+                </div>
               </div>
+            </FormSection>
 
-              {/* Features (Title | Description) */}
-              <div className="space-y-1.5 mt-4">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    মূল ফিচারসমূহ (Key Features)
-                  </label>
-                  <span className="text-[10px] text-slate-400">শিরোনাম | বিবরণ (প্রতি লাইনে)</span>
-                </div>
-                <textarea
-                  rows={4}
-                  value={classFeaturesInput}
-                  onChange={(e) => setClassFeaturesInput(e.target.value)}
-                  placeholder="অভিজ্ঞ মেন্টর প্যানেল | অভিজ্ঞ শিক্ষকদের সরাসরি দিকনির্দেশনা&#10;ডিজিটাল নোটস | প্রতিটি অধ্যায়ের পিডিএফ শিট"
-                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono leading-relaxed"
-                />
+            {/* Sticky Action Bar */}
+            <div className="ga-sticky-action-bar m-4 sm:m-5">
+              <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
+                নতুন ক্লাস তৈরি করতে নিচের বাটনটি চাপুন।
               </div>
-
-              {/* FAQs (Question | Answer) */}
-              <div className="space-y-1.5 mt-4">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    সচরাচর জিজ্ঞাসা (Class FAQs)
-                  </label>
-                  <span className="text-[10px] text-slate-400">প্রশ্ন | উত্তর (প্রতি লাইনে)</span>
-                </div>
-                <textarea
-                  rows={3}
-                  value={classFaqsInput}
-                  onChange={(e) => setClassFaqsInput(e.target.value)}
-                  placeholder="ক্লাস কীভাবে হবে? | গুগল মিটের মাধ্যমে সরাসরি লাইভে হবে।&#10;রেকর্ডিং থাকবে কি? | হ্যাঁ, ক্লাসরুমে ফুল এইচডি রেকর্ডিং থাকবে।"
-                  className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono leading-relaxed"
-                />
+              <div className="flex gap-2">
+                <Link href="/admin/classes">
+                  <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
+                    বাতিল করুন
+                  </Button>
+                </Link>
+                <Button
+                  type="submit"
+                  isLoading={submitting}
+                  className="bg-orange-600 font-bold text-white hover:bg-orange-700"
+                >
+                  ক্লাস তৈরি করুন
+                </Button>
               </div>
             </div>
-
-            {/* Submit / Cancel Actions */}
-            <div className="ga-sticky-action-bar mt-6 flex-col-reverse sm:flex-row">
-              <Link
-                href="/admin/classes"
-                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] text-xs font-bold transition-colors"
-              >
-                বাতিল করুন
-              </Link>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full sm:w-auto text-center px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
-              >
-                {submitting ? 'ক্লাস তৈরি হচ্ছে...' : 'ক্লাস তৈরি করুন'}
-              </button>
-            </div>
-
           </div>
         </form>
-
       </div>
     </div>
   );

@@ -90,4 +90,7 @@ export const Button: React.FC<ButtonProps> = ({
 export { DriveFileUpload } from './DriveFileUpload';
 export { FileUploadField } from './FileUploadField';
 export { LoadingSpinner, PageLoader } from './LoadingSpinner';
+export { FormPageHeader } from './FormPageHeader';
+export { FormSectionNav } from './FormSectionNav';
+export { FormSection, formInputClass, formLabelClass } from './FormSection';
 

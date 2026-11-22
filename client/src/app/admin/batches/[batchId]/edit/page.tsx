@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
-import { FormPageHeader } from '@/components/ui/FormPageHeader';
+import { Button } from '@/components/ui';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
   Layers,
   ArrowLeft,
@@ -12,9 +13,9 @@ import {
   AlertCircle,
   GraduationCap,
   BookOpen,
-  Calendar,
+  CalendarDays,
+  Clock,
   Users,
-  DollarSign,
   Save,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
@@ -29,7 +30,19 @@ interface CourseItem {
   durationMonths?: number;
 }
 
-const todayInDhaka = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const batchSections = [
+  { id: 'basic', label: 'Basic info' },
+  { id: 'timeline', label: 'Timeline & status' },
+  { id: 'schedule', label: 'Class routine' },
+];
+
+const todayInDhaka = () =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Dhaka',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
 
 export default function EditBatchPage() {
   const router = useRouter();
@@ -81,8 +94,12 @@ export default function EditBatchPage() {
 
       if (batchRes.data?.success) {
         const b = batchRes.data.data;
-        const cId = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId._id : (b.courseId || '');
-        const cGrade = typeof b.courseId === 'object' && b.courseId !== null ? b.courseId.gradeLevel : '';
+        const cId =
+          typeof b.courseId === 'object' && b.courseId !== null
+            ? b.courseId._id
+            : b.courseId || '';
+        const cGrade =
+          typeof b.courseId === 'object' && b.courseId !== null ? b.courseId.gradeLevel : '';
         setOriginalStartDate(b.startDate ? new Date(b.startDate).toISOString().slice(0, 10) : '');
 
         if (cGrade) {
@@ -106,268 +123,325 @@ export default function EditBatchPage() {
         });
       }
     } catch (err: any) {
-      console.error('Failed to load batch details:', err);
-      setError(err.response?.data?.message || 'Failed to load batch details.');
+      console.error('Failed to load batch data:', err);
+      setError('ব্যাচের তথ্য লোড করা যায়নি');
     } finally {
       setLoading(false);
     }
   };
 
-  // Compute available classes
-  const availableClasses = academicClasses.length > 0
-    ? academicClasses.map((ac) => ac.name)
-    : Array.from(new Set(courses.map((c) => c.gradeLevel).filter(Boolean))) as string[];
+  const availableClasses = academicClasses.map((item) => item.name);
 
-  // Filtered courses based on Class
-  const filteredCourses = React.useMemo(() => {
-    return courses.filter((c) => {
-      return selectedClass === 'All' || (c.gradeLevel || '').toLowerCase() === selectedClass.toLowerCase();
-    });
-  }, [courses, selectedClass]);
+  const filteredCourses = courses.filter((c) => {
+    if (selectedClass === 'All') return true;
+    return c.gradeLevel === selectedClass;
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courses.find((course) => course._id === form.courseId)?.durationMonths) {
-      setError('আগে নির্বাচিত course-এর মেয়াদ (মাস) নির্ধারণ করুন।');
+    if (!form.name || !form.courseId) {
+      setError('ব্যাচের নাম এবং প্যারেন্ট কোর্স নির্বাচন করা আবশ্যক');
       return;
     }
+
     setSubmitting(true);
     setError('');
     setSuccess('');
 
     try {
-      const finalScheduleText = form.scheduleText.trim()
-        ? form.scheduleText.trim()
-        : formatScheduleSlots(form.weeklySchedule);
-
       const payload: any = {
         name: form.name,
         courseId: form.courseId,
-        ...(statusTouched || form.startDate === originalStartDate ? { status: form.status } : {}),
-        scheduleText: finalScheduleText,
-        weeklySchedule: form.weeklySchedule.map((s) => ({
-          ...s,
-          topic: s.topic?.trim() || 'Lecture Day',
-        })),
-        capacity: Number(form.capacity),
-        meetingUrl: form.meetingUrl.trim(),
-        startDate: form.startDate,
+        status: form.status,
+        scheduleText: form.scheduleText,
+        weeklySchedule: form.weeklySchedule,
+        capacity: Number(form.capacity) || 40,
+        meetingUrl: form.meetingUrl,
       };
+
+      if (form.startDate && form.startDate !== originalStartDate) {
+        payload.startDate = form.startDate;
+      }
 
       const res = await api.put(`/batches/${batchId}`, payload);
       if (res.data?.success) {
-        setSuccess('✅ Batch details updated successfully! Redirecting...');
+        setSuccess('ব্যাচের তথ্য সফলভাবে আপডেট হয়েছে!');
         setTimeout(() => {
           router.push('/admin/batches');
         }, 1200);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update batch. Please check inputs.');
+      console.error('Failed to update batch:', err);
+      setError(err.response?.data?.message || 'ব্যাচ আপডেট করতে ব্যর্থ হয়েছে');
     } finally {
       setSubmitting(false);
     }
   };
 
+  const inputClass =
+    'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:border-[#262b34] dark:bg-[#151921] dark:text-white';
+  const labelClass = 'mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300';
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
-          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ব্যাচের তথ্য লোড হচ্ছে...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 py-10 dark:bg-[#0b0d12]">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-2xl border-2 border-orange-500/20 border-t-orange-600" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">ব্যাচ ডেটা লোড হচ্ছে...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="ga-page ga-admin-page ga-form-page py-10 transition-colors">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <FormPageHeader backHref="/admin/batches" backLabel="Batches" eyebrow="Batch configuration" title="Edit Batch Details" description="Batch-এর সময়, শিক্ষক ও enrollment settings আপডেট করুন।" badge={<Link href={`/admin/batches/${batchId}/curriculum`} className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">Manage curriculum</Link>} />
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref="/admin/batches"
+          backLabel="Batches"
+          eyebrow="Batch Management"
+          title="ব্যাচ সেটিংস এডিট"
+          description="ব্যাচের রুটিন, সময়কাল এবং শিক্ষার্থী ভর্তি তথ্য আপডেট করুন।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              Edit batch
+            </span>
+          }
+        />
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-400 text-sm flex items-center gap-3 shadow-xs">
-            <AlertCircle className="w-5 h-5 shrink-0" />
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-400">
+            <AlertCircle className="h-5 w-5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-400 text-sm flex items-center gap-3 shadow-xs">
-            <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <div className="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-400">
+            <CheckCircle2 className="h-5 w-5 shrink-0" />
             <span>{success}</span>
           </div>
         )}
 
-        {/* Edit Form */}
-        <div className="ga-card p-6 sm:p-8">
-          <nav className="mb-7 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:text-slate-400"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">ব্যাচ তথ্য</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">সময়কাল</span><span className="px-2 py-3">প্রকাশনা</span></nav>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Batch Name */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Batch Title *
-              </label>
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="e.g. Class 10 Physics - Special Final Revision Batch"
-                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav heading="Batch sections" items={batchSections} />
 
-            {/* Class & Course Selection */}
-            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200/80 dark:border-[#262b34] space-y-4">
-              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-xs uppercase tracking-wider">
-                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                <span>Class & Course Assignment</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* 1. Class Selection */}
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            {/* Section 1: Basic Info */}
+            <FormSection
+              id="basic"
+              icon={<GraduationCap className="h-4 w-4" />}
+              title="মৌলিক তথ্য ও কোর্স নির্ধারণ"
+              description="ব্যাচের নাম এবং সংশ্লিষ্ট কোর্স পরিবর্তন করুন।"
+            >
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">
-                    Academic Class Level
+                  <label className={labelClass}>
+                    Batch Title <span className="text-rose-500">*</span>
                   </label>
-                  <select
-                    value={selectedClass}
-                    onChange={(e) => setSelectedClass(e.target.value)}
-                    className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                  >
-                    <option value="All">All Classes ({availableClasses.length})</option>
-                    {availableClasses.map((cls) => (
-                      <option key={cls} value={cls}>
-                        {cls}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* 2. Course Selection */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5">
-                    Parent Course *
-                  </label>
-                  <select
+                  <input
+                    type="text"
                     required
-                    value={form.courseId}
-                    onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-                    className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                  >
-                    <option value="">Select a Course ({filteredCourses.length})</option>
-                    {filteredCourses.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.title} {c.gradeLevel ? `(${c.gradeLevel})` : ''}
-                      </option>
-                    ))}
-                  </select>
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="e.g. Class 10 Physics - Special Final Revision Batch"
+                    className={inputClass}
+                  />
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-[#262b34] dark:bg-[#151921]/40 sm:p-5">
+                  <div className="mb-3 flex items-center gap-2">
+                    <BookOpen className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      Class & Course Assignment
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        Academic Class Level
+                      </label>
+                      <select
+                        value={selectedClass}
+                        onChange={(e) => setSelectedClass(e.target.value)}
+                        className={inputClass}
+                      >
+                        <option value="All">All Classes ({availableClasses.length})</option>
+                        {availableClasses.map((cls) => (
+                          <option key={cls} value={cls}>
+                            {cls}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        Parent Course <span className="text-rose-500">*</span>
+                      </label>
+                      <select
+                        required
+                        value={form.courseId}
+                        onChange={(e) => setForm({ ...form, courseId: e.target.value })}
+                        className={inputClass}
+                      >
+                        <option value="">Select a Course ({filteredCourses.length})</option>
+                        {filteredCourses.map((c) => (
+                          <option key={c._id} value={c._id}>
+                            {c.title} {c.gradeLevel ? `(${c.gradeLevel})` : ''}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </FormSection>
 
-            {/* Status Selection */}
-            <section className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-[#262b34] dark:bg-[#151921] sm:p-5">
-              <div>
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white">ব্যাচের সময়কাল</h2>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">শেষের তারিখ course-এর মেয়াদ থেকে হিসাব হবে।</p>
+            {/* Section 2: Timeline & Status */}
+            <FormSection
+              id="timeline"
+              icon={<CalendarDays className="h-4 w-4" />}
+              title="সময়কাল ও স্ট্যাটাস"
+              description="ব্যাচ শুরুর তারিখ, ভর্তি সংক্রান্ত স্ট্যাটাস ও সিট ক্যাপাসিটি নির্ধারণ করুন।"
+            >
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-[#262b34] dark:bg-[#151921]/40 sm:p-5">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className={labelClass}>
+                        শুরুর তারিখ <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        required
+                        value={form.startDate}
+                        onChange={(e) => {
+                          const startDate = e.target.value;
+                          setForm((current) => ({
+                            ...current,
+                            startDate,
+                            status:
+                              !statusTouched && startDate
+                                ? startDate > todayInDhaka()
+                                  ? 'upcoming'
+                                  : 'active'
+                                : current.status,
+                          }));
+                        }}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="self-end pb-2.5 text-xs text-slate-500 dark:text-slate-400">
+                      নির্বাচিত কোর্স মেয়াদ:{' '}
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {courses.find((c) => c._id === form.courseId)?.durationMonths
+                          ? `${courses.find((c) => c._id === form.courseId)?.durationMonths} মাস`
+                          : 'মেয়াদ নির্ধারিত নেই'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className={labelClass}>Enrollment Status *</label>
+                    <select
+                      value={form.status}
+                      onChange={(e) => {
+                        setStatusTouched(true);
+                        setForm({ ...form, status: e.target.value });
+                      }}
+                      className={inputClass}
+                    >
+                      <option value="draft">Draft (Private setup)</option>
+                      <option value="upcoming">Upcoming (Scheduled for launch)</option>
+                      <option value="active">Active (Open for Admissions)</option>
+                      <option value="completed">Completed (Archived)</option>
+                      <option value="archived">Archived</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>Student Seat Capacity</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="500"
+                      value={form.capacity === 0 ? '' : form.capacity}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        setForm({ ...form, capacity: raw === '' ? 0 : Number(raw) });
+                      }}
+                      className={inputClass}
+                      placeholder="e.g. 40"
+                    />
+                    <span className="mt-1 block text-[10px] text-slate-400">
+                      ব্যাচে সর্বোচ্চ কতজন শিক্ষার্থী ভর্তি হতে পারবে
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">শুরুর তারিখ *
-                  <input type="date" required value={form.startDate} onChange={(e) => { const startDate = e.target.value; setForm((current) => ({ ...current, startDate, status: !statusTouched && startDate ? startDate > todayInDhaka() ? 'upcoming' : 'active' : current.status })); }} className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm dark:border-[#262b34] dark:bg-[#111318] focus:ring-2 focus:ring-orange-500" />
-                </label>
-                <p className="self-end pb-3 text-sm text-slate-500 dark:text-slate-400">নির্বাচিত course: {courses.find((course) => course._id === form.courseId)?.durationMonths ? `${courses.find((course) => course._id === form.courseId)?.durationMonths} মাস` : 'মেয়াদ নির্ধারিত নেই'}</p>
-              </div>
-            </section>
+            </FormSection>
 
-            {/* Status Selection */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                Enrollment Status *
-              </label>
-              <select
-                value={form.status}
-                onChange={(e) => { setStatusTouched(true); setForm({ ...form, status: e.target.value }); }}
-                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-              >
-                <option value="draft">Draft (Private setup)</option>
-                <option value="upcoming">Upcoming (Scheduled for launch)</option>
-                <option value="active">Active (Open for Admissions)</option>
-                <option value="completed">Completed (Archived)</option>
-                <option value="archived">Archived</option>
-              </select>
-            </div>
-
-            {/* Capacity Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                  Student Seat Capacity
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="500"
-                  value={form.capacity === 0 ? '' : form.capacity}
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    setForm({ ...form, capacity: raw === '' ? 0 : Number(raw) });
+            {/* Section 3: Schedule */}
+            <FormSection
+              id="schedule"
+              icon={<Clock className="h-4 w-4" />}
+              title="সাপ্তাহিক ক্লাস রুটিন"
+              description="সপ্তাহের ক্লাস দিন এবং সময় স্লটসমূহ যুক্ত করুন।"
+            >
+              <div className="space-y-4">
+                <WeeklyScheduleBuilder
+                  slots={form.weeklySchedule}
+                  onChange={(newSlots) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      weeklySchedule: newSlots,
+                      scheduleText: formatScheduleSlots(newSlots),
+                    }));
                   }}
-                  className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors font-bold"
                 />
-                <span className="text-[10px] text-slate-400 block mt-1">ব্যাচে সর্বোচ্চ কতজন শিক্ষার্থী ভর্তি হতে পারবে</span>
+
+                <div className="border-t border-slate-100 pt-3 dark:border-[#262b34]">
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Generated / Custom Schedule Summary Text
+                  </label>
+                  <input
+                    type="text"
+                    value={form.scheduleText}
+                    onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
+                    placeholder="e.g. শনি (19:00 - 20:30), রবি (20:00 - 21:30)"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+            </FormSection>
+
+            {/* Sticky Action Bar */}
+            <div className="ga-sticky-action-bar m-4 sm:m-5">
+              <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
+                পরিবর্তনগুলো সংরক্ষণ করতে সেভ বাটনে চাপুন।
+              </div>
+              <div className="flex gap-2">
+                <Link href="/admin/batches">
+                  <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
+                    Cancel
+                  </Button>
+                </Link>
+                <Button
+                  type="submit"
+                  isLoading={submitting}
+                  className="bg-orange-600 font-bold text-white hover:bg-orange-700"
+                >
+                  <Save className="mr-1.5 h-4 w-4" /> Save Batch Details
+                </Button>
               </div>
             </div>
-
-            {/* Structured Weekly Class Schedule Builder */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-[#151921] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
-              <WeeklyScheduleBuilder
-                slots={form.weeklySchedule}
-                onChange={(newSlots) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    weeklySchedule: newSlots,
-                    scheduleText: formatScheduleSlots(newSlots),
-                  }));
-                }}
-              />
-
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#262b34]">
-                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                  Generated / Custom Schedule Summary Text
-                </label>
-                <input
-                  type="text"
-                  value={form.scheduleText}
-                  onChange={(e) => setForm({ ...form, scheduleText: e.target.value })}
-                  placeholder="e.g. শনি (19:00 - 20:30), রবি (20:00 - 21:30)"
-                  className="w-full bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-xl px-3.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="ga-sticky-action-bar mt-6 flex-col-reverse sm:flex-row">
-              <Link
-                href="/admin/batches"
-                className="w-full sm:w-auto text-center px-5 py-3 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
-              >
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                <span>{submitting ? 'Saving Changes...' : 'Save Batch Details'}</span>
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );

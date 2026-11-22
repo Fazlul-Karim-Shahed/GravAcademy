@@ -7,6 +7,8 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { FileUploadField } from '@/components/ui/FileUploadField';
 import { toDatetimeLocalValue } from '@/lib/dateUtils';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
+import { Button } from '@/components/ui';
 import {
   FileText,
   ArrowLeft,
@@ -605,57 +607,51 @@ export default function EditExamPage({
   }
 
   return (
-    <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
-        {/* Header */}
-        <div className="ga-card mx-auto flex w-[98%] items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <Link
-              href={`/classroom/${batchId}/exams`}
-              className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors shadow-xs shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Link>
-            <div>
-              <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
-                <span>পরীক্ষা সম্পাদনা</span>
-              </h1>
-              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
-                প্রশ্ন, সময় ও নম্বর আপডেট করুন
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref={`/classroom/${batchId}/exams`}
+          backLabel="Exams"
+          eyebrow="Exam settings"
+          title="পরীক্ষা সম্পাদনা"
+          description="পরীক্ষার নাম, সময়সীমা, নম্বর এবং বহুনির্বাচনি ও সৃজনশীল প্রশ্ন আপডেট করুন।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              Edit exam
+            </span>
+          }
+        />
 
         {errorMessage && (
-          <div className="p-3 sm:p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2.5 shadow-xs">
-            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {successMessage && (
-          <div className="p-3 sm:p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2.5 shadow-xs">
-            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-emerald-600" />
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
             <span>{successMessage}</span>
           </div>
         )}
 
-        <nav className="grid grid-cols-4 overflow-hidden rounded-xl border border-slate-200 bg-white text-center text-[10px] font-bold text-slate-500 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-400 sm:text-xs"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">তথ্য</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">নিয়ম</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">প্রশ্ন</span><span className="px-2 py-3">প্রকাশনা</span></nav>
-        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-          {/* STEP 1: Basic Information */}
-        <div className="ga-card p-4 sm:p-8">
-            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-[#262b34] mb-4 sm:mb-6">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-600/10 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
-                ১
-              </div>
-              <div>
-                <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  মৌলিক তথ্য ও শিডিউলিং (Basic Information)
-                </h2>
-                <p className="text-[11px] sm:text-xs text-slate-500">পরীক্ষার নাম, সময়সীমা এবং নম্বর বণ্টন</p>
-              </div>
-            </div>
+        <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav
+            heading="Exam sections"
+            items={[
+              { id: 'basic', label: 'Basic & schedule' },
+              { id: 'questions', label: 'Question paper' },
+            ]}
+          />
+
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            <FormSection
+              id="basic"
+              icon={<Calendar className="h-4 w-4" />}
+              title="মৌলিক তথ্য ও শিডিউলিং"
+              description="পরীক্ষার নাম, সময়সীমা এবং নম্বর বণ্টন নির্ধারণ করুন।"
+            >
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
               <div className="md:col-span-2">
@@ -767,23 +763,15 @@ export default function EditExamPage({
                 />
               </div>
             </div>
-          </div>
+          </FormSection>
 
           {/* STEP 2: Question Delivery Method */}
-          <div className="bg-white dark:bg-[#111318] rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-8 shadow-xs">
-            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 dark:border-[#262b34] mb-4 sm:mb-6">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-600/10 text-orange-600 dark:text-orange-400 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
-                ২
-              </div>
-              <div>
-                <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  প্রশ্নপত্রের ধরন ও সম্পাদনা
-                </h2>
-                <p className="text-[11px] sm:text-xs text-slate-500">
-                  সরাসরি ওয়েবসাইটে MCQ/CQ পরিবর্তন করুন অথবা রেডি প্রশ্নপত্র ফাইল বদলান
-                </p>
-              </div>
-            </div>
+          <FormSection
+            id="questions"
+            icon={<HelpCircle className="h-4 w-4" />}
+            title="প্রশ্নপত্রের ধরন ও সম্পাদনা"
+            description="সরাসরি ওয়েবসাইটে MCQ/CQ পরিবর্তন করুন অথবা রেডি প্রশ্নপত্র ফাইল বদলান।"
+          >
 
             {/* Choose Exam Type */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
@@ -1258,27 +1246,30 @@ export default function EditExamPage({
                 )}
               </div>
             )}
-          </div>
+          </FormSection>
 
           {/* Submit Actions */}
-          <div className="ga-sticky-action-bar mt-6 flex-col-reverse sm:flex-row">
-            <Link
-              href={`/classroom/${batchId}/exams`}
-              className="w-full sm:w-auto text-center px-6 py-2.5 sm:py-3 rounded-2xl bg-slate-100 dark:bg-[#151921] text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-[#262b34] transition-all"
-            >
-              বাতিল করুন
-            </Link>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-lg shadow-orange-950/25 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-            >
-              <Save className="w-4 h-4" />
-              <span>{submitting ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ ও সিঙ্ক করুন'}</span>
-            </button>
+          <div className="ga-sticky-action-bar m-4 sm:m-5">
+            <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
+              পরিবর্তনগুলো সংরক্ষণ করতে সেভ বাটনে চাপুন।
+            </div>
+            <div className="flex gap-2">
+              <Link href={`/classroom/${batchId}/exams`}>
+                <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
+                  বাতিল করুন
+                </Button>
+              </Link>
+              <Button
+                type="submit"
+                isLoading={submitting}
+                className="bg-orange-600 font-bold text-white hover:bg-orange-700"
+              >
+                <Save className="mr-1.5 h-4 w-4" /> সংরক্ষণ ও সিঙ্ক করুন
+              </Button>
+            </div>
           </div>
-        </form>
+        </div>
+      </form>
 
         {/* Modal: Bulk Paste MCQ */}
         {showBulkModal && (

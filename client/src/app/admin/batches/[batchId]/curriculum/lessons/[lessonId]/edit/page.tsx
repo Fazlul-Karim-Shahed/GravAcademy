@@ -4,9 +4,10 @@ import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { Button } from '@/components/ui';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
   ArrowLeft,
-  Edit2,
   FileVideo,
   Upload,
   Loader2,
@@ -14,6 +15,9 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
+  FileText,
+  Video,
+  Save,
 } from 'lucide-react';
 import TextEditor from '@/components/ui/TextEditor';
 import { FileUploadField } from '@/components/ui/FileUploadField';
@@ -24,6 +28,12 @@ interface Resource {
   fileAssetId?: any;
   externalUrl?: string;
 }
+
+const lessonSections = [
+  { id: 'basic', label: 'Basic & video' },
+  { id: 'notes', label: 'Notes & details' },
+  { id: 'materials', label: 'Lecture materials' },
+];
 
 export default function EditLessonPage({
   params,
@@ -51,7 +61,6 @@ export default function EditLessonPage({
   const fetchLessonData = async () => {
     setInitialLoading(true);
     try {
-      // Find lesson from batch hierarchy
       const res = await api.get(`/batches/${resolvedParams.batchId}/hierarchy`);
       if (res.data?.success && res.data?.data) {
         let foundLesson: any = null;
@@ -93,15 +102,6 @@ export default function EditLessonPage({
     return clean;
   };
 
-  const handleUploadFile = (file: File) => {
-    if (file.size > 25 * 1024 * 1024) {
-      setMessage({ type: 'error', text: 'ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।' });
-      return;
-    }
-    setPendingFiles((prev) => [...prev, file]);
-    setMessage({ type: 'success', text: `"${file.name}" নির্বাচিত হয়েছে। লেসন সেভ করলে আপলোড হবে।` });
-  };
-
   const uploadPendingFile = async (file: File): Promise<Resource> => {
     const formData = new FormData();
     formData.append('file', file);
@@ -109,7 +109,10 @@ export default function EditLessonPage({
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     if (!res.data?.success || !res.data?.data) throw new Error(res.data?.message || 'ফাইল আপলোড ব্যর্থ হয়েছে।');
-    const inferredType = file.type.includes('image') || file.type.includes('word') || file.type.includes('officedocument') ? 'worksheet' : 'pdf';
+    const inferredType =
+      file.type.includes('image') || file.type.includes('word') || file.type.includes('officedocument')
+        ? 'worksheet'
+        : 'pdf';
     return { title: file.name.replace(/\.[^/.]+$/, ''), type: inferredType, fileAssetId: res.data.data };
   };
 
@@ -122,7 +125,10 @@ export default function EditLessonPage({
 
     const cleanYtId = cleanYouTubeInput(youtubeVideoId);
     if (cleanYtId && !/^[A-Za-z0-9_-]{11}$/.test(cleanYtId)) {
-      setMessage({ type: 'error', text: 'YouTube ভিডিও লিংক বা আইডি সঠিক নয়। সঠিক YouTube লিংক বা ১১ অক্ষরের ভিডিও আইডি দিন।' });
+      setMessage({
+        type: 'error',
+        text: 'YouTube ভিডিও লিংক বা আইডি সঠিক নয়। সঠিক YouTube লিংক বা ১১ অক্ষরের ভিডিও আইডি দিন।',
+      });
       return;
     }
 
@@ -156,180 +162,197 @@ export default function EditLessonPage({
       setMessage({ type: 'error', text: err.response?.data?.message || err.message || 'Failed to update lesson' });
     } finally {
       setSubmitting(false);
+      setUploadingFile(false);
     }
   };
 
+  const inputClass =
+    'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:border-[#262b34] dark:bg-[#151921] dark:text-white';
+  const labelClass = 'mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300';
+
   if (initialLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center p-4">
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-orange-600/10 border-2 border-orange-500/20 border-t-orange-600 animate-spin mx-auto" />
-          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
-            লেসন তথ্য লোড হচ্ছে...
-          </p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-[#0b0d12]">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-2xl border-2 border-orange-500/20 border-t-orange-600 bg-orange-600/10" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">লেসন তথ্য লোড হচ্ছে...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="ga-page ga-admin-page ga-form-page py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between">
-          <Link
-            href={`/admin/batches/${resolvedParams.batchId}/curriculum`}
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> কারিকুলামে ফিরে যান
-          </Link>
-        </div>
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref={`/admin/batches/${resolvedParams.batchId}/curriculum`}
+          backLabel="Curriculum"
+          eyebrow="Curriculum management"
+          title="লেসন সম্পাদনা করুন"
+          description="লেসনের শিরোনাম, ভিডিও লিংক, রিচ নোট এবং লেকচার শিট আপডেট করুন।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              Edit lesson
+            </span>
+          }
+        />
 
-        {/* Feedback Alert */}
         {message && (
           <div
-            className={`p-4 rounded-2xl flex items-center gap-3 border shadow-xs animate-in fade-in duration-200 ${
+            className={`mb-6 flex items-center gap-3 rounded-2xl border p-4 text-xs font-semibold shadow-xs ${
               message.type === 'success'
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
-                : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
+                : 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200'
             }`}
           >
             {message.type === 'success' ? (
-              <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
             ) : (
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
+              <AlertCircle className="h-5 w-5 shrink-0 text-rose-600" />
             )}
-            <span className="text-xs sm:text-sm font-medium">{message.text}</span>
+            <span>{message.text}</span>
           </div>
         )}
 
-        {/* Main Editor Card */}
-        <div className="ga-card overflow-hidden p-6 sm:p-8">
-          <div className="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-[#262b34]">
-            <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
-              <FileVideo className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-                লেসন সম্পাদনা (Edit Lesson)
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                লেসনের শিরোনাম, ভিডিও লিংক, রিচ নোট এবং লেকচার শিট আপডেট করুন
-              </p>
+        <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav heading="Lesson sections" items={lessonSections} />
+
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            {/* Section 1: Basic & Video */}
+            <FormSection
+              id="basic"
+              icon={<Video className="h-4 w-4" />}
+              title="লেসন শিরোনাম ও ভিডিও"
+              description="লেসনের নাম এবং সংশ্লিষ্ট YouTube ক্লাস ভিডিও লিংক বা আইডি যুক্ত করুন।"
+            >
+              <div className="space-y-4">
+                <div>
+                  <label className={labelClass}>
+                    লেসন শিরোনাম <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="যেমন: লেকচার ০১: গতি ও ত্বরণ"
+                    className={inputClass}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    YouTube ভিডিও লিংক বা আইডি
+                  </label>
+                  <input
+                    type="text"
+                    value={youtubeVideoId}
+                    onChange={(e) => setYoutubeVideoId(e.target.value)}
+                    placeholder="dQw4w9WgXcQ অথবা https://youtu.be/..."
+                    className={`${inputClass} font-mono`}
+                  />
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    ফুল ভিডিও লিংক দিলে আইডি স্বয়ংক্রিয়ভাবে আলাদা হয়ে যাবে।
+                  </p>
+                </div>
+              </div>
+            </FormSection>
+
+            {/* Section 2: Notes */}
+            <FormSection
+              id="notes"
+              icon={<FileText className="h-4 w-4" />}
+              title="লেসন নোট ও নির্দেশনাসমূহ"
+              description="ক্লাসের সারসংক্ষেপ, প্রয়োজনীয় সূত্রাবলী বা নির্দেশনা সুন্দরভাবে সাজিয়ে লিখুন।"
+            >
+              <div>
+                <TextEditor
+                  value={description}
+                  onChange={(val) => setDescription(val)}
+                  placeholder="এখানে ক্লাসের সারসংক্ষেপ, প্রয়োজনীয় সূত্রাবলী বা নির্দেশনা সুন্দরভাবে সাজিয়ে লিখুন..."
+                  minHeight="220px"
+                />
+              </div>
+            </FormSection>
+
+            {/* Section 3: Materials */}
+            <FormSection
+              id="materials"
+              icon={<Paperclip className="h-4 w-4" />}
+              title="সংযুক্ত লেকচার শিট ও ফাইল"
+              description="লেকচার শিট, হ্যান্ডনোট, ইমেজ বা অন্যান্য সহায়ক ফাইল আপলোড করুন।"
+            >
+              <div className="space-y-4">
+                <FileUploadField
+                  label="Lesson materials"
+                  selectedFile={pendingFiles[0] || null}
+                  selectedFiles={pendingFiles}
+                  multiple
+                  onFileChange={(file) => setPendingFiles(file ? [file] : [])}
+                  onFilesChange={setPendingFiles}
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  maxSizeMb={25}
+                  disabled={uploadingFile || submitting}
+                />
+
+                {resources && resources.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="block text-xs font-bold text-slate-500 dark:text-slate-400">
+                      সংযুক্ত ফাইলসমূহ ({resources.length}):
+                    </span>
+                    {resources.map((res, rIdx) => (
+                      <div
+                        key={rIdx}
+                        className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs dark:border-[#262b34] dark:bg-[#151921]"
+                      >
+                        <div className="flex min-w-0 items-center gap-2.5 pr-3">
+                          <Paperclip className="h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400" />
+                          <span className="truncate font-semibold text-slate-800 dark:text-slate-200">
+                            {res.title}
+                          </span>
+                          <span className="rounded border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold uppercase text-slate-400 dark:border-[#262b34] dark:bg-[#111318]">
+                            {res.type}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setResources((prev) => prev.filter((_, idx) => idx !== rIdx));
+                          }}
+                          className="p-1.5 text-slate-400 transition-colors hover:text-rose-600 dark:hover:text-rose-400"
+                          title="মুছে ফেলুন"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </FormSection>
+
+            {/* Sticky Action Bar */}
+            <div className="ga-sticky-action-bar m-4 sm:m-5">
+              <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
+                পরিবর্তনগুলো সংরক্ষণ করতে সেভ বাটনে চাপুন।
+              </div>
+              <div className="flex gap-2">
+                <Link href={`/admin/batches/${resolvedParams.batchId}/curriculum`}>
+                  <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
+                    বাতিল
+                  </Button>
+                </Link>
+                <Button
+                  type="submit"
+                  isLoading={submitting || uploadingFile}
+                  className="bg-orange-600 font-bold text-white hover:bg-orange-700"
+                >
+                  <Save className="mr-1.5 h-4 w-4" /> লেসন আপডেট করুন
+                </Button>
+              </div>
             </div>
           </div>
-
-          <nav className="mb-6 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:text-slate-400"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">লেসন তথ্য</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">ভিডিও</span><span className="px-2 py-3">ফাইল</span></nav>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
-                লেসন শিরোনাম *
-              </label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
-                YouTube ভিডিও লিংক বা আইডি
-              </label>
-              <input
-                type="text"
-                value={youtubeVideoId}
-                onChange={(e) => setYoutubeVideoId(e.target.value)}
-                placeholder="dQw4w9WgXcQ অথবা https://youtu.be/..."
-                className="w-full bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white font-mono placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">
-                লেসন নোট ও নির্দেশনাসমূহ
-              </label>
-              <TextEditor
-                value={description}
-                onChange={(val) => setDescription(val)}
-                placeholder="এখানে ক্লাসের সারসংক্ষেপ, প্রয়োজনীয় সূত্রাবলী বা নির্দেশনা সুন্দরভাবে সাজিয়ে লিখুন..."
-                minHeight="220px"
-              />
-            </div>
-
-            {/* Materials Upload */}
-            <div className="pt-4 border-t border-slate-100 dark:border-[#262b34]">
-              <label className="block text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
-                সংযুক্ত লেকচার শিট ও ফাইল (PDF / Document / Image)
-              </label>
-
-              <FileUploadField
-                label="Lesson materials"
-                selectedFile={pendingFiles[0] || null}
-                selectedFiles={pendingFiles}
-                multiple
-                onFileChange={(file) => setPendingFiles(file ? [file] : [])}
-                onFilesChange={setPendingFiles}
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                maxSizeMb={25}
-                disabled={uploadingFile || submitting}
-              />
-
-              {resources && resources.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">
-                    সংযুক্ত ফাইলসমূহ ({resources.length}):
-                  </span>
-                  {resources.map((res, rIdx) => (
-                    <div
-                      key={rIdx}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs sm:text-sm"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0 pr-3">
-                        <Paperclip className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
-                        <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
-                          {res.title}
-                        </span>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 bg-white dark:bg-[#111318] px-2 py-0.5 rounded border border-slate-200 dark:border-[#262b34]">
-                          {res.type}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setResources((prev) => prev.filter((_, idx) => idx !== rIdx));
-                        }}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors shrink-0"
-                        title="মুছে ফেলুন"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="ga-sticky-action-bar flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
-              <Link
-                href={`/admin/batches/${resolvedParams.batchId}/curriculum`}
-                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
-              >
-                বাতিল
-              </Link>
-              <button
-                type="submit"
-                disabled={submitting || uploadingFile}
-                className="w-full sm:w-auto px-7 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white transition-all shadow-md shadow-orange-950/25 disabled:opacity-50"
-              >
-                {submitting ? 'সংরক্ষণ হচ্ছে...' : 'আপডেট সম্পন্ন করুন'}
-              </button>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   );

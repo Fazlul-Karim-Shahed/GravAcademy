@@ -9,18 +9,25 @@ import { useAuth } from '@/context/AuthContext';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import { FileUploadField } from '@/components/ui/FileUploadField';
+import { Button } from '@/components/ui';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
-  Edit,
+  FileText,
   Calendar,
-  File,
-  CheckCircle2,
-  AlertCircle,
-  UploadCloud,
-  Loader2,
   Award,
+  Sparkles,
+  Paperclip,
+  AlertCircle,
   Save,
-  Eye,
+  Loader2,
 } from 'lucide-react';
+
+const assignmentSections = [
+  { id: 'basic', label: 'Basic details' },
+  { id: 'guidelines', label: 'Instructions & text' },
+  { id: 'grading', label: 'Marks & due date' },
+  { id: 'files', label: 'Attachment & rules' },
+];
 
 export default function EditAssignmentPage({
   params,
@@ -101,22 +108,6 @@ export default function EditAssignmentPage({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 25 * 1024 * 1024) {
-      alert('ফাইলের আকার ২৫ মেগাবাইটের বেশি হতে পারবে না।');
-      return;
-    }
-
-    setSelectedFile(file);
-    setFormData((prev) => ({
-      ...prev,
-      attachmentName: file.name,
-    }));
-  };
-
   const handleRemoveFile = () => {
     setSelectedFile(null);
     setFormData((prev) => ({
@@ -164,7 +155,11 @@ export default function EditAssignmentPage({
         if (uploadRes.data?.success && uploadRes.data?.data) {
           const fileAsset = uploadRes.data.data;
           finalAttachmentUrl =
-            fileAsset.url || fileAsset.fileUrl || fileAsset.streamUrl || fileAsset.driveDownloadUrl || fileAsset.googleDriveFileId;
+            fileAsset.url ||
+            fileAsset.fileUrl ||
+            fileAsset.streamUrl ||
+            fileAsset.driveDownloadUrl ||
+            fileAsset.googleDriveFileId;
           finalAttachmentName = selectedFile.name;
         } else {
           throw new Error(uploadRes.data?.message || 'ফাইলটি ড্রাইভে আপলোড করা যায়নি');
@@ -188,234 +183,224 @@ export default function EditAssignmentPage({
     }
   };
 
-  return (
-    <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 pb-20">
-      <header className="mb-8 border-b border-slate-200 bg-white/80 py-5 dark:border-[#262b34] dark:bg-[#0d0f13]/80 sm:py-6">
-        <div className="mx-auto flex max-w-4xl items-center gap-3.5 px-4 sm:px-6">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 dark:bg-orange-950/30 dark:text-orange-400">
-            <Edit className="w-6 h-6" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="truncate text-xl font-black tracking-tight text-slate-950 dark:text-white sm:text-2xl">অ্যাসাইনমেন্ট সম্পাদনা</h1>
-            <p className="mt-1 truncate text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-sm">
-              {formData.title || 'কাজের তথ্য আপডেট করুন'}
-            </p>
-          </div>
+  const inputClass =
+    'w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:border-[#262b34] dark:bg-[#151921] dark:text-white';
+  const labelClass = 'mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300';
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 py-10 dark:bg-[#0b0d12]">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-2xl border-2 border-orange-500/20 border-t-orange-600" />
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400">অ্যাসাইনমেন্টের তথ্য লোড হচ্ছে...</p>
         </div>
-      </header>
+      </div>
+    );
+  }
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-semibold text-slate-500">অ্যাসাইনমেন্টের তথ্য লোড হচ্ছে...</p>
+  return (
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref={`/classroom/${batchId}/assignments`}
+          backLabel="Assignments"
+          eyebrow="Assignment settings"
+          title="অ্যাসাইনমেন্ট সম্পাদনা"
+          description="অ্যাসাইনমেন্টের প্রশ্নাবলী, শেষ সময় এবং নম্বর সমন্বয় করুন।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              Edit assignment
+            </span>
+          }
+        />
+
+        {error && (
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-300">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
           </div>
-        ) : (
-          <>
-            {error && (
-              <div className="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2.5">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
+        )}
 
-            <form
-              onSubmit={handleSubmit}
-              className="ga-card space-y-4 p-4 sm:space-y-5 sm:p-6 md:p-7"
+        <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav heading="Assignment sections" items={assignmentSections} />
+
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            {/* Section 1: Basic */}
+            <FormSection
+              id="basic"
+              icon={<FileText className="h-4 w-4" />}
+              title="অ্যাসাইনমেন্ট শিরোনাম"
+              description="অ্যাসাইনমেন্টের মূল শিরোনাম যা শিক্ষার্থীরা দেখতে পাবে।"
             >
-              <nav className="grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:text-slate-400"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">নির্দেশনা</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">সময়সীমা</span><span className="px-2 py-3">সাবমিশন</span></nav>
-              <div className="px-1 py-1">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  শিরোনাম *
+              <div>
+                <label className={labelClass}>
+                  শিরোনাম <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-sm font-semibold focus:ring-2 focus:ring-orange-500 outline-none"
+                  className={inputClass}
                 />
               </div>
+            </FormSection>
 
-              <div className="px-1 py-1">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  নির্দেশনা ও বিস্তারিত প্রশ্ন
-                </label>
+            {/* Section 2: Instructions */}
+            <FormSection
+              id="guidelines"
+              icon={<Sparkles className="h-4 w-4" />}
+              title="নির্দেশনা ও বিস্তারিত প্রশ্নাবলী"
+              description="শিক্ষার্থীদের করণীয় বিষয়াবলী এবং প্রশ্নের নির্দেশনা বিস্তারিত লিখুন।"
+            >
+              <div>
                 <TextEditor
                   value={formData.description}
                   onChange={(val) => setFormData({ ...formData, description: val })}
                   minHeight="240px"
                 />
               </div>
+            </FormSection>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-1 py-1">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                    মোট পূর্ণমান *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    value={formData.totalMarks}
-                    onChange={(e) => setFormData({ ...formData, totalMarks: Number(e.target.value) })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-sm font-semibold focus:ring-2 focus:ring-orange-500 outline-none"
-                  />
+            {/* Section 3: Grading & Schedule */}
+            <FormSection
+              id="grading"
+              icon={<Award className="h-4 w-4" />}
+              title="নম্বর ও ডেডলাইন"
+              description="মোট পূর্ণমান, পাস নম্বর এবং জমা দেওয়ার শেষ তারিখ ও সময় নির্ধারণ করুন।"
+            >
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className={labelClass}>
+                      মোট পূর্ণমান <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={formData.totalMarks}
+                      onChange={(e) => setFormData({ ...formData, totalMarks: Number(e.target.value) })}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>
+                      পাস নম্বর <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min={0}
+                      max={formData.totalMarks}
+                      value={formData.passMarks}
+                      onChange={(e) => setFormData({ ...formData, passMarks: Number(e.target.value) })}
+                      className={inputClass}
+                    />
+                  </div>
                 </div>
+
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                    পাস নম্বর *
+                  <label className={labelClass}>
+                    জমা দেওয়ার শেষ সময় <span className="text-rose-500">*</span>
                   </label>
                   <input
-                    type="number"
+                    type="datetime-local"
                     required
-                    min={0}
-                    max={formData.totalMarks}
-                    value={formData.passMarks}
-                    onChange={(e) => setFormData({ ...formData, passMarks: Number(e.target.value) })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-sm font-semibold focus:ring-2 focus:ring-orange-500 outline-none"
+                    value={formData.dueDate}
+                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                    className={inputClass}
                   />
                 </div>
               </div>
+            </FormSection>
 
-              <div className="px-1 py-1">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  জমা দেওয়ার শেষ সময় *
-                </label>
-                <input
-                  type="datetime-local"
-                  required
-                  value={formData.dueDate}
-                  onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-sm font-semibold focus:ring-2 focus:ring-orange-500 outline-none"
-                />
-              </div>
-
-              <div className="px-1 py-1">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                  প্রশ্নপত্র অথবা সহায়ক ফাইল (Google Drive)
-                </label>
+            {/* Section 4: Files & Rules */}
+            <FormSection
+              id="files"
+              icon={<Paperclip className="h-4 w-4" />}
+              title="সংযুক্ত ফাইল ও লেইট সাবমিশন"
+              description="প্রশ্নপত্র বা সহায়ক ফাইল এবং দেরিতে জমা দেওয়ার নিয়মাবলি পরিবর্তন করুন।"
+            >
+              <div className="space-y-4">
                 <FileUploadField
                   label="প্রশ্নপত্র বা সহায়ক ফাইল"
                   selectedFile={selectedFile}
                   onFileChange={handleSelectedFileChange}
                   existingUrl={formData.attachmentUrl}
                   existingFileName={formData.attachmentName}
-                  onPreviewExisting={() => setPreviewDoc({ isOpen: true, url: formData.attachmentUrl, title: 'সংযুক্ত ফাইল', fileName: formData.attachmentName || 'ফাইল' })}
+                  onPreviewExisting={() =>
+                    setPreviewDoc({
+                      isOpen: true,
+                      url: formData.attachmentUrl,
+                      title: 'সংযুক্ত ফাইল',
+                      fileName: formData.attachmentName || 'ফাইল',
+                    })
+                  }
                   onClearExisting={handleRemoveFile}
                   disabled={submitting}
                   accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   maxSizeMb={25}
                 />
-                <div className="hidden min-w-0 max-w-full overflow-hidden p-4 rounded-2xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34]">
-                  <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
+
+                <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-[#262b34] dark:bg-[#151921]/40">
+                  <input
+                    type="checkbox"
+                    id="allowLateToggleEdit"
+                    checked={formData.allowLateSubmission}
+                    onChange={(e) => setFormData({ ...formData, allowLateSubmission: e.target.checked })}
+                    className="h-4 w-4 rounded accent-orange-600 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="allowLateToggleEdit"
+                    className="cursor-pointer text-xs font-semibold text-slate-700 select-none dark:text-slate-300"
+                  >
+                    ডেডলাইনের পরেও লেইট সাবমিশন গ্রহণ করার অনুমতি দিন
+                  </label>
+                </div>
+
+                {formData.allowLateSubmission && (
+                  <div>
+                    <label className={labelClass}>লেইট সাবমিশন পেনাল্টি (%)</label>
                     <input
-                      type="file"
-                      onChange={handleFileChange}
-                      disabled={submitting}
-                      className="block min-w-0 max-w-full w-full text-xs file:mr-2 file:py-2.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700 cursor-pointer"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      value={formData.latePenaltyPercent}
+                      onChange={(e) => setFormData({ ...formData, latePenaltyPercent: Number(e.target.value) })}
+                      className={`${inputClass} sm:max-w-xs`}
                     />
                   </div>
-
-                  {selectedFile ? (
-                    <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-[#111318] border border-orange-200 dark:border-orange-800/60 text-xs">
-                      <span className="flex min-w-0 items-center gap-2 text-orange-600 dark:text-orange-400 font-bold">
-                        <CheckCircle2 className="w-4 h-4 shrink-0" />
-                        <span className="truncate">নতুন সিলেক্টেড ফাইল: {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={handleRemoveFile}
-                        className="text-rose-500 hover:text-rose-700 text-xs font-bold ml-2 shrink-0 cursor-pointer"
-                      >
-                        ফাইল পরিবর্তন বা বাতিল
-                      </button>
-                    </div>
-                  ) : formData.attachmentUrl ? (
-                    <div className="mt-3 flex min-w-0 max-w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-xs">
-                      <span className="flex min-w-0 items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
-                        <CheckCircle2 className="w-4 h-4 shrink-0" />
-                        <span className="truncate">বর্তমান সংযুক্ত ফাইল: {formData.attachmentName || 'ফাইল সংযুক্ত আছে'}</span>
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setPreviewDoc({
-                              isOpen: true,
-                              url: formData.attachmentUrl,
-                              title: `${formData.title || 'অ্যাসাইনমেন্ট'} - সংযুক্ত ফাইল`,
-                              fileName: formData.attachmentName || 'ফাইল সংযুক্ত আছে',
-                            })
-                          }
-                          className="text-orange-600 dark:text-orange-400 hover:underline flex items-center gap-1 font-semibold shrink-0 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>প্রিভিউ দেখুন</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleRemoveFile}
-                          className="text-rose-500 hover:text-rose-700 text-xs font-bold ml-1 shrink-0 cursor-pointer"
-                        >
-                          মুছে ফেলুন
-                        </button>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+                )}
               </div>
+            </FormSection>
 
-              <div className="px-1 py-2 flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="allowLateToggleEdit"
-                  checked={formData.allowLateSubmission}
-                  onChange={(e) => setFormData({ ...formData, allowLateSubmission: e.target.checked })}
-                  className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 cursor-pointer"
-                />
-                <label htmlFor="allowLateToggleEdit" className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
-                  ডেডলাইনের পরেও লেইট সাবমিশন গ্রহণ করার অনুমতি দিন
-                </label>
+            {/* Sticky Action Bar */}
+            <div className="ga-sticky-action-bar m-4 sm:m-5">
+              <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
+                পরিবর্তনগুলো সংরক্ষণ করতে নিচের বাটনে চাপুন।
               </div>
-
-              {formData.allowLateSubmission && (
-                <div className="px-1 py-1">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">লেইট সাবমিশন পেনাল্টি (%)</label>
-                  <input type="number" min={0} max={100} step="0.01" value={formData.latePenaltyPercent} onChange={(e) => setFormData({ ...formData, latePenaltyPercent: Number(e.target.value) })} className="w-full sm:max-w-xs px-4 py-2.5 rounded-xl border border-slate-300 dark:border-[#262b34] bg-slate-50 dark:bg-[#151921] text-sm font-semibold focus:ring-2 focus:ring-orange-500 outline-none" />
-                </div>
-              )}
-
-              <div className="ga-sticky-action-bar flex items-center justify-end gap-3">
-                <Link
-                  href={`/classroom/${batchId}/assignments`}
-                  className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222d] text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
-                >
-                  বাতিল
+              <div className="flex gap-2">
+                <Link href={`/classroom/${batchId}/assignments`}>
+                  <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
+                    বাতিল
+                  </Button>
                 </Link>
-                <button
+                <Button
                   type="submit"
-                  disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                  isLoading={submitting}
+                  className="bg-orange-600 font-bold text-white hover:bg-orange-700"
                 >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>আপডেট হচ্ছে...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      <span>পরিবর্তন সংরক্ষণ করুন</span>
-                    </>
-                  )}
-                </button>
+                  <Save className="mr-1.5 h-4 w-4" /> পরিবর্তন সংরক্ষণ করুন
+                </Button>
               </div>
-            </form>
-          </>
-        )}
+            </div>
+          </div>
+        </form>
       </div>
-      {/* In-App Document Preview Modal */}
+
+      {/* Document Preview Modal */}
       <DocumentPreviewModal
         isOpen={previewDoc.isOpen}
         onClose={() => setPreviewDoc((prev) => ({ ...prev, isOpen: false }))}

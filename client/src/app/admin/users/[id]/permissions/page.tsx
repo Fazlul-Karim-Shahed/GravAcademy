@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Card, Button } from '@/components/ui';
+import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
   ALL_PERMISSIONS_METADATA,
   ROLE_DEFAULT_PERMISSIONS,
@@ -27,6 +28,7 @@ import {
   Mail,
   Calendar,
   Lock,
+  Save,
 } from 'lucide-react';
 
 interface UserDetail {
@@ -203,145 +205,112 @@ export default function UserPermissionsEditPage() {
   }
 
   return (
-    <div className="ga-page ga-admin-page ga-form-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Navigation Breadcrumb */}
-        <div className="mb-6">
-          <Link
-            href="/admin/settings"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Settings
-          </Link>
-        </div>
-
-        {/* Top Header Card */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-xs mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-500 text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-md shadow-orange-950/20 overflow-hidden">
-              {targetUser.avatarUrl ? (
-                <img src={targetUser.avatarUrl} alt={targetUser.name} className="w-full h-full object-cover" />
-              ) : (
-                targetUser.name.slice(0, 2).toUpperCase()
-              )}
-            </div>
-            <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  {targetUser.name}
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
-                  {targetUser.role}
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <Mail className="w-3.5 h-3.5" /> {targetUser.email}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" /> Joined {new Date(targetUser.createdAt).toLocaleDateString()}
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 dark:text-slate-400">মোট সক্রিয় পারমিশন:</span>
-            <span className="font-bold px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
-              {ALL_PERMISSIONS_METADATA.filter((permission) => getPermissionGranted(permission.key)).length} টি সক্রিয়
+    <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <FormPageHeader
+          backHref="/admin/settings"
+          backLabel="Settings"
+          eyebrow="Access control"
+          title={`${targetUser.name} - রোল ও পারমিশন`}
+          description="ব্যবহারকারীর প্রাইমারি রোল এবং সুনির্দিষ্ট গ্র্যানুলার পারমিশন পরিচালনা করুন।"
+          badge={
+            <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black uppercase text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+              {targetUser.role}
             </span>
-          </div>
-        </div>
+          }
+        />
 
         {/* Status Message */}
         {statusMessage && (
           <div
-            className={`p-4 rounded-2xl mb-6 text-xs flex items-center gap-3 border shadow-xs transition-all ${
+            className={`mb-6 flex items-center gap-3 rounded-2xl border p-4 text-xs shadow-xs transition-all ${
               statusMessage.type === 'success'
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800'
-                : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-200/80 dark:border-rose-800'
+                ? 'border-emerald-200/80 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+                : 'border-rose-200/80 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300'
             }`}
           >
             {statusMessage.type === 'success' ? (
-              <CheckCircle className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             ) : (
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400" />
+              <AlertCircle className="h-5 w-5 shrink-0 text-rose-600 dark:text-rose-400" />
             )}
             <span className="font-semibold">{statusMessage.text}</span>
           </div>
         )}
 
-        {/* Main Permissions Configuration Form */}
-        <form onSubmit={handleSave} className="space-y-8">
-          
-          {/* SECTION 1: Base Platform Role */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
-            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-[#262b34]">
-              <Shield className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                ১. প্রাইমারি প্ল্যাটফর্ম রোল (Primary Base Role)
-              </h2>
-            </div>
+        <form onSubmit={handleSave} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <FormSectionNav
+            heading="Permission sections"
+            items={[
+              { id: 'role', label: 'Primary role' },
+              { id: 'granular', label: 'Granular permissions' },
+            ]}
+          />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[
-                { role: 'student', title: 'Student (শিক্ষার্থী)', desc: 'সাধারণ লার্নিং অ্যাকাউন্ট ও ক্লাস অ্যাক্সেস' },
-                { role: 'teacher', title: 'Teacher (শিক্ষক)', desc: 'ক্লাস নেওয়া, পরীক্ষা ও সিলেবাস সাজানো' },
-                { role: 'admin', title: 'Admin (অপারেশনাল এডমিন)', desc: 'কোর্স, ব্যাচ ও অ্যাকাডেমিক ম্যানেজমেন্ট' },
-                { role: 'guardian', title: 'Guardian (অভিভাবক)', desc: 'সন্তানের উপস্থিতি ও ফলাফল পর্যবেক্ষণ' },
-                { role: 'employee', title: 'Employee (স্টাফ)', desc: 'সহায়তা কর্মী ও হাজিরা অপারেটর' },
-                ...(currentUser?.role === 'superadmin'
-                  ? [{ role: 'superadmin', title: 'Superadmin (পূর্ণ ক্ষমতা)', desc: 'প্ল্যাটফর্মের সর্বময় অধিশীর্ষ ক্ষমতা' }]
-                  : []),
-              ].map((item) => {
-                const isSelected = selectedRole === item.role;
-                return (
-                  <div
-                    key={item.role}
-                    onClick={() => setSelectedRole(item.role as UserRole)}
-                    className={`p-4 rounded-2xl border cursor-pointer transition-all ${
-                      isSelected
-                        ? 'bg-orange-500/10 dark:bg-orange-950/30 border-orange-500/60 dark:border-orange-500/50 text-orange-900 dark:text-orange-100 shadow-xs'
-                        : 'bg-slate-50 dark:bg-[#151921]/60 border-slate-200/80 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-xs">{item.title}</span>
-                      <div
-                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                          isSelected
-                            ? 'border-orange-600 bg-orange-600 text-white'
-                            : 'border-slate-300 dark:border-slate-600'
-                        }`}
-                      >
-                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+          <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
+            {/* SECTION 1: Base Platform Role */}
+            <FormSection
+              id="role"
+              icon={<Shield className="h-4 w-4" />}
+              title="প্রাইমারি প্ল্যাটফর্ম রোল (Primary Base Role)"
+              description="ব্যবহারকারীর মূল ভূমিকা নির্ধারণ করুন। এর ভিত্তিতে ডিফল্ট পারমিশন স্বয়ংক্রিয়ভাবে কার্যকর হবে।"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[
+                  { role: 'student', title: 'Student (শিক্ষার্থী)', desc: 'সাধারণ লার্নিং অ্যাকাউন্ট ও ক্লাস অ্যাক্সেস' },
+                  { role: 'teacher', title: 'Teacher (শিক্ষক)', desc: 'ক্লাস নেওয়া, পরীক্ষা ও সিলেবাস সাজানো' },
+                  { role: 'admin', title: 'Admin (অপারেশনাল এডমিন)', desc: 'কোর্স, ব্যাচ ও অ্যাকাডেমিক ম্যানেজমেন্ট' },
+                  { role: 'guardian', title: 'Guardian (অভিভাবক)', desc: 'সন্তানের উপস্থিতি ও ফলাফল পর্যবেক্ষণ' },
+                  { role: 'employee', title: 'Employee (স্টাফ)', desc: 'সহায়তা কর্মী ও হাজিরা অপারেটর' },
+                  ...(currentUser?.role === 'superadmin'
+                    ? [{ role: 'superadmin', title: 'Superadmin (পূর্ণ ক্ষমতা)', desc: 'প্ল্যাটফর্মের সর্বময় অধিশীর্ষ ক্ষমতা' }]
+                    : []),
+                ].map((item) => {
+                  const isSelected = selectedRole === item.role;
+                  return (
+                    <div
+                      key={item.role}
+                      onClick={() => setSelectedRole(item.role as UserRole)}
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                        isSelected
+                          ? 'bg-orange-500/10 dark:bg-orange-950/30 border-orange-500/60 dark:border-orange-500/50 text-orange-900 dark:text-orange-100 shadow-xs'
+                          : 'bg-slate-50 dark:bg-[#151921]/60 border-slate-200/80 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-xs">{item.title}</span>
+                        <div
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                            isSelected
+                              ? 'border-orange-600 bg-orange-600 text-white'
+                              : 'border-slate-300 dark:border-slate-600'
+                          }`}
+                        >
+                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
                       </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {item.desc}
+                      </p>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-4 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-              নির্বাচিত রোলের ডিফল্ট পারমিশনগুলো তালিকা থেকে চালু বা বন্ধ করতে পারবেন। প্রয়োজন হলে অতিরিক্ত ফিচারও সক্রিয় করতে পারবেন।
-            </p>
-          </div>
-
-          {/* SECTION 2: Granular Feature Matrix */}
-          <div className="bg-white dark:bg-[#111318] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-[#262b34] shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-slate-100 dark:border-[#262b34]">
-              <div className="flex items-center gap-2">
-                <Key className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  ২. ফিচারভিত্তিক কাস্টম পারমিশন (Granular Permissions Overrides)
-                </h2>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-4 flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                নির্বাচিত রোলের ডিফল্ট পারমিশনগুলো তালিকা থেকে চালু বা বন্ধ করতে পারবেন। প্রয়োজন হলে অতিরিক্ত ফিচারও সক্রিয় করতে পারবেন।
+              </p>
+            </FormSection>
+
+            {/* SECTION 2: Granular Feature Matrix */}
+            <FormSection
+              id="granular"
+              icon={<Key className="h-4 w-4" />}
+              title="ফিচারভিত্তিক কাস্টম পারমিশন (Granular Permissions Overrides)"
+              description="রোল ডিফল্টের বাইরে নির্দিষ্ট মডিউলের জন্য পারমিশন অন বা অফ করুন।"
+            >
+              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> ডিফল্ট রোল পারমিশন
                 </span>
@@ -349,123 +318,118 @@ export default function UserPermissionsEditPage() {
                   <span className="w-2.5 h-2.5 rounded-full bg-orange-600" /> অতিরিক্ত কাস্টম পারমিশন
                 </span>
               </div>
-            </div>
 
-            <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-950/20 p-3">
-              <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                সব permission একসাথে চালু বা বন্ধ করুন
-              </span>
-              <span className="flex shrink-0 items-center gap-2 text-[11px] font-bold text-orange-700 dark:text-orange-400">
-                <span>সব নির্বাচন</span>
-                <input
-                  type="checkbox"
-                  checked={allPermissionsSelected}
-                  disabled={selectedRole === ROLES.SUPERADMIN}
-                  onChange={(event) => setAllPermissionsSelected(event.target.checked)}
-                  className="h-4 w-4 rounded accent-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </span>
-            </label>
+              <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-950/20 p-3">
+                <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                  সব permission একসাথে চালু বা বন্ধ করুন
+                </span>
+                <span className="flex shrink-0 items-center gap-2 text-[11px] font-bold text-orange-700 dark:text-orange-400">
+                  <span>সব নির্বাচন</span>
+                  <input
+                    type="checkbox"
+                    checked={allPermissionsSelected}
+                    disabled={selectedRole === ROLES.SUPERADMIN}
+                    onChange={(event) => setAllPermissionsSelected(event.target.checked)}
+                    className="h-4 w-4 rounded accent-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </span>
+              </label>
 
-            {/* Category Filter Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize shrink-0 transition-all cursor-pointer ${
-                    activeCategory === cat
-                      ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
-                      : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1a202c]'
-                  }`}
-                >
-                  {cat === 'all' ? 'সকল ফিচার ক্যাটাগরি' : cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Permission matrix */}
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
-              {filteredPermissions.map((perm) => {
-                const isDefaultByRole = roleDefaultPerms.has(perm.key);
-                const isRevoked = revokedPermissions.includes(perm.key);
-                const isGrantedCustom = customPermissions.includes(perm.key);
-                const isGranted = getPermissionGranted(perm.key);
-
-                return (
-                  <div
-                    key={perm.key}
-                    onClick={() => toggleCustomPermission(perm.key)}
-                    className={`flex items-start justify-between gap-3 border-b border-slate-100 p-4 transition-colors last:border-b-0 dark:border-[#262b34] ${
-                      isRevoked
-                        ? 'bg-rose-50/70 dark:bg-rose-950/20 cursor-pointer'
-                        : isGranted
-                        ? 'bg-orange-50/70 dark:bg-orange-950/25 cursor-pointer'
-                        : 'hover:bg-slate-50 dark:hover:bg-[#151921] cursor-pointer'
+              {/* Category Filter Tabs */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize shrink-0 transition-all cursor-pointer ${
+                      activeCategory === cat
+                        ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
+                        : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1a202c]'
                     }`}
                   >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="font-bold text-xs text-slate-900 dark:text-white">
-                          {perm.label}
-                        </span>
-                        {isRevoked ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
-                            ডিফল্ট বন্ধ
+                    {cat === 'all' ? 'সকল ফিচার ক্যাটাগরি' : cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Permission matrix */}
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+                {filteredPermissions.map((perm) => {
+                  const isDefaultByRole = roleDefaultPerms.has(perm.key);
+                  const isRevoked = revokedPermissions.includes(perm.key);
+                  const isGrantedCustom = customPermissions.includes(perm.key);
+                  const isGranted = getPermissionGranted(perm.key);
+
+                  return (
+                    <div
+                      key={perm.key}
+                      onClick={() => toggleCustomPermission(perm.key)}
+                      className={`flex items-start justify-between gap-3 border-b border-slate-100 p-4 transition-colors last:border-b-0 dark:border-[#262b34] ${
+                        isRevoked
+                          ? 'bg-rose-50/70 dark:bg-rose-950/20 cursor-pointer'
+                          : isGranted
+                          ? 'bg-orange-50/70 dark:bg-orange-950/25 cursor-pointer'
+                          : 'hover:bg-slate-50 dark:hover:bg-[#151921] cursor-pointer'
+                      }`}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-bold text-xs text-slate-900 dark:text-white">
+                            {perm.label}
                           </span>
-                        ) : isDefaultByRole ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
-                            ডিফল্ট রোল পারমিশন
-                          </span>
-                        ) : isGrantedCustom ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-orange-100 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200">
-                            + অতিরিক্ত পারমিশন
-                          </span>
-                        ) : null}
+                          {isRevoked ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
+                              ডিফল্ট বন্ধ
+                            </span>
+                          ) : isDefaultByRole ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
+                              ডিফল্ট রোল পারমিশন
+                            </span>
+                          ) : isGrantedCustom ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-orange-100 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200">
+                              + অতিরিক্ত পারমিশন
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {perm.description}
+                        </p>
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {perm.description}
-                      </p>
+
+                      <div className="shrink-0 pt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={isGranted}
+                          disabled={selectedRole === ROLES.SUPERADMIN}
+                          onChange={() => toggleCustomPermission(perm.key)}
+                          onClick={(event) => event.stopPropagation()}
+                          className="w-4 h-4 rounded accent-orange-600 focus:ring-orange-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
+            </FormSection>
 
-                    <div className="shrink-0 pt-0.5">
-                      <input
-                        type="checkbox"
-                        checked={isGranted}
-                        disabled={selectedRole === ROLES.SUPERADMIN}
-                        onChange={() => toggleCustomPermission(perm.key)}
-                        onClick={(event) => event.stopPropagation()}
-                        className="w-4 h-4 rounded accent-orange-600 focus:ring-orange-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 dark:border-[#262b34] sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-            <div className="text-xs text-slate-500 dark:text-slate-400">
-              <span className="font-semibold text-slate-900 dark:text-white">{targetUser.name}</span> এর জন্য পারমিশন সেভ করতে প্রস্তুত।
-            </div>
-
-            <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              <Link href="/admin/settings" className="flex-1 sm:flex-none">
-                <button
-                  type="button"
-                  className="w-full px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors cursor-pointer"
+            <div className="ga-sticky-action-bar m-4 sm:m-5">
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/admin/settings"
+                  className="rounded-xl border border-slate-300 px-4 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-[#262b34] dark:text-slate-200 dark:hover:bg-[#1a202c]"
                 >
                   বাতিল (Cancel)
+                </Link>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-orange-700 disabled:opacity-50 cursor-pointer"
+                >
+                  <Save className="h-4 w-4" />
+                  {submitting ? 'সংরক্ষণ করা হচ্ছে...' : 'রোল ও পারমিশন সেভ করুন'}
                 </button>
-              </Link>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all disabled:opacity-50 cursor-pointer"
-              >
-                {submitting ? 'সংরক্ষণ করা হচ্ছে...' : 'রোল ও পারমিশন সেভ করুন'}
-              </button>
+              </div>
             </div>
           </div>
 
