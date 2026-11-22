@@ -4,6 +4,7 @@ import { AcademicClass } from '../models/AcademicClass';
 import { Course } from '../models/Course';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { AuditLog } from '../models/AuditLog';
+import { clearPublicCache, getCached } from '../services/publicCache';
 
 // Default initial academic classes with common subjects
 export const DEFAULT_CLASSES = [
@@ -72,7 +73,7 @@ export const updateClassSchema = z.object({
 export const getAcademicClasses = async (req: Request, res: Response) => {
   try {
     await ensureDefaultClasses();
-    const classes = await AcademicClass.find().sort({ order: 1, name: 1 });
+    const classes = await getCached('classes:list', () => AcademicClass.find().sort({ order: 1, name: 1 }).lean());
     return res.status(200).json({
       success: true,
       count: classes.length,
@@ -89,6 +90,8 @@ export const getAcademicClasses = async (req: Request, res: Response) => {
 export const getClassByIdOrSlug = async (req: Request, res: Response) => {
   try {
     const { idOrSlug } = req.params;
+    const cacheKey = `classes:detail:${idOrSlug}`;
+    const cached = await getCached(cacheKey, async () => {
     let academicClass = null;
 
     if (idOrSlug.match(/^[0-9a-fA-F]{24}$/)) {
@@ -104,9 +107,7 @@ export const getClassByIdOrSlug = async (req: Request, res: Response) => {
       });
     }
 
-    if (!academicClass) {
-      return res.status(404).json({ success: false, message: 'Class not found' });
-    }
+    if (!academicClass) return null;
 
     // Also fetch courses belonging to this class
     const courses = await Course.find({
@@ -114,13 +115,13 @@ export const getClassByIdOrSlug = async (req: Request, res: Response) => {
       isPublished: true,
     }).populate('instructors', 'name email avatar');
 
-    return res.status(200).json({
-      success: true,
-      data: {
+    return {
         academicClass,
         courses,
-      },
+    };
     });
+    if (!cached) return res.status(404).json({ success: false, message: 'Class not found' });
+    return res.status(200).json({ success: true, data: cached });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: 'Failed to fetch class details' });
   }
@@ -166,6 +167,7 @@ export const createAcademicClass = async (req: AuthenticatedRequest, res: Respon
       faqs: Array.isArray(faqs) ? faqs : [],
       subjects: Array.isArray(subjects) && subjects.length > 0 ? subjects : [],
     });
+    clearPublicCache('classes:');
 
     await AuditLog.create({
       actorId: req.user?._id,
@@ -244,6 +246,7 @@ export const updateAcademicClass = async (req: AuthenticatedRequest, res: Respon
     if (Array.isArray(subjects)) currentClass.subjects = subjects;
 
     await currentClass.save();
+    clearPublicCache();
 
     // Cascade update to all Courses that were tagged with oldName
     if (newName !== oldName) {
@@ -288,6 +291,7 @@ export const deleteAcademicClass = async (req: AuthenticatedRequest, res: Respon
 
     const className = academicClass.name;
     await AcademicClass.findByIdAndDelete(id);
+    clearPublicCache();
 
     // Retain courses safely: re-tag them as 'Unknown'
     const courseUpdateResult = await Course.updateMany(

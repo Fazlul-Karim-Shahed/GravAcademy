@@ -6,6 +6,7 @@ import { Batch } from '../models/Batch';
 import { addCalendarMonths } from '../services/batchAccessService';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { AuditLog } from '../models/AuditLog';
+import { clearPublicCache, getCached } from '../services/publicCache';
 
 const courseLinkSchema = z.string().max(500).refine(
   (value) => value === '' || value.startsWith('/') || /^https?:\/\//i.test(value),
@@ -84,10 +85,10 @@ export const getCourses = async (req: Request, res: Response) => {
       filter.$text = { $search: search as string };
     }
 
-    const courses = await Course.find(filter)
+    const courses = await getCached(`courses:list:${req.originalUrl}`, () => Course.find(filter)
       .populate('instructors', 'name email avatarUrl phone role teacherDetails')
       .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }).lean());
 
     return res.status(200).json({
       success: true,
@@ -111,9 +112,9 @@ export const getCourseById = async (req: Request, res: Response) => {
       ? { $or: [{ _id: id }, { slug: id }] }
       : { slug: id };
 
-    const course = await Course.findOne(query)
+    const course = await getCached(`courses:detail:${id}`, () => Course.findOne(query)
       .populate('instructors', 'name email avatarUrl phone role teacherDetails')
-      .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role');
+      .populate('instructorProfiles.instructorId', 'name email avatarUrl phone role').lean());
 
     if (!course) {
       return res.status(404).json({ success: false, message: 'Course not found' });
@@ -148,6 +149,7 @@ export const createCourse = async (req: AuthenticatedRequest, res: Response) => 
       ...data,
       slug,
     });
+    clearPublicCache('courses:');
 
     await AuditLog.create({
       actorId: req.user?._id,
@@ -201,6 +203,7 @@ export const updateCourse = async (req: AuthenticatedRequest, res: Response) => 
       await session.endSession();
     }
     if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
+    clearPublicCache('courses:');
 
     return res.status(200).json({
       success: true,
@@ -223,6 +226,7 @@ export const deleteCourse = async (req: AuthenticatedRequest, res: Response) => 
     if (!course) {
       return res.status(404).json({ success: false, message: 'Course not found' });
     }
+    clearPublicCache('courses:');
 
     await AuditLog.create({
       actorId: req.user?._id,
