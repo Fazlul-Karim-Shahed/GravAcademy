@@ -339,7 +339,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
 
       <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <FormSectionNav heading="Course sections" items={courseSections} />
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="min-w-0 bg-white sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 dark:bg-[#111318] dark:sm:border-[#262b34]">
         <Section id="basic" icon={<ImageIcon className="h-4 w-4" />} title="Basic information" description="Hero section, pricing এবং course identity এখান থেকে control করুন।">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Course title *"><input required className={inputClass} value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="Class 10 Physics Masterclass" /></Field>
