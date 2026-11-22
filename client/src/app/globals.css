@@ -426,9 +426,7 @@ body.dark {
 }
 
 .ga-sticky-action-bar {
-  position: sticky;
-  bottom: 0.75rem;
-  z-index: 30;
+  position: static;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -444,12 +442,6 @@ body.dark {
 }
 
 @media (max-width: 767px) {
-  .ga-admin-page,
-  .ga-classroom-page,
-  .ga-form-page {
-    padding-bottom: 5rem;
-  }
-
   .ga-operation-toolbar {
     align-items: stretch;
   }
@@ -459,7 +451,6 @@ body.dark {
   }
 
   .ga-sticky-action-bar {
-    bottom: calc(4.5rem + env(safe-area-inset-bottom));
     border-radius: 0.875rem;
   }
 }

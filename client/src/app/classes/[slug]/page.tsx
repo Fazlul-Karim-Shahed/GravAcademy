@@ -76,21 +76,15 @@ export default function DedicatedClassPage() {
   }
 
   const className = academicClass?.name || 'Class';
-  const description = academicClass?.description || `${className}-এর জন্য সাজানো কোর্স ও শেখার সুযোগ এক জায়গায়।`;
-
   return (
     <main className="ga-page ga-public-page text-slate-900 dark:text-slate-100 pb-20">
       <section className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
         <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-3xl border-l-4 border-orange-500 pl-5">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400">{className}</p>
               <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-                <span>
-                  {academicClass?.subtitle || `${className}-এর শিক্ষার্থীদের জন্য পরিকল্পিত পূর্ণাঙ্গ একাডেমিক প্রোগ্রাম`}
-                </span>
+                {className}-এর কোর্সসমূহ
               </h1>
-              <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-600 dark:text-slate-400">{description}</p>
             </div>
             <div className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 dark:border-[#262b34] dark:bg-[#151921] dark:text-slate-300">
               <BookOpen className="w-4 h-4 text-orange-500" />

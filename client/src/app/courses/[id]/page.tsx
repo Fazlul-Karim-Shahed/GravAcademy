@@ -167,6 +167,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const [showBatchPicker, setShowBatchPicker] = useState(false);
   const [expandedSyllabus, setExpandedSyllabus] = useState<number | null>(null);
   const [showAllTeachers, setShowAllTeachers] = useState(false);
+  const [showCourseDetails, setShowCourseDetails] = useState(false);
   const [demoPreview, setDemoPreview] = useState<{ title: string; url: string } | null>(null);
 
   useEffect(() => {
@@ -292,7 +293,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
               <p className="mb-3 text-xs font-bold tracking-wide text-blue-200">{course.gradeLevel}</p>
               <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">{course.title}</h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-blue-50/90 sm:text-base">{course.description || 'সম্পূর্ণ সিলেবাস কভার করে পরিকল্পিত একাডেমিক প্রস্তুতি।'}</p>
-              <button type="button" className="mt-4 text-xs font-bold text-white underline underline-offset-4">বিস্তারিত দেখুন</button>
+              <button type="button" onClick={() => setShowCourseDetails(true)} className="mt-4 text-xs font-bold text-white underline underline-offset-4">বিস্তারিত দেখুন</button>
             </div>
           </div>
         </div>
@@ -539,9 +540,47 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       </section>
 
       {showBatchPicker && <BatchPicker batches={batches} courseAccess={{ studentAccessMode: course.studentAccessMode, studentAccessMonths: course.studentAccessMonths }} enrolledBatchIds={enrolledBatchIds} pendingRequestBatchIds={pendingRequestBatchIds} onClose={() => setShowBatchPicker(false)} onSelect={(batch) => router.push(`/enroll/${batch._id}/request`)} />}
+      {showCourseDetails && <CourseDetailsModal course={course} onClose={() => setShowCourseDetails(false)} />}
       {demoPreview && <DemoPreviewModal title={demoPreview.title} url={demoPreview.url} onClose={() => setDemoPreview(null)} />}
     </main>
   );
+}
+
+function CourseDetailsModal({ course, onClose }: { course: CourseDetail; onClose: () => void }) {
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [onClose]);
+
+  const highlights = (course.curriculumHighlights || course.features || []).slice(0, 6);
+
+  return <div role="dialog" aria-modal="true" aria-labelledby="course-details-title" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl dark:bg-slate-900">
+      <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold text-orange-600 dark:text-orange-400">{course.gradeLevel}</p>
+          <h2 id="course-details-title" className="mt-1 truncate text-lg font-black text-slate-900 dark:text-white">{course.title}</h2>
+        </div>
+        <button type="button" onClick={onClose} aria-label="বন্ধ করুন" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"><X className="h-5 w-5" /></button>
+      </div>
+      <div className="space-y-6 p-5 sm:p-6">
+        <div>
+          <h3 className="text-sm font-black text-slate-900 dark:text-white">কোর্স সম্পর্কে</h3>
+          <p className="mt-2 whitespace-pre-line text-sm leading-7 text-slate-600 dark:text-slate-300">{course.description || 'সম্পূর্ণ সিলেবাস কভার করে পরিকল্পিত একাডেমিক প্রস্তুতি।'}</p>
+        </div>
+        {course.targetAudience && <div><h3 className="text-sm font-black text-slate-900 dark:text-white">যাদের জন্য</h3><p className="mt-2 text-sm leading-7 text-slate-600 dark:text-slate-300">{course.targetAudience}</p></div>}
+        {highlights.length > 0 && <div><h3 className="text-sm font-black text-slate-900 dark:text-white">কোর্সে যা থাকছে</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{highlights.map((item, index) => <li key={`${item}-${index}`} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-orange-600" /><span>{parseFeatureItem(item, index).text}</span></li>)}</ul></div>}
+      </div>
+    </div>
+  </div>;
 }
 
 function DemoPreviewModal({ title, url, onClose }: { title: string; url: string; onClose: () => void }) {
