@@ -377,7 +377,7 @@ export default function TakeExamPage({
   }
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-28">
+    <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
         <div className="ga-card sticky top-[4.5rem] z-40 mx-auto w-[98%] scroll-mt-24 bg-white/95 py-3 backdrop-blur-md dark:bg-[#111318]/95 sm:top-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
@@ -746,7 +746,7 @@ export default function TakeExamPage({
           )}
 
           {/* SUBMIT BUTTON BAR */}
-          <div className="flex items-center justify-between pt-4">
+          <div className="ga-sticky-action-bar flex items-center justify-between gap-4">
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               আপনার উত্তরপত্র স্বয়ংক্রিয়ভাবে সংরক্ষিত রয়েছে
             </span>

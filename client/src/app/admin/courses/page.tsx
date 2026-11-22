@@ -133,11 +133,11 @@ function AdminCoursesContent() {
   };
 
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
               <BookOpen className="w-7 h-7 text-orange-600 dark:text-orange-400" /> Course Management
@@ -158,7 +158,7 @@ function AdminCoursesContent() {
               <PlusCircle className="w-4 h-4" /> Add New Course
             </Link>
           </div>
-        </div>
+        </header>
 
         {message && (
           <div
@@ -178,7 +178,7 @@ function AdminCoursesContent() {
         )}
 
         {/* Filter / Search Bar */}
-        <div className="ga-card p-4 sm:p-5 mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="ga-operation-toolbar mb-8 justify-between p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -254,7 +254,7 @@ function AdminCoursesContent() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
             {courses.map((course, idx) => {
               const cardThemes = [
                 {
@@ -281,14 +281,14 @@ function AdminCoursesContent() {
               return (
                 <div
                   key={course._id}
-                  className={`group relative bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] shadow-xs hover:shadow-2xl ${theme.glow} hover:-translate-y-1 hover:border-orange-500/40 dark:hover:border-orange-500/40 transition-all duration-300 flex flex-col justify-between overflow-hidden backdrop-blur-xs`}
+                  className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-orange-500/50 dark:border-[#262b34] dark:bg-[#111318] dark:hover:border-orange-500/50`}
                 >
                   {/* Subtle Top Accent Ambient Line */}
                   <div className={`h-1 w-full bg-gradient-to-r ${theme.gradient} opacity-90`} />
 
                   <div className="flex flex-col flex-1">
                     {/* Thumbnail & Badges Container */}
-                    <div className="relative w-full aspect-[16/9.5] bg-slate-900 overflow-hidden">
+                    <div className="relative aspect-[16/7] w-full overflow-hidden bg-slate-900">
                       {course.thumbnailUrl ? (
                         <>
                           <img

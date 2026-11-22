@@ -116,7 +116,7 @@ export default function StudentMarksheetPage({
   };
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
+    <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />

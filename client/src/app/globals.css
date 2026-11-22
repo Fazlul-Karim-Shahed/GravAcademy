@@ -325,6 +325,145 @@ body.dark {
   background: var(--primary-hover);
 }
 
+/* Product layout families. These control structure and density, not branding. */
+.ga-public-page,
+.ga-dashboard-page,
+.ga-classroom-page,
+.ga-admin-page,
+.ga-form-page,
+.ga-auth-page {
+  min-height: 100vh;
+  background: var(--bg-app);
+  color: var(--text-main);
+}
+
+.ga-public-page > :where(header, section, main, div),
+.ga-dashboard-page > :where(header, section, main, div),
+.ga-classroom-page > :where(header, section, main, div),
+.ga-admin-page > :where(header, section, main, div),
+.ga-form-page > :where(header, section, main, div) {
+  scroll-margin-top: 5.5rem;
+}
+
+.ga-admin-page {
+  --ga-page-width: 80rem;
+}
+
+.ga-admin-page :where(h1) {
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.032em;
+}
+
+.ga-admin-page :where(table) {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ga-admin-page :where(th) {
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ga-admin-page :where(tbody tr) {
+  transition: background-color 160ms ease;
+}
+
+.ga-admin-page :where(tbody tr:hover) {
+  background: color-mix(in srgb, var(--primary) 3%, transparent);
+}
+
+.ga-classroom-page {
+  --ga-learning-sidebar: 17rem;
+  --ga-learning-aside: 19rem;
+}
+
+.ga-classroom-page :where(h1, h2, h3) {
+  letter-spacing: -0.025em;
+}
+
+.ga-form-page :where(form) {
+  container-type: inline-size;
+}
+
+.ga-form-page :where(input, select, textarea) {
+  min-height: 2.75rem;
+}
+
+.ga-form-page :where(textarea) {
+  min-height: 7rem;
+}
+
+.ga-auth-page {
+  display: grid;
+  place-items: center;
+}
+
+.ga-auth-page :where(form) {
+  width: 100%;
+}
+
+.ga-operation-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.875rem;
+  background: var(--bg-surface);
+}
+
+.ga-data-panel {
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  background: var(--bg-surface);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.035);
+}
+
+.ga-sticky-action-bar {
+  position: sticky;
+  bottom: 0.75rem;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.875rem;
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+@media (max-width: 767px) {
+  .ga-admin-page,
+  .ga-classroom-page,
+  .ga-form-page {
+    padding-bottom: 5rem;
+  }
+
+  .ga-operation-toolbar {
+    align-items: stretch;
+  }
+
+  .ga-operation-toolbar > * {
+    min-width: 0;
+  }
+
+  .ga-sticky-action-bar {
+    bottom: calc(4.5rem + env(safe-area-inset-bottom));
+    border-radius: 0.875rem;
+  }
+}
+
 /* Hide scrollbars cleanly */
 .no-scrollbar::-webkit-scrollbar,
 .scrollbar-none::-webkit-scrollbar {

@@ -186,30 +186,19 @@ export default function ExamRoomPage({
   };
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
-      {/* Header Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <span className="shooting-star meteor-1" />
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
+    <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
+      <header className="mb-8 border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="flex items-center gap-3.5 pt-1 min-w-0">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
-                <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-orange-300" />
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400">
+                <BarChart3 className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                <h1 className="text-2xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-3xl">
                   পরীক্ষা ও মূল্যায়ন
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                <p className="mt-1 truncate text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-sm">
                   পরীক্ষা দিন, ফলাফল দেখুন
                 </p>
               </div>
@@ -220,7 +209,7 @@ export default function ExamRoomPage({
               <div className="flex items-center gap-3">
                 <Link
                   href={`/classroom/${batchId}/exams/create`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/12 hover:bg-white/20 text-white text-xs font-black border border-white/20 shadow-lg shadow-black/10 backdrop-blur-md active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2.5 text-xs font-black text-white transition-colors hover:bg-orange-700"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>নতুন পরীক্ষা</span>
@@ -229,7 +218,7 @@ export default function ExamRoomPage({
             )}
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -263,7 +252,7 @@ export default function ExamRoomPage({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {sortedExams.map((exam) => {
               const timing = getExamTimingStatus(exam);
               const attempt = exam.myAttempt;
@@ -271,7 +260,7 @@ export default function ExamRoomPage({
               return (
                 <div
                   key={exam._id}
-                className={`ga-card group relative flex flex-col justify-between overflow-hidden p-5 transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6 ${
+                className={`ga-card group relative flex flex-col justify-between overflow-hidden p-5 transition-colors sm:p-6 ${
                     timing.state === 'RUNNING'
                       ? 'border-orange-500/60 dark:border-orange-500/50 shadow-xs'
                       : timing.state === 'UPCOMING'

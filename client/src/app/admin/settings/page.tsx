@@ -278,7 +278,7 @@ export default function AdminSettingsPage() {
   ];
 
   return (
-    <div className="ga-page min-h-screen py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page ga-form-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Simple Clean Header */}

@@ -110,22 +110,19 @@ export default function PublicJobCircularsPage() {
   };
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-12 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-            সকল চাকরির সার্কুলার <span className="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500 dark:from-orange-400 dark:via-amber-300 dark:to-orange-300 bg-clip-text text-transparent">এক ঠিকানায়</span>
-          </h1>
-
-          <p className="mt-3.5 text-sm sm:text-base text-slate-600 dark:text-slate-400 font-medium">
+    <div className="ga-page ga-public-page text-slate-900 dark:text-slate-100 transition-colors">
+      <header className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto grid max-w-7xl gap-7 px-4 py-9 sm:px-6 sm:py-12 lg:grid-cols-[minmax(0,1fr)_32rem] lg:items-end lg:px-8">
+          <div className="max-w-2xl border-l-4 border-orange-500 pl-5">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400">Career board</p>
+          <h1 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">চাকরির সার্কুলার</h1>
+          <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-400">
             মন্ত্রণালয়, অধিদপ্তর, ব্যাংক, স্বায়ত্তশাসিত ও শীর্ষস্থানীয় বেসরকারি প্রতিষ্ঠানের সর্বশেষ প্রকাশিত জব সার্কুলার, আবেদনের নিয়ম ও সময়সীমা এক নজরে দেখুন।
           </p>
+          </div>
 
-          {/* Search Box */}
-          <form onSubmit={handleSearchSubmit} className="mt-8 relative max-w-xl mx-auto">
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-lg shadow-slate-200/50 dark:shadow-none">
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white p-1.5 focus-within:border-orange-500 dark:border-[#343a46] dark:bg-[#151921]">
               <Search className="w-5 h-5 text-slate-400 ml-3 shrink-0" />
               <input
                 type="text"
@@ -136,25 +133,29 @@ export default function PublicJobCircularsPage() {
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-bold text-xs shadow-md shadow-orange-950/20 transition-all shrink-0 cursor-pointer"
+                className="shrink-0 cursor-pointer rounded-lg bg-orange-600 px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-orange-700"
               >
                 খুঁজুন
               </button>
             </div>
           </form>
         </div>
+      </header>
 
-        {/* Category Tabs: Loaded dynamically from database, default: Shorkari */}
-        <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-9 sm:px-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:px-8">
+
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-black">ক্যাটাগরি</h2><span className="text-xs text-slate-500">{totalCount}টি</span></div>
+          <div className="flex gap-2 overflow-x-auto pb-3 lg:flex-col lg:overflow-visible">
           <button
             onClick={() => {
               setActiveSector('all');
               setPage(1);
             }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+            className={`whitespace-nowrap rounded-lg px-3.5 py-2.5 text-left text-xs font-bold transition-colors lg:w-full ${
               activeSector === 'all'
-                ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25 scale-[1.02]'
-                : 'bg-white dark:bg-[#111318] text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-[#262b34] hover:bg-slate-100 dark:hover:bg-[#181b20]'
+                ? 'bg-orange-600 text-white'
+                : 'border border-slate-200 bg-white text-slate-600 hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300'
             }`}
           >
             সকল চাকরি
@@ -169,17 +170,20 @@ export default function PublicJobCircularsPage() {
                   setActiveSector(cat.slug);
                   setPage(1);
                 }}
-                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`whitespace-nowrap rounded-lg px-3.5 py-2.5 text-left text-xs font-bold transition-colors lg:w-full ${
                   isActive
-                    ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25 scale-[1.02]'
-                    : 'bg-white dark:bg-[#111318] text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-[#262b34] hover:bg-slate-100 dark:hover:bg-[#181b20]'
+                    ? 'bg-orange-600 text-white'
+                    : 'border border-slate-200 bg-white text-slate-600 hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300'
                 }`}
               >
                 {cat.name}
               </button>
             );
           })}
-        </div>
+          </div>
+        </aside>
+
+        <main className="min-w-0">
 
         {/* Circulars Count Indicator */}
         <div className="flex items-center justify-between mb-6 text-xs text-slate-500 dark:text-slate-400">
@@ -209,7 +213,7 @@ export default function PublicJobCircularsPage() {
             <p className="text-xs text-slate-500">অন্য কোনো কি-ওয়ার্ড দিয়ে খুঁজুন অথবা অন্য ক্যাটাগরি বেছে নিন।</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
             {jobs.map((job) => {
               const badge = sectorBadges[job.sector] || {
                 label: job.sector,
@@ -226,7 +230,7 @@ export default function PublicJobCircularsPage() {
                 <Link
                   key={job._id}
                   href={`/jobs/${job.slug}`}
-                  className="ga-card group relative flex flex-col justify-between p-6 hover:shadow-xl hover:border-orange-500/60 dark:hover:border-orange-500/50 transition-all duration-300"
+                  className="group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:border-orange-400 dark:border-[#262b34] dark:bg-[#111318] dark:hover:border-orange-600"
                 >
                   <div>
                     {/* Header: Sector badge & Expiry Status */}
@@ -339,7 +343,7 @@ export default function PublicJobCircularsPage() {
             </button>
           </div>
         )}
-
+        </main>
       </div>
     </div>
   );

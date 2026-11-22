@@ -51,11 +51,11 @@ export default function StudentPaymentsPage() {
   };
 
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-dashboard-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
-        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
+        <header className="mb-8 flex items-center gap-3 border-b border-slate-200 pb-5 dark:border-[#262b34]">
           <Link
             href="/dashboard"
             className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 transition-colors shadow-2xs"
@@ -71,7 +71,7 @@ export default function StudentPaymentsPage() {
               আমার পেমেন্ট ও মানি রিসিট
             </h1>
           </div>
-        </div>
+        </header>
 
         {/* 3 Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -99,7 +99,7 @@ export default function StudentPaymentsPage() {
             </span>
           </div>
 
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/80 dark:border-[#262b34] shadow-xs">
+          <div className="ga-card p-5">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               ভর্তি ব্যাচ সংখ্যা
             </span>
@@ -113,7 +113,7 @@ export default function StudentPaymentsPage() {
         </div>
 
         {/* Receipts & Payments List */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] overflow-hidden shadow-xs">
+        <div className="ga-data-panel">
           <div className="p-5 border-b border-slate-100 dark:border-[#262b34] flex items-center justify-between">
             <h2 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
               পেমেন্ট হিস্ট্রি ও অফিসিয়াল রিসিট তালিকা

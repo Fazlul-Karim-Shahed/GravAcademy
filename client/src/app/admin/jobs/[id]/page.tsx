@@ -3,5 +3,5 @@
 import AdminJobFormPage from '../new/page';
 
 export default function AdminJobEditPage({ params }: { params: Promise<{ id?: string }> }) {
-  return <AdminJobFormPage params={params} />;
+  return <div className="ga-admin-page ga-form-page"><AdminJobFormPage params={params} /></div>;
 }

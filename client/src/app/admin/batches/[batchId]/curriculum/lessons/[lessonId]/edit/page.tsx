@@ -173,7 +173,7 @@ export default function EditLessonPage({
   }
 
   return (
-    <div className="ga-page min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div className="ga-page ga-admin-page ga-form-page py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
@@ -312,7 +312,7 @@ export default function EditLessonPage({
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-slate-100 dark:border-[#262b34]">
+            <div className="ga-sticky-action-bar flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
               <Link
                 href={`/admin/batches/${resolvedParams.batchId}/curriculum`}
                 className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"

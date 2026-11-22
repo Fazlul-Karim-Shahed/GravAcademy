@@ -632,7 +632,7 @@ export default function AdminFinancePage() {
   if (loadingSettings) return <div className="min-h-screen flex items-center justify-center">লোড হচ্ছে...</div>;
   if (!isFeatureEnabled('finance', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-[#0b0d12]"><ComingSoonCard feature="Finance Management" /></div>;
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Non-blocking action notice/error banners (replace blocking alert()) */}
@@ -668,7 +668,7 @@ export default function AdminFinancePage() {
         )}
 
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
+        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
@@ -687,7 +687,7 @@ export default function AdminFinancePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             {can('finance.view') && (
               <Link
                 href="/admin/finance/company-expenses"
@@ -705,14 +705,14 @@ export default function AdminFinancePage() {
               নতুন পেমেন্ট / বকেয়া গ্রহণ
             </Link>
           </div>
-        </div>
+        </header>
 
         {/* 4 Financial Stat Cards (Clickable Filters) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Card 1: Total Revenue (Total Filter) */}
           <div
             onClick={() => handleCardClick('total')}
-            className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
+            className={`flex cursor-pointer items-center justify-between rounded-xl border p-5 transition-colors ${
               cardFilterType === 'total'
                 ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-400 dark:border-emerald-600 ring-2 ring-emerald-500/20'
                 : 'bg-white dark:bg-[#111318] border-slate-200/80 dark:border-[#262b34] hover:border-emerald-200 dark:hover:border-emerald-800/60'
@@ -742,7 +742,7 @@ export default function AdminFinancePage() {
           {/* Card 2: Today's Collection (Clickable Filter) */}
           <div
             onClick={() => handleCardClick('today')}
-            className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
+            className={`flex cursor-pointer items-center justify-between rounded-xl border p-5 transition-colors ${
               cardFilterType === 'today'
                 ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-400 dark:border-blue-600 ring-2 ring-blue-500/20'
                 : 'bg-white dark:bg-[#111318] border-slate-200/80 dark:border-[#262b34] hover:border-blue-200 dark:hover:border-blue-800/60'
@@ -780,7 +780,7 @@ export default function AdminFinancePage() {
           {/* Card 3: Total Due (Clickable Filter) */}
           <div
             onClick={() => handleCardClick('due')}
-            className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs flex items-center justify-between ${
+            className={`flex cursor-pointer items-center justify-between rounded-xl border p-5 transition-colors ${
               cardFilterType === 'due'
                 ? 'bg-rose-50/80 dark:bg-rose-950/50 border-rose-400 dark:border-rose-600 ring-2 ring-rose-500/20'
                 : 'bg-white dark:bg-[#111318] border-slate-200/80 dark:border-[#262b34] hover:border-rose-200 dark:hover:border-rose-800/60'
@@ -897,7 +897,7 @@ export default function AdminFinancePage() {
         </div>
 
         {/* Date Filter & Control Bar */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] p-4 mb-6 shadow-xs flex flex-col gap-4">
+        <div className="ga-operation-toolbar mb-6 block p-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Search input */}
             <form onSubmit={handleSearchSubmit} className="relative w-full lg:w-80">
@@ -1026,7 +1026,7 @@ export default function AdminFinancePage() {
         </div>
 
         {/* Transactions & Receipts Table */}
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] overflow-hidden shadow-xs">
+        <div className="ga-data-panel">
           {/* Mobile Card View (< md) */}
           <div className="block md:hidden divide-y divide-slate-100 dark:divide-[#262b34]">
             {loading ? (

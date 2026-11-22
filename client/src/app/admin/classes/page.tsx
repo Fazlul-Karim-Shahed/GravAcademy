@@ -246,11 +246,11 @@ export default function AdminClassesPage() {
   };
 
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Clean, Sleek, Professional Top Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-5 border-b border-slate-200/80 dark:border-[#262b34]">
+        <header className="mb-8 grid gap-5 border-b border-slate-200/80 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
@@ -279,7 +279,7 @@ export default function AdminClassesPage() {
               <span>Add Class</span>
             </Link>
           </div>
-        </div>
+        </header>
 
         {/* Message Banner */}
         {message && (
@@ -301,7 +301,7 @@ export default function AdminClassesPage() {
 
         {/* Classes List */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
             {[1, 2, 3].map((i) => (
               <div key={i} className="ga-card h-64 animate-pulse" />
             ))}
@@ -350,7 +350,7 @@ export default function AdminClassesPage() {
               return (
                 <div
                   key={cls._id}
-                  className="group relative bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-orange-500/40 dark:hover:border-orange-500/40 transition-all duration-300 flex flex-col justify-between"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-orange-500/50 dark:border-[#262b34] dark:bg-[#111318] dark:hover:border-orange-500/50"
                 >
                   {/* Top colored gradient stripe */}
                   <div className={`h-1.5 w-full bg-gradient-to-r ${theme.accentBar}`} />

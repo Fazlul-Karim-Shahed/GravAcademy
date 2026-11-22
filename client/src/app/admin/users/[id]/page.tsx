@@ -128,7 +128,7 @@ export default function AdminUserProfilePage() {
   const linkedStudentCount = profile.guardianDetails?.linkedGravIds?.length || 0;
 
   return (
-    <main className="ga-page min-h-screen py-6 text-slate-900 dark:text-slate-100 sm:py-10">
+    <main className="ga-page ga-admin-page py-6 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-3">
           <Link href="/admin/users" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">

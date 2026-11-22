@@ -173,33 +173,23 @@ export default function MarksheetPage({
   });
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
-      {/* Header Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <span className="shooting-star meteor-1" />
-        </div>
-        <div className="max-w-7xl mx-auto relative z-10">
+    <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
+      <header className="mb-8 border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div>
               <div className="flex items-center gap-2.5 mb-2.5">
               </div>
 
               <div className="flex items-center gap-3.5 pt-1 min-w-0">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
-                  <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-orange-400" />
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400">
+                  <BarChart3 className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                  <h1 className="text-2xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-3xl">
                     ফলাফল ও অগ্রগতি
                   </h1>
-                  <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                  <p className="mt-1 truncate text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-sm">
                     {batchInfo?.name}
                   </p>
                 </div>
@@ -208,7 +198,7 @@ export default function MarksheetPage({
 
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {loading ? (
@@ -401,7 +391,7 @@ export default function MarksheetPage({
 
             {/* Staff / Teacher View: Full Matrix Table with Search */}
             {isStaff && (
-              <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] p-6 shadow-sm space-y-5">
+              <div className="ga-data-panel space-y-5 p-5 sm:p-6">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="relative w-full sm:w-80">
                     <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />

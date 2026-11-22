@@ -33,51 +33,27 @@ export default function AcademicClassesHubPage() {
   }, []);
 
   return (
-    <div className="ga-page min-h-screen pb-16 transition-colors">
-      {/* Cosmic Header Strip */}
-      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16 mb-8 sm:mb-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[360px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        
-        {/* Twinkling Cosmic Stars */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[14%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[24%] left-[20%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[12%] right-[16%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <span className="shooting-star meteor-1" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center sm:text-left">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-bold text-amber-300 mb-3">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>ক্লাস ৬ হতে ১২ একাডেমিক প্রোগ্রাম</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.3] text-white">
-                শ্রেণিভিত্তিক{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300">
-                  একাডেমিক ক্লাস হাব
-                </span>
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
-                তোমার শ্রেণি নির্বাচন করে সংশ্লিষ্ট সকল কোর্স, ব্যাচ রুটিন, সিলেবাস এবং লাইভ ক্লাসে অংশ নাও।
-              </p>
-            </div>
-
-            <Link
-              href="/courses"
-              className="ga-primary-button px-6 py-3 text-xs sm:text-sm"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>সকল কোর্স ক্যাটালগ</span>
-            </Link>
+    <div className="ga-page ga-public-page pb-16 transition-colors">
+      <header className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto grid max-w-7xl gap-7 px-4 py-9 sm:px-6 sm:py-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:px-8">
+          <div className="max-w-2xl border-l-4 border-orange-500 pl-5">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400">Academic classes</p>
+            <h1 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">শ্রেণি নির্বাচন করুন</h1>
+            <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-400">নিজের শ্রেণি থেকে কোর্স, ব্যাচ রুটিন, সিলেবাস ও লাইভ ক্লাস এক জায়গায় দেখুন।</p>
           </div>
+          <Link href="/courses" className="ga-primary-button w-full px-5 py-3 text-xs sm:w-auto">
+            <BookOpen className="h-4 w-4" />
+            <span>কোর্স দেখুন</span>
+          </Link>
         </div>
-      </div>
+      </header>
 
       {/* Grid of Classes */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-9 sm:px-6 lg:px-8">
+        <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4 dark:border-[#262b34]">
+          <div><h2 className="text-lg font-black text-slate-900 dark:text-white">সকল শ্রেণি</h2><p className="mt-1 text-xs text-slate-500">একটি শ্রেণি বেছে নিয়ে পড়াশোনা শুরু করুন</p></div>
+          {!loading && <span className="text-xs font-bold text-slate-500">{classes.length}টি শ্রেণি</span>}
+        </div>
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -85,14 +61,14 @@ export default function AcademicClassesHubPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {classes.map((cls, idx) => {
               const slug = getClassSlug(cls);
               return (
                 <Link
                   key={cls._id || cls.name}
                   href={`/classes/${slug}`}
-                  className="ga-card group block p-6 hover:border-orange-500/60 dark:hover:border-orange-500/50 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                  className="group relative block overflow-hidden rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:border-orange-400 dark:border-[#262b34] dark:bg-[#111318] dark:hover:border-orange-600"
                 >
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-orange-200 bg-orange-50 text-lg font-black text-orange-700 transition-transform group-hover:scale-105 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-300">
@@ -121,7 +97,7 @@ export default function AcademicClassesHubPage() {
             })}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

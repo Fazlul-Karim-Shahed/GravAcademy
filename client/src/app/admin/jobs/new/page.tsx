@@ -232,7 +232,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
   }
 
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page ga-form-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
@@ -722,7 +722,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="ga-sticky-action-bar flex items-center gap-3 w-full sm:w-auto">
               <Link
                 href="/admin/jobs"
                 className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors text-center w-full sm:w-auto"

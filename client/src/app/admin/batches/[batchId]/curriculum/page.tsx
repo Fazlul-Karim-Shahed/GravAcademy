@@ -452,7 +452,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
   if (!hierarchy) return null;
 
   return (
-    <div className="ga-page min-h-screen py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}

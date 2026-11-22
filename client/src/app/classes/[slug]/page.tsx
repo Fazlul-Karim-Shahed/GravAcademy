@@ -79,27 +79,21 @@ export default function DedicatedClassPage() {
   const description = academicClass?.description || `${className}-এর জন্য সাজানো কোর্স ও শেখার সুযোগ এক জায়গায়।`;
 
   return (
-    <main className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
-      <section className="relative overflow-hidden cosmic-hero-bg text-white border-b border-white/10 shadow-lg">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[16%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[24%] right-[12%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[12%] right-[30%] w-1 h-1 rounded-full bg-orange-200 animate-star-twinkle-medium" />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 sm:py-12 relative z-10">
+    <main className="ga-page ga-public-page text-slate-900 dark:text-slate-100 pb-20">
+      <section className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="max-w-3xl">
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300 pt-1 pb-2">
+            <div className="max-w-3xl border-l-4 border-orange-500 pl-5">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400">{className}</p>
+              <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-4xl">
+                <span>
                   {academicClass?.subtitle || `${className}-এর শিক্ষার্থীদের জন্য পরিকল্পিত পূর্ণাঙ্গ একাডেমিক প্রোগ্রাম`}
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl font-medium leading-relaxed">{description}</p>
+              <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-600 dark:text-slate-400">{description}</p>
             </div>
-            <div className="shrink-0 flex items-center gap-2 text-xs font-bold text-slate-200">
-              <BookOpen className="w-4 h-4 text-orange-400" />
+            <div className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 dark:border-[#262b34] dark:bg-[#151921] dark:text-slate-300">
+              <BookOpen className="w-4 h-4 text-orange-500" />
               {courses.length}টি কোর্স
             </div>
           </div>

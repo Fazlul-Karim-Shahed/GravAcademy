@@ -163,9 +163,9 @@ function AdminBatchesContent() {
   });
 
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
               <Layers className="w-7 h-7 text-orange-600 dark:text-orange-400" /> Batch Management
@@ -186,7 +186,7 @@ function AdminBatchesContent() {
               <PlusCircle className="w-4 h-4" /> Create New Batch
             </Link>
           </div>
-        </div>
+        </header>
 
         {message && (
           <div

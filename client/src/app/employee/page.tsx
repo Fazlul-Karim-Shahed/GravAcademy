@@ -57,7 +57,7 @@ export default function EmployeePanelPage() {
   };
 
   return (
-    <div className="ga-page min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="ga-page ga-dashboard-page max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Banner */}
       <div className="ga-card p-6 mb-6">
         <div className="max-w-2xl">
@@ -97,7 +97,7 @@ export default function EmployeePanelPage() {
       )}
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card className="border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -133,7 +133,7 @@ export default function EmployeePanelPage() {
       </div>
 
       {/* Operations Table */}
-      <Card className="border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
+      <Card className="ga-data-panel border-0 bg-white dark:bg-[#111318]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-bold text-slate-900 dark:text-white">পেমেন্ট ভেরিফিকেশন বাকি থাকা ভর্তি</h3>
           <span className="text-xs text-slate-400">সর্বশেষ ৫টি</span>

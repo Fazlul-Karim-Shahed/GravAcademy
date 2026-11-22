@@ -183,7 +183,7 @@ export default function CoursesCatalogPage() {
   };
 
   return (
-    <main className="ga-page ga-modern-page min-h-screen bg-slate-50 text-slate-950 dark:bg-[#090b10] dark:text-slate-100">
+    <main className="ga-page ga-public-page ga-modern-page bg-slate-50 text-slate-950 dark:bg-[#090b10] dark:text-slate-100">
       <header className="border-b border-slate-200 bg-white dark:border-white/10 dark:bg-[#0d1016]">
         <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
           <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">

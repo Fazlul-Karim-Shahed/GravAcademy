@@ -88,7 +88,7 @@ export default function ScheduleFreeClassPage() {
   }
 
   return (
-    <div className="ga-page min-h-screen py-10 transition-colors">
+    <div className="ga-page ga-public-page ga-form-page py-10 transition-colors">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
@@ -188,7 +188,7 @@ export default function ScheduleFreeClassPage() {
             </div>
 
             {/* Submit */}
-            <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800 flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+            <div className="ga-sticky-action-bar mt-6 flex-col-reverse sm:flex-row">
               <Link href="/free-classes" className="w-full sm:w-auto">
                 <Button type="button" variant="secondary" size="md" className="w-full sm:w-auto">
                   বাতিল

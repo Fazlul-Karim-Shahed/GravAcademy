@@ -243,11 +243,11 @@ export default function AdminUsersPage() {
   if (loadingSettings) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b0d12]">লোড হচ্ছে...</div>;
   if (!isFeatureEnabled('userManagement', user?.role === 'superadmin')) return <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-slate-50 dark:bg-[#0b0d12]"><ComingSoonCard feature="User Management" /></div>;
   return (
-    <div className="ga-page min-h-screen py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
+        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-5 dark:border-[#262b34] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
@@ -283,10 +283,10 @@ export default function AdminUsersPage() {
               <span>নতুন শিক্ষার্থী ভর্তি</span>
             </Link>
           </div>
-        </div>
+        </header>
 
         {/* Role Quick Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
+        <div className="ga-operation-toolbar mb-6 overflow-x-auto p-1 no-scrollbar">
           {rolePills.map((pill) => (
             <button
               key={pill.id}

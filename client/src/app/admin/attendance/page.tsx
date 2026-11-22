@@ -148,9 +148,9 @@ export default function AdminTeacherAttendancePage() {
   }
 
   return (
-    <main className="ga-page min-h-screen py-6 text-slate-900 dark:text-slate-100 sm:py-10">
+    <main className="ga-page ga-admin-page py-6 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <header className="mb-7 flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:flex-row sm:items-end sm:justify-between">
+        <header className="mb-7 grid gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div>
             <p className="mb-1 text-sm font-semibold text-orange-600 dark:text-orange-400">শিক্ষক ব্যবস্থাপনা</p>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">শিক্ষক হাজিরা</h1>
@@ -182,7 +182,7 @@ export default function AdminTeacherAttendancePage() {
                 const first = group[0];
                 const selected = group.find((row) => row.attendance?.status === 'present');
                 return (
-                  <article key={first.batchId} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-[#262b34] dark:bg-[#111318]">
+                  <article key={first.batchId} className="ga-data-panel p-4">
                     <div className="mb-3 flex flex-wrap items-baseline justify-between gap-1 border-b border-slate-100 pb-3 dark:border-[#262b34]">
                       <div><h3 className="font-bold">{first.courseName} · {first.batchName}</h3><p className="mt-1 text-sm text-slate-500">{timeLabel(first.startTime, first.endTime)}</p></div>
                       <span className="text-xs font-medium text-slate-500">{group.length} জন শিক্ষক</span>

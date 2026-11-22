@@ -256,8 +256,8 @@ export default function ProfileEditPage() {
   }
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-10 transition-colors">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="ga-page ga-dashboard-page ga-form-page text-slate-900 dark:text-slate-100 py-10 transition-colors">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         
         {/* Top Header */}
         <div className="flex items-center justify-between gap-4 mb-6">
@@ -306,10 +306,15 @@ export default function ProfileEditPage() {
           </div>
         )}
 
-        <form id="profile-edit-form" onSubmit={handleSubmit} className="space-y-6">
+        <form id="profile-edit-form" onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
+          <aside className="hidden lg:sticky lg:top-24 lg:block">
+            <p className="mb-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Profile sections</p>
+            <nav className="space-y-1 border-l border-slate-200 pl-3 dark:border-[#262b34]"><a href="#photo" className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30">Photo</a><a href="#basic" className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30">Basic info</a><a href="#role-info" className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30">Role details</a></nav>
+          </aside>
+          <div className="min-w-0 space-y-6">
           
           {/* Avatar & Photo Section */}
-          <div className="ga-card p-6">
+          <div id="photo" className="ga-card scroll-mt-24 p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Camera className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>প্রোফাইল ছবি (Avatar / Photo)</span>
@@ -370,7 +375,7 @@ export default function ProfileEditPage() {
           </div>
 
           {/* Basic Personal Info */}
-          <div className="ga-card p-6 space-y-4">
+          <div id="basic" className="ga-card scroll-mt-24 space-y-4 p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
               <User className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>সাধারণ তথ্য</span>
@@ -444,7 +449,7 @@ export default function ProfileEditPage() {
 
           {/* TEACHER SPECIFIC FIELDS */}
           {user.role === 'teacher' && (
-            <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs space-y-4">
+            <div id="role-info" className="scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318]">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>শিক্ষক পরিচিতি ও হোমপেজ তথ্য</span>
@@ -590,7 +595,7 @@ export default function ProfileEditPage() {
 
           {/* STUDENT SPECIFIC FIELDS */}
           {user.role === 'student' && (
-            <div className="rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-6 shadow-xs space-y-4">
+            <div id="role-info" className="scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318]">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <School className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>অ্যাকাডেমিক ও শিক্ষাপ্রতিষ্ঠান তথ্য</span>
@@ -675,7 +680,7 @@ export default function ProfileEditPage() {
           )}
 
           {/* Form Actions Footer */}
-          <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-4">
+          <div className="ga-sticky-action-bar flex-col-reverse sm:flex-row">
             <Link
               href="/profile"
               className="w-full sm:w-auto text-center px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222c] border border-transparent dark:border-[#262b34] text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
@@ -690,6 +695,7 @@ export default function ProfileEditPage() {
             >
               {saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
             </button>
+          </div>
           </div>
 
         </form>

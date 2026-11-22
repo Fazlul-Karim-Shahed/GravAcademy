@@ -171,7 +171,7 @@ export default function ExamSubmissionsPage({
   };
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
+    <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
       {/* Header */}
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

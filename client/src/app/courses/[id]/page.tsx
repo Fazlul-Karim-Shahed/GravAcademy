@@ -259,7 +259,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   ];
 
   return (
-    <main className="ga-page min-h-screen text-slate-900 dark:text-slate-100">
+    <main className="ga-page ga-public-page text-slate-900 dark:text-slate-100">
       <section className="relative overflow-hidden cosmic-hero-bg pb-14 pt-8 text-white shadow-lg sm:pb-16 sm:pt-10">
         <div className="absolute left-1/2 top-0 h-[380px] w-[1000px] -translate-x-1/2 bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl" />
         <div className="absolute left-1/2 top-1/4 h-[250px] w-[750px] -translate-x-1/2 animate-atmosphere rounded-full bg-orange-600/10 blur-[100px]" />

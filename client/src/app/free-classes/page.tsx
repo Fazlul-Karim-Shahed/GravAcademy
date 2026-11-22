@@ -139,37 +139,15 @@ export default function FreeClassesPage() {
   });
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-public-page text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. COSMIC GLOWING HERO HEADER STRIP (Matching Home Page Cosmic Theme) */}
-      <div className="relative overflow-hidden cosmic-hero-bg text-white pt-10 pb-12 sm:pt-14 sm:pb-16">
-        
-        {/* Deep space radial ambient lighting & celestial nebula glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[380px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[250px] bg-orange-600/10 rounded-full blur-[100px] pointer-events-none -z-10 animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[350px] h-[250px] bg-amber-500/10 rounded-full blur-[90px] pointer-events-none -z-10" />
-        <div className="absolute -top-10 right-1/4 w-[350px] h-[250px] bg-orange-600/10 rounded-full blur-[90px] pointer-events-none -z-10" />
-
-        {/* Twinkling Cosmic Stars & Shooting Star */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[14%] left-[10%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[24%] left-[20%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[12%] right-[16%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-200 animate-star-twinkle-slow" />
-          <span className="shooting-star meteor-1" />
-          <span className="shooting-star meteor-3" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <header className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-7xl px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-normal leading-[1.35] text-white">
-                ফ্রি লাইভ ক্লাস ও{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-orange-300 pt-1 pb-2 px-1">
-                  স্পেশাল সেমিনার
-                </span>
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-xl font-medium leading-relaxed">
+            <div className="max-w-2xl border-l-4 border-orange-500 pl-5">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-orange-600 dark:text-orange-400">Open learning</p>
+              <h1 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">ফ্রি লাইভ ক্লাস ও সেমিনার</h1>
+              <p className="mt-3 text-sm font-medium leading-7 text-slate-600 dark:text-slate-400">
                 কোনো রেজিস্ট্রেশন ফি ছাড়াই সরাসরি যুক্ত হয়ে ক্লাস যাচাই করো এবং বিষয়ভিত্তিক শিক্ষকদের সাথে পরামর্শ নাও।
               </p>
             </div>
@@ -177,13 +155,13 @@ export default function FreeClassesPage() {
             {/* Actions & Cosmic Search */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-white/50 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="ক্লাসের নাম বা শিক্ষক খুঁজুন..."
-                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 backdrop-blur-xl border border-white/20 focus:border-orange-400 rounded-2xl pl-10 pr-9 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500/30 transition-all font-medium shadow-inner"
+                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-9 text-xs font-medium text-slate-900 outline-none focus:border-orange-500 dark:border-[#343a46] dark:bg-[#151921] dark:text-white sm:text-sm"
                 />
               </div>
 
@@ -199,7 +177,7 @@ export default function FreeClassesPage() {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* 2. Main Content Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">

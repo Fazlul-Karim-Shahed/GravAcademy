@@ -189,7 +189,7 @@ function CreateBatchContent() {
   };
 
   return (
-    <div className="ga-page min-h-screen py-10 transition-colors">
+    <div className="ga-page ga-admin-page ga-form-page py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
@@ -409,7 +409,7 @@ function CreateBatchContent() {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-6 border-t border-slate-200/80 dark:border-[#262b34] flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3">
+            <div className="ga-sticky-action-bar mt-6 flex-col-reverse sm:flex-row">
               <Link href="/admin/batches" className="w-full sm:w-auto">
                 <Button type="button" variant="secondary" size="md" className="w-full sm:w-auto">
                   Cancel

@@ -56,7 +56,7 @@ function VerifyEmailContent() {
   const iconColor = state === 'success' ? 'text-emerald-600' : state === 'error' ? 'text-rose-500' : 'text-orange-600 dark:text-orange-400';
 
   return (
-    <main className="ga-page flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center px-4 py-12 sm:py-16">
+    <main className="ga-page ga-auth-page flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center px-4 py-12 sm:py-16">
       <div className="mb-7 flex justify-center">
         <SiteLogo size="xl" showText={true} textClassName="text-lg" taglineClassName="text-xs" />
       </div>

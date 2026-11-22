@@ -183,7 +183,7 @@ export default function AdminJobsPage() {
   };
 
   return (
-    <div className="ga-page min-h-screen py-10 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation & Header */}
@@ -231,8 +231,8 @@ export default function AdminJobsPage() {
         </div>
 
         {/* Filters and Search Bar */}
-        <div className="ga-card p-5 mb-8">
-          <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row items-center gap-4">
+        <div className="ga-operation-toolbar mb-8">
+          <form onSubmit={handleSearchSubmit} className="grid w-full gap-3 md:grid-cols-[minmax(0,1fr)_220px_auto] md:items-center">
             
             {/* Search Input */}
             <div className="relative flex-1 w-full">

@@ -79,18 +79,18 @@ export default function AdmissionRequestsPage() {
   });
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-8 sm:py-10">
+    <div className="ga-page ga-admin-page text-slate-900 dark:text-slate-100 py-8 sm:py-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+        <header className="mb-7 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div>
             <Link href="/admin" className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 mb-3"><ArrowLeft className="w-3.5 h-3.5" /> Dashboard</Link>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">ভর্তি Requests</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Student applications review করুন এবং প্রয়োজন হলে form edit করে ভর্তি সম্পন্ন করুন।</p>
           </div>
           <Link href="/admin/admissions" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-sm shadow-orange-950/20">Manual Admission</Link>
-        </div>
+        </header>
 
-        <div className="ga-card flex items-center gap-1 p-1 w-fit mb-5">
+        <div className="ga-operation-toolbar mb-5 w-full overflow-x-auto p-1 sm:w-fit">
           {['pending', 'approved', 'rejected', 'all'].map((value) => <button key={value} type="button" onClick={() => setStatus(value)} className={`px-3.5 py-2 rounded-xl text-xs font-bold capitalize transition-all ${status === value ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>{value}</button>)}
         </div>
 
@@ -100,7 +100,7 @@ export default function AdmissionRequestsPage() {
         {loading ? <div className="py-20 text-center"><Loader2 className="w-8 h-8 animate-spin text-orange-600 dark:text-orange-400 mx-auto" /></div> : requests.length === 0 ? (
           <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200 dark:border-[#262b34] py-16 text-center"><Clock3 className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" /><p className="text-sm font-bold">এই filter-এ কোনো request নেই</p><p className="text-xs text-slate-500 dark:text-slate-400 mt-1">নতুন student request এলে এখানে দেখা যাবে।</p></div>
         ) : (
-          <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.05)] dark:border-[#262b34] dark:bg-[#111318]">
+          <div className="ga-data-panel">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[980px] text-left">
                 <thead className="border-b border-slate-200 bg-slate-50/80 dark:border-[#262b34] dark:bg-[#151921]">

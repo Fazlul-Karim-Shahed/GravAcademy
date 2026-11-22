@@ -88,9 +88,9 @@ export default function AuditLogsPage() {
   }
 
   return (
-    <div className="ga-page min-h-screen py-8 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-admin-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
+        <header className="mb-8 grid gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
@@ -115,10 +115,10 @@ export default function AuditLogsPage() {
           >
             <RefreshCw className="w-3.5 h-3.5" /> রিফ্রেশ
           </button>
-        </div>
+        </header>
 
-        <div className="bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/90 dark:border-[#262b34] shadow-sm overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="ga-data-panel">
+          <div className="ga-operation-toolbar rounded-none border-x-0 border-t-0 p-4 sm:p-5">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input

@@ -138,8 +138,8 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     : false;
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-10 transition-colors">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="ga-page ga-public-page text-slate-900 dark:text-slate-100 py-10 transition-colors">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
         <div className="flex items-center justify-between gap-4 mb-6">
@@ -244,8 +244,9 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
         </div>
 
+        <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_22rem]">
         {/* Quick Facts / Highlight Summary Table */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs mb-8">
+        <aside className="order-1 rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#262b34] dark:bg-[#111318] lg:order-2 lg:sticky lg:top-24">
           <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
             <Sparkles className="w-5 h-5 text-amber-500" /> নিয়োগ বিজ্ঞপ্তির সংক্ষিপ্ত তথ্য (Quick Summary)
           </h2>
@@ -335,7 +336,9 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
             )}
 
           </div>
-        </div>
+        </aside>
+
+        <main className="order-2 min-w-0 lg:order-1">
 
         {/* Dynamic Custom Fields Section (if any) */}
         {job.customFields && job.customFields.length > 0 && (
@@ -395,6 +398,8 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
           >
             <ArrowLeft className="w-4 h-4" /> সকল জব সার্কুলার দেখুন
           </Link>
+        </div>
+        </main>
         </div>
 
       </div>

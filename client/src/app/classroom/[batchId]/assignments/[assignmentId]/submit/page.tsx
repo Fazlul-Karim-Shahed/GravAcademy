@@ -183,7 +183,7 @@ export default function StudentAssignmentSubmitPage({
   const mySub = assignment?.mySubmission;
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
+    <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 pb-20">
       {/* Shared classroom header */}
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-lg shadow-orange-950/20">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
@@ -403,7 +403,7 @@ export default function StudentAssignmentSubmitPage({
                   )}
 
                   {/* Submit Action Button */}
-                  <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
+                  <div className="ga-sticky-action-bar flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
                     <Link
                       href={`/classroom/${batchId}/assignments`}
                       className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1c222d] text-slate-700 dark:text-slate-300 text-xs font-bold text-center"

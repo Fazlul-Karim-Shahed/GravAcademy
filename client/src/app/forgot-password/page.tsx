@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="ga-page min-h-screen px-4 py-12">
+    <main className="ga-page ga-auth-page px-4 py-12">
       <div className="mx-auto max-w-md">
         <Link href="/login" className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"><ArrowLeft className="h-4 w-4" /> Login</Link>
         <section className="ga-card p-6 sm:p-8">

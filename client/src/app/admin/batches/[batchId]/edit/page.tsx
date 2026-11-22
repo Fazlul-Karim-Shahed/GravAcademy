@@ -179,7 +179,7 @@ export default function EditBatchPage() {
   }
 
   return (
-    <div className="ga-page min-h-screen py-10 transition-colors">
+    <div className="ga-page ga-admin-page ga-form-page py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb */}
@@ -374,7 +374,7 @@ export default function EditBatchPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 sm:gap-3 pt-6 border-t border-slate-100 dark:border-[#262b34]">
+            <div className="ga-sticky-action-bar mt-6 flex-col-reverse sm:flex-row">
               <Link
                 href="/admin/batches"
                 className="w-full sm:w-auto text-center px-5 py-3 rounded-xl border border-slate-200 dark:border-[#262b34] text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"

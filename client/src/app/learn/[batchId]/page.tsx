@@ -189,36 +189,24 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
     (data.batch.assignedTeachers || []).some((teacherId) => teacherId.toString() === user.id);
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* 1. TOP HEADER (Cosmic Glow Theme) */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white border border-orange-900/40 shadow-lg shadow-orange-950/20">
-        {/* Subtle deep space glow in top bar */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <span className="shooting-star meteor-1" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 relative z-10">
+      <header className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5 pt-1 min-w-0">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400">
                 {activeLesson ? (
-                  <FileVideo className="w-6 h-6 sm:w-7 sm:h-7 text-orange-200" />
+                  <FileVideo className="h-5 w-5" />
                 ) : (
-                  <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-orange-200" />
+                  <BookOpen className="h-5 w-5" />
                 )}
               </div>
               <div className="min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight line-clamp-1">
+                <h1 className="line-clamp-1 text-xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-2xl">
                   লেকচার ও শিট
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+                <p className="mt-1 truncate text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-sm">
                   {activeLesson?.title || data.batch.name}
                 </p>
               </div>
@@ -229,7 +217,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
               {canEditCurriculum && (
                 <Link
                   href={`/admin/batches/${data.batch._id}/curriculum`}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all"
+                  className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-700"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   <span>এডিট</span>
@@ -237,10 +225,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
               )}
               <Link
                 href={`/classroom/${data.batch._id}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 backdrop-blur-md active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition-colors hover:border-orange-300 hover:text-orange-600 dark:border-[#343a46] dark:bg-[#151921] dark:text-slate-200"
                 title="ব্যাচ ক্লাসরুম, ডিসকাশন গ্রুপ ও নোটিশ বোর্ড"
               >
-                <MessageSquare className="w-4 h-4 text-orange-400" />
+                <MessageSquare className="w-4 h-4 text-orange-500" />
                 <span>ভিউ ক্লাসরুম</span>
               </Link>
 
@@ -248,14 +236,14 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* 2. MAIN 2-COLUMN LEARNING WORKSPACE */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-8">
           
           {/* LEFT 8 COLS: Video Player & Educational Notes */}
-          <div className="lg:col-span-8 space-y-6">
+          <main className="min-w-0 space-y-6">
             {activeLesson ? (
               <>
                 {/* Embedded Video Container */}
@@ -397,10 +385,10 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">ডানদিকের সিলেবাস মডিউল থেকে যেকোনো অধ্যায়ের পাঠে ক্লিক করুন।</p>
               </div>
             )}
-          </div>
+          </main>
 
           {/* RIGHT 4 COLS: Modern Playlist Style Curriculum Hierarchy */}
-          <div className="lg:col-span-4 sticky top-20 space-y-4">
+          <aside className="space-y-4 lg:sticky lg:top-20">
             <div className="p-5 rounded-3xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] shadow-xs">
               
               {/* Card Header */}
@@ -516,7 +504,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
               )}
 
             </div>
-          </div>
+          </aside>
 
         </div>
       </div>

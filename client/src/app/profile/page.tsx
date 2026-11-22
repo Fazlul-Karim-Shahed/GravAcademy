@@ -69,7 +69,7 @@ export default function ProfileViewPage() {
   const joinedDate = (user as any).createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-GB') : '—';
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-10 transition-colors">
+    <div className="ga-page ga-dashboard-page text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb / Header */}

@@ -74,7 +74,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
   const fee = batch?.courseId?.discountPrice ?? batch?.courseId?.courseFee ?? batch?.courseId?.regularPrice;
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 py-6 sm:py-10">
+    <div className="ga-page ga-public-page ga-form-page text-slate-900 dark:text-slate-100 py-6 sm:py-10">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between gap-4 mb-5">
           <Link href="/courses" className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-orange-600 transition-colors"><ArrowLeft className="w-4 h-4" /> কোর্সে ফিরে যান</Link>
@@ -93,8 +93,8 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
         ) : !batch ? (
           <div className="ga-card p-8 text-center"><p className="text-sm font-bold">ব্যাচটি পাওয়া যায়নি।</p></div>
         ) : (
-          <div className="space-y-5">
-            <section className="relative overflow-hidden rounded-[28px] border border-orange-100 dark:border-[#262b34] bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 dark:from-[#111318] dark:via-[#111318] dark:to-[#181b22] p-6 sm:p-8 shadow-[0_16px_45px_rgba(234,88,12,0.08)]">
+          <div className="grid items-start gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+            <section className="relative overflow-hidden rounded-2xl border border-orange-100 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318] lg:sticky lg:top-24">
               <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl dark:bg-orange-500/10" />
               <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                 <div className="flex items-start gap-4 min-w-0"><div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 text-orange-600 flex items-center justify-center shrink-0 shadow-sm border border-orange-100 dark:border-slate-700"><GraduationCap className="w-6 h-6" /></div><div className="min-w-0"><p className="text-[11px] font-black uppercase tracking-[0.16em] text-orange-600 dark:text-orange-400 mb-1">ভর্তি request</p><h1 className="text-xl sm:text-2xl font-black leading-tight truncate">{batch.name}</h1><p className="text-sm text-slate-500 dark:text-slate-400 mt-1 truncate">{batch.courseId?.title || 'Grav Academy course'}</p></div></div>
@@ -115,7 +115,7 @@ function EnrollmentRequestContent({ params }: { params: Promise<{ batchId: strin
                 <Field label="অভিভাবকের মোবাইল (WhatsApp)" value={form.guardianPhone} onChange={(v) => update('guardianPhone', v)} type="tel" readOnly={Boolean(user?.studentDetails?.guardianPhone)} />
               </div>
               <label className="block mt-5"><span className="text-xs font-bold text-slate-600 dark:text-slate-300">মেসেজ <span className="font-normal text-slate-400">(optional)</span></span><textarea value={form.message} onChange={(e) => update('message', e.target.value)} maxLength={500} rows={3} className="mt-1.5 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-950 px-4 py-3 text-sm outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 resize-none transition-colors" placeholder="কোনো তথ্য জানাতে চাইলে লিখুন" /></label>
-              <button type="submit" disabled={submitting} className="w-full mt-6 py-3.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-sm font-black flex items-center justify-center gap-2 shadow-lg shadow-orange-950/25 transition-all disabled:opacity-60 cursor-pointer">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}{submitting ? 'পাঠানো হচ্ছে...' : 'Request পাঠান'}</button>
+              <div className="ga-sticky-action-bar mt-6"><button type="submit" disabled={submitting} className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-orange-600 py-3 text-sm font-black text-white transition-colors hover:bg-orange-700 disabled:opacity-60">{submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}{submitting ? 'পাঠানো হচ্ছে...' : 'Request পাঠান'}</button></div>
             </form>
           </div>
         )}

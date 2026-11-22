@@ -141,7 +141,7 @@ export default function StudentExamResultPage({
   const percentage = Math.round((attempt.totalScore / exam.totalMarks) * 100) || 0;
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-20">
+    <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
       {/* Top Banner */}
       <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

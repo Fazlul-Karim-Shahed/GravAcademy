@@ -173,7 +173,7 @@ export default function SubmissionEvaluationPage({
   if (error || !submission || !exam) return <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] flex items-center justify-center p-6"><div className="max-w-md text-center"><AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" /><p className="text-sm font-bold text-rose-700 dark:text-rose-300">{error || 'সাবমিশন পাওয়া যায়নি'}</p></div></div>;
 
   return (
-    <div className="ga-page min-h-screen text-slate-900 dark:text-slate-100 pb-24">
+    <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 pb-24">
       <div className="w-[98%] mx-auto mt-4 rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 border border-orange-500/20 shadow-xl shadow-orange-950/20">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
