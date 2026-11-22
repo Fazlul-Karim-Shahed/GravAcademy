@@ -16,6 +16,7 @@ import apiRouter from './routes/api';
 import { startWhatsApp } from './services/whatsAppService';
 import { runAssignmentReminders, runExamReminders } from './services/classroomNotificationService';
 import { scanEmailBounces } from './services/emailBounceService';
+import { startDatabaseCleanup } from './services/cleanupService';
 
 dotenv.config();
 
@@ -194,6 +195,7 @@ const startServer = async () => {
     console.log(`🚀 Grav Academy API Server running on http://localhost:${PORT}`);
     setupSelfPing();
     startWhatsApp();
+    startDatabaseCleanup();
     const checkEmailBounces = async () => {
       try {
         await scanEmailBounces();
