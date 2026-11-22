@@ -514,6 +514,32 @@ html:not(.dark) textarea::placeholder {
   color: #94a3b8;
 }
 
+/* Keep guidance text visually secondary across every form and search field. */
+input::placeholder,
+textarea::placeholder {
+  font-size: 0.75rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+  opacity: 1;
+}
+
+.tiptap-content p.is-editor-empty:first-child::before {
+  color: #94a3b8;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+html.dark .tiptap-content p.is-editor-empty:first-child::before {
+  color: #64748b;
+}
+
 html:not(.dark) input:focus,
 html:not(.dark) select:focus,
 html:not(.dark) textarea:focus {
