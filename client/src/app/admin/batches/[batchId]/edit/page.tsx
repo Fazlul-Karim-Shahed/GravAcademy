@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
+import { FormPageHeader } from '@/components/ui/FormPageHeader';
 import {
   Layers,
   ArrowLeft,
@@ -182,33 +183,7 @@ export default function EditBatchPage() {
     <div className="ga-page ga-admin-page ga-form-page py-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Navigation Breadcrumb */}
-        <div className="mb-6 flex items-center justify-between">
-          <Link
-            href="/admin/batches"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Batch Management
-          </Link>
-
-          <Link
-            href={`/admin/batches/${batchId}/curriculum`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 text-xs font-bold transition-colors"
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Manage Curriculum</span>
-          </Link>
-        </div>
-
-        {/* Page Title */}
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-950/40 border border-orange-200/80 dark:border-orange-900/50 text-orange-700 dark:text-orange-400 text-xs font-semibold mb-3">
-            <Layers className="w-3.5 h-3.5" /> Batch Configuration
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Edit Batch Details
-          </h1>
-        </div>
+        <FormPageHeader backHref="/admin/batches" backLabel="Batches" eyebrow="Batch configuration" title="Edit Batch Details" description="Batch-এর সময়, শিক্ষক ও enrollment settings আপডেট করুন।" badge={<Link href={`/admin/batches/${batchId}/curriculum`} className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">Manage curriculum</Link>} />
 
         {/* Alerts */}
         {error && (

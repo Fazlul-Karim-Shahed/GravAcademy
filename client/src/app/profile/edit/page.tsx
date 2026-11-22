@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { FileUploadField } from '@/components/ui/FileUploadField';
 import { FormSectionNav } from '@/components/ui/FormSectionNav';
+import { FormPageHeader } from '@/components/ui/FormPageHeader';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import {
   User,
@@ -262,26 +263,7 @@ export default function ProfileEditPage() {
     <div className="ga-page ga-dashboard-page ga-form-page text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         
-        {/* Top Header */}
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/profile"
-              className="w-9 h-9 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 shadow-2xs transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                প্রোফাইল এডিট
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                আপনার প্রয়োজনীয় তথ্য ও ছবি আপডেট করুন।
-              </p>
-            </div>
-          </div>
-
-          <button
+        <FormPageHeader backHref="/profile" backLabel="Profile" eyebrow="Profile settings" title="প্রোফাইল এডিট" description="আপনার প্রয়োজনীয় তথ্য ও ছবি আপডেট করুন।" action={<button
             type="submit"
             form="profile-edit-form"
             disabled={saving}
@@ -289,8 +271,7 @@ export default function ProfileEditPage() {
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}</span>
-          </button>
-        </div>
+          </button>} />
 
         {message && (
           <div
