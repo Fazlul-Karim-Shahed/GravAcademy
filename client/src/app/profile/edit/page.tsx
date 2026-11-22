@@ -314,7 +314,7 @@ export default function ProfileEditPage() {
           <div className="min-w-0 space-y-6">
           
           {/* Avatar & Photo Section */}
-          <div id="photo" className="ga-card scroll-mt-24 p-6">
+          <div id="photo" className="ga-card ga-form-section scroll-mt-24 p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Camera className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>প্রোফাইল ছবি (Avatar / Photo)</span>
@@ -375,7 +375,7 @@ export default function ProfileEditPage() {
           </div>
 
           {/* Basic Personal Info */}
-          <div id="basic" className="ga-card scroll-mt-24 space-y-4 p-6">
+          <div id="basic" className="ga-card ga-form-section scroll-mt-24 space-y-4 p-6">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
               <User className="w-4 h-4 text-orange-600 dark:text-orange-400" />
               <span>সাধারণ তথ্য</span>
@@ -449,7 +449,7 @@ export default function ProfileEditPage() {
 
           {/* TEACHER SPECIFIC FIELDS */}
           {user.role === 'teacher' && (
-            <div id="role-info" className="scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318]">
+            <div id="role-info" className="ga-form-section scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318]">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>শিক্ষক পরিচিতি ও হোমপেজ তথ্য</span>
@@ -595,7 +595,7 @@ export default function ProfileEditPage() {
 
           {/* STUDENT SPECIFIC FIELDS */}
           {user.role === 'student' && (
-            <div id="role-info" className="scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318]">
+            <div id="role-info" className="ga-form-section scroll-mt-24 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#262b34] dark:bg-[#111318]">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <School className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                 <span>অ্যাকাডেমিক ও শিক্ষাপ্রতিষ্ঠান তথ্য</span>

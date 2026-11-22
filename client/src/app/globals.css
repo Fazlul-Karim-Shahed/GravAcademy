@@ -200,6 +200,28 @@ body.dark {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
 }
 
+/* Full-page forms use an edge-to-edge mobile canvas. The card shell remains
+   available from tablet upward; compact dialogs intentionally keep theirs. */
+@media (max-width: 639px) {
+  .ga-page .ga-card:has(> form):not(.ga-form-shell--keep-mobile),
+  .ga-page .ga-form-section {
+    background: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .ga-page .fixed .ga-card:has(> form) {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    border-radius: 1rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
 .ga-primary-button {
   display: inline-flex;
   min-height: 2.5rem;

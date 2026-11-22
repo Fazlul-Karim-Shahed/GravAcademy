@@ -217,7 +217,7 @@ function Field({ label, children, hint }: { label: string; children: React.React
 }
 
 function Section({ id, icon, title, description, children }: { id: string; icon: React.ReactNode; title: string; description?: string; children: React.ReactNode }) {
-  return <section id={id} className="scroll-mt-24 border-b border-slate-200 bg-white p-4 last:border-b-0 dark:border-[#262b34] dark:bg-[#111318] sm:p-6"><div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">{icon}</span><div><h2 className="text-sm font-black text-slate-900 dark:text-white">{title}</h2>{description && <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{description}</p>}</div></div><div className="mt-5">{children}</div></section>;
+  return <section id={id} className="scroll-mt-24 border-b border-slate-200 bg-transparent py-5 last:border-b-0 dark:border-[#262b34] dark:bg-transparent sm:bg-white sm:p-6 dark:sm:bg-[#111318]"><div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">{icon}</span><div><h2 className="text-sm font-black text-slate-900 dark:text-white">{title}</h2>{description && <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{description}</p>}</div></div><div className="mt-5">{children}</div></section>;
 }
 
 export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | 'edit'; courseId?: string }) {
@@ -339,7 +339,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
 
       <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <FormSectionNav heading="Course sections" items={courseSections} />
-        <div className="min-w-0 bg-white sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 dark:bg-[#111318] dark:sm:border-[#262b34]">
+        <div className="min-w-0 bg-transparent sm:overflow-hidden sm:rounded-2xl sm:border sm:border-slate-200 sm:bg-white dark:bg-transparent dark:sm:border-[#262b34] dark:sm:bg-[#111318]">
         <Section id="basic" icon={<ImageIcon className="h-4 w-4" />} title="Basic information" description="Hero section, pricing এবং course identity এখান থেকে control করুন।">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Course title *"><input required className={inputClass} value={form.title} onChange={(event) => update('title', event.target.value)} placeholder="Class 10 Physics Masterclass" /></Field>
