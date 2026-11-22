@@ -126,7 +126,7 @@ export default function AdminDashboardPage() {
                 href="/admin/attendance"
                 className="ga-card group relative flex min-h-[136px] flex-col justify-between overflow-hidden p-4 transition-all duration-300 hover:border-orange-500/60 hover:shadow-lg sm:p-5"
               >
-                <CalendarCheck className="pointer-events-none absolute -bottom-3 -right-3 h-24 w-24 text-slate-100 transition-all duration-300 group-hover:scale-110 group-hover:text-orange-500/10 dark:text-slate-800/40 dark:group-hover:text-orange-500/15" />
+                <CalendarCheck className="pointer-events-none absolute -bottom-3 -right-3 h-24 w-24 text-slate-100 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 group-hover:text-orange-500/10 dark:text-slate-800/40 dark:group-hover:text-orange-500/15" />
                 <div className="relative z-10 mb-3 flex items-center justify-between">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-orange-100 bg-orange-50 text-orange-600 transition-colors group-hover:bg-orange-600 group-hover:text-white dark:border-orange-900/50 dark:bg-orange-950/60 dark:text-orange-400">
                     <CalendarCheck className="h-4 w-4" />
@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
               style={{ display: isFeatureEnabled('admissions', user?.role === 'superadmin') ? undefined : 'none' }}
               className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-orange-500/60 transition-all duration-300 flex flex-col justify-between"
             >
-              <Inbox className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-orange-500/10 dark:group-hover:text-orange-500/15 group-hover:scale-110 transition-all duration-300 pointer-events-none" />
+              <Inbox className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-orange-500/10 dark:group-hover:text-orange-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
               <div className="relative z-10 flex items-center justify-between mb-3">
                 <div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/50 group-hover:bg-orange-600 group-hover:text-white transition-colors"><Inbox className="w-4 h-4" /></div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
