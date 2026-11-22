@@ -8,6 +8,7 @@ import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
 import { GraduationCap, Mail, Lock, AlertCircle, Loader2, UserCheck, Hash, Eye, EyeOff } from 'lucide-react';
 import { SiteLogo } from '@/components/common/SiteLogo';
+import { AuthBrandPanel } from '@/components/auth/AuthBrandPanel';
 
 function LoginForm() {
   const router = useRouter();
@@ -66,26 +67,10 @@ function LoginForm() {
   };
 
   return (
-    <div className="ga-page ga-auth-page relative grid min-h-[calc(100vh-4rem)] w-full overflow-hidden px-4 py-10 lg:grid-cols-[minmax(20rem,0.8fr)_minmax(28rem,1.2fr)] lg:gap-12 lg:px-10">
-      <aside className="relative hidden h-[calc(100vh-8rem)] min-h-[34rem] overflow-hidden rounded-3xl bg-[#111318] p-10 text-white lg:flex lg:flex-col lg:justify-between">
-        <SiteLogo size="xl" showText />
-        <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-400">Grav Academy</p><h2 className="mt-3 max-w-md text-4xl font-black leading-tight">Your Academic Care</h2></div>
-      </aside>
-      {/* Deep space radial ambient lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[220px] bg-orange-600/10 rounded-full blur-[90px] pointer-events-none -z-10 animate-atmosphere" />
-      <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-500/10 rounded-full blur-[80px] pointer-events-none -z-10" />
+    <div className="ga-page ga-auth-page mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(22rem,0.9fr)_minmax(28rem,1.1fr)] lg:px-8 lg:py-10">
+      <AuthBrandPanel mode="login" />
 
-      {/* Twinkling Cosmic Stars */}
-      <div className="hidden">
-        <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-        <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-        <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-        <div className="absolute top-[35%] right-[12%] w-1.5 h-1.5 rounded-full bg-orange-200 animate-star-twinkle-slow" />
-        <span className="shooting-star meteor-1" />
-      </div>
-
-      <div className="relative z-10 min-w-0 w-full max-w-[calc(100vw-2rem)] sm:max-w-md justify-self-center">
+      <div className="min-w-0 w-full max-w-[calc(100vw-2rem)] sm:max-w-md justify-self-center">
         <div className="text-center mb-7">
           <div className="flex justify-center mb-4">
             <SiteLogo size="xl" showText={false} />
