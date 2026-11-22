@@ -385,8 +385,8 @@ export default function UserPermissionsEditPage() {
               ))}
             </div>
 
-            {/* Permissions Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {/* Permission matrix */}
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
               {filteredPermissions.map((perm) => {
                 const isDefaultByRole = roleDefaultPerms.has(perm.key);
                 const isRevoked = revokedPermissions.includes(perm.key);
@@ -397,12 +397,12 @@ export default function UserPermissionsEditPage() {
                   <div
                     key={perm.key}
                     onClick={() => toggleCustomPermission(perm.key)}
-                    className={`p-4 rounded-2xl border transition-all flex items-start justify-between gap-3 ${
+                    className={`flex items-start justify-between gap-3 border-b border-slate-100 p-4 transition-colors last:border-b-0 dark:border-[#262b34] ${
                       isRevoked
-                        ? 'bg-rose-50/70 dark:bg-rose-950/20 border-rose-200/80 dark:border-rose-800/60 cursor-pointer'
+                        ? 'bg-rose-50/70 dark:bg-rose-950/20 cursor-pointer'
                         : isGranted
-                        ? 'bg-orange-50/70 dark:bg-orange-950/25 border-orange-400/60 dark:border-orange-500/40 cursor-pointer shadow-xs'
-                        : 'bg-slate-50/50 dark:bg-[#151921]/40 border-slate-200/80 dark:border-[#262b34] hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer'
+                        ? 'bg-orange-50/70 dark:bg-orange-950/25 cursor-pointer'
+                        : 'hover:bg-slate-50 dark:hover:bg-[#151921] cursor-pointer'
                     }`}
                   >
                     <div className="flex-1">
@@ -445,8 +445,7 @@ export default function UserPermissionsEditPage() {
             </div>
           </div>
 
-          {/* Sticky Footer Bar with Save Button */}
-          <div className="sticky bottom-4 z-40 bg-white/95 dark:bg-[#111318]/95 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-slate-200/90 dark:border-[#262b34] shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 dark:border-[#262b34] sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="text-xs text-slate-500 dark:text-slate-400">
               <span className="font-semibold text-slate-900 dark:text-white">{targetUser.name}</span> এর জন্য পারমিশন সেভ করতে প্রস্তুত।
             </div>

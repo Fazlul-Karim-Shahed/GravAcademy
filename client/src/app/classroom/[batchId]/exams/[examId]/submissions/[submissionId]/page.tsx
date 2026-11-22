@@ -174,21 +174,21 @@ export default function SubmissionEvaluationPage({
 
   return (
     <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 pb-24">
-      <div className="w-[98%] mx-auto mt-4 rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 border border-orange-500/20 shadow-xl shadow-orange-950/20">
+      <header className="border-b border-slate-200 bg-white py-6 dark:border-[#262b34] dark:bg-[#111318]">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <UserAvatar name={submission.gravId.name} avatarUrl={submission.gravId.avatarUrl} size="lg" className="border-2 border-white/30" />
+            <UserAvatar name={submission.gravId.name} avatarUrl={submission.gravId.avatarUrl} size="lg" />
             <div className="min-w-0">
               <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">{submission.gravId.name}</h1>
-              <p className="text-xs text-white/70 mt-1">{exam.title} · জমা: {formatBDTime(submission.submittedAt)}</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{exam.title} · জমা: {formatBDTime(submission.submittedAt)}</p>
             </div>
             <div className="sm:ml-auto text-left sm:text-right">
-              <p className="text-[11px] text-white/65">বর্তমান স্কোর</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">বর্তমান স্কোর</p>
               <p className="text-2xl font-black">{submission.totalScore} <span className="text-sm text-white/60">/ {exam.totalMarks}</span></p>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 grid grid-cols-1 lg:grid-cols-[1.25fr_.75fr] gap-5">
         <section className="space-y-5">

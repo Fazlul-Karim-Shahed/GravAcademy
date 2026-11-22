@@ -96,9 +96,8 @@ export default function EmployeePanelPage() {
         </div>
       )}
 
-      {/* Stat Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card className="border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
+      <div className="ga-data-panel mb-6 grid grid-cols-1 divide-y divide-slate-200 dark:divide-[#262b34] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <Card className="rounded-none border-0 bg-transparent shadow-none">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Pending Enrollments
@@ -109,7 +108,7 @@ export default function EmployeePanelPage() {
           <span className="text-xs text-orange-600 dark:text-orange-400 mt-1 block">পেমেন্ট ভেরিফিকেশন বাকি</span>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
+        <Card className="rounded-none border-0 bg-transparent shadow-none">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               আজকের নতুন ভর্তি
@@ -120,7 +119,7 @@ export default function EmployeePanelPage() {
           <span className="text-xs text-slate-500 mt-1 block">সকল ব্যাচ মিলিয়ে</span>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
+        <Card className="rounded-none border-0 bg-transparent shadow-none">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               আপনার এক্সেস

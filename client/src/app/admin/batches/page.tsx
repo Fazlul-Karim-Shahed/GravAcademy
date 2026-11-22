@@ -338,7 +338,7 @@ function AdminBatchesContent() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+          <div className="space-y-3">
             {filteredBatches.map((batch, idx) => {
               const batchAccents = [
                 'from-orange-600 via-amber-600 to-orange-700',
@@ -352,10 +352,10 @@ function AdminBatchesContent() {
               return (
                 <div
                   key={batch._id}
-                  className="group relative bg-white dark:bg-[#111318] rounded-3xl border border-slate-200/80 dark:border-[#262b34] shadow-xs hover:shadow-2xl hover:-translate-y-1 hover:border-orange-500/30 dark:hover:border-orange-500/30 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                  className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-orange-400 dark:border-[#262b34] dark:bg-[#111318] sm:grid sm:grid-cols-[minmax(0,1fr)_auto]"
                 >
                   {/* Subtle Top Ambient Gradient Line */}
-                  <div className={`h-1.5 w-full bg-gradient-to-r ${accentGradient} opacity-90`} />
+                  <div className={`h-1.5 w-full bg-gradient-to-r ${accentGradient} opacity-90 sm:col-span-2`} />
 
                   <div className="p-6 flex flex-col flex-1">
                     {/* Top Badges Row */}
@@ -421,7 +421,7 @@ function AdminBatchesContent() {
                   </div>
 
                   {/* Card Action Footer */}
-                  <div className="px-6 py-4 bg-slate-50/80 dark:bg-[#151921]/50 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/80 px-6 py-4 dark:border-[#262b34] dark:bg-[#151921]/50 sm:flex-col sm:items-end sm:justify-center sm:border-l sm:border-t-0">
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/classroom/${batch._id}`}

@@ -284,7 +284,8 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <nav className="mb-6 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 bg-white text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-400 sm:grid-cols-6">{['প্রাথমিক','যোগ্যতা','তারিখ','বিবরণ','কাস্টম','প্রকাশনা'].map((label, index) => <span key={label} className={`border-r border-slate-200 px-2 py-3 last:border-r-0 dark:border-[#262b34] ${index === 0 ? 'text-orange-600 dark:text-orange-400' : ''}`}>{label}</span>)}</nav>
+        <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* SECTION 1: PRIMARY INFO */}
         <div className="ga-card p-6 sm:p-8 space-y-6">

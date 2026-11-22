@@ -425,6 +425,17 @@ body.dark {
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.035);
 }
 
+.admin-command-grid a {
+  min-height: 6.5rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.admin-command-grid a > svg.absolute {
+  display: none;
+}
+
 .ga-sticky-action-bar {
   position: static;
   display: flex;

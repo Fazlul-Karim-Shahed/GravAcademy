@@ -227,6 +227,7 @@ export default function EditBatchPage() {
 
         {/* Edit Form */}
         <div className="ga-card p-6 sm:p-8">
+          <nav className="mb-7 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:text-slate-400"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">ব্যাচ তথ্য</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">সময়কাল</span><span className="px-2 py-3">প্রকাশনা</span></nav>
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Batch Name */}

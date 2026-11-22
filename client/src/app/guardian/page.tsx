@@ -99,15 +99,9 @@ export default function GuardianPortalPage() {
     <div className="ga-page ga-dashboard-page text-slate-900 dark:text-slate-100 transition-colors py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Welcome Banner */}
-        <div className="rounded-2xl p-6 mb-6 border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318]">
+        <header className="mb-7 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-orange-600 dark:bg-orange-400" />
-              <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
-                অভিভাবক পোর্টাল
-              </span>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-600 dark:text-orange-400">অভিভাবক পোর্টাল</p>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               সন্তানের একাডেমিক অগ্রগতি
             </h1>
@@ -115,7 +109,8 @@ export default function GuardianPortalPage() {
               আপনার সন্তানের পরীক্ষার ফলাফল, ভর্তিকৃত ব্যাচ এবং পেমেন্ট তথ্য এখান থেকে দেখুন।
             </p>
           </div>
-        </div>
+          {!loading && !error && <div className="grid grid-cols-2 divide-x divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white dark:divide-[#262b34] dark:border-[#262b34] dark:bg-[#111318]"><div className="px-5 py-3"><span className="block text-[11px] text-slate-500">শিক্ষার্থী</span><strong className="text-lg text-slate-900 dark:text-white">{students.length}</strong></div><div className="px-5 py-3"><span className="block text-[11px] text-slate-500">সক্রিয় ব্যাচ</span><strong className="text-lg text-slate-900 dark:text-white">{students.reduce((total, student) => total + student.batches.length, 0)}</strong></div></div>}
+        </header>
 
         {loading && (
           <div className="text-center py-16 text-slate-400 text-sm font-medium">তথ্য লোড হচ্ছে...</div>

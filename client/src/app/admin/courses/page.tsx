@@ -254,7 +254,7 @@ function AdminCoursesContent() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+          <div className="space-y-4">
             {courses.map((course, idx) => {
               const cardThemes = [
                 {
@@ -286,9 +286,9 @@ function AdminCoursesContent() {
                   {/* Subtle Top Accent Ambient Line */}
                   <div className={`h-1 w-full bg-gradient-to-r ${theme.gradient} opacity-90`} />
 
-                  <div className="flex flex-col flex-1">
+                  <div className="grid flex-1 sm:grid-cols-[220px_minmax(0,1fr)]">
                     {/* Thumbnail & Badges Container */}
-                    <div className="relative aspect-[16/7] w-full overflow-hidden bg-slate-900">
+                    <div className="relative min-h-44 w-full overflow-hidden bg-slate-900 sm:min-h-full">
                       {course.thumbnailUrl ? (
                         <>
                           <img

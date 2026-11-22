@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { CheckCircle2, Loader2, MailCheck, XCircle } from 'lucide-react';
-import { SiteLogo } from '@/components/common/SiteLogo';
+import { AuthActionLayout } from '@/components/auth/AuthActionLayout';
 
 function VerifyEmailContent() {
   const params = useSearchParams();
@@ -56,11 +56,8 @@ function VerifyEmailContent() {
   const iconColor = state === 'success' ? 'text-emerald-600' : state === 'error' ? 'text-rose-500' : 'text-orange-600 dark:text-orange-400';
 
   return (
-    <main className="ga-page ga-auth-page flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center px-4 py-12 sm:py-16">
-      <div className="mb-7 flex justify-center">
-        <SiteLogo size="xl" showText={true} textClassName="text-lg" taglineClassName="text-xs" />
-      </div>
-      <section className="ga-card w-full max-w-md p-7 text-center shadow-xl sm:p-10">
+    <AuthActionLayout backHref="/" backLabel="হোম">
+      <section className="text-center">
           <div className={`mx-auto mb-5 flex h-12 w-12 items-center justify-center ${iconColor}`}>
             <Icon className={`h-7 w-7 ${state === 'loading' ? 'animate-spin' : ''}`} />
           </div>
@@ -81,7 +78,7 @@ function VerifyEmailContent() {
           </div>
         )}
       </section>
-    </main>
+    </AuthActionLayout>
   );
 }
 

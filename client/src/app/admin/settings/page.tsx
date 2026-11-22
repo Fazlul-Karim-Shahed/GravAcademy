@@ -303,7 +303,7 @@ export default function AdminSettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Left Sidebar Menu */}
-          <div className="ga-card lg:col-span-3 p-2 space-y-1">
+          <aside className="ga-card space-y-1 p-2 lg:sticky lg:top-24 lg:col-span-3">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -333,7 +333,7 @@ export default function AdminSettingsPage() {
                 </button>
               );
             })}
-          </div>
+          </aside>
 
           {/* Right Content Panel */}
           <div className="lg:col-span-9 min-w-0">

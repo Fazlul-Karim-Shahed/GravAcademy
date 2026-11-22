@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
         </header>
 
         {/* Sleek Boxy Metric Cards with Watermark Background Icons */}
-        <div className="mb-10 grid grid-cols-2 gap-3.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+        <div className="admin-command-grid mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {/* Row 1: 6 Core Modules */}
           <div className="contents">
             {hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE) && (

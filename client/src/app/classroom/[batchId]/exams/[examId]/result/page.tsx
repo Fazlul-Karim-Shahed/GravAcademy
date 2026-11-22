@@ -142,17 +142,16 @@ export default function StudentExamResultPage({
 
   return (
     <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
-      {/* Top Banner */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-[1.75rem] cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+      <header className="mb-8 border-b border-slate-200 bg-white py-6 dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             {exam.title}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1">
+          <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-sm">
             জমা দেওয়া হয়েছে: {formatBDDateTime(attempt.submittedAt)}
           </p>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* SCORE CARD */}

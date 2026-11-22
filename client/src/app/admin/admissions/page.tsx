@@ -636,7 +636,7 @@ export default function AdminAdmissionsPage() {
           
           {/* LEFT: Admission Form (7 cols on lg) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white dark:bg-[#111318] rounded-[28px] border border-slate-200/80 dark:border-[#262b34] p-5 sm:p-8 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#262b34] dark:bg-[#111318] sm:p-8">
               <div className="flex items-center justify-between pb-5 mb-6 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-orange-600 animate-pulse"></span>
@@ -645,6 +645,7 @@ export default function AdminAdmissionsPage() {
                   </h2>
                 </div>
               </div>
+              <nav className="mb-6 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 text-center text-[11px] font-bold text-slate-500 dark:border-[#262b34] dark:text-slate-400"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">শিক্ষার্থী</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">কোর্স ও ব্যাচ</span><span className="px-2 py-3">পেমেন্ট</span></nav>
 
               {errorMsg && (
                 <div className="p-4 mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm flex items-start gap-3">

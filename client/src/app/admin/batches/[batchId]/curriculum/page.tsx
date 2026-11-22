@@ -592,12 +592,12 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
               const moduleLessonCount = (mod.directLessons?.length || 0) + (mod.sections?.reduce((acc, s) => acc + (s.lessons?.length || 0), 0) || 0);
 
               return (
-                <div
+                <article
                   key={mod._id}
-                  className="bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] rounded-2xl shadow-xs hover:border-orange-500/30 dark:hover:border-orange-500/30 transition-all overflow-hidden"
+                  className="overflow-hidden border-y border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318] sm:rounded-xl sm:border"
                 >
                   {/* Module Header Bar */}
-                  <div className="p-5 sm:p-6 bg-slate-50/70 dark:bg-[#151921]/90 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-col justify-between gap-4 border-b border-slate-200 bg-white p-5 dark:border-[#262b34] dark:bg-[#111318] sm:flex-row sm:items-center sm:px-6">
                     <div className="flex items-center gap-3.5">
                       <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-600 to-orange-700 text-white flex items-center justify-center shadow-sm" title="Module">
                         <Layers className="w-4 h-4" />
@@ -718,9 +718,9 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                     {mod.sections && mod.sections.length > 0 && (
                       <div className="space-y-4 pt-1">
                         {mod.sections.map((sec) => (
-                          <div
+                          <section
                             key={sec._id}
-                            className="bg-slate-50/60 dark:bg-[#151921]/50 border border-slate-200 dark:border-[#262b34]/80 rounded-xl p-4 transition-colors"
+                            className="border-t border-slate-200 py-4 first:border-t-0 dark:border-[#262b34]"
                           >
                             {/* Section Header */}
                             <div className="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-slate-200/60 dark:border-[#262b34]/60">
@@ -813,7 +813,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                 No lessons in this section yet. Click &apos;+ Add Lesson&apos; above.
                               </p>
                             )}
-                          </div>
+                          </section>
                         ))}
                       </div>
                     )}
@@ -845,7 +845,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                         </div>
                       )}
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>

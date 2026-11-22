@@ -321,7 +321,7 @@ export default function AdminClassesPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-3">
             {classes.map((cls, idx) => {
               const classCourses = getCoursesForClass(cls.name);
 
@@ -350,10 +350,10 @@ export default function AdminClassesPage() {
               return (
                 <div
                   key={cls._id}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-orange-500/50 dark:border-[#262b34] dark:bg-[#111318] dark:hover:border-orange-500/50"
+                  className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-orange-500/50 dark:border-[#262b34] dark:bg-[#111318] dark:hover:border-orange-500/50 sm:grid sm:grid-cols-[minmax(0,1fr)_auto]"
                 >
                   {/* Top colored gradient stripe */}
-                  <div className={`h-1.5 w-full bg-gradient-to-r ${theme.accentBar}`} />
+                  <div className={`h-1.5 w-full bg-gradient-to-r ${theme.accentBar} sm:col-span-2`} />
 
                   <div className="p-6">
                     {/* Header Row */}
@@ -404,7 +404,7 @@ export default function AdminClassesPage() {
                   </div>
 
                   {/* Card Bottom CTA */}
-                  <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#151921]/50 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between text-xs">
+                  <div className="flex min-w-[210px] flex-col justify-center gap-3 border-t border-slate-100 bg-slate-50/70 px-6 py-4 text-xs dark:border-[#262b34] dark:bg-[#151921]/50 sm:border-l sm:border-t-0">
                     <Link
                       href={`/classes/${cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                       target="_blank"

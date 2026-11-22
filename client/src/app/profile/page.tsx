@@ -70,7 +70,7 @@ export default function ProfileViewPage() {
 
   return (
     <div className="ga-page ga-dashboard-page text-slate-900 dark:text-slate-100 py-10 transition-colors">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         
         {/* Navigation Breadcrumb / Header */}
         <div className="flex items-center justify-between gap-4 mb-6">
@@ -94,11 +94,9 @@ export default function ProfileViewPage() {
         </div>
 
         {/* Hero Profile Card */}
-        <div className="ga-card relative p-6 sm:p-8 overflow-hidden mb-8">
-          {/* Ambient Glow */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/10 dark:bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-6">
+        <section className="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+          <div className="grid lg:grid-cols-[190px_minmax(0,1fr)]">
+            <div className="flex items-center justify-center border-b border-slate-200 bg-slate-50 p-7 dark:border-[#262b34] dark:bg-[#151921] lg:border-b-0 lg:border-r">
             <UserAvatar
               name={user.name}
               avatarUrl={user.avatarUrl}
@@ -106,8 +104,9 @@ export default function ProfileViewPage() {
               size="xl"
               className="w-24 h-24 sm:w-28 sm:h-28 text-2xl border-2 border-white dark:border-[#262b34] shadow-lg"
             />
+            </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 p-6 sm:p-8">
               <div className="flex flex-wrap items-center gap-2 mb-1.5">
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white truncate">
                   {user.name}
@@ -158,7 +157,7 @@ export default function ProfileViewPage() {
               )}
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Printable identity card */}
         <style jsx global>{`@media print { body * { visibility: hidden !important; } #identity-card-sheet, #identity-card-sheet * { visibility: visible !important; } #identity-card-sheet { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; } }`}</style>

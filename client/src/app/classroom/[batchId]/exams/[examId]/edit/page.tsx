@@ -641,6 +641,7 @@ export default function EditExamPage({
           </div>
         )}
 
+        <nav className="grid grid-cols-4 overflow-hidden rounded-xl border border-slate-200 bg-white text-center text-[10px] font-bold text-slate-500 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-400 sm:text-xs"><span className="border-r border-slate-200 px-2 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">তথ্য</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">নিয়ম</span><span className="border-r border-slate-200 px-2 py-3 dark:border-[#262b34]">প্রশ্ন</span><span className="px-2 py-3">প্রকাশনা</span></nav>
         <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
           {/* STEP 1: Basic Information */}
         <div className="ga-card p-4 sm:p-8">

@@ -251,33 +251,23 @@ export default function AssignmentSubmissionsPage({
 
   return (
     <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 pb-20">
-      {/* Shared classroom header */}
-      <div className="relative w-[98%] mx-auto overflow-hidden rounded-2xl cosmic-hero-bg text-white p-5 sm:p-7 mb-8 border border-orange-500/20 shadow-xl shadow-orange-950/20">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] bg-gradient-to-b from-orange-950/40 via-amber-950/20 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[650px] h-[200px] bg-orange-600/15 rounded-full blur-[80px] pointer-events-none animate-atmosphere" />
-        <div className="absolute -top-10 left-1/4 w-[300px] h-[200px] bg-amber-900/15 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-white animate-star-twinkle-slow" />
-          <div className="absolute top-[25%] left-[22%] w-1.5 h-1.5 rounded-full bg-amber-100 animate-star-twinkle-fast" />
-          <div className="absolute top-[18%] right-[14%] w-1 h-1 rounded-full bg-white animate-star-twinkle-medium" />
-          <span className="shooting-star meteor-1" />
-        </div>
-        <div className="max-w-7xl mx-auto relative z-10">
+      <header className="mb-8 border-b border-slate-200 bg-white py-6 dark:border-[#262b34] dark:bg-[#111318]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 pt-1 min-w-0">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-              <FileCheck className="w-6 h-6 sm:w-7 sm:h-7 text-orange-300" />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400">
+              <FileCheck className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                 সাবমিশন রিভিউ
               </h1>
-              <p className="text-xs sm:text-sm text-slate-300 font-semibold mt-1 truncate">
+              <p className="mt-1 truncate text-xs font-semibold text-slate-500 dark:text-slate-400 sm:text-sm">
                 {assignment?.title || 'স্টুডেন্টের কাজ রিভিউ করুন'}
               </p>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {loading ? (

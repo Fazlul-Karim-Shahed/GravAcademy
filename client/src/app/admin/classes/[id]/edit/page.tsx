@@ -248,6 +248,7 @@ export default function EditClassPage() {
         {/* Main Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="ga-card p-6 sm:p-8 space-y-6">
+            <nav className="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 text-center text-xs font-bold dark:border-[#262b34]"><span className="border-r border-slate-200 px-3 py-3 text-orange-600 dark:border-[#262b34] dark:text-orange-400">মৌলিক তথ্য</span><span className="px-3 py-3 text-slate-500 dark:text-slate-400">কারিকুলাম</span></nav>
             
             {/* Section 1: Basic Information */}
             <div>

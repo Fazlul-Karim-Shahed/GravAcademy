@@ -137,11 +137,11 @@ export default function AdminUserProfilePage() {
           <Link href={`/admin/users/${profile._id}/permissions`} className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">Permissions</Link>
         </div>
 
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-[#262b34] dark:bg-[#111318]">
-          <div className="h-2 bg-gradient-to-r from-orange-600 to-orange-700" />
-          <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-8">
+        <section className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318] lg:grid-cols-[220px_1fr]">
+          <div className="flex items-center justify-center border-b border-slate-200 bg-slate-50 p-7 dark:border-[#262b34] dark:bg-[#151921] lg:border-b-0 lg:border-r">
             <UserAvatar name={profile.name} avatarUrl={profile.avatarUrl} role={profile.role} size="xl" />
-            <div className="min-w-0 flex-1">
+          </div>
+          <div className="min-w-0 p-5 sm:p-8">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-2xl font-black tracking-tight sm:text-3xl text-slate-900 dark:text-white">{profile.name}</h1>
                 <span className="rounded-full bg-orange-500/10 px-2.5 py-1 text-[11px] font-bold text-orange-600 dark:text-orange-400 border border-orange-500/20">{roleNames[profile.role] || profile.role}</span>
@@ -152,7 +152,6 @@ export default function AdminUserProfilePage() {
                 {profile.gravId && <span className="rounded-lg border border-orange-500/20 bg-orange-500/10 px-2.5 py-1.5 font-mono font-bold text-orange-600 dark:text-orange-400">Grav ID: {profile.gravId}</span>}
                 <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 font-semibold ${profile.emailVerified ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'}`}><ShieldCheck className="h-3.5 w-3.5" />{verifiedText}</span>
               </div>
-            </div>
           </div>
         </section>
 

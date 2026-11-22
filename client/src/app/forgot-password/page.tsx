@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { api } from '@/lib/api';
-import { Mail, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Mail, Loader2, CheckCircle2 } from 'lucide-react';
+import { AuthActionLayout } from '@/components/auth/AuthActionLayout';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -33,10 +33,8 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="ga-page ga-auth-page px-4 py-12">
-      <div className="mx-auto max-w-md">
-        <Link href="/login" className="mb-6 inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"><ArrowLeft className="h-4 w-4" /> Login</Link>
-        <section className="ga-card p-6 sm:p-8">
+    <AuthActionLayout>
+        <section>
           <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl border border-orange-200/70 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400"><Mail className="h-5 w-5" /></div>
           <h1 className="text-2xl font-black">Password reset</h1>
           <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">আপনার registered Gmail দিন। সেখানে password পরিবর্তনের link পাঠানো হবে।</p>
@@ -47,7 +45,6 @@ export default function ForgotPasswordPage() {
             <button type="submit" disabled={loading} className="ga-primary-button w-full disabled:opacity-60">{loading && <Loader2 className="h-4 w-4 animate-spin" />}Link পাঠান</button>
           </form>
         </section>
-      </div>
-    </main>
+    </AuthActionLayout>
   );
 }
