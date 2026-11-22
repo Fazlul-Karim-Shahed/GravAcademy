@@ -83,7 +83,9 @@ export default function DedicatedClassPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-3xl border-l-4 border-orange-500 pl-5">
               <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-                {className}-এর কোর্সসমূহ
+                <span>
+                  {academicClass?.subtitle || `${className}-এর শিক্ষার্থীদের জন্য পরিকল্পিত পূর্ণাঙ্গ একাডেমিক প্রোগ্রাম`}
+                </span>
               </h1>
             </div>
             <div className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 dark:border-[#262b34] dark:bg-[#151921] dark:text-slate-300">
