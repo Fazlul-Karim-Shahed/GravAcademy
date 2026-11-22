@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { FileUploadField } from '@/components/ui/FileUploadField';
+import { FormSectionNav } from '@/components/ui/FormSectionNav';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import {
   User,
@@ -35,6 +36,8 @@ import {
   RefreshCw,
   Link as LinkIcon,
 } from 'lucide-react';
+
+const profileSections = [{ id: 'photo', label: 'Photo' }, { id: 'basic', label: 'Basic info' }, { id: 'role-info', label: 'Role details' }];
 
 export default function ProfileEditPage() {
   const { user, loading: authLoading, updateUser } = useAuth();
@@ -307,10 +310,7 @@ export default function ProfileEditPage() {
         )}
 
         <form id="profile-edit-form" onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
-          <aside className="hidden lg:sticky lg:top-24 lg:block">
-            <p className="mb-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Profile sections</p>
-            <nav className="space-y-1 border-l border-slate-200 pl-3 dark:border-[#262b34]"><a href="#photo" className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30">Photo</a><a href="#basic" className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30">Basic info</a><a href="#role-info" className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30">Role details</a></nav>
-          </aside>
+          <FormSectionNav heading="Profile sections" items={profileSections} />
           <div className="min-w-0 space-y-6">
           
           {/* Avatar & Photo Section */}

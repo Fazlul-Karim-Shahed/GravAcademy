@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Card, Button, DriveFileUpload } from '@/components/ui';
+import { FormSectionNav } from '@/components/ui/FormSectionNav';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { AVAILABLE_FEATURE_ICONS, parseFeatureItem } from '@/components/course/CourseCardFeatures';
 import {
@@ -94,6 +95,7 @@ const defaultHighlights = [
 ];
 
 const DEFAULT_DEMO_TITLE = 'এখনই ফ্রী ডেমো দেখুন';
+const courseSections = [{ id: 'basic', label: 'Basic' }, { id: 'teachers', label: 'Teachers' }, { id: 'syllabus', label: 'Syllabus' }, { id: 'highlights', label: 'Highlights' }, { id: 'routine', label: 'Routine' }, { id: 'support', label: 'Support' }];
 
 const defaultSyllabus: SyllabusItem[] = [
   {
@@ -336,12 +338,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
       {success && <div className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300"><CheckCircle2 className="h-5 w-5 shrink-0" />{success}</div>}
 
       <form onSubmit={handleSubmit} className="grid items-start gap-7 lg:grid-cols-[14rem_minmax(0,1fr)]">
-        <aside className="hidden lg:sticky lg:top-24 lg:block">
-          <p className="mb-3 text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Course sections</p>
-          <nav className="space-y-1 border-l border-slate-200 pl-3 dark:border-[#262b34]">
-            {[['basic', 'Basic'], ['teachers', 'Teachers'], ['syllabus', 'Syllabus'], ['highlights', 'Highlights'], ['routine', 'Routine'], ['support', 'Support']].map(([id, label]) => <a key={id} href={`#${id}`} className="block rounded-lg px-3 py-2 text-xs font-bold text-slate-600 hover:bg-orange-50 hover:text-orange-700 dark:text-slate-300 dark:hover:bg-orange-950/30 dark:hover:text-orange-300">{label}</a>)}
-          </nav>
-        </aside>
+        <FormSectionNav heading="Course sections" items={courseSections} />
         <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
         <Section id="basic" icon={<ImageIcon className="h-4 w-4" />} title="Basic information" description="Hero section, pricing এবং course identity এখান থেকে control করুন।">
           <div className="grid gap-4 sm:grid-cols-2">
