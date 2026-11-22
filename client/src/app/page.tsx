@@ -41,6 +41,7 @@ import { CourseCard } from '@/components/course/CourseCard';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { HeroCardItem, DEFAULT_HERO_CARDS, getHeroCardStyles, HeroCardIcon } from '@/lib/heroCards';
 import { InstructorCard } from '@/lib/instructorCards';
+import { AchieverStrip, TestimonialSection } from '@/components/home/MarketingShowcase';
 
 // Convert English numbers to Bengali numerals
 function toBengaliNumerals(num: number | string): string {
@@ -1010,6 +1011,10 @@ export default function HomePage() {
 
         </div>
       </section>
+
+      <AchieverStrip />
+
+      <TestimonialSection />
 
       {/* 9. FREQUENTLY ASKED QUESTIONS (FAQ) (Cute Cosmic Glass Aesthetic) */}
       <section className="relative py-20 sm:py-28 overflow-hidden">

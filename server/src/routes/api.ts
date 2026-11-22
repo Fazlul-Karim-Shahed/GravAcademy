@@ -27,6 +27,7 @@ import * as marksheetCtrl from '../controllers/marksheetController';
 import * as teacherAttendanceCtrl from '../controllers/teacherAttendanceController';
 import * as companyExpenseCtrl from '../controllers/companyExpenseController';
 import * as whatsAppCtrl from '../controllers/whatsAppController';
+import * as showcaseCtrl from '../controllers/showcaseController';
 
 const router = Router();
 router.get('/whatsapp/status', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), whatsAppCtrl.getStatus);
@@ -426,6 +427,13 @@ router.post(
   docCtrl.uploadDocument
 );
 router.get('/documents/:fileAssetId/stream', authenticate, docCtrl.streamProtectedDocument);
+
+// --- PUBLIC MARKETING SHOWCASE ---
+router.get('/showcase', showcaseCtrl.getPublicShowcase);
+router.get('/admin/showcase', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), showcaseCtrl.getAdminShowcase);
+router.post('/admin/showcase', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), validateRequest(showcaseCtrl.showcaseItemSchema), showcaseCtrl.createShowcase);
+router.put('/admin/showcase/:id', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), validateRequest(showcaseCtrl.showcaseItemSchema), showcaseCtrl.updateShowcase);
+router.delete('/admin/showcase/:id', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), showcaseCtrl.deleteShowcase);
 
 // --- EXAM ROUTES ---
 router.post(
