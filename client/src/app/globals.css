@@ -432,10 +432,6 @@ body.dark {
   transform: none !important;
 }
 
-.admin-command-grid a > svg.absolute {
-  display: none;
-}
-
 .ga-sticky-action-bar {
   position: static;
   display: flex;
