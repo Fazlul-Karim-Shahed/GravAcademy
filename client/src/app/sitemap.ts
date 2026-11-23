@@ -10,7 +10,7 @@ async function getAllPublishedJobs(): Promise<Job[]> {
   const pageSize = 50;
   const jobs: Job[] = [];
 
-  for (let page = 1; page <= 100; page += 1) {
+  for (let page = 1; ; page += 1) {
     const batch = await publicApi<Job[]>(`/jobs?limit=${pageSize}&page=${page}`);
     if (!batch?.length) break;
     jobs.push(...batch);
