@@ -8,7 +8,7 @@ import { Course } from '../models/Course';
 import { User } from '../models/User';
 import { sendClassroomEventEmail } from './emailService';
 
-const appUrl = (process.env.PUBLIC_APP_URL || 'https://grav-academy.vercel.app').replace(/\/+$/, '');
+const appUrl = (process.env.PUBLIC_APP_URL || 'https://gravacademy.com').replace(/\/+$/, '');
 const formatDate = (date: Date) => new Intl.DateTimeFormat('bn-BD', {
   dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Dhaka',
 }).format(new Date(date));

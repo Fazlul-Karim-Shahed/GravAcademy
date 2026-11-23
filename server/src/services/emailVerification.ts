@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { EmailVerificationToken } from '../models/EmailVerificationToken';
 
 const publicAppUrl = () =>
-  (process.env.PUBLIC_APP_URL || 'https://grav-academy.vercel.app').replace(/\/+$/, '');
+  (process.env.PUBLIC_APP_URL || 'https://gravacademy.com').replace(/\/+$/, '');
 
 export const createEmailVerification = async (target: {
   accountId?: mongoose.Types.ObjectId;

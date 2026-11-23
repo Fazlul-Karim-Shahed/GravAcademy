@@ -43,7 +43,7 @@ export const hasValidMxRecords = async (email: string): Promise<boolean> => {
 };
 
 const getPublicAppUrl = () =>
-  (process.env.PUBLIC_APP_URL || 'https://grav-academy.vercel.app').replace(/\/+$/, '');
+  (process.env.PUBLIC_APP_URL || 'https://gravacademy.com').replace(/\/+$/, '');
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (character) => ({
