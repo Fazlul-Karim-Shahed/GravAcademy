@@ -4,7 +4,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import { useAuth } from '@/context/AuthContext';
 import { Card, Button } from '@/components/ui';
 import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
@@ -48,7 +47,6 @@ export default function UserPermissionsEditPage() {
   const params = useParams();
   const router = useRouter();
   const gravId = params?.id as string;
-  const { user: currentUser } = useAuth();
 
   const [targetUser, setTargetUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -262,9 +260,6 @@ export default function UserPermissionsEditPage() {
                   { role: 'admin', title: 'Admin (অপারেশনাল এডমিন)', desc: 'কোর্স, ব্যাচ ও অ্যাকাডেমিক ম্যানেজমেন্ট' },
                   { role: 'guardian', title: 'Guardian (অভিভাবক)', desc: 'সন্তানের উপস্থিতি ও ফলাফল পর্যবেক্ষণ' },
                   { role: 'employee', title: 'Employee (স্টাফ)', desc: 'সহায়তা কর্মী ও হাজিরা অপারেটর' },
-                  ...(currentUser?.role === 'superadmin'
-                    ? [{ role: 'superadmin', title: 'Superadmin (পূর্ণ ক্ষমতা)', desc: 'প্ল্যাটফর্মের সর্বময় অধিশীর্ষ ক্ষমতা' }]
-                    : []),
                 ].map((item) => {
                   const isSelected = selectedRole === item.role;
                   return (
