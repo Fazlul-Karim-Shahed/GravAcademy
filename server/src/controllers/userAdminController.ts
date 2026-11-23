@@ -69,8 +69,15 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { role, search, page = '1', limit = '10' } = req.query;
     const filter: any = {};
+    const isSuperAdmin = req.user?.role === ROLES.SUPERADMIN;
 
-    if (role && role !== 'all') filter.role = role;
+    if (role && role !== 'all') {
+      // Do not reveal that a superadmin account exists to other roles.
+      if (!isSuperAdmin && role === ROLES.SUPERADMIN) filter._id = { $exists: false };
+      else filter.role = role;
+    } else if (!isSuperAdmin) {
+      filter.role = { $ne: ROLES.SUPERADMIN };
+    }
     if (search) {
       filter.$or = [
         { name: { $regex: search as string, $options: 'i' } },
