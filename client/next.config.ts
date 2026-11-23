@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    agentUpgrade: "security",
+  } as any,
   allowedDevOrigins: [
     '192.168.1.103',
     'localhost:3000',
