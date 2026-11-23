@@ -25,7 +25,6 @@ import {
   DollarSign,
   Inbox,
   CalendarCheck,
-  Trophy,
 } from 'lucide-react';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
@@ -274,15 +273,6 @@ export default function AdminDashboardPage() {
                   জব সার্কুলার
                 </div>
               </div>
-            </Link>
-
-            <Link
-              href="/admin/showcase"
-              className="group relative overflow-hidden rounded-2xl bg-white dark:bg-[#111318] border border-slate-200/90 dark:border-[#262b34] p-4 sm:p-5 shadow-xs hover:shadow-lg hover:border-orange-500/60 transition-all duration-300 flex flex-col justify-between"
-            >
-              <Trophy className="absolute -right-3 -bottom-3 w-24 h-24 text-slate-100 dark:text-slate-800/40 group-hover:text-orange-500/10 dark:group-hover:text-orange-500/15 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none" />
-              <div className="relative z-10 flex items-center justify-between mb-3"><div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/50 group-hover:bg-orange-600 group-hover:text-white transition-colors"><Trophy className="w-4 h-4" /></div><ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" /></div>
-              <div className="relative z-10"><div className="text-base font-extrabold text-slate-900 dark:text-white leading-none mb-1.5">সাফল্য ও রিভিউ</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">Homepage marketing</div></div>
             </Link>
 
           </div>

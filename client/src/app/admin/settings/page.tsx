@@ -654,6 +654,16 @@ export default function AdminSettingsPage() {
             {/* TAB: HOMEPAGE SETTINGS */}
             {activeTab === 'homepage' && (
               <div className="space-y-6">
+                <div className="flex flex-col gap-4 rounded-2xl border border-orange-200 bg-orange-50/70 p-5 dark:border-orange-900/60 dark:bg-orange-950/20 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="text-base font-black text-slate-900 dark:text-white">সাফল্য ও রিভিউ</h3>
+                    <p className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-300">হোমপেজের কৃতি শিক্ষার্থী এবং অভিভাবক/শিক্ষার্থীর মতামত সাজান।</p>
+                  </div>
+                  <Link href="/admin/showcase" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-orange-700">
+                    <MessageCircle className="h-4 w-4" /> পরিচালনা করুন
+                  </Link>
+                </div>
+
                 {/* Header card */}
                 <div className="bg-white dark:bg-[#111318] rounded-2xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-2xs">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
