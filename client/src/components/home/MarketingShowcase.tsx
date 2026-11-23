@@ -48,7 +48,7 @@ export function AchieverStrip() {
         </article>)}
       </div>
     </div>
-    <div className="relative mx-auto mt-10 flex justify-center px-4"><Link href="/achievers" className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-orange-600 dark:bg-white dark:text-slate-950 dark:hover:bg-orange-300">সকল কৃতি শিক্ষার্থী দেখুন <ArrowRight className="h-4 w-4" /></Link></div>
+    <div className="relative mx-auto mt-10 flex justify-center px-4"><Link href="/achievers" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-orange-600/25 transition hover:-translate-y-0.5 hover:from-orange-700 hover:to-orange-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#0f1014]">সকল কৃতি শিক্ষার্থী দেখুন <ArrowRight className="h-4 w-4" /></Link></div>
   </section>;
 }
 
