@@ -30,16 +30,12 @@ const notoSansBengali = Noto_Sans_Bengali({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://gravacademy.com'),
-  title: { default: 'গ্র্যাভ একাডেমি | ক্লাস ৬ – ১২ অনলাইন কোচিং ও একাডেমিক কেয়ার', template: '%s | GRAV ACADEMY' },
+  title: { default: 'গ্র্যাভ একাডেমি | স্কুল থেকে ক্যারিয়ার প্রস্তুতি', template: '%s | GRAV ACADEMY' },
   description: '৬ষ্ঠ থেকে ১২শ শ্রেণির শিক্ষার্থীদের জন্য দেশের অন্যতম আধুনিক অনলাইন একাডেমিক কোচিং প্ল্যাটফর্ম। লাইভ ক্লাস, লেকচার শিট, পরীক্ষা ও সার্বক্ষণিক গাইডলাইন।',
   referrer: 'strict-origin-when-cross-origin',
   alternates: { canonical: '/' },
-  openGraph: { type: 'website', locale: 'bn_BD', url: 'https://gravacademy.com', siteName: 'GRAV ACADEMY', title: 'গ্র্যাভ একাডেমি | ক্লাস ৬ – ১২ অনলাইন কোচিং ও একাডেমিক কেয়ার', description: 'লাইভ ক্লাস, লেকচার শিট, পরীক্ষা ও সার্বক্ষণিক একাডেমিক গাইডলাইন।', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'GRAV ACADEMY' }] },
+  openGraph: { type: 'website', locale: 'bn_BD', url: 'https://gravacademy.com', siteName: 'GRAV ACADEMY', title: 'গ্র্যাভ একাডেমি | স্কুল থেকে ক্যারিয়ার প্রস্তুতি', description: 'লাইভ ক্লাস, লেকচার শিট, পরীক্ষা ও সার্বক্ষণিক একাডেমিক গাইডলাইন।', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'GRAV ACADEMY' }] },
   twitter: { card: 'summary_large_image', title: 'GRAV ACADEMY', description: 'Your Academic Care', images: ['/opengraph-image'] },
-  icons: {
-    icon: 'https://lh3.googleusercontent.com/d/168GpVoyHXNpcY582UI2uGhtQkmau9SgT',
-    apple: 'https://lh3.googleusercontent.com/d/168GpVoyHXNpcY582UI2uGhtQkmau9SgT',
-  },
 };
 
 export default function RootLayout({
