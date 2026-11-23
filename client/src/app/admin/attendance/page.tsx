@@ -155,9 +155,7 @@ export default function AdminTeacherAttendancePage() {
             <p className="mb-1 text-sm font-semibold text-orange-600 dark:text-orange-400">শিক্ষক ব্যবস্থাপনা</p>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">শিক্ষক হাজিরা</h1>
           </div>
-          <button onClick={() => { loadQuick(); loadTeachers(selectedDate); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40">
-            <RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ
-          </button>
+          <div className="flex flex-wrap gap-2"><Link href="/admin/attendance/manual" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white transition hover:bg-orange-700"><CalendarCheck className="h-4 w-4" /> Manual Attendance</Link><button onClick={() => { loadQuick(); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40"><RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ</button></div>
         </header>
 
         {notice && <div role="status" className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">{notice}</div>}
@@ -204,7 +202,7 @@ export default function AdminTeacherAttendancePage() {
           )}
         </section>
 
-        <section aria-labelledby="manual-attendance-title">
+        {false && <section aria-labelledby="manual-attendance-title">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 id="manual-attendance-title" className="flex items-center gap-2 text-lg font-bold sm:text-xl"><CalendarCheck className="h-5 w-5 text-orange-500" /> Manual Attendance</h2>
@@ -251,7 +249,7 @@ export default function AdminTeacherAttendancePage() {
               ))}
             </div>
           )}
-        </section>
+        </section>}
       </div>
     </main>
   );
