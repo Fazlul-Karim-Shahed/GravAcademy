@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
   const now = new Date();
   const staticPages: MetadataRoute.Sitemap = [
-    ['', 1], ['/courses', 0.9], ['/classes', 0.9], ['/free-classes', 0.7], ['/achievers', 0.7], ['/jobs', 0.6], ['/teacher', 0.6],
+    ['', 1], ['/courses', 0.9], ['/classes', 0.9], ['/free-classes', 0.7], ['/achievers', 0.7], ['/testimonials', 0.7], ['/jobs', 0.6], ['/teacher', 0.6],
   ].map(([path, priority]) => ({ url: `${SITE_URL}${path}`, lastModified: now, changeFrequency: 'weekly', priority: Number(priority) }));
   return [
     ...staticPages,
