@@ -3,19 +3,19 @@ import { ImageResponse } from 'next/og';
 const brandLogo = 'https://lh3.googleusercontent.com/d/168GpVoyHXNpcY582UI2uGhtQkmau9SgT';
 
 export const runtime = 'nodejs';
-export const alt = 'GRAV ACADEMY — Your Academic Care';
+export const alt = 'GRAV ACADEMY — School to Career · Learn with Confidence';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 export default function OpenGraphImage() {
   return new ImageResponse(
-    <div style={{ height: '100%', width: '100%', display: 'flex', background: '#fff8f1', color: '#10233f', padding: '72px', position: 'relative' }}>
-      <div style={{ position: 'absolute', width: 620, height: 620, borderRadius: 620, background: '#ff7a16', opacity: 0.12, right: -180, top: -220 }} />
-      <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: 360, background: '#f6bd53', opacity: 0.22, left: -130, bottom: -180 }} />
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}><img src={brandLogo} width="92" height="92" alt="Grav Academy logo" style={{ width: 92, height: 92, borderRadius: 46, objectFit: 'cover' }} /><div style={{ display: 'flex', flexDirection: 'column' }}><div style={{ fontSize: 36, fontWeight: 800, letterSpacing: 1 }}>GRAV ACADEMY</div><div style={{ fontSize: 20, color: '#d65a00', marginTop: 3 }}>YOUR ACADEMIC CARE</div></div></div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}><div style={{ display: 'flex', flexDirection: 'column', fontSize: 64, lineHeight: 1.1, fontWeight: 800, maxWidth: 860 }}><span>Learn with clarity.</span><span>Grow with confidence.</span></div><div style={{ fontSize: 26, color: '#526277', marginTop: 24 }}>Classes 6–12 · Live learning · Exam preparation</div></div>
-        <div style={{ fontSize: 23, color: '#d65a00', fontWeight: 700 }}>gravacademy.com</div>
+    <div style={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fffaf6', color: '#10233f', overflow: 'hidden', position: 'relative' }}>
+      <div style={{ position: 'absolute', width: 1040, height: 1040, borderRadius: 1040, background: '#ff7a16', opacity: 0.1, top: -665, left: 80 }} />
+      <div style={{ position: 'absolute', width: 780, height: 780, borderRadius: 780, background: '#f6bd53', opacity: 0.12, bottom: -590, right: -160 }} />
+      <div style={{ zIndex: 1, display: 'flex', alignItems: 'center', flexDirection: 'column', textAlign: 'center', transform: 'translateY(-4px)' }}>
+        <img src={brandLogo} width="260" height="260" alt="Grav Academy logo" style={{ width: 260, height: 260, borderRadius: 130, objectFit: 'cover' }} />
+        <div style={{ marginTop: 38, fontSize: 54, lineHeight: 1, fontWeight: 600, letterSpacing: 16, color: '#092b59', paddingLeft: 16 }}>GRAV ACADEMY</div>
+        <div style={{ marginTop: 24, fontSize: 28, lineHeight: 1, fontWeight: 400, letterSpacing: 1.1, color: '#f56600' }}>School to Career · Learn with Confidence</div>
       </div>
     </div>,
     size,
