@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Card, Button } from '@/components/ui';
@@ -249,21 +250,7 @@ export default function AdminClassesPage() {
     <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Clean, Sleek, Professional Top Bar */}
-        <header className="mb-8 grid gap-5 border-b border-slate-200/80 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Academic Hierarchy
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Academic Classes
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-2.5 shrink-0">
+        <AdminPageHeader title="Academic Classes" description="Academic class ও বিষয়ভিত্তিক তথ্য পরিচালনা করুন।" actions={<>
             <Link
               href="/admin/courses"
               className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] flex items-center gap-2 transition-colors shadow-2xs"
@@ -278,8 +265,7 @@ export default function AdminClassesPage() {
               <PlusCircle className="w-4 h-4" />
               <span>Add Class</span>
             </Link>
-          </div>
-        </header>
+          </>} />
 
         {/* Message Banner */}
         {message && (

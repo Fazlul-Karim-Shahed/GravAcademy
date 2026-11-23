@@ -26,6 +26,7 @@ import {
   Banknote,
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 
 interface Course {
   _id: string;
@@ -136,15 +137,7 @@ function AdminCoursesContent() {
     <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Top Header */}
-        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              <BookOpen className="w-7 h-7 text-orange-600 dark:text-orange-400" /> Course Management
-            </h1>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+        <AdminPageHeader title="Course Management" description="কোর্স, শিক্ষক, syllabus এবং প্রকাশের অবস্থা পরিচালনা করুন।" actions={<>
             <Link
               href="/admin/classes"
               className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
@@ -157,8 +150,7 @@ function AdminCoursesContent() {
             >
               <PlusCircle className="w-4 h-4" /> Add New Course
             </Link>
-          </div>
-        </header>
+          </>} />
 
         {message && (
           <div

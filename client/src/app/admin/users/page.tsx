@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -246,27 +247,7 @@ export default function AdminUsersPage() {
     <div className="ga-page ga-admin-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Navigation & Header */}
-        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-5 dark:border-[#262b34] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="ga-secondary-button w-10 h-10 p-0 text-slate-500 hover:text-orange-600 dark:hover:text-orange-400"
-              title="ড্যাশবোর্ডে ফিরে যান"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-xl border border-orange-200/70 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">
-                  <Users className="w-6 h-6" />
-                </span>
-                ইউজার ম্যানেজমেন্ট (User Management)
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
+        <AdminPageHeader title="ইউজার ম্যানেজমেন্ট" description="সকল user account, role এবং staff access পরিচালনা করুন।" actions={<>
             <button
               type="button"
               onClick={() => setShowCreateStaffModal(true)}
@@ -282,8 +263,7 @@ export default function AdminUsersPage() {
               <UserPlus className="w-4 h-4" />
               <span>নতুন শিক্ষার্থী ভর্তি</span>
             </Link>
-          </div>
-        </header>
+          </>} />
 
         {/* Role Quick Filters */}
         <div className="ga-operation-toolbar mb-6 overflow-x-auto p-1 no-scrollbar">

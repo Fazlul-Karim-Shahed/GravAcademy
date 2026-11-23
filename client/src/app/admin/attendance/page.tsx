@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { UserAvatar } from '@/components/common/UserAvatar';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import {
   ArrowRight,
   CalendarCheck,
@@ -150,13 +151,7 @@ export default function AdminTeacherAttendancePage() {
   return (
     <main className="ga-page ga-admin-page py-6 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <header className="mb-7 grid gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-          <div>
-            <p className="mb-1 text-sm font-semibold text-orange-600 dark:text-orange-400">শিক্ষক ব্যবস্থাপনা</p>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">শিক্ষক হাজিরা</h1>
-          </div>
-          <div className="flex flex-wrap gap-2"><Link href="/admin/attendance/manual" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white transition hover:bg-orange-700"><CalendarCheck className="h-4 w-4" /> Manual Attendance</Link><button onClick={() => { loadQuick(); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40"><RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ</button></div>
-        </header>
+        <AdminPageHeader title="শিক্ষক হাজিরা" description="চলমান class-এর Quick Attendance নিন এবং পুরোনো হাজিরা দেখতে Manual Attendance ব্যবহার করুন।" actions={<><Link href="/admin/attendance/manual" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white transition hover:bg-orange-700"><CalendarCheck className="h-4 w-4" /> Manual Attendance</Link><button onClick={() => { loadQuick(); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40"><RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ</button></>} />
 
         {notice && <div role="status" className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">{notice}</div>}
         {error && <div role="alert" className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">{error}</div>}

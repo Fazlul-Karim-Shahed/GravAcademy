@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -281,23 +282,7 @@ export default function AdminSettingsPage() {
     <div className="ga-page ga-admin-page ga-form-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Simple Clean Header */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200 dark:border-[#262b34]">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="w-9 h-9 rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 dark:hover:border-orange-500/40 transition-colors"
-              title="ড্যাশবোর্ডে ফিরে যান"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                সেটিংস ও কন্ট্রোল
-              </h1>
-            </div>
-          </div>
-        </div>
+        <AdminPageHeader title="সেটিংস ও কন্ট্রোল" description="Website, homepage, user এবং notification-এর settings পরিচালনা করুন।" />
 
         {/* 2-Column Clean Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useId } from 'react';
 import Link from 'next/link';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { FileUploadField } from '@/components/ui/FileUploadField';
 import { formatBDDate } from '@/lib/dateUtils';
@@ -667,27 +668,7 @@ export default function AdminFinancePage() {
           </div>
         )}
 
-        {/* Navigation & Header */}
-        <header className="mb-8 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 dark:hover:text-orange-400 hover:border-orange-300 transition-colors shadow-2xs"
-              title="ড্যাশবোর্ডে ফিরে যান"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25">
-                  <DollarSign className="w-6 h-6" />
-                </span>
-                ফাইন্যান্স ম্যানেজমেন্ট (Finance Management)
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
+        <AdminPageHeader title="ফাইন্যান্স ম্যানেজমেন্ট" description="Payment, income, expense এবং financial report পরিচালনা করুন।" actions={<>
             {can('finance.view') && (
               <Link
                 href="/admin/finance/company-expenses"
@@ -704,8 +685,7 @@ export default function AdminFinancePage() {
               <PlusCircle className="w-4 h-4" />
               নতুন পেমেন্ট / বকেয়া গ্রহণ
             </Link>
-          </div>
-        </header>
+          </>} />
 
         {/* 4 Financial Stat Cards (Clickable Filters) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { formatBDDateTime } from '@/lib/dateUtils';
@@ -90,32 +91,13 @@ export default function AuditLogsPage() {
   return (
     <div className="ga-page ga-admin-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="mb-8 grid gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="w-10 h-10 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] flex items-center justify-center text-slate-500 hover:text-orange-600 transition-colors shadow-2xs"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                <span className="p-2.5 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/20">
-                  <ShieldCheck className="w-6 h-6" />
-                </span>
-                অডিট লগ (Audit Log)
-              </h1>
-              <p className="text-xs text-slate-500 mt-1">সর্বশেষ ১০০টি সেনসিটিভ অ্যাকশনের রেকর্ড</p>
-            </div>
-          </div>
-          <button
+        <AdminPageHeader title="অডিট লগ" description="সর্বশেষ ১০০টি গুরুত্বপূর্ণ action ও security record দেখুন।" actions={<button
             type="button"
             onClick={loadLogs}
             className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1c222c] border border-transparent dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" /> রিফ্রেশ
-          </button>
-        </header>
+          </button>} />
 
         <div className="ga-data-panel">
           <div className="ga-operation-toolbar rounded-none border-x-0 border-t-0 p-4 sm:p-5">
