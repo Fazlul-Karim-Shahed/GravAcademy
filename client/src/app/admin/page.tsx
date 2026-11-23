@@ -89,7 +89,7 @@ export default function AdminDashboardPage() {
         <header className="mb-8 grid gap-5 border-b border-slate-200/80 pb-6 dark:border-[#262b34] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Admin Dashboard
+              {user?.role === 'superadmin' ? 'Super Admin Dashboard' : 'Admin Dashboard'}
             </h1>
           </div>
 

@@ -391,7 +391,9 @@ export const Navbar: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
-                            {user.role === 'admin' || user.role === 'superadmin'
+                            {user.role === 'superadmin'
+                              ? 'সুপার এডমিন'
+                              : user.role === 'admin'
                               ? 'এডমিন'
                               : user.role === 'teacher'
                               ? 'শিক্ষক'
