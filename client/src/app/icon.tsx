@@ -7,7 +7,7 @@ export const contentType = 'image/png';
 
 export default function Icon() {
   return new ImageResponse(
-    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff' }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent' }}>
       <img src={brandLogo} width="512" height="512" alt="Grav Academy" style={{ width: 512, height: 512, objectFit: 'cover' }} />
     </div>,
     size,
