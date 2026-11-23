@@ -46,6 +46,16 @@ function DashboardStatValue({ loading, children }: { loading: boolean; children:
   );
 }
 
+function DashboardCardLoadingOverlay({ loading }: { loading: boolean }) {
+  if (!loading) return null;
+  return (
+    <span aria-label="তথ্য লোড হচ্ছে" className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-2xl bg-white/55 backdrop-blur-[1.5px] dark:bg-slate-950/45">
+      <span className="animate-card-sheen absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/90 to-transparent dark:via-slate-300/30" />
+      <span className="absolute inset-x-4 bottom-4 h-2 rounded-full bg-slate-200/90 dark:bg-slate-700/70" />
+    </span>
+  );
+}
+
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const { isFeatureEnabled } = useSiteSettings();
@@ -158,6 +168,7 @@ export default function AdminDashboardPage() {
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
               </div>
               <div className="relative z-10"><div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-none mb-1.5"><DashboardStatValue loading={loadingStats.pendingRequestsCount}>{stats.pendingRequestsCount}</DashboardStatValue></div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">ভর্তি Requests</div></div>
+              <DashboardCardLoadingOverlay loading={loadingStats.pendingRequestsCount} />
             </Link>
             
             {/* Card 0: এডমিশন */}
@@ -183,6 +194,7 @@ export default function AdminDashboardPage() {
                   এডমিশন
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.admissionsCount} />
             </Link>
             
             {/* Card 1: কোর্স ম্যানেজমেন্ট */}
@@ -207,6 +219,7 @@ export default function AdminDashboardPage() {
                   কোর্স ম্যানেজমেন্ট
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.coursesCount} />
             </Link>
 
             {/* Card 2: ব্যাচ ম্যানেজমেন্ট */}
@@ -231,6 +244,7 @@ export default function AdminDashboardPage() {
                   ব্যাচ ম্যানেজমেন্ট
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.batchesCount} />
             </Link>
 
             {/* Card 3: ফ্রি ক্লাস ও সেমিনার */}
@@ -256,6 +270,7 @@ export default function AdminDashboardPage() {
                   ফ্রি ক্লাস ও সেমিনার
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.liveClassesCount} />
             </Link>
 
             {/* Card 4: জব সার্কুলার */}
@@ -281,6 +296,7 @@ export default function AdminDashboardPage() {
                   জব সার্কুলার
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.jobsCount} />
             </Link>
 
           </div>
@@ -324,6 +340,7 @@ export default function AdminDashboardPage() {
                   ইউজার ম্যানেজমেন্ট
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.usersCount} />
             </Link>
 
             {/* Card 7: ফাইন্যান্স ম্যানেজমেন্ট (Finance Management) */}
@@ -349,6 +366,7 @@ export default function AdminDashboardPage() {
                   ফাইন্যান্স ম্যানেজমেন্ট
                 </div>
               </div>
+              <DashboardCardLoadingOverlay loading={loadingStats.financeTotal} />
             </Link>
 
             {/* Card 8: Audit Log — superadmin only, same as the backend route */}
