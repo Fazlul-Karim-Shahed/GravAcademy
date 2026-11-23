@@ -30,6 +30,7 @@ import { SiteLogo } from '@/components/common/SiteLogo';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { DriveFileUpload, DriveFileUploadHandle } from '@/components/ui/DriveFileUpload';
 import { formatDriveImageUrl } from '@/lib/drive';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { CheckCircle2, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 import {
   HeroCardItem,
@@ -65,6 +66,7 @@ const formatFileSize = (bytes: number) => {
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
+  const canManageDriveCleanup = hasPermission(user, PERMISSIONS.SETTINGS_MANAGE);
   const { settings, updateSettings, loading: loadingSettings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<TabType>('users');
   const [whatsAppStatus, setWhatsAppStatus] = useState<WhatsAppStatus | null>(null);
@@ -333,7 +335,8 @@ export default function AdminSettingsPage() {
   const tabs = [
     { id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length },
     { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home },
-    ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }, { id: 'drive' as TabType, label: 'Drive Cleanup', icon: HardDrive }] : []),
+    ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }] : []),
+    ...(canManageDriveCleanup ? [{ id: 'drive' as TabType, label: 'Drive Cleanup', icon: HardDrive }] : []),
     { id: 'notifications' as TabType, label: 'নোটিফিকেশন', icon: Bell },
   ];
 
@@ -1016,7 +1019,7 @@ export default function AdminSettingsPage() {
             )}
 
             {/* TAB: GENERAL SETTINGS */}
-            {activeTab === 'drive' && user?.role === 'superadmin' && (
+            {activeTab === 'drive' && canManageDriveCleanup && (
               <div className="space-y-5">
                 <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

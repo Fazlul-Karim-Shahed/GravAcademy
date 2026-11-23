@@ -672,8 +672,8 @@ router.delete(
 
 // --- SYSTEM & SITE SETTINGS ROUTES ---
 router.get('/settings', settingCtrl.getSiteSettings);
-router.get('/admin/drive-cleanup', authenticate, requireRole(ROLES.SUPERADMIN), driveCleanupCtrl.scanDriveCleanup);
-router.post('/admin/drive-cleanup/trash', authenticate, requireRole(ROLES.SUPERADMIN), driveCleanupCtrl.trashUnusedDriveFiles);
+router.get('/admin/drive-cleanup', authenticate, requirePermission(PERMISSIONS.SETTINGS_MANAGE), driveCleanupCtrl.scanDriveCleanup);
+router.post('/admin/drive-cleanup/trash', authenticate, requirePermission(PERMISSIONS.SETTINGS_MANAGE), driveCleanupCtrl.trashUnusedDriveFiles);
 router.put(
   '/admin/settings',
   authenticate,
