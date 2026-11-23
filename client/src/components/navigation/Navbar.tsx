@@ -173,7 +173,7 @@ export const Navbar: React.FC = () => {
         }`}
       >
         {/* Logo / Brand */}
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="https://gravacademy.com/" className="flex items-center gap-2.5">
           <SiteLogo size="md" showText={false} />
           <div>
             <span className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base tracking-tight block leading-tight">
