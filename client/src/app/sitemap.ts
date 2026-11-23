@@ -6,11 +6,25 @@ type AcademicClass = { slug?: string; name?: string; updatedAt?: string };
 type Job = { slug: string; updatedAt?: string };
 const slugify = (value = '') => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
+async function getAllPublishedJobs(): Promise<Job[]> {
+  const pageSize = 50;
+  const jobs: Job[] = [];
+
+  for (let page = 1; page <= 100; page += 1) {
+    const batch = await publicApi<Job[]>(`/jobs?limit=${pageSize}&page=${page}`);
+    if (!batch?.length) break;
+    jobs.push(...batch);
+    if (batch.length < pageSize) break;
+  }
+
+  return jobs;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [courses, classes, jobs] = await Promise.all([
     publicApi<Course[]>('/courses?isPublished=true'),
     publicApi<AcademicClass[]>('/classes'),
-    publicApi<Job[]>('/jobs?limit=50'),
+    getAllPublishedJobs(),
   ]);
   const now = new Date();
   const staticPages: MetadataRoute.Sitemap = [
