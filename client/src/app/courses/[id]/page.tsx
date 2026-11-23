@@ -8,6 +8,7 @@ import { formatDriveImageUrl } from '@/lib/drive';
 import { parseFeatureItem } from '@/components/course/CourseCardFeatures';
 import { useAuth } from '@/context/AuthContext';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
+import { useInitialPublicCourse } from '@/components/course/PublicCourseDataProvider';
 import {
   ArrowRight,
   Atom,
@@ -159,11 +160,12 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const { user } = useAuth();
   const { isFeatureEnabled } = useSiteSettings();
-  const [course, setCourse] = useState<CourseDetail | null>(null);
+  const initialCourse = useInitialPublicCourse<CourseDetail>();
+  const [course, setCourse] = useState<CourseDetail | null>(initialCourse);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [enrolledBatchIds, setEnrolledBatchIds] = useState<string[]>([]);
   const [pendingRequestBatchIds, setPendingRequestBatchIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialCourse);
   const [showBatchPicker, setShowBatchPicker] = useState(false);
   const [expandedSyllabus, setExpandedSyllabus] = useState<number | null>(null);
   const [showAllTeachers, setShowAllTeachers] = useState(false);
@@ -172,7 +174,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     const load = async () => {
-      setLoading(true);
+      if (!initialCourse) setLoading(true);
       try {
         const courseRes = await api.get(`/courses/${resolvedParams.id}`);
         const loaded = courseRes.data?.data;

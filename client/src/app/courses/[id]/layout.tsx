@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { cleanText, pageMetadata, publicApi, SITE_URL } from '@/lib/seo';
+import { PublicCourseDataProvider } from '@/components/course/PublicCourseDataProvider';
 
 type SyllabusItem = { title?: string; details?: string; contentLines?: string[]; demoTitle?: string; demoUrl?: string };
 type Teacher = { name?: string; teacherDetails?: { institution?: string; department?: string; experience?: string; specialistSubjects?: string[]; badge?: string } };
@@ -40,7 +41,7 @@ export default async function CourseLayout({ children, params }: { children: Rea
   };
 
   return <>
-    {children}
+    <PublicCourseDataProvider course={course}>{children}</PublicCourseDataProvider>
     <Script id="course-structured-data" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }} />
     <article className="sr-only" aria-label={`${course.title} কোর্সের সম্পূর্ণ তথ্য`}>
       <header>
