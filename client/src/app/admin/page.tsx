@@ -30,6 +30,22 @@ import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 
+type StatKey = 'coursesCount' | 'batchesCount' | 'usersCount' | 'liveClassesCount' | 'admissionsCount' | 'jobsCount' | 'financeTotal' | 'pendingRequestsCount';
+
+const INITIAL_STAT_LOADING: Record<StatKey, boolean> = {
+  coursesCount: true, batchesCount: true, usersCount: true, liveClassesCount: true,
+  admissionsCount: true, jobsCount: true, financeTotal: true, pendingRequestsCount: true,
+};
+
+function DashboardStatValue({ loading, children }: { loading: boolean; children: React.ReactNode }) {
+  if (!loading) return <>{children}</>;
+  return (
+    <span aria-label="লোড হচ্ছে" className="relative inline-block h-7 min-w-16 overflow-hidden rounded-lg bg-slate-200/90 align-middle shadow-inner dark:bg-slate-700/70 sm:h-8">
+      <span className="animate-card-sheen absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-white/80 to-transparent opacity-90 dark:via-slate-300/30" />
+    </span>
+  );
+}
+
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const { isFeatureEnabled } = useSiteSettings();
@@ -43,41 +59,33 @@ export default function AdminDashboardPage() {
     financeTotal: 0,
     pendingRequestsCount: 0,
   });
-  const [loading, setLoading] = useState(true);
+  const [loadingStats, setLoadingStats] = useState<Record<StatKey, boolean>>(INITIAL_STAT_LOADING);
 
   useEffect(() => {
     loadOverview();
   }, []);
 
   const loadOverview = async () => {
-    setLoading(true);
-    try {
-      const [coursesRes, batchesRes, usersRes, liveRes, enrollRes, jobsRes, financeRes, requestRes] = await Promise.all([
-        api.get('/courses'),
-        api.get('/batches'),
-        api.get('/users').catch(() => ({ data: { count: 1 } })),
-        api.get('/live-classes').catch(() => ({ data: { count: 0 } })),
-        api.get('/enrollments/admin-list?limit=1').catch(() => ({ data: { total: 0 } })),
-        api.get('/admin/jobs?limit=1').catch(() => ({ data: { total: 0 } })),
-        api.get('/finance/admin-payments?limit=1').catch(() => ({ data: { summary: { totalRevenue: 0 } } })),
-        api.get('/enrollment-requests/admin?status=pending').catch(() => ({ data: { count: 0 } })),
-      ]);
-
-      setStats({
-        coursesCount: coursesRes.data.count || coursesRes.data.data?.length || 0,
-        batchesCount: batchesRes.data.count || batchesRes.data.data?.length || 0,
-        usersCount: usersRes.data.count || usersRes.data.data?.length || 1,
-        liveClassesCount: liveRes.data.count || liveRes.data.data?.length || 0,
-        admissionsCount: enrollRes.data.total || 0,
-        jobsCount: jobsRes.data.total || 0,
-        financeTotal: financeRes.data.summary?.totalRevenue || 0,
-        pendingRequestsCount: requestRes.data.count || requestRes.data.data?.length || 0,
+    setLoadingStats(INITIAL_STAT_LOADING);
+    const loadStat = (key: StatKey, request: Promise<any>, value: (response: any) => number) => {
+      void request.then((response) => {
+        setStats((previous) => ({ ...previous, [key]: value(response) }));
+      }).catch((error) => {
+        console.error(`Failed to load dashboard ${key}`, error);
+        setStats((previous) => ({ ...previous, [key]: 0 }));
+      }).finally(() => {
+        setLoadingStats((previous) => ({ ...previous, [key]: false }));
       });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    loadStat('coursesCount', api.get('/courses'), (r) => r.data.count || r.data.data?.length || 0);
+    loadStat('batchesCount', api.get('/batches'), (r) => r.data.count || r.data.data?.length || 0);
+    loadStat('usersCount', api.get('/users'), (r) => r.data.count || r.data.data?.length || 0);
+    loadStat('liveClassesCount', api.get('/live-classes'), (r) => r.data.count || r.data.data?.length || 0);
+    loadStat('admissionsCount', api.get('/enrollments/admin-list?limit=1'), (r) => r.data.total || 0);
+    loadStat('jobsCount', api.get('/admin/jobs?limit=1'), (r) => r.data.total || 0);
+    loadStat('financeTotal', api.get('/finance/admin-payments?limit=1'), (r) => r.data.summary?.totalRevenue || 0);
+    loadStat('pendingRequestsCount', api.get('/enrollment-requests/admin?status=pending'), (r) => r.data.count || r.data.data?.length || 0);
   };
 
   return (
@@ -149,7 +157,7 @@ export default function AdminDashboardPage() {
                 <div className="w-9 h-9 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center border border-orange-100 dark:border-orange-900/50 group-hover:bg-orange-600 group-hover:text-white transition-colors"><Inbox className="w-4 h-4" /></div>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <div className="relative z-10"><div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-none mb-1.5">{stats.pendingRequestsCount}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">ভর্তি Requests</div></div>
+              <div className="relative z-10"><div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-none mb-1.5"><DashboardStatValue loading={loadingStats.pendingRequestsCount}>{stats.pendingRequestsCount}</DashboardStatValue></div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">ভর্তি Requests</div></div>
             </Link>
             
             {/* Card 0: এডমিশন */}
@@ -169,7 +177,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.admissionsCount}
+                  <DashboardStatValue loading={loadingStats.admissionsCount}>{stats.admissionsCount}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   এডমিশন
@@ -193,7 +201,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.coursesCount}
+                  <DashboardStatValue loading={loadingStats.coursesCount}>{stats.coursesCount}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   কোর্স ম্যানেজমেন্ট
@@ -217,7 +225,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.batchesCount}
+                  <DashboardStatValue loading={loadingStats.batchesCount}>{stats.batchesCount}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   ব্যাচ ম্যানেজমেন্ট
@@ -242,7 +250,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.liveClassesCount}
+                  <DashboardStatValue loading={loadingStats.liveClassesCount}>{stats.liveClassesCount}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   ফ্রি ক্লাস ও সেমিনার
@@ -267,7 +275,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.jobsCount}
+                  <DashboardStatValue loading={loadingStats.jobsCount}>{stats.jobsCount}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   জব সার্কুলার
@@ -310,7 +318,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  {stats.usersCount}
+                  <DashboardStatValue loading={loadingStats.usersCount}>{stats.usersCount}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   ইউজার ম্যানেজমেন্ট
@@ -335,7 +343,7 @@ export default function AdminDashboardPage() {
 
               <div className="relative z-10">
                 <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-1.5">
-                  ৳{stats.financeTotal.toLocaleString('bn-BD')}
+                  <DashboardStatValue loading={loadingStats.financeTotal}>৳{stats.financeTotal.toLocaleString('bn-BD')}</DashboardStatValue>
                 </div>
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">
                   ফাইন্যান্স ম্যানেজমেন্ট
