@@ -140,16 +140,30 @@ export const getBatchHierarchy = async (req: Request, res: Response) => {
     }
 
     // Keep public curriculum previews available, but enforce expiry for logged-in students.
-    const student = (req as AuthenticatedRequest).user;
-    if (student?.role === 'student') {
+    const currentUser = (req as AuthenticatedRequest).user;
+    if (currentUser?.role === 'student') {
       const enrollment = await Enrollment.findOne({
-        gravId: student.gravId,
+        gravId: currentUser.gravId,
         batchId,
         status: { $in: ['enrolled', 'completed'] },
       });
       const courseAccess = batch.courseId as any;
       if (!enrollment || !courseAccess || !hasActiveStudentBatchAccess(batch, enrollment, courseAccess)) {
         return res.status(403).json({ success: false, message: 'এই batch-এর access period শেষ হয়েছে।' });
+      }
+    }
+
+    // Let the server make the edit decision so the client never has to guess
+    // whether assignedTeachers is populated IDs or plain ObjectIds.
+    let canManageCurriculum = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+    if (!canManageCurriculum && currentUser?.role === 'teacher') {
+      const assignedTeachers = batch.assignedTeachers || [];
+      if (assignedTeachers.length) {
+        canManageCurriculum = assignedTeachers.some((teacherId) => teacherId.toString() === currentUser._id.toString());
+      } else {
+        const courseId = (batch.courseId as any)?._id || batch.courseId;
+        const course = await Course.findById(courseId).select('instructors').lean();
+        canManageCurriculum = (course?.instructors || []).some((teacherId) => teacherId.toString() === currentUser._id.toString());
       }
     }
 
@@ -185,6 +199,7 @@ export const getBatchHierarchy = async (req: Request, res: Response) => {
       data: {
         batch,
         modules: structuredModules,
+        canManageCurriculum,
       },
     });
   } catch (error) {

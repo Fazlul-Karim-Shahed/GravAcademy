@@ -85,6 +85,7 @@ interface BatchHierarchyData {
     };
   };
   modules: Module[];
+  canManageCurriculum?: boolean;
 }
 
 export const dynamic = 'force-dynamic';
@@ -184,9 +185,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
   }
 
   const courseLink = `/courses/${data.batch.courseId?.slug || data.batch.courseId?._id}`;
-  const canEditCurriculum =
-    user?.role === 'teacher' &&
-    (data.batch.assignedTeachers || []).some((teacherId) => teacherId.toString() === user.id);
+  const canEditCurriculum = data.canManageCurriculum === true;
 
   return (
     <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 transition-colors">
