@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
@@ -20,6 +20,10 @@ import {
   ExternalLink,
   Sparkles,
   RefreshCw,
+  HardDrive,
+  FileCheck2,
+  FileX2,
+  Trash2,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
@@ -48,8 +52,16 @@ interface UserRecord {
   avatarUrl?: string;
 }
 
-type TabType = 'users' | 'homepage' | 'general' | 'notifications';
+type TabType = 'users' | 'homepage' | 'general' | 'notifications' | 'drive';
 type WhatsAppStatus = { state: 'starting' | 'qr' | 'ready' | 'disconnected' | 'error'; qrImage: string | null; lastError: string | null };
+type DriveCleanupFile = { id: string; name: string; mimeType: string; sizeBytes: number; createdTime: string | null; modifiedTime: string | null; webViewLink: string };
+
+const formatFileSize = (bytes: number) => {
+  if (!bytes) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / 1024 ** index).toFixed(index ? 1 : 0)} ${units[index]}`;
+};
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
@@ -62,6 +74,53 @@ export default function AdminSettingsPage() {
   const [whatsAppFeedback, setWhatsAppFeedback] = useState('');
   const [disconnectingWhatsApp, setDisconnectingWhatsApp] = useState(false);
   const [checkingWhatsApp, setCheckingWhatsApp] = useState(false);
+  const [driveFiles, setDriveFiles] = useState<DriveCleanupFile[]>([]);
+  const [referencedDriveIds, setReferencedDriveIds] = useState<string[]>([]);
+  const [loadingDriveCleanup, setLoadingDriveCleanup] = useState(false);
+  const [driveCleanupError, setDriveCleanupError] = useState('');
+  const [driveCleanupFeedback, setDriveCleanupFeedback] = useState('');
+  const [driveCleanupLoaded, setDriveCleanupLoaded] = useState(false);
+  const [driveCleanupView, setDriveCleanupView] = useState<'unused' | 'used'>('unused');
+  const [selectedDriveFileIds, setSelectedDriveFileIds] = useState<string[]>([]);
+  const [trashingDriveFiles, setTrashingDriveFiles] = useState(false);
+
+  const scanDriveCleanup = async () => {
+    setLoadingDriveCleanup(true);
+    setDriveCleanupError('');
+    setDriveCleanupFeedback('');
+    try {
+      const response = await api.get('/admin/drive-cleanup');
+      if (!response.data?.success) throw new Error(response.data?.message || 'Drive scan করা যায়নি।');
+      setDriveFiles(response.data.data?.files || []);
+      setReferencedDriveIds(response.data.data?.referencedIds || []);
+      setSelectedDriveFileIds([]);
+      setDriveCleanupLoaded(true);
+    } catch (error: any) {
+      setDriveCleanupError(error.response?.data?.message || error.message || 'Drive scan করা যায়নি।');
+    } finally {
+      setLoadingDriveCleanup(false);
+    }
+  };
+
+  const trashSelectedDriveFiles = async () => {
+    if (!selectedDriveFileIds.length) return;
+    if (!window.confirm(`${selectedDriveFileIds.length}টি unused file Google Drive Trash-এ পাঠাবেন? এগুলো 30 দিন পর্যন্ত Drive Trash থেকে ফিরিয়ে আনা যাবে।`)) return;
+    setTrashingDriveFiles(true);
+    setDriveCleanupError('');
+    setDriveCleanupFeedback('');
+    try {
+      const response = await api.post('/admin/drive-cleanup/trash', { fileIds: selectedDriveFileIds });
+      if (!response.data?.success) throw new Error(response.data?.message || 'File Trash করা যায়নি।');
+      const trashedIds = new Set<string>(response.data.data?.trashedIds || []);
+      setDriveFiles((previous) => previous.filter((file) => !trashedIds.has(file.id)));
+      setSelectedDriveFileIds([]);
+      setDriveCleanupFeedback(response.data.message || 'নির্বাচিত file Drive Trash-এ পাঠানো হয়েছে।');
+    } catch (error: any) {
+      setDriveCleanupError(error.response?.data?.message || error.message || 'File Trash করা যায়নি।');
+    } finally {
+      setTrashingDriveFiles(false);
+    }
+  };
 
   const checkWhatsAppStatus = async () => {
     setCheckingWhatsApp(true);
@@ -274,9 +333,18 @@ export default function AdminSettingsPage() {
   const tabs = [
     { id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length },
     { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home },
-    ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }] : []),
+    ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }, { id: 'drive' as TabType, label: 'Drive Cleanup', icon: HardDrive }] : []),
     { id: 'notifications' as TabType, label: 'নোটিফিকেশন', icon: Bell },
   ];
+
+  const { usedDriveFiles, unusedDriveFiles } = useMemo(() => {
+    const referenced = new Set(referencedDriveIds);
+    return {
+      usedDriveFiles: driveFiles.filter((file) => referenced.has(file.id)),
+      unusedDriveFiles: driveFiles.filter((file) => !referenced.has(file.id)),
+    };
+  }, [driveFiles, referencedDriveIds]);
+  const visibleDriveFiles = driveCleanupView === 'unused' ? unusedDriveFiles : usedDriveFiles;
 
   return (
     <div className="ga-page ga-admin-page ga-form-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
@@ -948,6 +1016,54 @@ export default function AdminSettingsPage() {
             )}
 
             {/* TAB: GENERAL SETTINGS */}
+            {activeTab === 'drive' && user?.role === 'superadmin' && (
+              <div className="space-y-5">
+                <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs dark:border-[#262b34] dark:bg-[#111318] sm:p-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex gap-3">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-950/40 dark:text-orange-300"><HardDrive className="h-5 w-5" /></div>
+                      <div>
+                        <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Google Drive Cleanup</h2>
+                        <p className="mt-1 max-w-2xl text-xs leading-relaxed text-slate-500 dark:text-slate-400">শুধু আপনার configured Grav Academy upload folder scan হবে। Browser used ও unused file compare করে দেখাবে; কোনো file স্বয়ংক্রিয়ভাবে delete হবে না।</p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={scanDriveCleanup} disabled={loadingDriveCleanup || trashingDriveFiles} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-orange-950/20 transition hover:from-orange-700 hover:to-orange-800 disabled:cursor-not-allowed disabled:opacity-60">
+                      <RefreshCw className={`h-3.5 w-3.5 ${loadingDriveCleanup ? 'animate-spin' : ''}`} /> {loadingDriveCleanup ? 'Scan হচ্ছে...' : driveCleanupLoaded ? 'আবার Scan করুন' : 'Drive Scan করুন'}
+                    </button>
+                  </div>
+                  {driveCleanupError && <p role="alert" className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-3 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">{driveCleanupError}</p>}
+                  {driveCleanupFeedback && <p role="status" className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">{driveCleanupFeedback}</p>}
+                </div>
+
+                {driveCleanupLoaded && <div className="space-y-5">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-[#262b34] dark:bg-[#111318]"><p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Folder files</p><p className="mt-1 text-2xl font-black text-slate-900 dark:text-white">{driveFiles.length}</p></div>
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-900/70 dark:bg-emerald-950/20"><p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300"><FileCheck2 className="h-3.5 w-3.5" /> In use</p><p className="mt-1 text-2xl font-black text-emerald-800 dark:text-emerald-200">{usedDriveFiles.length}</p></div>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 dark:border-amber-900/70 dark:bg-amber-950/20"><p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300"><FileX2 className="h-3.5 w-3.5" /> Not in database</p><p className="mt-1 text-2xl font-black text-amber-800 dark:text-amber-200">{unusedDriveFiles.length}</p><p className="mt-0.5 text-[11px] font-semibold text-amber-700/80 dark:text-amber-300/80">{formatFileSize(unusedDriveFiles.reduce((total, file) => total + file.sizeBytes, 0))} recoverable</p></div>
+                  </div>
+
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+                    <div className="flex flex-col gap-3 border-b border-slate-100 p-4 dark:border-[#262b34] sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex gap-2"><button type="button" onClick={() => { setDriveCleanupView('unused'); setSelectedDriveFileIds([]); }} className={`rounded-lg px-3 py-2 text-xs font-bold transition ${driveCleanupView === 'unused' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200' : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#151921]'}`}>Unused ({unusedDriveFiles.length})</button><button type="button" onClick={() => { setDriveCleanupView('used'); setSelectedDriveFileIds([]); }} className={`rounded-lg px-3 py-2 text-xs font-bold transition ${driveCleanupView === 'used' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200' : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#151921]'}`}>In use ({usedDriveFiles.length})</button></div>
+                      {driveCleanupView === 'unused' && <button type="button" onClick={trashSelectedDriveFiles} disabled={!selectedDriveFileIds.length || trashingDriveFiles} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"><Trash2 className="h-3.5 w-3.5" />{trashingDriveFiles ? 'Trash হচ্ছে...' : `Selected Trash করুন${selectedDriveFileIds.length ? ` (${selectedDriveFileIds.length})` : ''}`}</button>}
+                    </div>
+                    {driveCleanupView === 'unused' && visibleDriveFiles.length > 0 && <label className="flex cursor-pointer items-center gap-2 border-b border-slate-100 px-4 py-3 text-xs font-bold text-slate-600 dark:border-[#262b34] dark:text-slate-300"><input type="checkbox" checked={visibleDriveFiles.length > 0 && selectedDriveFileIds.length === visibleDriveFiles.length} onChange={(event) => setSelectedDriveFileIds(event.target.checked ? visibleDriveFiles.slice(0, 100).map((file) => file.id) : [])} className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500" /> এই page-এর সর্বোচ্চ 100টি file নির্বাচন করুন</label>}
+                    <div className="divide-y divide-slate-100 dark:divide-[#262b34]">
+                      {visibleDriveFiles.length ? visibleDriveFiles.map((file) => {
+                        const selected = selectedDriveFileIds.includes(file.id);
+                        return <div key={file.id} className="flex gap-3 px-4 py-3.5">
+                          {driveCleanupView === 'unused' && <input aria-label={`${file.name} নির্বাচন করুন`} type="checkbox" checked={selected} onChange={(event) => setSelectedDriveFileIds((previous) => event.target.checked ? [...previous, file.id].slice(0, 100) : previous.filter((id) => id !== file.id))} className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-orange-600 focus:ring-orange-500" />}
+                          <div className="min-w-0 flex-1"><a href={file.webViewLink} target="_blank" rel="noreferrer" className="block truncate text-sm font-bold text-slate-800 hover:text-orange-600 dark:text-slate-100 dark:hover:text-orange-300">{file.name}</a><p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">{file.mimeType} · {formatFileSize(file.sizeBytes)} {file.createdTime ? `· ${new Date(file.createdTime).toLocaleDateString('bn-BD')}` : ''}</p></div>
+                          <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-bold ${driveCleanupView === 'unused' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200'}`}>{driveCleanupView === 'unused' ? 'Unused' : 'Used'}</span>
+                        </div>;
+                      }) : <div className="px-4 py-14 text-center text-sm font-semibold text-slate-400">{driveCleanupView === 'unused' ? 'Database-এর বাইরে কোনো file পাওয়া যায়নি।' : 'Database-এ ব্যবহৃত file পাওয়া যায়নি।'}</div>}
+                    </div>
+                  </div>
+                  <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">Trash করলে file Drive Trash-এ যাবে—permanent delete নয়। Delete করার আগে backend আবার database reference যাচাই করবে, তাই scan-এর পরে কোনো file ব্যবহার শুরু হলেও সেটি Trash হবে না।</p>
+                </div>}
+              </div>
+            )}
+
             {activeTab === 'general' && (
               <div className="bg-white dark:bg-[#111318] rounded-2xl p-6 sm:p-8 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-6">
                 <div>

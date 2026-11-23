@@ -1,6 +1,16 @@
 import { google } from 'googleapis';
 import stream from 'stream';
 
+export type ManagedDriveFile = {
+  id: string;
+  name: string;
+  mimeType: string;
+  sizeBytes: number;
+  createdTime?: string;
+  modifiedTime?: string;
+  webViewLink?: string;
+};
+
 const getDriveClient = () => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -79,4 +89,51 @@ export const getDriveFileStream = async (fileId: string) => {
     { responseType: 'stream' }
   );
   return response.data;
+};
+
+/** Lists only files inside Grav Academy's configured upload folder. */
+export const listManagedDriveFiles = async (): Promise<ManagedDriveFile[]> => {
+  const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+  if (!folderId) throw new Error('GOOGLE_DRIVE_FOLDER_ID is not configured.');
+
+  const drive = getDriveClient();
+  const files: ManagedDriveFile[] = [];
+  let pageToken: string | undefined;
+
+  do {
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`,
+      pageSize: 100,
+      pageToken,
+      orderBy: 'createdTime desc',
+      fields: 'nextPageToken, files(id,name,mimeType,size,createdTime,modifiedTime,webViewLink)',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+    for (const file of response.data.files || []) {
+      if (!file.id) continue;
+      files.push({
+        id: file.id,
+        name: file.name || 'Unnamed file',
+        mimeType: file.mimeType || 'application/octet-stream',
+        sizeBytes: Number(file.size || 0),
+        createdTime: file.createdTime || undefined,
+        modifiedTime: file.modifiedTime || undefined,
+        webViewLink: file.webViewLink || undefined,
+      });
+    }
+    pageToken = response.data.nextPageToken || undefined;
+  } while (pageToken);
+
+  return files;
+};
+
+/** Moves a configured-folder file to Google Drive Trash so it remains recoverable. */
+export const trashManagedDriveFile = async (fileId: string): Promise<void> => {
+  const drive = getDriveClient();
+  await drive.files.update({
+    fileId,
+    requestBody: { trashed: true },
+    supportsAllDrives: true,
+  });
 };

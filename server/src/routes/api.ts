@@ -28,6 +28,7 @@ import * as teacherAttendanceCtrl from '../controllers/teacherAttendanceControll
 import * as companyExpenseCtrl from '../controllers/companyExpenseController';
 import * as whatsAppCtrl from '../controllers/whatsAppController';
 import * as showcaseCtrl from '../controllers/showcaseController';
+import * as driveCleanupCtrl from '../controllers/driveCleanupController';
 
 const router = Router();
 router.get('/whatsapp/status', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), whatsAppCtrl.getStatus);
@@ -671,6 +672,8 @@ router.delete(
 
 // --- SYSTEM & SITE SETTINGS ROUTES ---
 router.get('/settings', settingCtrl.getSiteSettings);
+router.get('/admin/drive-cleanup', authenticate, requireRole(ROLES.SUPERADMIN), driveCleanupCtrl.scanDriveCleanup);
+router.post('/admin/drive-cleanup/trash', authenticate, requireRole(ROLES.SUPERADMIN), driveCleanupCtrl.trashUnusedDriveFiles);
 router.put(
   '/admin/settings',
   authenticate,
