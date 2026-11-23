@@ -6,7 +6,7 @@ import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { formatBDDateTime } from '@/lib/dateUtils';
-import { ArrowLeft, ShieldCheck, Search, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Search, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 
 interface AuditLogRow {
   _id: string;
@@ -91,13 +91,23 @@ export default function AuditLogsPage() {
   return (
     <div className="ga-page ga-admin-page py-8 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AdminPageHeader title="অডিট লগ" description="সর্বশেষ ১০০টি গুরুত্বপূর্ণ action ও security record দেখুন।" actions={<button
-            type="button"
-            onClick={loadLogs}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1c222c] border border-transparent dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
+        <AdminPageHeader title="অডিট লগ" description="সর্বশেষ ১০০টি গুরুত্বপূর্ণ action ও security record দেখুন।" actions={<>
+          <a
+            href="https://gravapi.138.2.92.182.nip.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:border-orange-500/40 dark:hover:text-orange-400"
           >
-            <RefreshCw className="w-3.5 h-3.5" /> রিফ্রেশ
-          </button>} />
+            <ExternalLink className="h-3.5 w-3.5" /> Server Status
+          </a>
+          <button
+              type="button"
+              onClick={loadLogs}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] hover:bg-slate-200 dark:hover:bg-[#1c222c] border border-transparent dark:border-[#262b34] text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
+            >
+              <RefreshCw className="w-3.5 h-3.5" /> রিফ্রেশ
+            </button>
+        </>} />
 
         <div className="ga-data-panel">
           <div className="ga-operation-toolbar rounded-none border-x-0 border-t-0 p-4 sm:p-5">
