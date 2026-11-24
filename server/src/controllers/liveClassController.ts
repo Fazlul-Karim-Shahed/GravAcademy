@@ -5,8 +5,46 @@ import { Enrollment } from '../models/Enrollment';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ROLES } from '../types/roles';
 import { Batch } from '../models/Batch';
+import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 import { classroomLink, dispatchNotification, formatDate, notifyBatchStudents } from '../services/classroomNotificationService';
+
+/** Issue no token here: this proves that the signed-in person may join a batch room. */
+export const authorizeClassroomLiveJoin = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { batchId } = req.body as { batchId?: string };
+    const user = req.user;
+    if (!user || !batchId || !/^[0-9a-fA-F]{24}$/.test(batchId)) {
+      return res.status(400).json({ success: false, message: 'Invalid classroom request.' });
+    }
+
+    if (user.role === ROLES.ADMIN || user.role === ROLES.SUPERADMIN) {
+      return res.json({ success: true, data: { name: user.name } });
+    }
+
+    const batch = await Batch.findById(batchId).select('assignedTeachers courseId endDate').lean();
+    if (!batch) return res.status(404).json({ success: false, message: 'Classroom not found.' });
+
+    let allowed = false;
+    if (user.role === ROLES.TEACHER) {
+      if (batch.assignedTeachers?.length) {
+        allowed = batch.assignedTeachers.some((teacherId) => teacherId.toString() === user._id.toString());
+      } else {
+        const course = await Course.findById(batch.courseId).select('instructors').lean();
+        allowed = (course?.instructors || []).some((teacherId) => teacherId.toString() === user._id.toString());
+      }
+    } else if (user.role === ROLES.STUDENT) {
+      const enrollment = await Enrollment.findOne({ batchId, gravId: user.gravId, status: { $in: ['enrolled', 'completed'] } }).lean();
+      const course = await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths').lean();
+      allowed = !!enrollment && !!course && hasActiveStudentBatchAccess(batch as any, enrollment as any, course as any);
+    }
+
+    if (!allowed) return res.status(403).json({ success: false, message: 'You do not have access to this live classroom.' });
+    return res.json({ success: true, data: { name: user.name } });
+  } catch {
+    return res.status(500).json({ success: false, message: 'Could not authorize live classroom access.' });
+  }
+};
 
 export const createLiveClassSchema = z.object({
   title: z.string().min(3),

@@ -1,14 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AccessToken } from 'livekit-server-sdk';
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const room = searchParams.get('room');
-    const username = searchParams.get('username') || 'Student';
+    const authorization = request.headers.get('authorization');
+    const { batchId } = await request.json() as { batchId?: string };
+    if (!authorization || !batchId || !/^[0-9a-fA-F]{24}$/.test(batchId)) {
+      return NextResponse.json({ error: 'Authentication and a valid classroom are required.' }, { status: 401 });
+    }
 
-    if (!room) {
-      return NextResponse.json({ error: 'Missing "room" query parameter' }, { status: 400 });
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiBaseUrl) return NextResponse.json({ error: 'Server API is not configured.' }, { status: 500 });
+
+    const authorizationResponse = await fetch(`${apiBaseUrl}/live-classes/classroom-authorize`, {
+      method: 'POST',
+      headers: { Authorization: authorization, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ batchId }),
+      cache: 'no-store',
+    });
+    const authorizationData = await authorizationResponse.json().catch(() => null);
+    if (!authorizationResponse.ok || !authorizationData?.success) {
+      return NextResponse.json({ error: authorizationData?.message || 'You do not have access to this classroom.' }, { status: authorizationResponse.status || 403 });
     }
 
     const apiKey = process.env.LIVEKIT_API_KEY;
@@ -22,10 +34,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Create Access Token
+    const room = `gravacademy-Batch-${batchId}`;
+    const name = String(authorizationData.data?.name || 'Participant').slice(0, 100);
     const at = new AccessToken(apiKey, apiSecret, {
-      identity: username,
-      name: username,
+      identity: `${batchId}-${crypto.randomUUID()}`,
+      name,
     });
 
     at.addGrant({

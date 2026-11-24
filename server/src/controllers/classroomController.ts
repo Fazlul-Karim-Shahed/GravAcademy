@@ -92,7 +92,7 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
     if (!hasAccess) {
       return res.status(403).json({
         success: false,
-        message: 'à¦†à¦ªà¦¨à¦¿ à¦à¦‡ à¦•à§à¦²à¦¾à¦¸à¦°à§à¦®à§‡à¦° à¦¸à¦¦à¦¸à§à¦¯ à¦¨à¦¨ à¦¬à¦¾ à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸ à¦¨à§‡à¦‡à¥¤',
+        message: 'আপনি এই ক্লাসরুমের সদস্য নন বা আপনার অনুমোদিত অ্যাক্সেস নেই।',
       });
     }
 
@@ -339,7 +339,7 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
     sendClassroomEmailNotification({
       toEmails: recipientEmails,
       batchName: batch.name,
-      announcerName: `${author?.name} (${userRole === 'teacher' ? 'à¦¶à¦¿à¦•à§à¦·à¦•' : userRole === 'admin' ? 'à¦à¦¡à¦®à¦¿à¦¨' : 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€'})`,
+      announcerName: `${author?.name} (${userRole === 'teacher' ? 'শিক্ষক' : userRole === 'admin' ? 'এডমিন' : 'শিক্ষার্থী'})`,
       announcementTitle: title,
       announcementContent: content,
     })

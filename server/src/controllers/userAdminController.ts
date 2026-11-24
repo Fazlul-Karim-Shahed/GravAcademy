@@ -497,18 +497,18 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
     }
 
     if (!Array.isArray(gravIds)) {
-      return res.status(400).json({ success: false, message: 'gravIds à¦à¦•à¦Ÿà¦¿ array à¦¹à¦¤à§‡ à¦¹à¦¬à§‡' });
+      return res.status(400).json({ success: false, message: 'gravIds একটি array হতে হবে' });
     }
 
     const guardian = await User.findById(id);
-    if (!guardian) return res.status(404).json({ success: false, message: 'à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦• à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿' });
+    if (!guardian) return res.status(404).json({ success: false, message: 'অভিভাবক পাওয়া যায়নি' });
     if (guardian.role !== ROLES.GUARDIAN) {
-      return res.status(400).json({ success: false, message: 'à¦à¦‡ à¦‡à¦‰à¦œà¦¾à¦° à¦à¦•à¦œà¦¨ à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦• à¦¨à¦¨' });
+      return res.status(400).json({ success: false, message: 'এই ইউজার একজন অভিভাবক নন' });
     }
 
     const validStudents = await User.find({ gravId: { $in: gravIds }, role: ROLES.STUDENT }).select('gravId');
     if (validStudents.length !== gravIds.length) {
-      return res.status(400).json({ success: false, message: 'à¦à¦• à¦¬à¦¾ à¦à¦•à¦¾à¦§à¦¿à¦• à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦¸à¦ à¦¿à¦• à¦¨à¦¯à¦¼' });
+      return res.status(400).json({ success: false, message: 'এক বা একাধিক শিক্ষার্থী সঠিক নয়' });
     }
 
     const previouslinkedGravIds = guardian.guardianDetails?.linkedGravIds || [];
@@ -538,7 +538,7 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
 
     return res.status(200).json({
       success: true,
-      message: 'à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦•-à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦¸à¦‚à¦¯à§‹à¦— à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦¹à¦¯à¦¼à§‡à¦›à§‡',
+      message: 'অভিভাবক-শিক্ষার্থী সংযোগ সফলভাবে আপডেট হয়েছে',
       data: populatedGuardian,
     });
   } catch (error) {

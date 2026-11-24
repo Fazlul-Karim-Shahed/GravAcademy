@@ -538,6 +538,7 @@ router.get('/batches/:batchId/marksheet', authenticate, marksheetCtrl.getBatchMa
 router.get('/free-classes', requireFeature(FEATURE_FLAGS.freeClasses), liveCtrl.getFreePublicClasses);
 router.get('/live-classes', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.getLiveClasses);
 router.get('/live-classes/my', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.getStudentLiveClasses);
+router.post('/live-classes/classroom-authorize', authenticate, requireFeature(FEATURE_FLAGS.liveClasses), liveCtrl.authorizeClassroomLiveJoin);
 router.post(
   '/live-classes',
   authenticate,

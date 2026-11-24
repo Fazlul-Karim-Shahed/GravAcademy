@@ -14,7 +14,7 @@ export const getGuardianOverview = async (req: AuthenticatedRequest, res: Respon
   try {
     const user = req.user;
     if (!user || user.role !== 'guardian') {
-      return res.status(403).json({ success: false, message: 'à¦¶à§à¦§à§à¦®à¦¾à¦¤à§à¦° à¦…à¦­à¦¿à¦­à¦¾à¦¬à¦•à¦°à¦¾ à¦à¦‡ à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡à¦¨' });
+      return res.status(403).json({ success: false, message: 'শুধুমাত্র অভিভাবকরা এই তথ্য দেখতে পারবেন' });
     }
 
     const guardianDoc = await User.findById(user._id)
@@ -96,6 +96,6 @@ export const getGuardianOverview = async (req: AuthenticatedRequest, res: Respon
     return res.status(200).json({ success: true, data: { linkedGravIds: data } });
   } catch (error: any) {
     console.error('getGuardianOverview error:', error);
-    return res.status(500).json({ success: false, message: 'à¦¡à§à¦¯à¦¾à¦¶à¦¬à§‹à¦°à§à¦¡ à¦¤à¦¥à§à¦¯ à¦²à§‹à¦¡ à¦•à¦°à¦¤à§‡ à¦¬à§à¦¯à¦°à§à¦¥' });
+    return res.status(500).json({ success: false, message: 'ড্যাশবোর্ড তথ্য লোড করতে ব্যর্থ' });
   }
 };

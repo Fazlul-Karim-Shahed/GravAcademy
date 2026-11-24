@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 import { X, Maximize2, Minimize2, Video, AlertTriangle } from 'lucide-react';
 import '@livekit/components-styles';
 import {
@@ -46,13 +47,13 @@ export function LiveKitClassroomModal({
         setLoading(true);
         setError(null);
 
-        // Sanitize room name
-        const sanitizedRoom = `gravacademy-${roomName.replace(/[^a-zA-Z0-9_-]/g, '')}`;
-        const participantName = displayName || 'Student';
-
-        const res = await fetch(
-          `/api/livekit/token?room=${encodeURIComponent(sanitizedRoom)}&username=${encodeURIComponent(participantName)}`
-        );
+        const batchId = roomName.replace(/^Batch-/, '');
+        const accessToken = Cookies.get('grav_token') || localStorage.getItem('grav_token');
+        const res = await fetch('/api/livekit/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
+          body: JSON.stringify({ batchId }),
+        });
         const data = await res.json();
 
         if (!res.ok || data.error) {

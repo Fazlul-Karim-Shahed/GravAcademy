@@ -236,7 +236,7 @@ export const getAssignmentDetails = async (req: AuthenticatedRequest, res: Respo
     }
 
     const hasAccess = await verifyAssignmentBatchAccess(
-      user._id.toString(),
+      user.role === ROLES.STUDENT ? user.gravId : user._id.toString(),
       user.role,
       assignment.batchId.toString()
     );
@@ -369,7 +369,7 @@ export const submitAssignment = async (req: AuthenticatedRequest, res: Response)
 
     // Security: Student MUST be enrolled in this batch
     const isEnrolled = await verifyAssignmentBatchAccess(
-      user._id.toString(),
+      user.gravId,
       user.role,
       assignment.batchId.toString(),
       true

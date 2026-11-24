@@ -60,6 +60,8 @@ interface ExamData {
   questionPaperUrl?: string;
   cqQuestions?: CQQuestion[];
   questionsVersion?: number;
+  attemptStartedAt?: string;
+  attemptExpiresAt?: string;
 }
 
 export default function TakeExamPage({
@@ -139,7 +141,10 @@ export default function TakeExamPage({
         questionsVersionRef.current = examData.questionsVersion || 1;
 
         // Restore draft answers and timer from localStorage if present
-        let restoredTimeLeft = examData.durationMinutes * 60;
+        const serverTimeLeft = examData.attemptExpiresAt
+          ? Math.max(0, Math.floor((new Date(examData.attemptExpiresAt).getTime() - Date.now()) / 1000))
+          : examData.durationMinutes * 60;
+        let restoredTimeLeft = serverTimeLeft;
         if (storageKey && typeof window !== 'undefined') {
           try {
             const rawDraft = localStorage.getItem(storageKey);
@@ -153,7 +158,7 @@ export default function TakeExamPage({
                 const elapsedSeconds = draft.savedAt
                   ? Math.floor((Date.now() - draft.savedAt) / 1000)
                   : 0;
-                restoredTimeLeft = Math.max(5, draft.timeLeft - elapsedSeconds);
+                restoredTimeLeft = Math.min(serverTimeLeft, Math.max(0, draft.timeLeft - elapsedSeconds));
               }
             }
           } catch (e) {

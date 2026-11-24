@@ -37,9 +37,9 @@ export const generateReceiptNumber = async (): Promise<string> => {
 };
 
 export const collectPaymentSchema = z.object({
-  gravId: z.string().regex(/^\d{9}$/, 'à¦­à§à¦² Grav ID'),
-  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'à¦­à§à¦² à¦¬à§à¦¯à¦¾à¦š à¦†à¦‡à¦¡à¦¿').optional(),
-  amountPaid: z.number().min(0, 'à¦Ÿà¦¾à¦•à¦¾à¦° à¦ªà¦°à¦¿à¦®à¦¾à¦£ à§¦ à¦¬à¦¾ à¦¤à¦¾à¦° à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦¹à¦¬à§‡'),
+  gravId: z.string().regex(/^\d{9}$/, 'ভুল Grav ID'),
+  batchId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'ভুল ব্যাচ আইডি').optional(),
+  amountPaid: z.number().min(0, 'টাকার পরিমাণ ০ বা তার বেশি হতে হবে'),
   paymentMethod: z.enum(['cash', 'bkash', 'nagad', 'rocket', 'bank_transfer', 'other']).default('cash'),
   paymentType: z.enum(['admission', 'due_payment', 'monthly_fee', 'refund', 'adjustment', 'other']).default('due_payment'),
   transactionId: z.string().optional().or(z.literal('')),
@@ -56,7 +56,7 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
     }
 
     const {
@@ -74,7 +74,7 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
 
     const student = await User.findOne({ gravId });
     if (!student) {
-      return res.status(404).json({ success: false, message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
     }
 
     let batch = null;
@@ -153,14 +153,14 @@ export const collectPayment = async (req: AuthenticatedRequest, res: Response) =
 
     return res.status(201).json({
       success: true,
-      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦®à¦¾à¦¨à¦¿ à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦ªà§à¦°à¦¸à§à¦¤à§à¦¤!',
+      message: 'পেমেন্ট সফলভাবে সংরক্ষিত হয়েছে এবং মানি রিসিট প্রস্তুত!',
       data: populatedPayment,
     });
   } catch (error: any) {
     console.error('collectPayment error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à¦‚à¦—à§à¦°à¦¹ à¦¬à§à¦¯à¦°à§à¦¥ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
+      message: error?.message || 'পেমেন্ট সংগ্রহ ব্যর্থ হয়েছে।',
     });
   }
 };
@@ -439,7 +439,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
-            notes: 'à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦«à¦¿ à¦¬à¦•à§‡à§Ÿà¦¾ à¦°à§Ÿà§‡à¦›à§‡ (Self/Manual Enrolled)',
+            notes: 'এনরোলমেন্ট ফি বকেয়া রয়েছে (Self/Manual Enrolled)',
             paidAt: enr.enrolledAt || (enr as any).createdAt,
             createdAt: enr.enrolledAt || (enr as any).createdAt,
           });
@@ -609,7 +609,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
             paymentMethod: 'cash',
             paymentType: 'admission',
             status: 'completed',
-            notes: dueAmount > 0 ? 'à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦«à¦¿ à¦¬à¦•à§‡à§Ÿà¦¾ à¦°à§Ÿà§‡à¦›à§‡ (Self/Manual Enrolled)' : 'à¦¸à¦®à§à¦ªà§‚à¦°à§à¦£ à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤',
+            notes: dueAmount > 0 ? 'এনরোলমেন্ট ফি বকেয়া রয়েছে (Self/Manual Enrolled)' : 'সম্পূর্ণ পরিশোধিত',
             paidAt: enr.enrolledAt || (enr as any).createdAt,
             createdAt: enr.enrolledAt || (enr as any).createdAt,
           });
@@ -811,7 +811,7 @@ export const getAdminPayments = async (req: AuthenticatedRequest, res: Response)
     console.error('getAdminPayments error:', error);
     return res.status(500).json({
       success: false,
-      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¤à¦¾à¦²à¦¿à¦•à¦¾ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿',
+      message: 'পেমেন্ট তালিকা লোড করা যায়নি',
     });
   }
 };
@@ -828,7 +828,7 @@ export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Re
     const { gravId, batchId } = req.query;
 
     if (!gravId) {
-      return res.status(400).json({ success: false, message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à¦¾ à¦†à¦¬à¦¶à§à¦¯à¦•' });
+      return res.status(400).json({ success: false, message: 'শিক্ষার্থী নির্বাচন করা আবশ্যক' });
     }
 
     const query: any = {
@@ -861,7 +861,7 @@ export const getStudentBatchPayments = async (req: AuthenticatedRequest, res: Re
     });
   } catch (error: any) {
     console.error('getStudentBatchPayments error:', error);
-    return res.status(500).json({ success: false, message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¬à¦¿à¦¬à¦°à¦£à§€ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+    return res.status(500).json({ success: false, message: 'পেমেন্ট বিবরণী লোড করা যায়নি' });
   }
 };
 
@@ -880,7 +880,7 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
       .lean();
 
     if (!payment) {
-      return res.status(404).json({ success: false, message: 'à¦®à¦¾à¦¨à¦¿ à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'মানি রিসিট পাওয়া যায়নি' });
     }
 
     // Authorization: Superadmin, Admin, the student himself, or a guardian linked to the student
@@ -899,7 +899,7 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
     }
 
     if (!isOwner && !isAdmin && !isLinkedGuardian) {
-      return res.status(403).json({ success: false, message: 'à¦à¦‡ à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦¦à§‡à¦–à¦¾à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à§‡à¦‡' });
+      return res.status(403).json({ success: false, message: 'এই রিসিট দেখার অনুমতি আপনার নেই' });
     }
 
     // Also fetch all historical payments for this student and batch to form complete installment list
@@ -929,7 +929,7 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
     });
   } catch (error: any) {
     console.error('getPaymentReceipt error:', error);
-    return res.status(500).json({ success: false, message: 'à¦°à¦¿à¦¸à¦¿à¦Ÿ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+    return res.status(500).json({ success: false, message: 'রিসিট লোড করা যায়নি' });
   }
 };
 
@@ -940,7 +940,7 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
   try {
     const user = req.user;
     if (!user) {
-      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
     }
 
     // Guardians may pass ?gravId=<wardId> to view a linked ward's payments.
@@ -948,14 +948,14 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
     const requestedGravId = req.query.gravId as string | undefined;
     if (requestedGravId && requestedGravId !== user.gravId) {
       if (user.role !== 'guardian') {
-        return res.status(403).json({ success: false, message: 'à¦à¦‡ à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¾à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à§‡à¦‡' });
+        return res.status(403).json({ success: false, message: 'এই তথ্য দেখার অনুমতি আপনার নেই' });
       }
       const guardianDoc = await User.findById(user._id).select('guardianDetails').lean();
       const isLinked = guardianDoc?.guardianDetails?.linkedGravIds?.some(
         (linkedGravId: string) => linkedGravId === requestedGravId
       );
       if (!isLinked) {
-        return res.status(403).json({ success: false, message: 'à¦à¦‡ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¾à¦° à¦…à¦¨à§à¦®à¦¤à¦¿ à¦†à¦ªà¦¨à¦¾à¦° à¦¨à§‡à¦‡' });
+        return res.status(403).json({ success: false, message: 'এই শিক্ষার্থীর তথ্য দেখার অনুমতি আপনার নেই' });
       }
       gravId = requestedGravId;
     }
@@ -1000,7 +1000,7 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
     console.error('getMyPayments error:', error);
     return res.status(500).json({
       success: false,
-      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¹à¦¿à¦¸à§à¦Ÿà§à¦°à¦¿ à¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿',
+      message: 'পেমেন্ট হিস্ট্রি লোড করা যায়নি',
     });
   }
 };
@@ -1012,7 +1012,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
   try {
     const file = req.file;
     if (!file) {
-      return res.status(400).json({ success: false, message: 'à¦•à§‹à¦¨à§‹ à¦«à¦¾à¦‡à¦² à¦†à¦ªà¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¹à§Ÿà¦¨à¦¿à¥¤' });
+      return res.status(400).json({ success: false, message: 'কোনো ফাইল আপলোড করা হয়নি।' });
     }
 
     const allowedMimeTypes = [
@@ -1027,7 +1027,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
     if (!allowedMimeTypes.includes(file.mimetype)) {
       return res.status(400).json({
         success: false,
-        message: 'à¦¶à§à¦§à§à¦®à¦¾à¦¤à§à¦° à¦›à¦¬à¦¿ (JPG, PNG, WebP) à¦…à¦¥à¦¬à¦¾ PDF/à¦¡à¦•à§à¦®à§‡à¦¨à§à¦Ÿ à¦†à¦ªà¦²à§‹à¦¡ à¦•à¦°à¦¾ à¦¯à¦¾à¦¬à§‡à¥¤',
+        message: 'শুধুমাত্র ছবি (JPG, PNG, WebP) অথবা PDF/ডকুমেন্ট আপলোড করা যাবে।',
       });
     }
 
@@ -1052,7 +1052,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
 
     return res.status(200).json({
       success: true,
-      message: 'à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦¸à§à¦²à¦¿à¦ª à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¡à§à¦°à¦¾à¦‡à¦­à§‡ à¦†à¦ªà¦²à§‹à¦¡ à¦¹à§Ÿà§‡à¦›à§‡!',
+      message: 'পেমেন্ট স্লিপ সফলভাবে ড্রাইভে আপলোড হয়েছে!',
       data: {
         fileUrl,
         driveFileId,
@@ -1063,7 +1063,7 @@ export const uploadPaymentDocument = async (req: AuthenticatedRequest, res: Resp
     console.error('uploadPaymentDocument error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'à¦¸à§à¦²à¦¿à¦ª à¦†à¦ªà¦²à§‹à¦¡ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
+      message: error?.message || 'স্লিপ আপলোড করতে সমস্যা হয়েছে।',
     });
   }
 };
@@ -1078,12 +1078,12 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
     const adminUser = req.user;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'à¦­à§à¦² à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ à¦†à¦‡à¦¡à¦¿' });
+      return res.status(400).json({ success: false, message: 'ভুল পেমেন্ট আইডি' });
     }
 
     const payment = await Payment.findById(id);
     if (!payment) {
-      return res.status(404).json({ success: false, message: 'à¦²à§‡à¦¨à¦¦à§‡à¦¨à¦Ÿà¦¿ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'লেনদেনটি পাওয়া যায়নি' });
     }
 
     const { gravId, batchId, amountPaid, receiptNo } = payment;
@@ -1131,13 +1131,13 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
 
     return res.status(200).json({
       success: true,
-      message: 'à¦²à§‡à¦¨à¦¦à§‡à¦¨à¦Ÿà¦¿ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦®à§à¦›à§‡ à¦«à§‡à¦²à¦¾ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¹à¦¿à¦¸à¦¾à¦¬ à¦¹à¦¾à¦²à¦¨à¦¾à¦—à¦¾à¦¦ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡!',
+      message: 'লেনদেনটি সফলভাবে মুছে ফেলা হয়েছে এবং বকেয়া হিসাব হালনাগাদ করা হয়েছে!',
     });
   } catch (error: any) {
     console.error('deletePayment error:', error);
     return res.status(500).json({
       success: false,
-      message: error?.message || 'à¦²à§‡à¦¨à¦¦à§‡à¦¨ à¦®à§à¦›à§‡ à¦«à§‡à¦²à¦¤à§‡ à¦¤à§à¦°à§à¦Ÿà¦¿ à¦˜à¦Ÿà§‡à¦›à§‡',
+      message: error?.message || 'লেনদেন মুছে ফেলতে ত্রুটি ঘটেছে',
     });
   }
 };
@@ -1145,13 +1145,13 @@ export const deletePayment = async (req: AuthenticatedRequest, res: Response) =>
 /**
  * Admin action to toggle or mark student's enrollment/payment as 'paid' (isManualPaid).
  * Rule 2:
- * "à¦à¦¡à¦®à¦¿à¦¨ à¦šà¦¾à¦‡à¦²à§‡ à¦•à§‹à¦¨ à¦¸à§à¦Ÿà§à¦¡à§‡à¦¨à§à¦Ÿà¦•à§‡ à¦ªà§‡à¦‡à¦¡ à¦•à¦°à§‡ à¦¦à¦¿à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¥¤ à¦…à¦°à§à¦¥à¦¾à§Ž à¦§à¦°à§‹ à¦•à§‹à¦¨ à¦•à§‹à¦°à§à¦¸à§‡à¦° à¦ªà§à¦°à¦¾à¦‡à¦¸ à§«à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦•à¦¿à¦¨à§à¦¤à§ à¦¸à§à¦Ÿà§à¦¡à§‡à¦¨à§à¦Ÿ à¦¦à¦¿à¦² à§¨à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦¤à¦–à¦¨ à¦¤à§‹ à¦¸à¦¿à¦¸à§à¦Ÿà§‡à¦® à¦…à¦Ÿà§‹ à¦¡à¦¿à¦Ÿà§‡à¦•à§à¦Ÿ à¦•à¦°à¦¬à§‡ à¦ªà¦¾à¦°à§à¦¸à¦¿à§Ÿà¦¾à¦²à¥¤ à¦•à¦¿à¦¨à§à¦¤à§ à¦à¦¡à¦®à¦¿à¦¨ à¦šà¦¾à¦‡à¦²à§‡ à¦®à§à¦¯à¦¾à¦¨à§à§Ÿà¦¾à¦²à¦¿ à¦¸à§‡à¦Ÿà¦¾à¦•à§‡ à¦ªà§‡à¦‡à¦¡ à¦•à¦°à§‡ à¦¦à¦¿à¦¤à§‡ à¦ªà¦¾à¦°à§‡à¥¤ à¦¯à¦¦à¦¿ à¦¸à§‡à¦Ÿà¦¾à¦•à§‡ à¦à¦¡à¦®à¦¿à¦¨ à¦ªà§‡à¦‡à¦¡ à¦•à¦°à§‡ à¦¦à§‡à§Ÿ à¦¤à¦¾à¦¹à¦²à§‡ à¦“à¦‡ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¬à¦¿à¦²à¦Ÿà¦¾ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸à§‡ à¦®à§‹à¦Ÿ à¦¬à¦•à§‡à§Ÿà¦¾à§Ÿ à¦†à¦° à¦¯à§‹à¦— à¦¹à¦¬à§‡ à¦¨à¦¾à¥¤ à¦•à¦¿à¦¨à§à¦¤à§ à¦¤à¦¾à¦° à¦®à¦¾à¦¨à§‡ à¦à¦‡ à¦¨à¦¾ à¦¯à§‡ à¦¤à¦¾à¦° à¦Ÿà¦¾à¦•à¦¾ à§¨à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦•à¦¿ à¦¤à§à¦®à¦¿ à§«à§¦à§¦ à¦Ÿà¦¾à¦•à¦¾ à¦¬à¦¾à¦¨à¦¾à¦‡ à¦¦à¦¿à¦¬à¦¾à¥¤ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸à§‡ à¦¸à¦¬à¦‡ à¦ à¦¿à¦• à¦¥à¦¾à¦•à¦¬à§‡ à¦¤à¦¾à¦° à¦°à§‹-à¦¤à§‡ à§¨à§¦à§¦ à¦ªà¦°à¦¿à¦¶à§‹à¦§ à¦“ à§©à§¦à§¦ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¦à§‡à¦–à¦¾à¦¬à§‡ à¦•à¦¿à¦¨à§à¦¤à§ à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ 'à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤' (à¦ªà§‡à¦‡à¦¡) à¦¹à§Ÿà§‡ à¦¯à¦¾à¦¬à§‡à¥¤ à¦®à§‹à¦Ÿ à¦¬à¦•à§‡à§Ÿà¦¾à§Ÿ à¦“à¦‡à¦Ÿà¦¾ à¦†à¦° à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦¹à¦¬à§‡ à¦¨à¦¾à¥¤"
+ * "এডমিন চাইলে কোন স্টুডেন্টকে পেইড করে দিতে পারে। অর্থাৎ ধরো কোন কোর্সের প্রাইস ৫০০ টাকা কিন্তু স্টুডেন্ট দিল ২০০ টাকা তখন তো সিস্টেম অটো ডিটেক্ট করবে পার্সিয়াল। কিন্তু এডমিন চাইলে ম্যানুয়ালি সেটাকে পেইড করে দিতে পারে। যদি সেটাকে এডমিন পেইড করে দেয় তাহলে ওই বকেয়া বিলটা ফাইন্যান্সে মোট বকেয়ায় আর যোগ হবে না। কিন্তু তার মানে এই না যে তার টাকা ২০০ টাকা কি তুমি ৫০০ টাকা বানাই দিবা। ফাইন্যান্সে সবই ঠিক থাকবে তার রো-তে ২০০ পরিশোধ ও ৩০০ বকেয়া দেখাবে কিন্তু স্ট্যাটাস 'পরিশোধিত' (পেইড) হয়ে যাবে। মোট বকেয়ায় ওইটা আর কাউন্ট হবে না।"
  */
 export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
     }
 
     const { gravId, batchId, enrollmentId, isManualPaid = true } = req.body;
@@ -1166,7 +1166,7 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     if (!enrollment) {
       return res.status(404).json({
         success: false,
-        message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦à¦¨à¦°à§‹à¦²à¦®à§‡à¦¨à§à¦Ÿ à¦°à§‡à¦•à¦°à§à¦¡ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿à¥¤',
+        message: 'শিক্ষার্থীর এনরোলমেন্ট রেকর্ড পাওয়া যায়নি।',
       });
     }
 
@@ -1215,8 +1215,8 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     return res.status(200).json({
       success: true,
       message: isManualPaid
-        ? 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦•à§‡ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà§‡à¦‡à¦¡ (à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤) à¦¹à¦¿à¦¸à§‡à¦¬à§‡ à¦šà¦¿à¦¹à§à¦¨à¦¿à¦¤ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦®à§‹à¦Ÿ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¥à§‡à¦•à§‡ à¦à¦‡ à¦¬à¦•à§‡à§Ÿà¦¾ à¦¬à¦¾à¦¦ à¦¦à§‡à¦“à§Ÿà¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤'
-        : 'à¦ªà§‡à¦‡à¦¡ à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦ªà§à¦°à¦¤à§à¦¯à¦¾à¦¹à¦¾à¦° à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
+        ? 'শিক্ষার্থীকে সফলভাবে পেইড (পরিশোধিত) হিসেবে চিহ্নিত করা হয়েছে। মোট বকেয়া থেকে এই বকেয়া বাদ দেওয়া হয়েছে।'
+        : 'পেইড স্ট্যাটাস সফলভাবে প্রত্যাহার করা হয়েছে।',
       data: {
         isManualPaid: enrollment.isManualPaid,
         paymentStatus: enrollment.paymentStatus,
@@ -1226,19 +1226,19 @@ export const toggleManualPaidStatus = async (req: AuthenticatedRequest, res: Res
     console.error('toggleManualPaidStatus error:', error);
     return res.status(500).json({
       success: false,
-      message: 'à¦¸à§à¦Ÿà§à¦¯à¦¾à¦Ÿà¦¾à¦¸ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦•à¦°à¦¤à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤',
+      message: 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
     });
   }
 };
 
 /**
- * Admin: Refund / Adjustment of Excess Payment (à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦¬à¦¾ à¦…à¦¤à¦¿à¦°à¦¿à¦•à§à¦¤ à¦Ÿà¦¾à¦•à¦¾ à¦«à§‡à¦°à¦¤)
+ * Admin: Refund / Adjustment of Excess Payment (রিফান্ড বা অতিরিক্ত টাকা ফেরত)
  */
 export const refundExcessPayment = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const adminUser = req.user;
     if (!adminUser) {
-      return res.status(401).json({ success: false, message: 'à¦…à¦¨à¦¨à§à¦®à§‹à¦¦à¦¿à¦¤ à¦…à§à¦¯à¦¾à¦•à§à¦¸à§‡à¦¸' });
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অ্যাক্সেস' });
     }
 
     const {
@@ -1255,13 +1255,13 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
     if (!numRefund || numRefund <= 0) {
       return res.status(400).json({
         success: false,
-        message: 'à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡à§‡à¦° à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦…à¦¬à¦¶à§à¦¯à¦‡ à§¦ à¦Ÿà¦¾à¦•à¦¾à¦° à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦¹à¦¬à§‡à¥¤',
+        message: 'রিফান্ডের পরিমাণ অবশ্যই ০ টাকার বেশি হতে হবে।',
       });
     }
 
     const student = await User.findOne({ gravId });
     if (!student) {
-      return res.status(404).json({ success: false, message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'শিক্ষার্থী পাওয়া যায়নি' });
     }
 
     let batch = null;
@@ -1289,7 +1289,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
     if (numRefund > previousPaid) {
       return res.status(400).json({
         success: false,
-        message: `à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡à§‡à¦° à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦¸à¦°à§à¦¬à§‹à¦šà§à¦š à¦ªà¦°à¦¿à¦¶à§‹à¦§à¦¿à¦¤ à¦Ÿà¦¾à¦•à¦¾à¦° (à§³${previousPaid}) à¦šà§‡à¦¯à¦¼à§‡ à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡ à¦¨à¦¾à¥¤`,
+        message: `রিফান্ডের পরিমাণ শিক্ষার্থীর সর্বোচ্চ পরিশোধিত টাকার (৳${previousPaid}) চেয়ে বেশি হতে পারবে না।`,
       });
     }
 
@@ -1311,7 +1311,7 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
       paymentType: 'refund',
       transactionId: transactionId.trim(),
       senderNumber: senderNumber.trim(),
-      notes: notes.trim() || 'à¦…à¦¤à¦¿à¦°à¦¿à¦•à§à¦¤ à¦Ÿà¦¾à¦•à¦¾ à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ / à¦«à§‡à¦°à¦¤ à¦ªà§à¦°à¦¦à¦¾à¦¨',
+      notes: notes.trim() || 'অতিরিক্ত টাকা রিফান্ড / ফেরত প্রদান',
       collectedBy: adminUser._id,
       paidAt: new Date(),
       status: 'completed',
@@ -1351,16 +1351,15 @@ export const refundExcessPayment = async (req: AuthenticatedRequest, res: Respon
 
     return res.status(201).json({
       success: true,
-      message: `à§³${numRefund.toLocaleString('bn-BD')} à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡ à¦à¦¬à¦‚ à¦«à¦¾à¦‡à¦¨à§à¦¯à¦¾à¦¨à§à¦¸ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦¹à§Ÿà§‡à¦›à§‡!`,
+      message: `৳${numRefund.toLocaleString('bn-BD')} সফলভাবে রিফান্ড করা হয়েছে এবং ফাইন্যান্স আপডেট হয়েছে!`,
       data: populatedRefund,
     });
   } catch (error: any) {
     console.error('refundExcessPayment error:', error);
     return res.status(500).json({
       success: false,
-      message: error.message || 'à¦°à¦¿à¦«à¦¾à¦¨à§à¦¡ à¦ªà§à¦°à¦•à§à¦°à¦¿à§Ÿà¦¾à¦•à¦°à¦£à§‡ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à§Ÿà§‡à¦›à§‡à¥¤',
+      message: error.message || 'রিফান্ড প্রক্রিয়াকরণে সমস্যা হয়েছে।',
     });
   }
 };
-
 

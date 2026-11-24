@@ -66,7 +66,7 @@ export const updateExamSchema = z.object({
   cqQuestions: z.array(cqQuestionSchema).optional(),
 }).refine(
   (data) => data.passMarks === undefined || data.totalMarks === undefined || data.passMarks <= data.totalMarks,
-  { message: 'à¦ªà¦¾à¦¸ à¦®à¦¾à¦°à§à¦• à¦®à§‹à¦Ÿ à¦¨à¦®à§à¦¬à¦°à§‡à¦° à¦šà§‡à¦¯à¦¼à§‡ à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡ à¦¨à¦¾', path: ['passMarks'] }
+  { message: 'পাস মার্ক মোট নম্বরের চেয়ে বেশি হতে পারবে না', path: ['passMarks'] }
 );
 
 /**
@@ -128,7 +128,7 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
 
     const exam = await Examination.findById(examId);
     if (!exam) {
-      return res.status(404).json({ success: false, message: 'à¦à¦•à§à¦¸à¦¾à¦® à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'এক্সাম পাওয়া যায়নি' });
     }
     const wasPublished = exam.isPublished;
 
@@ -194,7 +194,7 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: 'à¦à¦•à§à¦¸à¦¾à¦® à¦“ à¦ªà§à¦°à¦¶à§à¦¨à¦ªà¦¤à§à¦° à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡',
+      message: 'এক্সাম ও প্রশ্নপত্র সফলভাবে আপডেট করা হয়েছে',
       data: {
         exam,
         questions: updatedQuestions,
@@ -230,7 +230,7 @@ export const createExamSchema = z.object({
   cqQuestions: z.array(cqQuestionSchema).optional(),
 }).refine(
   (data) => data.passMarks <= data.totalMarks,
-  { message: 'à¦ªà¦¾à¦¸ à¦®à¦¾à¦°à§à¦• à¦®à§‹à¦Ÿ à¦¨à¦®à§à¦¬à¦°à§‡à¦° à¦šà§‡à¦¯à¦¼à§‡ à¦¬à§‡à¦¶à¦¿ à¦¹à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡ à¦¨à¦¾', path: ['passMarks'] }
+  { message: 'পাস মার্ক মোট নম্বরের চেয়ে বেশি হতে পারবে না', path: ['passMarks'] }
 );
 
 /**
@@ -290,7 +290,7 @@ export const createExam = async (req: AuthenticatedRequest, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      message: 'à¦à¦•à§à¦¸à¦¾à¦® à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à¦¾ à¦¹à§Ÿà§‡à¦›à§‡',
+      message: 'এক্সাম সফলভাবে তৈরি করা হয়েছে',
       data: exam,
     });
   } catch (error: any) {
@@ -369,7 +369,7 @@ export const getExamDetails = async (req: AuthenticatedRequest, res: Response) =
     const { examId } = req.params;
     const exam = await Examination.findById(examId);
     if (!exam) {
-      return res.status(404).json({ success: false, message: 'à¦à¦•à§à¦¸à¦¾à¦® à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'এক্সাম পাওয়া যায়নি' });
     }
 
     // Also fetch questions if teacher/admin wants to edit/view
@@ -427,7 +427,7 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
     if (!isTeacherOrAdmin && now < new Date(exam.startWindow)) {
       return res.status(403).json({
         success: false,
-        message: 'à¦à¦•à§à¦¸à¦¾à¦®à¦Ÿà¦¿ à¦à¦–à¦¨à¦“ à¦¶à§à¦°à§ à¦¹à§Ÿà¦¨à¦¿à¥¤ à¦¨à¦¿à¦°à§à¦§à¦¾à¦°à¦¿à¦¤ à¦¸à¦®à§Ÿà§‡ à¦ªà§à¦°à¦¬à§‡à¦¶ à¦•à¦°à§à¦¨à¥¤',
+        message: 'এক্সামটি এখনও শুরু হয়নি। নির্ধারিত সময়ে প্রবেশ করুন।',
         startWindow: exam.startWindow,
       });
     }
@@ -437,15 +437,35 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
       const existingAttempts = await ExamAttempt.countDocuments({
         examId: exam._id,
         gravId: user?.gravId,
-        status: { $in: ['submitted', 'evaluated'] },
+        status: { $in: ['submitted', 'evaluated', 'timeout'] },
       });
 
       if (existingAttempts >= (exam.attemptLimit || 1)) {
         return res.status(400).json({
           success: false,
-          message: 'à¦†à¦ªà¦¨à¦¿ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦‡ à¦ªà¦°à§€à¦•à§à¦·à¦¾à§Ÿ à¦…à¦‚à¦¶ à¦¨à¦¿à§Ÿà§‡à¦›à§‡à¦¨à¥¤',
+          message: 'আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।',
           alreadySubmitted: true,
         });
+      }
+    }
+
+    let attemptStartedAt: Date | undefined;
+    let attemptExpiresAt: Date | undefined;
+    if (!isTeacherOrAdmin) {
+      if (now > new Date(exam.endWindow)) {
+        return res.status(403).json({ success: false, message: 'পরীক্ষার সময়সীমা শেষ হয়ে গেছে।' });
+      }
+      let activeAttempt = await ExamAttempt.findOne({ examId: exam._id, gravId: user!.gravId, status: 'in_progress' }).sort({ startedAt: -1 });
+      if (!activeAttempt) {
+        activeAttempt = await ExamAttempt.create({ gravId: user!.gravId, examId: exam._id, batchId: exam.batchId, status: 'in_progress' });
+      }
+      attemptStartedAt = activeAttempt.startedAt;
+      const durationEndsAt = new Date(attemptStartedAt.getTime() + exam.durationMinutes * 60 * 1000);
+      attemptExpiresAt = durationEndsAt < new Date(exam.endWindow) ? durationEndsAt : new Date(exam.endWindow);
+      if (now > attemptExpiresAt) {
+        activeAttempt.status = 'timeout';
+        await activeAttempt.save();
+        return res.status(403).json({ success: false, message: 'আপনার নির্ধারিত পরীক্ষার সময় শেষ হয়ে গেছে।' });
       }
     }
 
@@ -473,6 +493,8 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
           questionPaperUrl: exam.questionPaperUrl,
           cqQuestions: exam.cqQuestions,
           questionsVersion: exam.questionsVersion || 1,
+          attemptStartedAt,
+          attemptExpiresAt,
         },
         mcqQuestions: questions,
       },
@@ -493,11 +515,11 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
 
     const exam = await Examination.findById(examId);
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
+    if (!user || user.role !== ROLES.STUDENT) {
+      return res.status(403).json({ success: false, message: 'Only enrolled students can submit an exam attempt.' });
+    }
 
-    const isTeacherOrAdmin =
-      user?.role === ROLES.SUPERADMIN ||
-      user?.role === ROLES.ADMIN ||
-      user?.role === ROLES.TEACHER;
+    const isTeacherOrAdmin = false;
 
     if (!isTeacherOrAdmin) {
       if (!exam.isPublished) {
@@ -519,28 +541,39 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
       if (now < new Date(exam.startWindow)) {
         return res.status(403).json({
           success: false,
-          message: 'à¦à¦•à§à¦¸à¦¾à¦®à¦Ÿà¦¿ à¦à¦–à¦¨à¦“ à¦¶à§à¦°à§ à¦¹à¦¯à¦¼à¦¨à¦¿à¥¤ à¦¨à¦¿à¦°à§à¦§à¦¾à¦°à¦¿à¦¤ à¦¸à¦®à¦¯à¦¼à§‡ à¦ªà§à¦°à¦¬à§‡à¦¶ à¦•à¦°à§à¦¨à¥¤',
+          message: 'এক্সামটি এখনও শুরু হয়নি। নির্ধারিত সময়ে প্রবেশ করুন।',
         });
       }
       if (now > new Date(exam.endWindow)) {
         return res.status(403).json({
           success: false,
-          message: 'à¦à¦•à§à¦¸à¦¾à¦®à§‡à¦° à¦¸à¦®à¦¯à¦¼à¦¸à§€à¦®à¦¾ à¦¶à§‡à¦· à¦¹à¦¯à¦¼à§‡ à¦—à§‡à¦›à§‡à¥¤',
+          message: 'এক্সামের সময়সীমা শেষ হয়ে গেছে।',
         });
       }
 
       const existingAttempts = await ExamAttempt.countDocuments({
         examId: exam._id,
         gravId: user?.gravId,
-        status: { $in: ['submitted', 'evaluated'] },
+        status: { $in: ['submitted', 'evaluated', 'timeout'] },
       });
       if (existingAttempts >= (exam.attemptLimit || 1)) {
         return res.status(400).json({
           success: false,
-          message: 'à¦†à¦ªà¦¨à¦¿ à¦‡à¦¤à¦¿à¦®à¦§à§à¦¯à§‡ à¦à¦‡ à¦ªà¦°à§€à¦•à§à¦·à¦¾à¦¯à¦¼ à¦…à¦‚à¦¶ à¦¨à¦¿à¦¯à¦¼à§‡à¦›à§‡à¦¨à¥¤',
+          message: 'আপনি ইতিমধ্যে এই পরীক্ষায় অংশ নিয়েছেন।',
           alreadySubmitted: true,
         });
       }
+    }
+
+    const activeAttempt = await ExamAttempt.findOne({ examId: exam._id, gravId: user.gravId, status: 'in_progress' }).sort({ startedAt: -1 });
+    if (!activeAttempt) {
+      return res.status(400).json({ success: false, message: 'No active exam attempt was found. Please reload the exam page.' });
+    }
+    const attemptDeadline = new Date(Math.min(activeAttempt.startedAt.getTime() + exam.durationMinutes * 60 * 1000, new Date(exam.endWindow).getTime()));
+    if (new Date() > attemptDeadline) {
+      activeAttempt.status = 'timeout';
+      await activeAttempt.save();
+      return res.status(403).json({ success: false, message: 'আপনার নির্ধারিত পরীক্ষার সময় শেষ হয়ে গেছে।' });
     }
 
     // Fetch questions WITH correctOptionId for server-side grading
@@ -586,21 +619,18 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
     const totalScore = mcqScore;
     const passed = isAutoEvaluated ? totalScore >= exam.passMarks : false;
 
-    const attempt = await ExamAttempt.create({
-      gravId: user?.gravId,
-      examId: exam._id,
-      batchId: exam.batchId,
-      submittedAt: new Date(),
-      answers: evaluatedAnswers,
-      cqAnswers: cqAnswers || [],
-      studentDocumentUrl: studentDocumentUrl || '',
-      mcqScore,
-      cqScore: 0,
-      totalScore,
-      passed,
-      isEvaluated: isAutoEvaluated,
-      status: isAutoEvaluated ? 'evaluated' : 'submitted',
-    });
+    const attempt = activeAttempt;
+    attempt.submittedAt = new Date();
+    attempt.answers = evaluatedAnswers;
+    attempt.cqAnswers = cqAnswers || [];
+    attempt.studentDocumentUrl = studentDocumentUrl || '';
+    attempt.mcqScore = mcqScore;
+    attempt.cqScore = 0;
+    attempt.totalScore = totalScore;
+    attempt.passed = passed;
+    attempt.isEvaluated = isAutoEvaluated;
+    attempt.status = isAutoEvaluated ? 'evaluated' : 'submitted';
+    await attempt.save();
 
     if (isAutoEvaluated) dispatchNotification(notifyStudent(user!.gravId, `পরীক্ষার ফল: ${exam.title}`,
       `"${exam.title}" পরীক্ষার ফল প্রস্তুত।\n${classroomLink(exam.batchId.toString(), `/exams/${exam._id}/result`)}`));
@@ -608,8 +638,8 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(200).json({
       success: true,
       message: isAutoEvaluated
-        ? 'à¦ªà¦°à§€à¦•à§à¦·à¦¾ à¦œà¦®à¦¾ à¦“ à¦®à§‚à¦²à§à¦¯à¦¾à§Ÿà¦¨ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¹à§Ÿà§‡à¦›à§‡'
-        : 'à¦ªà¦°à§€à¦•à§à¦·à¦¾ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦œà¦®à¦¾ à¦¦à§‡à¦“à§Ÿà¦¾ à¦¹à§Ÿà§‡à¦›à§‡! à¦¶à¦¿à¦•à§à¦·à¦• à¦®à§‚à¦²à§à¦¯à¦¾à¦¯à¦¼à¦¨ à¦•à¦°à¦¾à¦° à¦ªà¦° à¦šà§‚à¦¡à¦¼à¦¾à¦¨à§à¦¤ à¦«à¦²à¦¾à¦«à¦² à¦¦à§‡à¦–à¦¤à§‡ à¦ªà¦¾à¦¬à§‡à¦¨à¥¤',
+        ? 'পরীক্ষা জমা ও মূল্যায়ন সম্পন্ন হয়েছে'
+        : 'পরীক্ষা সফলভাবে জমা দেওয়া হয়েছে! শিক্ষক মূল্যায়ন করার পর চূড়ান্ত ফলাফল দেখতে পাবেন।',
       data: {
         attemptId: attempt._id,
         mcqScore,
@@ -676,7 +706,7 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
 
     const attempt = await ExamAttempt.findById(attemptId).populate('examId');
     if (!attempt) {
-      return res.status(404).json({ success: false, message: 'à¦¸à¦¾à¦¬à¦®à¦¿à¦¶à¦¨ à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'সাবমিশন পাওয়া যায়নি' });
     }
 
     const exam: any = attempt.examId;
@@ -714,12 +744,12 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
 
     return res.status(200).json({
       success: true,
-      message: 'à¦¶à¦¿à¦•à§à¦·à¦¾à¦°à§à¦¥à§€à¦° à¦–à¦¾à¦¤à¦¾ à¦®à§‚à¦²à§à¦¯à¦¾à§Ÿà¦¨ à¦“ à¦®à¦¾à¦°à§à¦•à¦¿à¦‚ à¦¸à¦«à¦²à¦­à¦¾à¦¬à§‡ à¦¸à¦‚à¦°à¦•à§à¦·à¦¿à¦¤ à¦¹à§Ÿà§‡à¦›à§‡!',
+      message: 'শিক্ষার্থীর খাতা মূল্যায়ন ও মার্কিং সফলভাবে সংরক্ষিত হয়েছে!',
       data: attempt,
     });
   } catch (error) {
     console.error('evaluateStudentAttempt error:', error);
-    return res.status(500).json({ success: false, message: 'à¦–à¦¾à¦¤à¦¾ à¦®à§‚à¦²à§à¦¯à¦¾à§Ÿà¦¨ à¦•à¦°à¦¤à§‡ à¦¬à§à¦¯à¦°à§à¦¥ à¦¹à§Ÿà§‡à¦›à§‡' });
+    return res.status(500).json({ success: false, message: 'খাতা মূল্যায়ন করতে ব্যর্থ হয়েছে' });
   }
 };
 
@@ -740,7 +770,7 @@ export const getStudentExamResult = async (req: AuthenticatedRequest, res: Respo
     }).populate('evaluatedBy', 'name');
 
     if (!attempt) {
-      return res.status(404).json({ success: false, message: 'à¦«à¦²à¦¾à¦«à¦² à¦ªà¦¾à¦“à§Ÿà¦¾ à¦¯à¦¾à§Ÿà¦¨à¦¿' });
+      return res.status(404).json({ success: false, message: 'ফলাফল পাওয়া যায়নি' });
     }
 
     // Only reveal the answer key once the student has no attempts left, or the exam window has closed.
