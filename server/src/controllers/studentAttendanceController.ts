@@ -16,12 +16,13 @@ async function canManageBatchAttendance(user: any, batch: any): Promise<boolean>
   if (!user || !batch) return false;
   if ([ROLES.SUPERADMIN, ROLES.ADMIN].includes(user.role)) return true;
   if (user.role === ROLES.TEACHER) {
-    const isAssigned = batch.assignedTeachers?.some(
-      (t: any) => t.toString() === user._id.toString()
-    );
-    if (isAssigned) return true;
+    const directTeachers = (batch.assignedTeachers || []).map((t: any) => t.toString());
+    // If the batch has explicitly assigned teachers, ONLY they are authorized
+    if (directTeachers.length > 0) {
+      return directTeachers.includes(user._id.toString());
+    }
 
-    // Check course instructors fallback
+    // Check course instructors fallback ONLY if no direct teachers are assigned
     const courseId = batch.courseId?._id || batch.courseId;
     if (courseId) {
       const course = await Course.findById(courseId).select('instructors').lean();

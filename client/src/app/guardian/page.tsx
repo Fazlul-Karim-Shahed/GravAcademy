@@ -116,7 +116,7 @@ export default function GuardianPortalPage() {
   const handleOpenReceipt = async (receiptNo: string) => {
     setLoadingReceipt(true);
     try {
-      const res = await api.get(`/finance/payments/${receiptNo}/receipt`);
+      const res = await api.get(`/finance/receipts/${receiptNo}`);
       if (res.data?.success) {
         setActiveReceipt(res.data.data);
         setAllReceiptPayments(res.data.allPayments || []);

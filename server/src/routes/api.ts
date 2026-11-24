@@ -300,6 +300,12 @@ router.get(
   requireFeature(FEATURE_FLAGS.finance),
   financeCtrl.getPaymentReceipt
 );
+router.get(
+  '/finance/payments/:id/receipt',
+  authenticate,
+  requireFeature(FEATURE_FLAGS.finance),
+  financeCtrl.getPaymentReceipt
+);
 router.post(
   '/finance/upload-document',
   authenticate,
