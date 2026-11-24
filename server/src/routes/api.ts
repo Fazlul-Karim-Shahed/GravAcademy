@@ -25,6 +25,7 @@ import * as guardianCtrl from '../controllers/guardianController';
 import * as assignmentCtrl from '../controllers/assignmentController';
 import * as marksheetCtrl from '../controllers/marksheetController';
 import * as teacherAttendanceCtrl from '../controllers/teacherAttendanceController';
+import * as studentAttendanceCtrl from '../controllers/studentAttendanceController';
 import * as companyExpenseCtrl from '../controllers/companyExpenseController';
 import * as whatsAppCtrl from '../controllers/whatsAppController';
 import * as showcaseCtrl from '../controllers/showcaseController';
@@ -345,6 +346,9 @@ router.post(
   validateRequest(classroomCtrl.createDiscussionSchema),
   classroomCtrl.postDiscussionMessage
 );
+// Student Attendance Routes
+router.get('/classrooms/:batchId/attendance', authenticate, studentAttendanceCtrl.getBatchAttendance);
+router.post('/classrooms/:batchId/attendance', authenticate, studentAttendanceCtrl.recordAttendance);
 
 // --- CONTENT HIERARCHY ROUTES ---
 // Modules

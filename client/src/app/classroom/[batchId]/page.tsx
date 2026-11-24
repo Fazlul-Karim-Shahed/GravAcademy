@@ -35,10 +35,12 @@ import {
   Award,
   ArrowRight,
   Clipboard,
+  ClipboardCheck,
   X,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { LiveKitClassroomModal } from '@/components/classroom/LiveKitClassroomModal';
+import { ClassroomAttendanceTab } from '@/components/classroom/ClassroomAttendanceTab';
 import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 
 interface BatchInfo {
@@ -107,7 +109,7 @@ export default function BatchClassroomPage({
   const { isFeatureEnabled } = useSiteSettings();
 
   // Start with a simple classroom home; detailed areas remain available as tabs.
-  const [activeTab, setActiveTab] = useState<'home' | 'discussion' | 'announcements' | 'members' | 'materials'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'discussion' | 'announcements' | 'members' | 'materials' | 'attendance'>('home');
   const [materials, setMaterials] = useState<ClassroomMaterial[]>([]);
   const [materialsLoading, setMaterialsLoading] = useState(false);
 
@@ -513,6 +515,7 @@ export default function BatchClassroomPage({
         <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6 lg:px-8">
           {[
             { key: 'home' as const, label: 'হোম', icon: BookOpen, count: null },
+            { key: 'attendance' as const, label: 'উপস্থিতি', icon: ClipboardCheck, count: null },
             { key: 'discussion' as const, label: 'ডিসকাশন', icon: MessageSquare, count: messages.length },
             { key: 'announcements' as const, label: 'নোটিশ', icon: Megaphone, count: announcements.length },
             { key: 'materials' as const, label: 'Materials', icon: FileText, count: materials.length },
@@ -594,9 +597,12 @@ export default function BatchClassroomPage({
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button onClick={() => setIsJitsiOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 text-xs font-bold transition-colors">
                 <Video className="w-4 h-4" /> লাইভ ক্লাস
+              </button>
+              <button onClick={() => setActiveTab('attendance')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 border border-transparent dark:border-[#262b34] py-2.5 px-4 text-xs font-bold transition-colors">
+                <ClipboardCheck className="w-4 h-4" /> উপস্থিতি
               </button>
               <button onClick={() => setActiveTab('announcements')} className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 border border-transparent dark:border-[#262b34] py-2.5 px-4 text-xs font-bold transition-colors">
                 <Megaphone className="w-4 h-4" /> নোটিশ
@@ -1075,6 +1081,15 @@ export default function BatchClassroomPage({
             )}
 
           </div>
+        )}
+
+        {/* ================= TAB 4: ATTENDANCE ================= */}
+        {activeTab === 'attendance' && (
+          <ClassroomAttendanceTab
+            batchId={batchId}
+            user={user}
+            assignedTeachers={batch?.assignedTeachers}
+          />
         )}
 
       </div>

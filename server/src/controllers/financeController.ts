@@ -946,16 +946,21 @@ export const getMyPayments = async (req: AuthenticatedRequest, res: Response) =>
     // Guardians may pass ?gravId=<wardId> to view a linked ward's payments.
     let gravId: string | undefined = user.role === 'student' ? user.gravId : undefined;
     const requestedGravId = req.query.gravId as string | undefined;
-    if (requestedGravId && requestedGravId !== user.gravId) {
-      if (user.role !== 'guardian') {
-        return res.status(403).json({ success: false, message: 'এই তথ্য দেখার অনুমতি আপনার নেই' });
-      }
+
+    if (user.role === 'guardian') {
       const guardianDoc = await User.findById(user._id).select('guardianDetails').lean();
-      const isLinked = guardianDoc?.guardianDetails?.linkedGravIds?.some(
-        (linkedGravId: string) => linkedGravId === requestedGravId
-      );
-      if (!isLinked) {
+      const linkedGravIds = guardianDoc?.guardianDetails?.linkedGravIds || [];
+      if (linkedGravIds.length === 0) {
+        return res.status(403).json({ success: false, message: 'কোনো শিক্ষার্থী লিংক করা নেই' });
+      }
+      const targetGravId = requestedGravId || linkedGravIds[0];
+      if (!linkedGravIds.includes(targetGravId)) {
         return res.status(403).json({ success: false, message: 'এই শিক্ষার্থীর তথ্য দেখার অনুমতি আপনার নেই' });
+      }
+      gravId = targetGravId;
+    } else if (requestedGravId && requestedGravId !== user.gravId) {
+      if (!['superadmin', 'admin'].includes(user.role)) {
+        return res.status(403).json({ success: false, message: 'এই তথ্য দেখার অনুমতি আপনার নেই' });
       }
       gravId = requestedGravId;
     }

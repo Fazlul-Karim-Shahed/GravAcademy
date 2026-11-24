@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { api } from '@/lib/api';
 import { formatBDDate } from '@/lib/dateUtils';
+import { UserAvatar } from '@/components/common/UserAvatar';
+import { MoneyReceiptModal, PaymentReceiptData } from '@/components/finance/MoneyReceiptModal';
 import {
   Users,
   FileCheck2,
@@ -12,6 +15,9 @@ import {
   XCircle,
   AlertCircle,
   X,
+  ArrowRight,
+  Printer,
+  CalendarCheck,
 } from 'lucide-react';
 
 interface RecentResult {
@@ -35,6 +41,13 @@ interface LinkedStudent {
     averageScorePercent: number | null;
     recentResults: RecentResult[];
   };
+  attendanceSummary?: {
+    totalClasses: number;
+    presentCount: number;
+    absentCount: number;
+    lateCount: number;
+    attendanceRate: number | null;
+  };
   paymentSummary: { totalPaid: number };
 }
 
@@ -57,6 +70,11 @@ export default function GuardianPortalPage() {
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [paymentSummary, setPaymentSummary] = useState<{ totalPaid: number; totalDue: number } | null>(null);
   const [loadingPayments, setLoadingPayments] = useState(false);
+
+  // Money Receipt Modal
+  const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
+  const [allReceiptPayments, setAllReceiptPayments] = useState<PaymentReceiptData[]>([]);
+  const [loadingReceipt, setLoadingReceipt] = useState(false);
 
   useEffect(() => {
     loadOverview();
@@ -95,6 +113,21 @@ export default function GuardianPortalPage() {
     }
   };
 
+  const handleOpenReceipt = async (receiptNo: string) => {
+    setLoadingReceipt(true);
+    try {
+      const res = await api.get(`/finance/payments/${receiptNo}/receipt`);
+      if (res.data?.success) {
+        setActiveReceipt(res.data.data);
+        setAllReceiptPayments(res.data.allPayments || []);
+      }
+    } catch (err) {
+      console.error('Failed to load receipt:', err);
+    } finally {
+      setLoadingReceipt(false);
+    }
+  };
+
   return (
     <div className="ga-page ga-dashboard-page text-slate-900 dark:text-slate-100 transition-colors py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,10 +139,23 @@ export default function GuardianPortalPage() {
               সন্তানের একাডেমিক অগ্রগতি
             </h1>
             <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-              আপনার সন্তানের পরীক্ষার ফলাফল, ভর্তিকৃত ব্যাচ এবং পেমেন্ট তথ্য এখান থেকে দেখুন।
+              আপনার সন্তানের ক্লাসরুম, পরীক্ষার ফলাফল, উপস্থিতি এবং পেমেন্ট সংক্রান্ত তথ্য এখান থেকে পর্যবেক্ষণ করুন।
             </p>
           </div>
-          {!loading && !error && <div className="grid grid-cols-2 divide-x divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white dark:divide-[#262b34] dark:border-[#262b34] dark:bg-[#111318]"><div className="px-5 py-3"><span className="block text-[11px] text-slate-500">শিক্ষার্থী</span><strong className="text-lg text-slate-900 dark:text-white">{students.length}</strong></div><div className="px-5 py-3"><span className="block text-[11px] text-slate-500">সক্রিয় ব্যাচ</span><strong className="text-lg text-slate-900 dark:text-white">{students.reduce((total, student) => total + student.batches.length, 0)}</strong></div></div>}
+          {!loading && !error && (
+            <div className="grid grid-cols-2 divide-x divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white dark:divide-[#262b34] dark:border-[#262b34] dark:bg-[#111318]">
+              <div className="px-5 py-3">
+                <span className="block text-[11px] text-slate-500">শিক্ষার্থী</span>
+                <strong className="text-lg text-slate-900 dark:text-white">{students.length}</strong>
+              </div>
+              <div className="px-5 py-3">
+                <span className="block text-[11px] text-slate-500">সক্রিয় ব্যাচ</span>
+                <strong className="text-lg text-slate-900 dark:text-white">
+                  {students.reduce((total, student) => total + student.batches.length, 0)}
+                </strong>
+              </div>
+            </div>
+          )}
         </header>
 
         {loading && (
@@ -136,13 +182,11 @@ export default function GuardianPortalPage() {
         {!loading && students.length > 0 && (
           <div className="space-y-8">
             {students.map((student) => (
-              <div key={student._id} className="rounded-xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] overflow-hidden">
+              <div key={student._id} className="rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] overflow-hidden">
                 {/* Student Header */}
                 <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-[#262b34]">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-950/60 border border-orange-200/80 dark:border-orange-800/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xl">
-                      {student.name?.slice(0, 2).toUpperCase() || '??'}
-                    </div>
+                    <UserAvatar name={student.name} avatarUrl={student.avatarUrl} size="lg" />
                     <div>
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white">{student.name}</h3>
                       <p className="text-xs text-slate-600 dark:text-slate-400">
@@ -155,6 +199,16 @@ export default function GuardianPortalPage() {
                   </div>
 
                   <div className="flex items-center gap-6">
+                    {/* Attendance summary badge if classes recorded */}
+                    {student.attendanceSummary?.attendanceRate !== null && student.attendanceSummary?.attendanceRate !== undefined && (
+                      <div>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">উপস্থিতি</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">
+                          {student.attendanceSummary.attendanceRate}%
+                        </span>
+                      </div>
+                    )}
+
                     <div>
                       <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">গড় স্কোর</span>
                       <span className="text-base font-bold text-orange-600 dark:text-orange-400">
@@ -163,10 +217,11 @@ export default function GuardianPortalPage() {
                           : '—'}
                       </span>
                     </div>
+
                     <button
                       type="button"
                       onClick={() => openPaymentModal(student)}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-950/70 text-orange-700 dark:text-orange-300 text-xs font-bold transition-colors border border-orange-200/70 dark:border-orange-800 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-950/70 text-orange-700 dark:text-orange-300 text-xs font-bold transition-colors border border-orange-200/70 dark:border-orange-800 cursor-pointer"
                     >
                       <Wallet className="w-3.5 h-3.5" />
                       পেমেন্ট দেখুন
@@ -178,16 +233,28 @@ export default function GuardianPortalPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
                   <div>
                     <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                      <BookOpen className="w-3.5 h-3.5 text-orange-500" /> ভর্তিকৃত ব্যাচ
+                      <BookOpen className="w-3.5 h-3.5 text-orange-500" /> ভর্তিকৃত ব্যাচ ও ক্লাসরুম
                     </h4>
                     {student.batches.length === 0 ? (
                       <p className="text-xs text-slate-400">কোনো সক্রিয় ভর্তি নেই</p>
                     ) : (
                       <div className="space-y-2">
                         {student.batches.map((b) => (
-                          <div key={b.batchId} className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] text-xs">
-                            <div className="font-bold text-slate-900 dark:text-white">{b.batchName}</div>
-                            <div className="text-slate-500 dark:text-slate-400">{b.courseName}</div>
+                          <div
+                            key={b.batchId}
+                            className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] text-xs flex items-center justify-between gap-3"
+                          >
+                            <div className="min-w-0">
+                              <div className="font-bold text-slate-900 dark:text-white truncate">{b.batchName}</div>
+                              <div className="text-slate-500 dark:text-slate-400 truncate">{b.courseName}</div>
+                            </div>
+                            <Link
+                              href={`/classroom/${b.batchId}`}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-bold text-[11px] shadow-xs transition-colors shrink-0"
+                            >
+                              <span>ক্লাসরুমে যান</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </Link>
                           </div>
                         ))}
                       </div>
@@ -237,11 +304,14 @@ export default function GuardianPortalPage() {
       {/* Payment History Modal */}
       {paymentModalStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="ga-card max-w-lg w-full max-h-[80vh] flex flex-col">
+          <div className="ga-card max-w-lg w-full max-h-[85vh] flex flex-col rounded-3xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] shadow-2xl">
             <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
-              <h3 className="text-sm font-black text-slate-900 dark:text-white">
-                "{paymentModalStudent.name}" এর পেমেন্ট হিস্ট্রি
-              </h3>
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                  "{paymentModalStudent.name}" এর পেমেন্ট হিস্ট্রি
+                </h3>
+                <p className="text-[11px] text-slate-400">Grav ID: #{paymentModalStudent.gravId}</p>
+              </div>
               <button
                 type="button"
                 onClick={() => setPaymentModalStudent(null)}
@@ -271,12 +341,29 @@ export default function GuardianPortalPage() {
                 <div className="text-center py-10 text-slate-400 text-xs font-medium">কোনো পেমেন্ট রেকর্ড নেই</div>
               ) : (
                 payments.map((p) => (
-                  <div key={p._id} className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] flex items-center justify-between text-xs">
+                  <div
+                    key={p._id}
+                    className="p-3 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200/70 dark:border-[#262b34] flex items-center justify-between text-xs"
+                  >
                     <div>
-                      <div className="font-bold text-slate-900 dark:text-white">{p.receiptNo}</div>
+                      <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <span>{p.receiptNo}</span>
+                      </div>
                       <div className="text-slate-500">{formatBDDate(p.paidAt || p.createdAt)}</div>
                     </div>
-                    <div className="font-bold text-emerald-600">৳{p.amountPaid?.toLocaleString('bn-BD')}</div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="font-bold text-emerald-600">৳{p.amountPaid?.toLocaleString('bn-BD')}</div>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenReceipt(p.receiptNo)}
+                        disabled={loadingReceipt}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#111318] hover:bg-orange-50 hover:border-orange-200 text-[11px] font-bold text-slate-700 dark:text-slate-200 hover:text-orange-600 transition-colors cursor-pointer"
+                      >
+                        <Printer className="w-3 h-3 text-orange-500" />
+                        <span>রিসিট</span>
+                      </button>
+                    </div>
                   </div>
                 ))
               )}
@@ -284,6 +371,14 @@ export default function GuardianPortalPage() {
           </div>
         </div>
       )}
+
+      {/* Official Money Receipt Modal */}
+      <MoneyReceiptModal
+        isOpen={!!activeReceipt}
+        onClose={() => setActiveReceipt(null)}
+        data={activeReceipt}
+        allPayments={allReceiptPayments}
+      />
     </div>
   );
 }
