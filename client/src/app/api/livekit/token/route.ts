@@ -4,7 +4,8 @@ import { AccessToken } from 'livekit-server-sdk';
 export async function POST(request: NextRequest) {
   try {
     const authorization = request.headers.get('authorization');
-    const { batchId } = await request.json() as { batchId?: string };
+    const body = await request.json().catch(() => null) as { batchId?: string } | null;
+    const batchId = body?.batchId;
     if (!authorization || !batchId || !/^[0-9a-fA-F]{24}$/.test(batchId)) {
       return NextResponse.json({ error: 'Authentication and a valid classroom are required.' }, { status: 401 });
     }
