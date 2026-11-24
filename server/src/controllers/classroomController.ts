@@ -59,7 +59,9 @@ async function verifyClassroomAccess(gravId: string, userRole: string, batchId: 
   }
 
   if (userRole === 'guardian') {
-    const guardian = await User.findOne({ gravId });
+    const guardian = mongoose.Types.ObjectId.isValid(gravId)
+      ? await User.findById(gravId)
+      : await User.findOne({ gravId });
     const gravIds = guardian?.guardianDetails?.linkedGravIds || [];
     if (gravIds.length === 0) return false;
 
@@ -280,6 +282,13 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
 
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
+
+    if (!['superadmin', 'admin', 'teacher'].includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: 'শুধুমাত্র শিক্ষক ও অ্যাডমিন নোটিশ/অ্যানাউন্সমেন্ট প্রকাশ করতে পারবেন।',
+      });
+    }
 
     const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
     if (!hasAccess) {

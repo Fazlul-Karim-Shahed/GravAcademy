@@ -113,6 +113,9 @@ export const getBatches = async (req: Request, res: Response) => {
 export const getBatchById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid Batch ID' });
+    }
     const batch = await Batch.findById(id)
       .populate('courseId', 'title slug gradeLevel subject')
       .populate('assignedTeachers', 'name email');
