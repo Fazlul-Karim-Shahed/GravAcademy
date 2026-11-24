@@ -42,6 +42,7 @@ export const createStaffSchema = z.object({
   phone: z.string().trim().min(1, 'মোবাইল নম্বর দিন'),
   password: z.string().min(6, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'),
   role: z.enum(['teacher', 'guardian', 'employee']),
+  linkedGravIds: z.array(z.string()).optional(),
 });
 
 /**
@@ -262,6 +263,18 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
 
     const gravId = await generateUniquegravId();
 
+    let validLinkedGravIds: string[] = [];
+    if (body.role === 'guardian' && Array.isArray(body.linkedGravIds) && body.linkedGravIds.length > 0) {
+      const validStudents = await User.find({
+        $or: [
+          { gravId: { $in: body.linkedGravIds } },
+          { _id: { $in: body.linkedGravIds.filter((id) => mongoose.Types.ObjectId.isValid(id)) } },
+        ],
+        role: ROLES.STUDENT,
+      }).select('gravId _id');
+      validLinkedGravIds = validStudents.map((s) => s.gravId || s._id.toString());
+    }
+
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(body.password, salt);
 
@@ -274,6 +287,9 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
       role: body.role,
       status: 'pending_verification',
       emailVerified: false,
+      ...(body.role === 'guardian' && validLinkedGravIds.length > 0
+        ? { guardianDetails: { linkedGravIds: validLinkedGravIds } }
+        : {}),
     });
 
     const { rawToken, verificationUrl } = await createEmailVerification({ accountId: user._id });
@@ -303,7 +319,12 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
       action: 'STAFF_ACCOUNT_CREATED',
       resourceType: 'User',
       resourceId: user._id.toString(),
-      metadata: { role: body.role, targetEmail: user.email, targetName: user.name },
+      metadata: {
+        role: body.role,
+        targetEmail: user.email,
+        targetName: user.name,
+        ...(validLinkedGravIds.length > 0 ? { linkedGravIds: validLinkedGravIds } : {}),
+      },
       ipAddress: req.ip,
       userAgent: req.headers['user-agent'],
     });
@@ -506,15 +527,22 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
       return res.status(400).json({ success: false, message: 'এই ইউজার একজন অভিভাবক নন' });
     }
 
-    const validStudents = await User.find({ gravId: { $in: gravIds }, role: ROLES.STUDENT }).select('gravId');
+    const validStudents = await User.find({
+      $or: [
+        { gravId: { $in: gravIds } },
+        { _id: { $in: gravIds.filter((id: string) => mongoose.Types.ObjectId.isValid(id)) } },
+      ],
+      role: ROLES.STUDENT,
+    }).select('gravId _id');
     if (validStudents.length !== gravIds.length) {
       return res.status(400).json({ success: false, message: 'এক বা একাধিক শিক্ষার্থী সঠিক নয়' });
     }
 
+    const normalizedGravIds = validStudents.map((s) => s.gravId || s._id.toString());
     const previouslinkedGravIds = guardian.guardianDetails?.linkedGravIds || [];
     guardian.guardianDetails = {
       ...(guardian.guardianDetails || {}),
-      linkedGravIds: gravIds,
+      linkedGravIds: normalizedGravIds,
     } as typeof guardian.guardianDetails;
     await guardian.save();
 

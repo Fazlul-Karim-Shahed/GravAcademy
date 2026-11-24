@@ -135,7 +135,7 @@ export default function AdminUsersPage() {
         api.get('/users', { params: { role: 'student', limit: 500 } }),
       ]);
       const linked = (guardianRes.data?.data?.guardianDetails?.linkedGravIds || []) as any[];
-      setSelectedgravIds(linked.map((s: any) => (typeof s === 'string' ? s : s._id)));
+      setSelectedgravIds(linked.map((s: any) => (typeof s === 'string' ? s : s.gravId || s._id)));
       setAllStudents(studentsRes.data?.data || []);
     } catch (e) {
       setLinkError('তথ্য লোড করতে সমস্যা হয়েছে');
@@ -176,16 +176,33 @@ export default function AdminUsersPage() {
     return s.name.toLowerCase().includes(q) || (s.gravId || '').toLowerCase().includes(q);
   });
 
-  // Create Staff Account (Teacher / Guardian / Employee) modal
+  // Create Member Account (Teacher / Guardian / Employee) modal
   const [showCreateStaffModal, setShowCreateStaffModal] = useState(false);
   const [staffName, setStaffName] = useState('');
   const [staffEmail, setStaffEmail] = useState('');
   const [staffPhone, setStaffPhone] = useState('');
   const [staffPassword, setStaffPassword] = useState('');
   const [staffRole, setStaffRole] = useState<'teacher' | 'guardian' | 'employee'>('teacher');
+  const [staffLinkedStudents, setStaffLinkedStudents] = useState<string[]>([]);
+  const [staffStudentSearch, setStaffStudentSearch] = useState('');
+  const [isStaffStudentDropdownOpen, setIsStaffStudentDropdownOpen] = useState(false);
+  const [loadingStudents, setLoadingStudents] = useState(false);
   const [creatingStaff, setCreatingStaff] = useState(false);
   const [createStaffError, setCreateStaffError] = useState('');
   const [createStaffSuccess, setCreateStaffSuccess] = useState('');
+
+  const fetchStudentsList = async () => {
+    if (allStudents.length > 0) return;
+    setLoadingStudents(true);
+    try {
+      const res = await api.get('/users', { params: { role: 'student', limit: 500 } });
+      setAllStudents(res.data?.data || []);
+    } catch (e) {
+      console.error('Failed to load students list', e);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
 
   const resetStaffForm = () => {
     setStaffName('');
@@ -193,21 +210,34 @@ export default function AdminUsersPage() {
     setStaffPhone('');
     setStaffPassword('');
     setStaffRole('teacher');
+    setStaffLinkedStudents([]);
+    setStaffStudentSearch('');
+    setIsStaffStudentDropdownOpen(false);
     setCreateStaffError('');
   };
+
+  const filteredStaffStudents = allStudents.filter((s) => {
+    if (!staffStudentSearch.trim()) return true;
+    const q = staffStudentSearch.trim().toLowerCase();
+    return s.name.toLowerCase().includes(q) || (s.gravId || '').toLowerCase().includes(q);
+  });
 
   const handleCreateStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateStaffError('');
     setCreatingStaff(true);
     try {
-      const res = await api.post('/users/create-staff', {
+      const payload: any = {
         name: staffName.trim(),
         email: staffEmail.trim() || undefined,
         phone: staffPhone.trim() || undefined,
         password: staffPassword,
         role: staffRole,
-      });
+      };
+      if (staffRole === 'guardian' && staffLinkedStudents.length > 0) {
+        payload.linkedGravIds = staffLinkedStudents;
+      }
+      const res = await api.post('/users/create-staff', payload);
       if (res.data?.success) {
         setCreateStaffSuccess(`"${staffName}" account তৈরি হয়েছে (Grav ID: ${res.data.data?.gravId})। চালু করতে email verification প্রয়োজন।`);
         resetStaffForm();
@@ -641,11 +671,11 @@ export default function AdminUsersPage() {
 
       </div>
 
-      {/* Create Staff Account Modal (Teacher / Guardian / Employee) */}
+      {/* Create Staff / Member Account Modal (Teacher / Guardian / Employee) */}
       {showCreateStaffModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs px-4">
-          <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-md w-full border border-slate-200 dark:border-[#262b34] shadow-2xl">
-            <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
+          <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-md w-full border border-slate-200 dark:border-[#262b34] shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between shrink-0">
               <h3 className="text-sm font-black text-slate-900 dark:text-white">নতুন মেম্বার অ্যাকাউন্ট তৈরি করুন</h3>
               <button
                 type="button"
@@ -659,7 +689,7 @@ export default function AdminUsersPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateStaff} className="p-5 space-y-4">
+            <form onSubmit={handleCreateStaff} className="p-5 space-y-4 overflow-y-auto flex-1">
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1.5">রোল</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -671,7 +701,12 @@ export default function AdminUsersPage() {
                     <button
                       key={r.id}
                       type="button"
-                      onClick={() => setStaffRole(r.id)}
+                      onClick={() => {
+                        setStaffRole(r.id);
+                        if (r.id === 'guardian') {
+                          fetchStudentsList();
+                        }
+                      }}
                       className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         staffRole === r.id
                           ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
@@ -739,6 +774,134 @@ export default function AdminUsersPage() {
                 />
               </div>
 
+              {/* If Guardian is selected, show student linking select box */}
+              {staffRole === 'guardian' && (
+                <div className="pt-2 border-t border-slate-100 dark:border-[#262b34]">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                      <Link2 className="w-3.5 h-3.5 text-orange-500" />
+                      <span>শিক্ষার্থী লিংক করুন</span>
+                      <span className="text-[11px] font-normal text-slate-400">(ঐচ্ছিক)</span>
+                    </label>
+                    {staffLinkedStudents.length > 0 && (
+                      <span className="text-[11px] font-bold text-orange-600 dark:text-orange-400">
+                        {staffLinkedStudents.length} জন নির্বাচিত
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Selected Students Chips */}
+                  {staffLinkedStudents.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {staffLinkedStudents.map((gravId) => {
+                        const student = allStudents.find((s) => (s.gravId || s._id) === gravId);
+                        return (
+                          <span
+                            key={gravId}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 dark:bg-orange-950/40 border border-orange-200/80 dark:border-orange-800/50 text-xs font-semibold text-orange-700 dark:text-orange-300"
+                          >
+                            <span className="truncate max-w-[130px]">{student?.name || gravId}</span>
+                            <span className="text-[10px] text-orange-500 font-mono">#{gravId}</span>
+                            <button
+                              type="button"
+                              onClick={() => setStaffLinkedStudents((prev) => prev.filter((id) => id !== gravId))}
+                              className="hover:text-rose-600 text-orange-400 hover:text-rose-500 transition-colors cursor-pointer"
+                              title="বাদ দিন"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Search / Select dropdown box */}
+                  <div className="relative">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={staffStudentSearch}
+                        onChange={(e) => {
+                          setStaffStudentSearch(e.target.value);
+                          setIsStaffStudentDropdownOpen(true);
+                        }}
+                        onFocus={() => {
+                          setIsStaffStudentDropdownOpen(true);
+                          fetchStudentsList();
+                        }}
+                        placeholder="শিক্ষার্থীর নাম বা Grav ID দিয়ে খুঁজুন..."
+                        className="w-full bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-slate-900 dark:text-white text-xs rounded-xl pl-8.5 pr-8 py-2.5 focus:outline-none focus:border-orange-500"
+                      />
+                      {staffStudentSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setStaffStudentSearch('')}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Backdrop */}
+                    {isStaffStudentDropdownOpen && (
+                      <div
+                        className="fixed inset-0 z-20"
+                        onClick={() => setIsStaffStudentDropdownOpen(false)}
+                      />
+                    )}
+
+                    {/* Dropdown list */}
+                    {isStaffStudentDropdownOpen && (
+                      <div className="absolute left-0 right-0 top-full mt-1 z-30 max-h-48 overflow-y-auto bg-white dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] rounded-xl shadow-xl p-1.5 space-y-1">
+                        {loadingStudents ? (
+                          <div className="p-3 text-center text-xs text-slate-400">শিক্ষার্থী লোড হচ্ছে...</div>
+                        ) : filteredStaffStudents.length === 0 ? (
+                          <div className="p-3 text-center text-xs text-slate-400">কোনো শিক্ষার্থী পাওয়া যায়নি</div>
+                        ) : (
+                          filteredStaffStudents.slice(0, 50).map((s) => {
+                            const sGravId = s.gravId || s._id;
+                            const isSelected = staffLinkedStudents.includes(sGravId);
+                            return (
+                              <button
+                                key={s._id}
+                                type="button"
+                                onClick={() => {
+                                  setStaffLinkedStudents((prev) =>
+                                    isSelected ? prev.filter((id) => id !== sGravId) : [...prev, sGravId]
+                                  );
+                                }}
+                                className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold'
+                                    : 'hover:bg-slate-100 dark:hover:bg-[#1a202c] text-slate-700 dark:text-slate-300'
+                                }`}
+                              >
+                                <div className="truncate pr-2">
+                                  <div className="font-semibold truncate">{s.name}</div>
+                                  <div className="text-[10px] text-slate-400 font-mono">#{s.gravId || s._id}</div>
+                                </div>
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {}}
+                                  className="w-3.5 h-3.5 accent-orange-600 rounded pointer-events-none"
+                                />
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    অভিভাবক লগইন করার পর লিঙ্ক করা শিক্ষার্থীদের ড্যাশবোর্ড ও অগ্রগতি দেখতে পাবেন।
+                  </p>
+                </div>
+              )}
+
               {createStaffError && (
                 <div className="text-xs text-rose-600 font-bold">{createStaffError}</div>
               )}
@@ -800,7 +963,8 @@ export default function AdminUsersPage() {
                 <div className="text-center py-10 text-slate-400 text-xs font-medium">কোনো শিক্ষার্থী পাওয়া যায়নি</div>
               ) : (
                 filteredModalStudents.map((s) => {
-                  const checked = selectedgravIds.includes(s._id);
+                  const sGravId = s.gravId || s._id;
+                  const checked = selectedgravIds.includes(sGravId);
                   return (
                     <label
                       key={s._id}
@@ -813,7 +977,7 @@ export default function AdminUsersPage() {
                       <input
                         type="checkbox"
                         checked={checked}
-                        onChange={() => toggleStudentSelection(s._id)}
+                        onChange={() => toggleStudentSelection(sGravId)}
                         className="w-4 h-4 accent-orange-600 rounded"
                       />
                       <div className="min-w-0">
