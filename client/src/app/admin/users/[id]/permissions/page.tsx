@@ -115,13 +115,23 @@ export default function UserPermissionsEditPage() {
       });
 
       if (res.data?.success) {
+        setTargetUser((prev) =>
+          prev
+            ? {
+                ...prev,
+                role: selectedRole,
+                customPermissions,
+                revokedPermissions,
+              }
+            : prev
+        );
         setStatusMessage({
           type: 'success',
-          text: `ব্যবহারকারীর রোল (${selectedRole.toUpperCase()}) ও পারমিশন সফলভাবে আপডেট ও সেভ হয়েছে!`,
+          text: `ব্যবহারকারীর রোল (${selectedRole.toUpperCase()}) ও পারমিশন সফলভাবে সংরক্ষণ করা হয়েছে!`,
         });
         setTimeout(() => {
-          router.push('/admin/users');
-        }, 1200);
+          setStatusMessage(null);
+        }, 5000);
       }
     } catch (err: any) {
       setStatusMessage({
@@ -192,10 +202,10 @@ export default function UserPermissionsEditPage() {
             এই আইডি সম্পন্ন কোনো অ্যাকাউন্ট ডাটাবেসে নেই বা মুছে ফেলা হয়েছে।
           </p>
           <Link
-            href="/admin/settings"
+            href="/admin/users"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> সেটিংস তালিকায় ফিরে যান
+            <ArrowLeft className="w-4 h-4" /> ইউজার তালিকায় ফিরে যান
           </Link>
         </div>
       </div>
@@ -206,8 +216,8 @@ export default function UserPermissionsEditPage() {
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref="/admin/settings"
-          backLabel="Settings"
+          backHref="/admin/users"
+          backLabel="Users"
           eyebrow="Access control"
           title={`${targetUser.name} - রোল ও পারমিশন`}
           description="ব্যবহারকারীর প্রাইমারি রোল এবং সুনির্দিষ্ট গ্র্যানুলার পারমিশন পরিচালনা করুন।"
