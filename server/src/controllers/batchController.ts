@@ -388,6 +388,9 @@ export const updateBatch = async (req: AuthenticatedRequest, res: Response) => {
       batch.weeklySchedule = weeklySchedule;
     }
     if (capacity !== undefined) batch.capacity = Number(capacity);
+    if (req.body.assignedTeachers !== undefined && Array.isArray(req.body.assignedTeachers)) {
+      batch.assignedTeachers = req.body.assignedTeachers;
+    }
 
     const startDate = req.body.startDate;
     if (typeof startDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(startDate) || Number.isNaN(Date.parse(`${startDate}T00:00:00.000Z`)) || new Date(`${startDate}T00:00:00.000Z`).toISOString().slice(0, 10) !== startDate) {

@@ -5,11 +5,12 @@ import { StudentAttendance, IStudentAttendanceRecord } from '../models/StudentAt
 import { Batch } from '../models/Batch';
 import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
+import { Course } from '../models/Course';
 import { ROLES } from '../types/roles';
 
 /**
  * Verify if the caller can manage (take/update) attendance for the specified batch.
- * Only Superadmin, Admin, or Teachers assigned to this batch are allowed.
+ * Only Superadmin, Admin, or Teachers assigned to this batch (or course instructors) are allowed.
  */
 async function canManageBatchAttendance(user: any, batch: any): Promise<boolean> {
   if (!user || !batch) return false;
@@ -18,7 +19,17 @@ async function canManageBatchAttendance(user: any, batch: any): Promise<boolean>
     const isAssigned = batch.assignedTeachers?.some(
       (t: any) => t.toString() === user._id.toString()
     );
-    return Boolean(isAssigned);
+    if (isAssigned) return true;
+
+    // Check course instructors fallback
+    const courseId = batch.courseId?._id || batch.courseId;
+    if (courseId) {
+      const course = await Course.findById(courseId).select('instructors').lean();
+      const isCourseInstructor = (course?.instructors || []).some(
+        (t: any) => t.toString() === user._id.toString()
+      );
+      if (isCourseInstructor) return true;
+    }
   }
   return false;
 }
