@@ -254,7 +254,7 @@ export default function AdminUsersPage() {
               className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
             >
               <UserPlus className="w-4 h-4 text-orange-500" />
-              <span>নতুন স্টাফ তৈরি করুন</span>
+              <span>নতুন মেম্বার তৈরি করুন</span>
             </button>
             <Link
               href="/admin/admissions"
@@ -646,7 +646,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs px-4">
           <div className="bg-white dark:bg-[#111318] rounded-3xl max-w-md w-full border border-slate-200 dark:border-[#262b34] shadow-2xl">
             <div className="p-5 border-b border-slate-200 dark:border-[#262b34] flex items-center justify-between">
-              <h3 className="text-sm font-black text-slate-900 dark:text-white">নতুন স্টাফ অ্যাকাউন্ট তৈরি করুন</h3>
+              <h3 className="text-sm font-black text-slate-900 dark:text-white">নতুন মেম্বার অ্যাকাউন্ট তৈরি করুন</h3>
               <button
                 type="button"
                 onClick={() => {
