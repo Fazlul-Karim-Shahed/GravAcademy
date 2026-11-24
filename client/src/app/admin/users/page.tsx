@@ -469,19 +469,22 @@ export default function AdminUsersPage() {
                   <th className="py-3.5 px-4">যোগাযোগ (Email / Phone)</th>
                   <th className="py-3.5 px-3">রোল (Role)</th>
                   <th className="py-3.5 px-3">স্ট্যাটাস</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-right">অ্যাকশন</th>
+                  <th className="py-3.5 px-2"></th>
+                  <th className="py-3.5 px-2"></th>
+                  <th className="py-3.5 px-2"></th>
+                  <th className="py-3.5 px-3 text-center w-12"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">
                 {loadingUsers ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-14 text-slate-400 font-medium">
+                    <td colSpan={9} className="text-center py-14 text-slate-400 font-medium">
                       ইউজার তালিকা লোড হচ্ছে...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-14 text-slate-400 font-medium">
+                    <td colSpan={9} className="text-center py-14 text-slate-400 font-medium">
                       কোনো ব্যবহারকারী অ্যাকাউন্ট পাওয়া যায়নি।
                     </td>
                   </tr>
@@ -561,50 +564,61 @@ export default function AdminUsersPage() {
                         </span>
                       </td>
 
-                      {/* Action */}
-                      <td className="py-3.5 px-4 sm:px-6 text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <Link
-                            href={`/admin/users/${u._id}`}
-                            title="প্রোফাইল দেখুন"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20"
+                      {/* Button Column 1: Profile */}
+                      <td className="py-3.5 px-2 whitespace-nowrap text-center">
+                        <Link
+                          href={`/admin/users/${u._id}`}
+                          title="প্রোফাইল দেখুন"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>প্রোফাইল</span>
+                        </Link>
+                      </td>
+
+                      {/* Button Column 2: Link Student (for guardian) */}
+                      <td className="py-3.5 px-2 whitespace-nowrap text-center">
+                        {u.role === 'guardian' ? (
+                          <button
+                            type="button"
+                            onClick={() => openLinkModal(u)}
+                            title="শিক্ষার্থী লিংক করুন"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/70 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors border border-amber-200/70 dark:border-amber-800 shadow-2xs cursor-pointer"
                           >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>প্রোফাইল</span>
-                          </Link>
-                          {u.role === 'guardian' && (
-                            <button
-                              type="button"
-                              onClick={() => openLinkModal(u)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/70 text-amber-700 dark:text-amber-300 font-bold text-xs transition-colors shadow-2xs"
-                            >
-                              <Link2 className="w-3.5 h-3.5" />
-                              <span>শিক্ষার্থী লিংক করুন</span>
-                            </button>
-                          )}
-                          <Link
-                            href={`/admin/users/${u._id}/permissions`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-[#262b34] shadow-2xs"
+                            <Link2 className="w-3.5 h-3.5" />
+                            <span>শিক্ষার্থী লিংক</span>
+                          </button>
+                        ) : null}
+                      </td>
+
+                      {/* Button Column 3: Permissions */}
+                      <td className="py-3.5 px-2 whitespace-nowrap text-center">
+                        <Link
+                          href={`/admin/users/${u._id}/permissions`}
+                          title="পারমিশন ও অ্যাক্সেস কন্ট্রোল"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-[#262b34] shadow-2xs cursor-pointer"
+                        >
+                          <Key className="w-3.5 h-3.5 text-orange-500" />
+                          <span>পারমিশন</span>
+                        </Link>
+                      </td>
+
+                      {/* Button Column 4: Delete */}
+                      <td className="py-3.5 px-3 whitespace-nowrap text-center w-12">
+                        {canDeleteUser(u) ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeleteError('');
+                              setDeleteTarget(u);
+                            }}
+                            disabled={deletinggravId === u._id}
+                            title="ইউজার ডিলিট করুন"
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-600 dark:text-rose-300 transition-colors border border-rose-200/70 dark:border-rose-900/40 shadow-2xs disabled:opacity-50 cursor-pointer"
                           >
-                            <Key className="w-3.5 h-3.5 text-orange-500" />
-                            <span>পারমিশন ও কন্ট্রোল</span>
-                            <ChevronRight className="w-3 h-3" />
-                          </Link>
-                          {canDeleteUser(u) && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setDeleteError('');
-                                setDeleteTarget(u);
-                              }}
-                              disabled={deletinggravId === u._id}
-                              title="ইউজার ডিলিট"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 text-rose-600 dark:text-rose-300 transition-colors shadow-2xs disabled:opacity-50 cursor-pointer"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                        </div>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        ) : null}
                       </td>
                     </tr>
                   ))
