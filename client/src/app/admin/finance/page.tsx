@@ -669,7 +669,7 @@ export default function AdminFinancePage() {
         )}
 
         <AdminPageHeader title="ফাইন্যান্স ম্যানেজমেন্ট" description="Payment, income, expense এবং financial report পরিচালনা করুন।" actions={<>
-            {can('finance.view') && (
+            {can('finance.expense_manage') && (
               <Link
                 href="/admin/finance/company-expenses"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] hover:border-orange-300 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
@@ -678,13 +678,15 @@ export default function AdminFinancePage() {
                 Company Expense
               </Link>
             )}
-            <Link
-              href="/admin/admissions"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all cursor-pointer"
-            >
-              <PlusCircle className="w-4 h-4" />
-              নতুন পেমেন্ট / বকেয়া গ্রহণ
-            </Link>
+            {can('admissions.create') && (
+              <Link
+                href={user?.role === 'employee' ? '/employee/admissions' : '/admin/admissions'}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all cursor-pointer"
+              >
+                <PlusCircle className="w-4 h-4" />
+                নতুন পেমেন্ট / বকেয়া গ্রহণ
+              </Link>
+            )}
           </>} />
 
         {/* 4 Financial Stat Cards (Clickable Filters) */}

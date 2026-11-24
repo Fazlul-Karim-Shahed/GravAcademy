@@ -132,6 +132,10 @@ interface EnrollmentRecord {
 
 export default function AdminAdmissionsPage() {
   const { user } = useAuth();
+  const canCreateAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.create'));
+  const canViewAdmissions = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.view'));
+  const canRemoveAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.remove'));
+
   const searchParams = useSearchParams();
   const requestId = searchParams.get('requestId');
 
@@ -232,9 +236,13 @@ export default function AdminAdmissionsPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchInitialData();
-    fetchRecentAdmissions();
-  }, []);
+    if (canCreateAdmission) {
+      fetchInitialData();
+    }
+    if (canViewAdmissions) {
+      fetchRecentAdmissions();
+    }
+  }, [canCreateAdmission, canViewAdmissions]);
 
   useEffect(() => {
     if (!requestId) return;
@@ -597,24 +605,55 @@ export default function AdminAdmissionsPage() {
     }
   };
 
+  if (!canViewAdmissions && !canCreateAdmission) {
+    return (
+      <div className="ga-page ga-admin-page text-slate-900 dark:text-slate-100 py-16 flex items-center justify-center">
+        <div className="ga-card max-w-md w-full p-8 text-center">
+          <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">অ্যাক্সেস অনুমোদিত নয়</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 mb-6">
+            ভর্তি সংক্রান্ত তথ্য দেখার বা নতুন শিক্ষার্থী ভর্তি করার অনুমতি আপনার অ্যাকাউন্টে নেই।
+          </p>
+          <Link
+            href={user?.role === 'employee' ? '/employee' : '/admin'}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> ড্যাশবোর্ডে ফিরে যান
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="ga-page ga-admin-page text-slate-900 dark:text-slate-100 py-10 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <AdminPageHeader title="ম্যানুয়াল শিক্ষার্থী ভর্তি" description="নতুন শিক্ষার্থীর তথ্য, course, batch এবং payment দিয়ে ভর্তি সম্পন্ন করুন।" actions={<>
-            <Link
-              href="/admin/batches"
-              className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors flex items-center gap-1.5"
-            >
-              <Layers className="w-4 h-4 text-orange-500" /> ব্যাচসমূহ
-            </Link>
-          </>} />
+        <AdminPageHeader
+          title={canCreateAdmission ? 'ম্যানুয়াল শিক্ষার্থী ভর্তি' : 'শিক্ষার্থী ভর্তি তালিকা'}
+          description={
+            canCreateAdmission
+              ? 'নতুন শিক্ষার্থীর তথ্য, course, batch এবং payment দিয়ে ভর্তি সম্পন্ন করুন।'
+              : 'সকল ব্যাচের সাম্প্রতিক শিক্ষার্থী ভর্তির বিবরণ ও তালিকা দেখুন।'
+          }
+          actions={
+            user?.role !== 'employee' ? (
+              <Link
+                href="/admin/batches"
+                className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors flex items-center gap-1.5"
+              >
+                <Layers className="w-4 h-4 text-orange-500" /> ব্যাচসমূহ
+              </Link>
+            ) : null
+          }
+        />
 
         {/* Two Column Grid: Form (Left) & Recent Admissions (Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
           
-          {/* LEFT: Admission Form (7 cols on lg) */}
-          <div className="lg:col-span-8 space-y-6">
+          {/* LEFT: Admission Form */}
+          {canCreateAdmission && (
+            <div className={`${canViewAdmissions ? 'lg:col-span-8' : 'lg:col-span-12'} space-y-6`}>
             <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-[#262b34] dark:bg-[#111318] sm:p-8">
               <div className="flex items-center justify-between pb-5 mb-6 border-b border-slate-100 dark:border-[#262b34]">
                 <div className="flex items-center gap-2.5">
@@ -1136,10 +1175,12 @@ export default function AdminAdmissionsPage() {
               </form>
             </div>
           </div>
+          )}
 
-          {/* RIGHT: Recent Admissions Feed (5 cols on lg) */}
-          <div className="lg:col-span-4 space-y-4">
-        <div className="ga-card p-6 flex flex-col h-full max-h-[820px]">
+          {/* RIGHT: Recent Admissions Feed */}
+          {canViewAdmissions && (
+            <div className={`${canCreateAdmission ? 'lg:col-span-4' : 'lg:col-span-12'} space-y-4`}>
+              <div className={`ga-card p-6 flex flex-col ${canCreateAdmission ? 'h-full max-h-[820px]' : 'min-h-[500px]'}`}>
               
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
@@ -1234,14 +1275,16 @@ export default function AdminAdmissionsPage() {
                           </span>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setAdmissionToCancel(adm)}
-                          title="ভর্তি বাতিল / কোর্স থেকে রিমুভ করুন"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50 transition-colors cursor-pointer"
-                        >
-                          <UserMinus className="w-4 h-4" />
-                        </button>
+                        {canRemoveAdmission && (
+                          <button
+                            type="button"
+                            onClick={() => setAdmissionToCancel(adm)}
+                            title="ভর্তি বাতিল / কোর্স থেকে রিমুভ করুন"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/50 transition-colors cursor-pointer"
+                          >
+                            <UserMinus className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))
@@ -1250,6 +1293,7 @@ export default function AdminAdmissionsPage() {
 
             </div>
           </div>
+          )}
 
         </div>
 

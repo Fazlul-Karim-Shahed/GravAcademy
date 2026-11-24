@@ -26,7 +26,9 @@ interface EnrollmentRow {
 
 export default function EmployeePanelPage() {
   const { user } = useAuth();
-  const hasFinanceAccess = Boolean(user?.effectivePermissions?.includes('finance.view'));
+  const canViewAdmissions = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.view'));
+  const canCreateAdmissions = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.create'));
+  const canViewFinance = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('finance.view'));
 
   const [pendingEnrollments, setPendingEnrollments] = useState<EnrollmentRow[]>([]);
   const [pendingTotal, setPendingTotal] = useState(0);
@@ -36,9 +38,13 @@ export default function EmployeePanelPage() {
 
   useEffect(() => {
     loadOverview();
-  }, []);
+  }, [user]);
 
   const loadOverview = async () => {
+    if (!canViewAdmissions) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -72,21 +78,31 @@ export default function EmployeePanelPage() {
             অপারেশন সাপোর্ট প্যানেল
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-            শিক্ষার্থী ভর্তি ও সংশ্লিষ্ট অপারেশন পরিচালনা করুন।
+            আপনার অ্যাকাউন্টের অনুমোদিত অপারেশনসমূহ পরিচালনা করুন।
           </p>
         </div>
 
         {/* Quick action links to areas Employee has backend permission for */}
         <div className="flex flex-wrap gap-2 mt-5">
-          <Link
-            href="/admin/admissions"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
-          >
-            <UserPlus className="w-3.5 h-3.5" /> নতুন ভর্তি করুন
-          </Link>
-          {hasFinanceAccess && (
+          {canCreateAdmissions && (
             <Link
-              href="/admin/finance"
+              href="/employee/admissions"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
+            >
+              <UserPlus className="w-3.5 h-3.5" /> নতুন ভর্তি করুন
+            </Link>
+          )}
+          {canViewAdmissions && !canCreateAdmissions && (
+            <Link
+              href="/employee/admissions"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-md shadow-orange-950/25"
+            >
+              <UserCheck className="w-3.5 h-3.5" /> ভর্তি তালিকা দেখুন
+            </Link>
+          )}
+          {canViewFinance && (
+            <Link
+              href="/employee/finance"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors"
             >
               <Wallet className="w-3.5 h-3.5" /> ফাইন্যান্স ম্যানেজমেন্ট
@@ -110,8 +126,12 @@ export default function EmployeePanelPage() {
             </span>
             <UserCheck className="w-4 h-4 text-orange-600 dark:text-orange-400" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">{loading ? '—' : `${pendingTotal} জন`}</div>
-          <span className="text-xs text-orange-600 dark:text-orange-400 mt-1 block">পেমেন্ট ভেরিফিকেশন বাকি</span>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            {!canViewAdmissions ? '—' : loading ? '...' : `${pendingTotal} জন`}
+          </div>
+          <span className="text-xs text-orange-600 dark:text-orange-400 mt-1 block">
+            {canViewAdmissions ? 'পেমেন্ট ভেরিফিকেশন বাকি' : 'পারমিশন সীমিত'}
+          </span>
         </Card>
 
         <Card className="rounded-none border-0 bg-transparent shadow-none">
@@ -121,8 +141,12 @@ export default function EmployeePanelPage() {
             </span>
             <Clock className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">{loading ? '—' : `${todayCount} জন`}</div>
-          <span className="text-xs text-slate-500 mt-1 block">সকল ব্যাচ মিলিয়ে</span>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white">
+            {!canViewAdmissions ? '—' : loading ? '...' : `${todayCount} জন`}
+          </div>
+          <span className="text-xs text-slate-500 mt-1 block">
+            {canViewAdmissions ? 'সকল ব্যাচ মিলিয়ে' : 'পারমিশন সীমিত'}
+          </span>
         </Card>
 
         <Card className="rounded-none border-0 bg-transparent shadow-none">
@@ -132,62 +156,81 @@ export default function EmployeePanelPage() {
             </span>
             <Briefcase className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-base font-bold text-slate-900 dark:text-white">
-            {hasFinanceAccess ? 'Admissions + Finance' : 'Admissions (ভর্তি সাপোর্ট)'}
+          <div className="text-sm font-bold text-slate-900 dark:text-white flex flex-wrap gap-1">
+            {canCreateAdmissions && (
+              <span className="px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs">
+                ভর্তি করুন
+              </span>
+            )}
+            {canViewAdmissions && (
+              <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs">
+                ভর্তি তালিকা
+              </span>
+            )}
+            {canViewFinance && (
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs">
+                ফাইন্যান্স
+              </span>
+            )}
+            {!canCreateAdmissions && !canViewAdmissions && !canViewFinance && (
+              <span className="text-slate-400 text-xs font-normal">কোনো অপারেশনাল পারমিশন সক্রিয় নেই</span>
+            )}
           </div>
           <span className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 block">পারমিশন অনুযায়ী সীমিত</span>
         </Card>
       </div>
 
       {/* Operations Table */}
-      <Card className="ga-data-panel border-0 bg-white dark:bg-[#111318]">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">পেমেন্ট ভেরিফিকেশন বাকি থাকা ভর্তি</h3>
-          <span className="text-xs text-slate-400">সর্বশেষ ৫টি</span>
-        </div>
+      {canViewAdmissions && (
+        <Card className="ga-data-panel border-0 bg-white dark:bg-[#111318]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">পেমেন্ট ভেরিফিকেশন বাকি থাকা ভর্তি</h3>
+            <span className="text-xs text-slate-400">সর্বশেষ ৫টি</span>
+          </div>
 
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div className="text-center py-8 text-slate-500 text-xs font-medium">লোড হচ্ছে...</div>
-          ) : pendingEnrollments.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-xs font-medium">
-              কোনো পেমেন্ট-বাকি ভর্তি নেই — সবকিছু আপ-টু-ডেট!
-            </div>
-          ) : (
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-[#262b34] text-slate-400 uppercase">
-                  <th className="py-3 px-4">Student Name</th>
-                  <th className="py-3 px-4">Requested Batch</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#262b34] text-slate-700 dark:text-slate-300">
-                {pendingEnrollments.map((e) => (
-                  <tr key={e._id}>
-                    <td className="py-3 px-4 font-semibold text-slate-900 dark:text-white">{e.gravId?.name || '—'}</td>
-                    <td className="py-3 px-4">{e.batchId?.name || '—'}</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400 font-semibold">
-                        পেমেন্ট বাকি
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <Link
-                        href={hasFinanceAccess ? '/admin/finance' : '/admin/admissions'}
-                        className="px-3 py-1 rounded-lg bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium transition-all shadow-xs inline-block"
-                      >
-                        {hasFinanceAccess ? 'যাচাই করুন' : 'ভর্তি দেখুন'}
-                      </Link>
-                    </td>
+          <div className="overflow-x-auto">
+            {loading ? (
+              <div className="text-center py-8 text-slate-500 text-xs font-medium">লোড হচ্ছে...</div>
+            ) : pendingEnrollments.length === 0 ? (
+              <div className="text-center py-8 text-slate-500 text-xs font-medium">
+                কোনো পেমেন্ট-বাকি ভর্তি নেই — সবকিছু আপ-টু-ডেট!
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-[#262b34] text-slate-400 uppercase">
+                    <th className="py-3 px-4">Student Name</th>
+                    <th className="py-3 px-4">Requested Batch</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </Card>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-[#262b34] text-slate-700 dark:text-slate-300">
+                  {pendingEnrollments.map((e) => (
+                    <tr key={e._id}>
+                      <td className="py-3 px-4 font-semibold text-slate-900 dark:text-white">{e.gravId?.name || '—'}</td>
+                      <td className="py-3 px-4">{e.batchId?.name || '—'}</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-orange-500/10 text-orange-600 dark:text-orange-400 font-semibold">
+                          পেমেন্ট বাকি
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <Link
+                          href={canViewFinance ? '/employee/finance' : '/employee/admissions'}
+                          className="px-3 py-1 rounded-lg bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium transition-all shadow-xs inline-block"
+                        >
+                          {canViewFinance ? 'যাচাই করুন' : 'ভর্তি দেখুন'}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

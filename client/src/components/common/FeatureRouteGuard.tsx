@@ -6,7 +6,7 @@ import { useSiteSettings } from '@/context/SiteSettingsContext';
 import ComingSoonCard from './ComingSoonCard';
 
 function featureForPath(pathname: string): string | null {
-  if (pathname.startsWith('/admin/finance') || pathname.startsWith('/dashboard/payments')) return 'finance';
+  if (pathname.startsWith('/admin/finance') || pathname.startsWith('/employee/finance') || pathname.startsWith('/dashboard/payments')) return 'finance';
   if (pathname.startsWith('/admin/users')) return 'userManagement';
   if (pathname.startsWith('/admin/audit-logs')) return 'auditLogs';
   if (pathname.startsWith('/admin/admissions') || pathname.startsWith('/employee')) return 'admissions';

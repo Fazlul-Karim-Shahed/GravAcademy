@@ -399,6 +399,8 @@ export const Navbar: React.FC = () => {
                               ? 'শিক্ষক'
                               : user.role === 'guardian'
                               ? 'অভিভাবক'
+                              : user.role === 'employee'
+                              ? 'স্টাফ'
                               : 'শিক্ষার্থী'}
                           </span>
                         </div>

@@ -1,23 +1,41 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 type AdminPageHeaderProps = {
   title: ReactNode;
   description: ReactNode;
   actions?: ReactNode;
+  backHref?: string;
+  backLabel?: string;
 };
 
 /** The shared top section for every primary Admin Dashboard module. */
-export function AdminPageHeader({ title, description, actions }: AdminPageHeaderProps) {
+export function AdminPageHeader({
+  title,
+  description,
+  actions,
+  backHref,
+  backLabel,
+}: AdminPageHeaderProps) {
+  const { user } = useAuth();
+  const defaultBackHref = user?.role === 'employee' ? '/employee' : '/admin';
+  const defaultBackLabel = user?.role === 'employee' ? 'Employee Dashboard' : 'Dashboard';
+
+  const href = backHref || defaultBackHref;
+  const label = backLabel || defaultBackLabel;
+
   return (
     <header className="mb-7 grid gap-5 border-b border-slate-200 pb-6 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
       <div>
         <Link
-          href="/admin"
+          href={href}
           className="mb-3 inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 transition-colors hover:text-orange-600 dark:text-slate-400 dark:hover:text-orange-400"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
+          <ArrowLeft className="h-3.5 w-3.5" /> {label}
         </Link>
         <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">{title}</h1>
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{description}</p>

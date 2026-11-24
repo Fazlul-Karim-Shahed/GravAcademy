@@ -8,6 +8,8 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   /** Roles allowed to view this section. Omit to allow any logged-in user. */
   allowedRoles?: Array<'superadmin' | 'admin' | 'teacher' | 'student' | 'guardian' | 'employee'>;
+  /** Where an authenticated user without the required role should be sent. */
+  unauthorizedRedirect?: string;
 }
 
 /**
@@ -16,7 +18,7 @@ interface ProtectedRouteProps {
  * Backend permission checks remain the real security boundary — this only
  * avoids exposing the UI shell of pages a visitor shouldn't be browsing.
  */
-export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, allowedRoles, unauthorizedRedirect = '/login' }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -27,9 +29,21 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
       return;
     }
     if (allowedRoles && !allowedRoles.includes(user.role)) {
-      router.replace('/login');
+      if (unauthorizedRedirect && unauthorizedRedirect !== '/login') {
+        router.replace(unauthorizedRedirect);
+      } else if (user.role === 'employee') {
+        router.replace('/employee');
+      } else if (user.role === 'teacher') {
+        router.replace('/teacher');
+      } else if (user.role === 'guardian') {
+        router.replace('/guardian');
+      } else if (user.role === 'student') {
+        router.replace('/dashboard');
+      } else {
+        router.replace(unauthorizedRedirect);
+      }
     }
-  }, [user, loading, allowedRoles, router]);
+  }, [user, loading, allowedRoles, unauthorizedRedirect, router]);
 
   if (loading || !user || (allowedRoles && !allowedRoles.includes(user.role))) {
     return (
