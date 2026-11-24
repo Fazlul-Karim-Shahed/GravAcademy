@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { formatBDDate } from '@/lib/dateUtils';
 import { Card } from '@/components/ui';
 import {
@@ -24,6 +25,9 @@ interface EnrollmentRow {
 }
 
 export default function EmployeePanelPage() {
+  const { user } = useAuth();
+  const hasFinanceAccess = Boolean(user?.effectivePermissions?.includes('finance.view'));
+
   const [pendingEnrollments, setPendingEnrollments] = useState<EnrollmentRow[]>([]);
   const [pendingTotal, setPendingTotal] = useState(0);
   const [todayCount, setTodayCount] = useState(0);
@@ -68,7 +72,7 @@ export default function EmployeePanelPage() {
             অপারেশন সাপোর্ট প্যানেল
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-            শিক্ষার্থী ভর্তি ও পেমেন্ট যাচাই করুন।
+            শিক্ষার্থী ভর্তি ও সংশ্লিষ্ট অপারেশন পরিচালনা করুন।
           </p>
         </div>
 
@@ -80,12 +84,14 @@ export default function EmployeePanelPage() {
           >
             <UserPlus className="w-3.5 h-3.5" /> নতুন ভর্তি করুন
           </Link>
-          <Link
-            href="/admin/finance"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors"
-          >
-            <Wallet className="w-3.5 h-3.5" /> ফাইন্যান্স ম্যানেজমেন্ট
-          </Link>
+          {hasFinanceAccess && (
+            <Link
+              href="/admin/finance"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors"
+            >
+              <Wallet className="w-3.5 h-3.5" /> ফাইন্যান্স ম্যানেজমেন্ট
+            </Link>
+          )}
         </div>
       </div>
 
@@ -126,7 +132,9 @@ export default function EmployeePanelPage() {
             </span>
             <Briefcase className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-base font-bold text-slate-900 dark:text-white">Admissions + Finance (Collect)</div>
+          <div className="text-base font-bold text-slate-900 dark:text-white">
+            {hasFinanceAccess ? 'Admissions + Finance' : 'Admissions (ভর্তি সাপোর্ট)'}
+          </div>
           <span className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 block">পারমিশন অনুযায়ী সীমিত</span>
         </Card>
       </div>
@@ -167,10 +175,10 @@ export default function EmployeePanelPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <Link
-                        href="/admin/finance"
+                        href={hasFinanceAccess ? '/admin/finance' : '/admin/admissions'}
                         className="px-3 py-1 rounded-lg bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium transition-all shadow-xs inline-block"
                       >
-                        যাচাই করুন
+                        {hasFinanceAccess ? 'যাচাই করুন' : 'ভর্তি দেখুন'}
                       </Link>
                     </td>
                   </tr>
