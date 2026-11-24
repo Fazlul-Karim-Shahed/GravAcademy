@@ -44,6 +44,7 @@ interface AssignmentDetails {
     annotatedFileName?: string;
     isLate: boolean;
     isEvaluated: boolean;
+    status: 'submitted' | 'evaluated' | 'resubmit_requested';
     score?: number;
     feedback?: string;
     submittedAt?: string;
@@ -71,6 +72,7 @@ export default function StudentAssignmentSubmitPage({
   const [existingFileName, setExistingFileName] = useState('');
   const [submittingWork, setSubmittingWork] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const canResubmit = assignment?.mySubmission?.status === 'resubmit_requested';
 
   // Document Preview Modal State
   const [previewDoc, setPreviewDoc] = useState<{
@@ -223,14 +225,18 @@ export default function StudentAssignmentSubmitPage({
               {mySub && (
                 <div
                   className={`p-4 rounded-2xl border flex items-start gap-3 ${
-                    mySub.isEvaluated
+                    canResubmit
+                      ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800'
+                      : mySub.isEvaluated
                       ? 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800'
                       : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800'
                   }`}
                 >
                   <CheckCircle2
                     className={`w-5 h-5 shrink-0 mt-0.5 ${
-                      mySub.isEvaluated
+                      canResubmit
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : mySub.isEvaluated
                         ? 'text-purple-600 dark:text-purple-400'
                         : 'text-emerald-600 dark:text-emerald-400'
                     }`}
@@ -238,26 +244,30 @@ export default function StudentAssignmentSubmitPage({
                   <div className="text-xs text-slate-700 dark:text-slate-300">
                     <p
                       className={`font-bold ${
-                        mySub.isEvaluated
+                        canResubmit
+                          ? 'text-amber-900 dark:text-amber-200 text-sm'
+                          : mySub.isEvaluated
                           ? 'text-purple-900 dark:text-purple-200 text-sm'
                           : 'text-emerald-800 dark:text-emerald-300'
                       }`}
                     >
-                      {mySub.isEvaluated
+                      {canResubmit
+                        ? 'শিক্ষক সংশোধন করে পুনঃজমা দিতে বলেছেন'
+                        : mySub.isEvaluated
                         ? 'এই অ্যাসাইনমেন্টটি শিক্ষক কর্তৃক মূল্যায়িত ও চূড়ান্ত হয়েছে!'
                         : 'আপনি ইতোমধ্যেই এই অ্যাসাইনমেন্ট জমা দিয়েছেন!'}
                     </p>
                     <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                      {mySub.isEvaluated
+                      {canResubmit
+                        ? 'নিচের ফিডব্যাক অনুসরণ করে আপনার উত্তর বা ফাইল সংশোধন করে আবার জমা দিন।'
+                        : mySub.isEvaluated
                         ? 'যেহেতু শিক্ষক ইতোমধ্যে আপনার খাতা মূল্যায়ন করে নম্বর প্রদান করেছেন, তাই এই অ্যাসাইনমেন্টটি আর নতুন করে পরিবর্তন বা পুনরায় জমা দেওয়া যাবে না।'
                         : 'নিচে থেকে আপনার উত্তর পরিবর্তন বা আপডেট করে পুনরায় সাবমিট করতে পারেন।'}
                     </p>
-                    {mySub.isEvaluated && (
+                    {(mySub.isEvaluated || canResubmit) && (
                       <div className="mt-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-purple-200 dark:border-purple-800/60 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="font-extrabold text-purple-700 dark:text-purple-300 text-xs">
-                            প্রাপ্ত মার্কস: {mySub.score} / {assignment.totalMarks}
-                          </span>
+                          {mySub.isEvaluated && <span className="font-extrabold text-purple-700 dark:text-purple-300 text-xs">প্রাপ্ত মার্কস: {mySub.score} / {assignment.totalMarks}</span>}
                           {mySub.annotatedFileUrl && (
                             <button
                               type="button"
@@ -401,7 +411,7 @@ export default function StudentAssignmentSubmitPage({
                     >
                       ফিরে যান
                     </Link>
-                    {mySub?.isEvaluated ? (
+                    {mySub?.isEvaluated && !canResubmit ? (
                       <div className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-[#151921] text-slate-400 dark:text-slate-500 text-xs font-bold flex items-center gap-2 cursor-not-allowed border border-slate-200 dark:border-[#262b34]">
                         <CheckCircle2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                         <span>মূল্যায়ন সম্পন্ন (সাবমিশন লক করা)</span>
@@ -420,7 +430,7 @@ export default function StudentAssignmentSubmitPage({
                         ) : (
                           <>
                             <Send className="w-4 h-4" />
-                            <span>{mySub ? 'সাবমিশন আপডেট নিশ্চিত করুন' : 'নিশ্চিত অ্যাসাইনমেন্ট জমা দিন'}</span>
+                            <span>{canResubmit ? 'সংশোধিত অ্যাসাইনমেন্ট জমা দিন' : mySub ? 'সাবমিশন আপডেট নিশ্চিত করুন' : 'নিশ্চিত অ্যাসাইনমেন্ট জমা দিন'}</span>
                           </>
                         )}
                       </button>

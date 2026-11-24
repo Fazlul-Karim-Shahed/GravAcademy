@@ -406,7 +406,7 @@ export const submitAssignment = async (req: AuthenticatedRequest, res: Response)
       gravId: user.gravId,
     });
 
-    if (submission && submission.isEvaluated) {
+    if (submission && submission.isEvaluated && submission.status !== 'resubmit_requested') {
       return res.status(400).json({
         success: false,
         message: 'This assignment has already been evaluated and finalized by the teacher.',
@@ -431,6 +431,12 @@ export const submitAssignment = async (req: AuthenticatedRequest, res: Response)
       submission.fileName = data.fileName || submission.fileName;
       submission.submittedAt = now;
       submission.isLate = isOverdue;
+      // A corrected submission becomes pending again; it is not a final grade.
+      submission.isEvaluated = false;
+      submission.score = undefined;
+      submission.rawScore = undefined;
+      submission.evaluatedBy = undefined;
+      submission.evaluatedAt = undefined;
       submission.status = 'submitted';
     }
 
@@ -542,20 +548,21 @@ export const gradeAssignmentSubmission = async (req: AuthenticatedRequest, res: 
       });
     }
 
-    submission.rawScore = data.score;
+    const isResubmitRequest = data.status === 'resubmit_requested';
     const penaltyPercent = submission.isLate ? Number(assignment.latePenaltyPercent || 0) : 0;
     const penalizedScore = penaltyPercent > 0
       ? Math.round(data.score * (1 - penaltyPercent / 100) * 100) / 100
       : data.score;
-    submission.score = Math.max(0, penalizedScore);
+    submission.rawScore = isResubmitRequest ? undefined : data.score;
+    submission.score = isResubmitRequest ? undefined : Math.max(0, penalizedScore);
     submission.feedback = data.feedback;
     if (data.annotatedFileUrl) {
       submission.annotatedFileUrl = data.annotatedFileUrl;
       submission.annotatedFileName = data.annotatedFileName || 'evaluated_script.png';
     }
-    submission.isEvaluated = true;
-    submission.evaluatedBy = user._id;
-    submission.evaluatedAt = new Date();
+    submission.isEvaluated = !isResubmitRequest;
+    submission.evaluatedBy = isResubmitRequest ? undefined : user._id;
+    submission.evaluatedAt = isResubmitRequest ? undefined : new Date();
     submission.status = data.status;
 
     await submission.save();

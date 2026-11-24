@@ -40,6 +40,7 @@ interface SubmissionItem {
   annotatedFileName?: string;
   isLate: boolean;
   isEvaluated: boolean;
+  status: 'submitted' | 'evaluated' | 'resubmit_requested';
   score?: number;
   rawScore?: number;
   feedback?: string;
@@ -148,12 +149,15 @@ export default function AssignmentSubmissionsPage({
     setSaveSuccess(false);
   };
 
-  const handleSaveGrade = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveGrade = async (status: 'evaluated' | 'resubmit_requested') => {
     if (!selectedSub || !assignment) return;
 
-    if (gradeScore < 0 || gradeScore > assignment.totalMarks) {
+    if (status === 'evaluated' && (gradeScore < 0 || gradeScore > assignment.totalMarks)) {
       alert(`নম্বর ০ থেকে ${assignment.totalMarks} এর মধ্যে হতে হবে।`);
+      return;
+    }
+    if (status === 'resubmit_requested' && !gradeFeedback.trim()) {
+      alert('পুনঃজমা চাইলে শিক্ষার্থীর জন্য কী সংশোধন করতে হবে তা লিখুন।');
       return;
     }
 
@@ -180,10 +184,11 @@ export default function AssignmentSubmissionsPage({
       }
 
       const res = await api.put(`/assignments/submissions/${selectedSub._id}/grade`, {
-        score: gradeScore,
+        score: status === 'evaluated' ? gradeScore : 0,
         feedback: gradeFeedback,
         annotatedFileUrl: finalAnnotatedUrl,
         annotatedFileName: 'evaluated_script.png',
+        status,
       });
 
       if (res.data?.success) {
@@ -194,8 +199,9 @@ export default function AssignmentSubmissionsPage({
             s._id === selectedSub._id
               ? {
                   ...s,
-                  isEvaluated: true,
-                  score: gradeScore,
+                  isEvaluated: status === 'evaluated',
+                  status,
+                  score: status === 'evaluated' ? gradeScore : undefined,
                   feedback: gradeFeedback,
                   annotatedFileUrl: finalAnnotatedUrl,
                   annotatedFileName: 'evaluated_script.png',
@@ -208,8 +214,9 @@ export default function AssignmentSubmissionsPage({
           prev
             ? {
                 ...prev,
-                isEvaluated: true,
-                score: gradeScore,
+                isEvaluated: status === 'evaluated',
+                status,
+                score: status === 'evaluated' ? gradeScore : undefined,
                 feedback: gradeFeedback,
                 annotatedFileUrl: finalAnnotatedUrl,
               }
@@ -489,12 +496,14 @@ export default function AssignmentSubmissionsPage({
                       </div>
                       <span
                         className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                          selectedSub.isEvaluated
+                          selectedSub.status === 'resubmit_requested'
+                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
+                            : selectedSub.isEvaluated
                             ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
                             : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
                         }`}
                       >
-                        {selectedSub.isEvaluated ? 'চেকড' : 'বাকি'}
+                        {selectedSub.status === 'resubmit_requested' ? 'পুনঃজমা চাওয়া' : selectedSub.isEvaluated ? 'চেকড' : 'বাকি'}
                       </span>
                     </div>
 
@@ -648,7 +657,7 @@ export default function AssignmentSubmissionsPage({
                     </div>
 
                     {/* Evaluation Form */}
-                    <form onSubmit={handleSaveGrade} className="pt-2 border-t border-slate-100 dark:border-[#262b34] space-y-4">
+                    <form onSubmit={(event) => { event.preventDefault(); void handleSaveGrade('evaluated'); }} className="pt-2 border-t border-slate-100 dark:border-[#262b34] space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -689,14 +698,24 @@ export default function AssignmentSubmissionsPage({
                         </div>
                       )}
 
-                      <button
-                        type="submit"
-                        disabled={savingGrade}
-                        className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        <FileCheck className="w-4 h-4" />
-                        <span>{savingGrade ? 'সেভ হচ্ছে...' : 'সেভ'}</span>
-                      </button>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <button
+                          type="submit"
+                          disabled={savingGrade}
+                          className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <FileCheck className="w-4 h-4" />
+                          <span>{savingGrade ? 'সেভ হচ্ছে...' : 'চূড়ান্ত মূল্যায়ন'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          disabled={savingGrade}
+                          onClick={() => void handleSaveGrade('resubmit_requested')}
+                          className="py-2.5 px-4 rounded-xl border border-amber-300 bg-amber-50 text-amber-800 text-xs font-bold transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200 dark:hover:bg-amber-950/50"
+                        >
+                          সংশোধন করে পুনঃজমা চাইুন
+                        </button>
+                      </div>
                     </form>
                   </div>
                 ) : (
