@@ -9,12 +9,12 @@ function featureForPath(pathname: string): string | null {
   if (pathname.startsWith('/admin/finance') || pathname.startsWith('/employee/finance') || pathname.startsWith('/dashboard/payments')) return 'finance';
   if (pathname.startsWith('/admin/users')) return 'userManagement';
   if (pathname.startsWith('/admin/audit-logs')) return 'auditLogs';
-  if (pathname.startsWith('/admin/admissions') || pathname.startsWith('/employee')) return 'admissions';
+  if (pathname.startsWith('/admin/admissions') || pathname.startsWith('/employee/admissions')) return 'admissions';
   if (pathname.includes('/assignments')) return 'assignments';
   if (pathname.includes('/exams')) return 'exams';
   if (pathname.startsWith('/admin/courses') || pathname.startsWith('/courses') || pathname.startsWith('/classes')) return 'courses';
   if (pathname.startsWith('/admin/batches') || pathname.startsWith('/classroom')) return 'batches';
-  if (pathname.startsWith('/free-classes')) return 'freeClasses';
+  if (pathname.startsWith('/free-classes') || pathname.startsWith('/employee/free-classes')) return 'freeClasses';
   if (pathname.startsWith('/jobs') || pathname.startsWith('/admin/jobs')) return 'jobs';
   return null;
 }
