@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { ComponentType } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { hasPermission, PERMISSIONS, type PermissionKey } from '@/lib/permissions';
-import { ArrowRight, BriefcaseBusiness, CircleDollarSign, FileCheck2, Video, CalendarCheck, ShieldCheck, BookOpen, Layers } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, CircleDollarSign, FileCheck2, Inbox, Video, CalendarCheck, ShieldCheck, BookOpen, Layers } from 'lucide-react';
 
 interface EmployeeCard {
   title: string;
@@ -23,9 +23,9 @@ const employeeCards: EmployeeCard[] = [
     permissions: [{ key: PERMISSIONS.COURSES_VIEW, label: 'কোর্স দেখুন' }, { key: PERMISSIONS.COURSES_CREATE, label: 'তৈরি' }, { key: PERMISSIONS.COURSES_UPDATE, label: 'এডিট' }, { key: PERMISSIONS.COURSES_DELETE, label: 'ডিলিট' }, { key: PERMISSIONS.CLASSES_MANAGE, label: 'ক্লাস ম্যানেজ' }],
   },
   {
-    title: 'ব্যাচ ম্যানেজমেন্ট', description: 'ব্যাচ ও ক্লাসরুম দেখুন।', href: '/employee/batches', icon: Layers,
-    iconClass: 'bg-blue-500/10 text-blue-600', routePermissions: [PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.LESSONS_MANAGE],
-    permissions: [{ key: PERMISSIONS.BATCHES_VIEW, label: 'ব্যাচ ও ক্লাসরুম' }, { key: PERMISSIONS.BATCHES_MANAGE, label: 'ব্যাচ ম্যানেজ' }, { key: PERMISSIONS.BATCHES_DUPLICATE, label: 'ডুপ্লিকেট' }, { key: PERMISSIONS.LESSONS_MANAGE, label: 'কারিকুলাম' }],
+    title: 'ব্যাচ ম্যানেজমেন্ট', description: 'ব্যাচ, ক্লাসরুম, কারিকুলাম ও পরীক্ষা পরিচালনা করুন।', href: '/employee/batches', icon: Layers,
+    iconClass: 'bg-blue-500/10 text-blue-600', routePermissions: [PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.LESSONS_MANAGE, PERMISSIONS.EXAMS_MANAGE],
+    permissions: [{ key: PERMISSIONS.BATCHES_VIEW, label: 'ব্যাচ ও ক্লাসরুম' }, { key: PERMISSIONS.BATCHES_MANAGE, label: 'ব্যাচ ম্যানেজ' }, { key: PERMISSIONS.BATCHES_DUPLICATE, label: 'ডুপ্লিকেট' }, { key: PERMISSIONS.LESSONS_MANAGE, label: 'কারিকুলাম' }, { key: PERMISSIONS.EXAMS_MANAGE, label: 'পরীক্ষা ও অ্যাসাইনমেন্ট' }],
   },
   {
     title: 'শিক্ষক হাজিরা', description: 'শিক্ষক হাজিরা ও ইতিহাস দেখুন।', href: '/employee/attendance', icon: CalendarCheck,
@@ -51,6 +51,13 @@ const employeeCards: EmployeeCard[] = [
     title: 'অন্যান্য সেটিংস', description: 'সাইট, হোমপেজ ও Drive Cleanup পরিচালনা করুন।', href: '/employee/settings', icon: ShieldCheck,
     iconClass: 'bg-slate-500/10 text-slate-600', routePermissions: [PERMISSIONS.SETTINGS_MANAGE],
     permissions: [{ key: PERMISSIONS.SETTINGS_MANAGE, label: 'সেটিংস ম্যানেজ' }],
+  },
+  {
+    title: 'ভর্তি Requests', description: 'শিক্ষার্থীদের ভর্তি আবেদন দেখুন ও অনুমোদন করুন।', href: '/employee/admission-requests', icon: Inbox,
+    iconClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400', routePermissions: [PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_CREATE],
+    permissions: [
+      { key: PERMISSIONS.ADMISSIONS_VIEW, label: 'Requests দেখুন' }, { key: PERMISSIONS.ADMISSIONS_CREATE, label: 'Approve / Reject' },
+    ],
   },
   {
     title: 'এডমিশন', description: 'শিক্ষার্থী ভর্তি ও সাম্প্রতিক ভর্তি পরিচালনা করুন।', href: '/employee/admissions', icon: FileCheck2,

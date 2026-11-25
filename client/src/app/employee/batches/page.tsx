@@ -12,7 +12,7 @@ type Batch = { _id: string; name: string; status?: string; courseId?: { title?: 
 function BatchList() {
   const { user } = useAuth();
   const canManage = hasPermission(user, PERMISSIONS.BATCHES_MANAGE);
-  const canView = hasPermission(user, PERMISSIONS.BATCHES_VIEW);
+  const canView = hasPermission(user, PERMISSIONS.BATCHES_VIEW) || hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
   const canDuplicate = hasPermission(user, PERMISSIONS.BATCHES_DUPLICATE);
   const canCurriculum = hasPermission(user, PERMISSIONS.LESSONS_MANAGE);
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -40,5 +40,5 @@ function BatchList() {
 }
 
 export default function EmployeeBatchesPage() {
-  return <PermissionRouteGuard anyOf={[PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.LESSONS_MANAGE]}><BatchList /></PermissionRouteGuard>;
+  return <PermissionRouteGuard anyOf={[PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.LESSONS_MANAGE, PERMISSIONS.EXAMS_MANAGE]}><BatchList /></PermissionRouteGuard>;
 }

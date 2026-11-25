@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { ArrowLeft, Check, Clock3, Edit3, Loader2, MessageSquare, UserRound, X } from 'lucide-react';
 
 interface AdmissionRequest {
@@ -23,6 +25,9 @@ interface AdmissionRequest {
 }
 
 export default function AdmissionRequestsPage() {
+  const { user } = useAuth();
+  const canProcessAdmissions = hasPermission(user, PERMISSIONS.ADMISSIONS_CREATE);
+  const admissionsHref = user?.role === 'employee' ? '/employee/admissions' : '/admin/admissions';
   const [requests, setRequests] = useState<AdmissionRequest[]>([]);
   const [status, setStatus] = useState('pending');
   const [loading, setLoading] = useState(true);
@@ -82,7 +87,7 @@ export default function AdmissionRequestsPage() {
   return (
     <div className="ga-page ga-admin-page text-slate-900 dark:text-slate-100 py-8 sm:py-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AdminPageHeader title="ভর্তি Requests" description="Student applications review করুন এবং প্রয়োজন হলে form edit করে ভর্তি সম্পন্ন করুন।" actions={<Link href="/admin/admissions" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm shadow-orange-950/20 hover:from-orange-700 hover:to-orange-800">Manual Admission</Link>} />
+        <AdminPageHeader title="ভর্তি Requests" description="Student applications review করুন এবং প্রয়োজন হলে form edit করে ভর্তি সম্পন্ন করুন।" actions={canProcessAdmissions ? <Link href={admissionsHref} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm shadow-orange-950/20 hover:from-orange-700 hover:to-orange-800">Manual Admission</Link> : undefined} />
 
         <div className="ga-operation-toolbar mb-5 w-full overflow-x-auto p-1 sm:w-fit">
           {['pending', 'approved', 'rejected', 'all'].map((value) => <button key={value} type="button" onClick={() => setStatus(value)} className={`px-3.5 py-2 rounded-xl text-xs font-bold capitalize transition-all ${status === value ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>{value}</button>)}
@@ -118,7 +123,7 @@ export default function AdmissionRequestsPage() {
                     <td className="px-5 py-4"><p className="text-xs text-slate-600 dark:text-slate-300">{request.schoolOrCollege || 'School নেই'}</p>{request.guardianName && <p className="mt-1 text-[10px] text-slate-400">Guardian: {request.guardianName}</p>}{request.message && <p className="mt-1 flex max-w-[170px] items-center gap-1 truncate text-[10px] text-slate-400"><MessageSquare className="h-3 w-3 shrink-0" />{request.message}</p>}</td>
                     <td className="whitespace-nowrap px-5 py-4 text-xs text-slate-500 dark:text-slate-400">{formatDate(request.createdAt)}</td>
                     <td className="px-5 py-4"><span className={`inline-flex rounded-lg px-2.5 py-1 text-[10px] font-black uppercase ${request.status === 'pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300' : request.status === 'approved' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-slate-100 text-slate-500 dark:bg-[#151921] dark:text-slate-400'}`}>{request.status}</span></td>
-                    <td className="px-5 py-4"><div className="flex justify-end gap-2">{request.status === 'pending' ? <><button type="button" aria-label={`Approve ${request.name}`} disabled={busyId === request._id} onClick={() => approve(request._id)} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60">{busyId === request._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}Approve</button><Link href={`/admin/admissions?requestId=${request._id}`} className="inline-flex items-center gap-1.5 rounded-xl bg-orange-50 px-3 py-2 text-xs font-bold text-orange-700 dark:bg-orange-950/50 dark:text-orange-300"><Edit3 className="h-3.5 w-3.5" />Edit</Link><button type="button" aria-label={`Reject ${request.name}`} disabled={busyId === request._id} onClick={() => reject(request._id)} className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"><X className="h-3.5 w-3.5" />Reject</button></> : <span className="text-[11px] text-slate-400">—</span>}</div></td>
+                    <td className="px-5 py-4"><div className="flex justify-end gap-2">{request.status === 'pending' && canProcessAdmissions ? <><button type="button" aria-label={`Approve ${request.name}`} disabled={busyId === request._id} onClick={() => approve(request._id)} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60">{busyId === request._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}Approve</button><Link href={`${admissionsHref}?requestId=${request._id}`} className="inline-flex items-center gap-1.5 rounded-xl bg-orange-50 px-3 py-2 text-xs font-bold text-orange-700 dark:bg-orange-950/50 dark:text-orange-300"><Edit3 className="h-3.5 w-3.5" />Edit</Link><button type="button" aria-label={`Reject ${request.name}`} disabled={busyId === request._id} onClick={() => reject(request._id)} className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"><X className="h-3.5 w-3.5" />Reject</button></> : <span className="text-[11px] text-slate-400">—</span>}</div></td>
                   </tr>)}
                 </tbody>
               </table>

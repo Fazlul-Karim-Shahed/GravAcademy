@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import {
   FileText,
   PlusCircle,
@@ -66,7 +67,9 @@ export default function ExamRoomPage({
   const isTeacherOrAdmin =
     user?.role === 'teacher' ||
     user?.role === 'admin' ||
-    user?.role === 'superadmin';
+    user?.role === 'superadmin' ||
+    hasPermission(user, PERMISSIONS.EXAMS_MANAGE) ||
+    hasPermission(user, PERMISSIONS.EXAMS_EVALUATE);
 
   useEffect(() => {
     // Keep local clock updated every second for live timers

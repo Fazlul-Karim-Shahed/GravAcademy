@@ -91,6 +91,26 @@ export default function UserPermissionsEditPage() {
 
   const toggleCustomPermission = (permKey: PermissionKey) => {
     if (selectedRole === ROLES.SUPERADMIN) return;
+    const bundledClassroomKeys: PermissionKey[] = [
+      PERMISSIONS.EXAMS_MANAGE,
+      PERMISSIONS.EXAMS_EVALUATE,
+      PERMISSIONS.ASSIGNMENTS_MANAGE,
+      PERMISSIONS.RESULTS_VIEW_ALL,
+    ];
+    if (permKey === PERMISSIONS.EXAMS_MANAGE) {
+      const enabling = !(
+        (roleDefaultPerms.has(PERMISSIONS.EXAMS_MANAGE) && !revokedPermissions.includes(PERMISSIONS.EXAMS_MANAGE)) ||
+        customPermissions.includes(PERMISSIONS.EXAMS_MANAGE)
+      );
+      if (enabling) {
+        setRevokedPermissions((prev) => prev.filter((p) => !bundledClassroomKeys.includes(p as PermissionKey)));
+        setCustomPermissions((prev) => Array.from(new Set([...prev, ...bundledClassroomKeys.filter((k) => !roleDefaultPerms.has(k))])));
+      } else {
+        setCustomPermissions((prev) => prev.filter((p) => !bundledClassroomKeys.includes(p as PermissionKey)));
+        setRevokedPermissions((prev) => Array.from(new Set([...prev, ...bundledClassroomKeys.filter((k) => roleDefaultPerms.has(k))])));
+      }
+      return;
+    }
     if (roleDefaultPerms.has(permKey)) {
       setRevokedPermissions((previous) => previous.includes(permKey)
         ? previous.filter((permission) => permission !== permKey)

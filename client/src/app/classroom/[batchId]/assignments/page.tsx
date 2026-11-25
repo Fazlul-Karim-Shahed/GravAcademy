@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { useSiteSettings } from '@/context/SiteSettingsContext';
 import ComingSoonCard from '@/components/common/ComingSoonCard';
 import TextEditor from '@/components/ui/TextEditor';
@@ -153,7 +154,8 @@ export default function AssignmentRoomPage({
   const isTeacherOrAdmin =
     user?.role === 'teacher' ||
     user?.role === 'admin' ||
-    user?.role === 'superadmin';
+    user?.role === 'superadmin' ||
+    hasPermission(user, PERMISSIONS.ASSIGNMENTS_MANAGE);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
