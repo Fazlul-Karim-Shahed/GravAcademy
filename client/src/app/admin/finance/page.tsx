@@ -471,7 +471,7 @@ export default function AdminFinancePage() {
 
   useEffect(() => {
     fetchPayments();
-    fetchStudentsAndBatches();
+    if (can('finance.collect')) fetchStudentsAndBatches();
   }, [selectedMethod, cardFilterType, dateRangePreset, startDate, endDate, currentPage]);
 
   const fetchPayments = async () => {
@@ -546,7 +546,7 @@ export default function AdminFinancePage() {
   const fetchStudentsAndBatches = async () => {
     try {
       const [userRes, batchRes] = await Promise.all([
-        api.get('/users?role=student&limit=200'),
+        api.get('/operational-students'),
         api.get('/batches'),
       ]);
       if (userRes.data?.success) setStudents(userRes.data.data || []);

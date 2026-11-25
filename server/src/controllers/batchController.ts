@@ -7,6 +7,7 @@ import { Module, Section, Lesson } from '../models/ContentHierarchy';
 import { FileAsset } from '../models/FileAsset';
 import { AuditLog } from '../models/AuditLog';
 import { AuthenticatedRequest } from '../middleware/auth';
+import { getEffectivePermissions, PERMISSIONS } from '../types/roles';
 
 import { Enrollment } from '../models/Enrollment';
 import { addCalendarMonths, hasActiveStudentBatchAccess } from '../services/batchAccessService';
@@ -159,6 +160,9 @@ export const getBatchHierarchy = async (req: Request, res: Response) => {
     // Let the server make the edit decision so the client never has to guess
     // whether assignedTeachers is populated IDs or plain ObjectIds.
     let canManageCurriculum = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
+    if (!canManageCurriculum && currentUser?.role === 'employee') {
+      canManageCurriculum = getEffectivePermissions(currentUser.role, currentUser.customPermissions, currentUser.revokedPermissions).includes(PERMISSIONS.LESSONS_MANAGE);
+    }
     if (!canManageCurriculum && currentUser?.role === 'teacher') {
       const assignedTeachers = batch.assignedTeachers || [];
       if (assignedTeachers.length) {

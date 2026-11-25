@@ -644,6 +644,17 @@ export const getCourseInstructors = async (_req: any, res: Response) => {
   }
 };
 
+/** Student choices needed by admission and payment forms, without user administration access. */
+export const getOperationalStudents = async (_req: AuthenticatedRequest, res: Response) => {
+  try {
+    const students = await User.find({ role: 'student' })
+      .select('name gravId phone email studentDetails').sort({ name: 1 }).limit(300);
+    return res.status(200).json({ success: true, data: students });
+  } catch {
+    return res.status(500).json({ success: false, message: 'Failed to fetch students.' });
+  }
+};
+
 /**
  * Upload Profile Avatar Photo directly to Google Drive and update user's avatarUrl
  */

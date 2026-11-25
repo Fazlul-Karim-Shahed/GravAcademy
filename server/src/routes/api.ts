@@ -66,6 +66,7 @@ router.put('/auth/profile', authenticate, authCtrl.updateProfile);
 router.post('/auth/avatar', authenticate, upload.single('avatar'), authCtrl.uploadAvatar);
 router.get('/teachers', authCtrl.getPublicTeachers);
 router.get('/course-instructors', authenticate, requireAnyPermission(PERMISSIONS.COURSES_CREATE, PERMISSIONS.COURSES_UPDATE), authCtrl.getCourseInstructors);
+router.get('/operational-students', authenticate, requireAnyPermission(PERMISSIONS.ADMISSIONS_CREATE, PERMISSIONS.FINANCE_COLLECT), authCtrl.getOperationalStudents);
 
 // --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
 router.get('/classes', requireFeature(FEATURE_FLAGS.courses), academicClassCtrl.getAcademicClasses);

@@ -135,6 +135,12 @@ export default function AdminAdmissionsPage() {
   const canCreateAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.create'));
   const canViewAdmissions = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.view'));
   const canRemoveAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.remove'));
+  const canShiftAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.shift'));
+  const [shiftTarget, setShiftTarget] = useState<EnrollmentRecord | null>(null);
+  const [shiftBatch, setShiftBatch] = useState('');
+  const [shiftBatches, setShiftBatches] = useState<BatchItem[]>([]);
+  const [shiftBusy, setShiftBusy] = useState(false);
+  const [shiftError, setShiftError] = useState('');
 
   const searchParams = useSearchParams();
   const requestId = searchParams.get('requestId');
@@ -243,6 +249,27 @@ export default function AdminAdmissionsPage() {
       fetchRecentAdmissions();
     }
   }, [canCreateAdmission, canViewAdmissions]);
+
+  useEffect(() => {
+    if (!canShiftAdmission) return;
+    void api.get('/batches').then((response) => setShiftBatches(response.data?.data || []))
+      .catch(() => setShiftError('ব্যাচ তালিকা লোড করা যায়নি।'));
+  }, [canShiftAdmission]);
+
+  const submitShift = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!shiftTarget || !shiftBatch || !canShiftAdmission) return;
+    setShiftBusy(true);
+    setShiftError('');
+    try {
+      await api.post('/enrollments/shift', { enrollmentId: shiftTarget._id, targetBatchId: shiftBatch });
+      setShiftTarget(null);
+      setShiftBatch('');
+      await fetchRecentAdmissions(searchQuery);
+    } catch (error: any) {
+      setShiftError(error.response?.data?.message || 'ব্যাচ পরিবর্তন করা যায়নি।');
+    } finally { setShiftBusy(false); }
+  };
 
   useEffect(() => {
     if (!requestId) return;
@@ -422,7 +449,7 @@ export default function AdminAdmissionsPage() {
         api.get('/courses'),
         api.get('/batches'),
         getSharedAcademicClasses(),
-        api.get('/users?role=student&limit=300'),
+        api.get('/operational-students'),
       ]);
 
       const cList = coursesRes.data?.data || [];
@@ -1275,6 +1302,7 @@ export default function AdminAdmissionsPage() {
                           </span>
                         </div>
 
+                        {canShiftAdmission && <button type="button" onClick={() => { setShiftTarget(adm); setShiftBatch(''); setShiftError(''); }} className="rounded-lg px-2 py-1 text-xs font-semibold text-orange-600 hover:bg-orange-50">ব্যাচ পরিবর্তন</button>}
                         {canRemoveAdmission && (
                           <button
                             type="button"
@@ -1296,6 +1324,8 @@ export default function AdminAdmissionsPage() {
           )}
 
         </div>
+
+        {shiftTarget && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4"><form onSubmit={submitShift} className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-slate-900"><h2 className="text-lg font-bold">ব্যাচ পরিবর্তন</h2><p className="mt-2 text-sm">{shiftTarget.student?.name} · {shiftTarget.batchId?.name}</p><label className="mt-4 block text-sm font-semibold">নতুন ব্যাচ<select required value={shiftBatch} onChange={(event) => setShiftBatch(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-300 bg-white p-3 dark:bg-slate-800"><option value="">ব্যাচ নির্বাচন করুন</option>{shiftBatches.filter((batch) => batch._id !== shiftTarget.batchId?._id).map((batch) => <option value={batch._id} key={batch._id}>{batch.name}</option>)}</select></label>{shiftError && <p role="alert" className="mt-3 text-sm text-rose-600">{shiftError}</p>}<div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setShiftTarget(null)} className="rounded-xl border px-4 py-2">বাতিল</button><button type="submit" disabled={shiftBusy || !shiftBatch} className="rounded-xl bg-orange-600 px-4 py-2 font-bold text-white disabled:opacity-50">{shiftBusy ? 'সংরক্ষণ হচ্ছে…' : 'পরিবর্তন করুন'}</button></div></form></div>}
 
         {/* MODAL: CANCEL ENROLLMENT CONFIRMATION */}
         {admissionToCancel && (

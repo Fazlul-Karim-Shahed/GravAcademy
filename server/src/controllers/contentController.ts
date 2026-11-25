@@ -5,6 +5,7 @@ import { Module, Section, Lesson } from '../models/ContentHierarchy';
 import { Batch } from '../models/Batch';
 import { Course } from '../models/Course';
 import { AuthenticatedRequest } from '../middleware/auth';
+import { getEffectivePermissions, PERMISSIONS } from '../types/roles';
 
 const isAdminRole = (role?: string) => role === 'admin' || role === 'superadmin';
 
@@ -12,6 +13,7 @@ const teacherCanManageBatch = async (req: AuthenticatedRequest, batchId: string)
   const user = req.user;
   if (!user) return false;
   if (isAdminRole(user.role)) return true;
+  if (user.role === 'employee') return getEffectivePermissions(user.role, user.customPermissions, user.revokedPermissions).includes(PERMISSIONS.LESSONS_MANAGE);
   if (user.role !== 'teacher' || !mongoose.Types.ObjectId.isValid(batchId)) return false;
 
   const batch = await Batch.findById(batchId).select('assignedTeachers courseId').lean();

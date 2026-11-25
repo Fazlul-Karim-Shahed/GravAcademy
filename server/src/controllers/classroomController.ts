@@ -29,11 +29,12 @@ export const createDiscussionSchema = z.object({
  * - Student: enrolled in batch
  * - Guardian: linked to an enrolled student
  */
-async function verifyClassroomAccess(gravId: string, userRole: string, batchId: string) {
+async function verifyClassroomAccess(gravId: string, userRole: string, batchId: string, canViewEmployee = false) {
   // Admin & Superadmin have unrestricted access everywhere
   if (userRole === 'admin' || userRole === 'superadmin') {
     return true;
   }
+  if (userRole === 'employee' && canViewEmployee) return true;
 
   const batch = await Batch.findById(batchId);
   if (!batch) return false;
@@ -90,7 +91,8 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
+    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({
         success: false,
@@ -176,7 +178,8 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
+    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
@@ -213,7 +216,7 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
     }
     const combinedTeachers = Array.from(teacherMap.values());
 
-    const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole);
+    const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole) || canViewEmployee;
 
     let students: any[] = [];
     if (canViewAllMembers) {
@@ -252,7 +255,8 @@ export const getAnnouncements = async (req: AuthenticatedRequest, res: Response)
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
+    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
@@ -378,7 +382,8 @@ export const getDiscussionMessages = async (req: AuthenticatedRequest, res: Resp
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
+    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
