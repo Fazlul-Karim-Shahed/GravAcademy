@@ -76,16 +76,8 @@ export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 export interface PermissionDefinition {
   key: PermissionKey;
   label: string;
-  category:
-    | 'Courses & Academics'
-    | 'Batches & Curriculum'
-    | 'Admissions & Students'
-    | 'Finance & Accounting'
-    | 'Live Classes'
-    | 'Exams & Homework'
-    | 'Job Circulars'
-    | 'Documents & Media'
-    | 'Administration';
+  /** Matches the visible admin-dashboard card where this action appears. */
+  category: string;
   description: string;
 }
 
@@ -347,6 +339,38 @@ export const ALL_PERMISSIONS_METADATA: PermissionDefinition[] = [
     category: 'Administration',
     description: 'প্লাটফর্ম সেটিংস ও পেমেন্ট কনফিগারেশন',
   },
+];
+
+/** Permission picker groups mapped directly to the visible admin-dashboard cards. */
+export const DASHBOARD_PERMISSION_METADATA: PermissionDefinition[] = [
+  { key: PERMISSIONS.ADMISSIONS_VIEW, label: 'সাম্প্রতিক ভর্তি দেখুন', category: 'এডমিশন', description: 'ভর্তি তালিকা, আবেদন এবং সাম্প্রতিক ভর্তি দেখুন' },
+  { key: PERMISSIONS.ADMISSIONS_CREATE, label: 'শিক্ষার্থী ভর্তি নিন', category: 'এডমিশন', description: 'নতুন শিক্ষার্থী ভর্তি ও আবেদন অনুমোদন করুন' },
+  { key: PERMISSIONS.ADMISSIONS_SHIFT, label: 'ব্যাচ পরিবর্তন করুন', category: 'এডমিশন', description: 'ভর্তি হওয়া শিক্ষার্থীকে অন্য ব্যাচে সরান' },
+  { key: PERMISSIONS.ADMISSIONS_REMOVE, label: 'ভর্তি বাতিল করুন', category: 'এডমিশন', description: 'ভর্তি বাতিল বা শিক্ষার্থী অপসারণ করুন' },
+  { key: PERMISSIONS.COURSES_VIEW, label: 'কোর্স দেখুন', category: 'কোর্স ম্যানেজমেন্ট', description: 'কোর্স তালিকা ও বিস্তারিত দেখুন' },
+  { key: PERMISSIONS.COURSES_CREATE, label: 'নতুন কোর্স তৈরি করুন', category: 'কোর্স ম্যানেজমেন্ট', description: 'নতুন কোর্স যোগ করুন' },
+  { key: PERMISSIONS.COURSES_UPDATE, label: 'কোর্স এডিট করুন', category: 'কোর্স ম্যানেজমেন্ট', description: 'কোর্সের তথ্য ও প্রকাশনা পরিবর্তন করুন' },
+  { key: PERMISSIONS.COURSES_DELETE, label: 'কোর্স ডিলিট করুন', category: 'কোর্স ম্যানেজমেন্ট', description: 'কোর্স মুছে ফেলুন' },
+  { key: PERMISSIONS.CLASSES_MANAGE, label: 'ক্লাস ও সাবজেক্ট ম্যানেজ করুন', category: 'কোর্স ম্যানেজমেন্ট', description: 'ক্লাস ও সাবজেক্ট তৈরি, এডিট বা ডিলিট করুন' },
+  { key: PERMISSIONS.BATCHES_VIEW, label: 'ব্যাচ দেখুন ও ক্লাসরুম খুলুন', category: 'ব্যাচ ম্যানেজমেন্ট', description: 'ব্যাচ তালিকা, সময়সূচি ও সংশ্লিষ্ট ক্লাসরুম দেখুন' },
+  { key: PERMISSIONS.BATCHES_MANAGE, label: 'ব্যাচ তৈরি ও এডিট করুন', category: 'ব্যাচ ম্যানেজমেন্ট', description: 'নতুন ব্যাচ তৈরি, এডিট বা ডিলিট করুন' },
+  { key: PERMISSIONS.BATCHES_DUPLICATE, label: 'ব্যাচ ডুপ্লিকেট করুন', category: 'ব্যাচ ম্যানেজমেন্ট', description: 'পুরোনো ব্যাচ থেকে নতুন ব্যাচ তৈরি করুন' },
+  { key: PERMISSIONS.LESSONS_MANAGE, label: 'কারিকুলাম ম্যানেজ করুন', category: 'ব্যাচ ম্যানেজমেন্ট', description: 'মডিউল, সেকশন ও লেসন পরিচালনা করুন' },
+  { key: PERMISSIONS.LIVE_CLASSES_MANAGE, label: 'ফ্রি ক্লাস ও সেমিনার ম্যানেজ করুন', category: 'ফ্রি ক্লাস ও সেমিনার', description: 'ফ্রি ক্লাস তৈরি, এডিট ও ডিলিট করুন' },
+  { key: PERMISSIONS.JOBS_VIEW, label: 'জব সার্কুলার দেখুন', category: 'জব সার্কুলার', description: 'নিয়োগ বিজ্ঞপ্তির তালিকা দেখুন' },
+  { key: PERMISSIONS.JOBS_MANAGE, label: 'জব সার্কুলার ম্যানেজ করুন', category: 'জব সার্কুলার', description: 'বিজ্ঞপ্তি ও ক্যাটাগরি তৈরি, এডিট বা ডিলিট করুন' },
+  { key: PERMISSIONS.USERS_MANAGE, label: 'ইউজার ম্যানেজ করুন', category: 'ইউজার ম্যানেজমেন্ট', description: 'ইউজার দেখা, তৈরি ও তথ্য পরিচালনা করুন' },
+  { key: PERMISSIONS.PERMISSIONS_MANAGE, label: 'রোল ও পারমিশন পরিবর্তন করুন', category: 'ইউজার ম্যানেজমেন্ট', description: 'ইউজারের রোল ও dashboard access পরিবর্তন করুন' },
+  { key: PERMISSIONS.FINANCE_VIEW, label: 'ফাইন্যান্স রিপোর্ট দেখুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'পেমেন্ট, বকেয়া ও রসিদ দেখুন' },
+  { key: PERMISSIONS.FINANCE_COLLECT, label: 'পেমেন্ট গ্রহণ করুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'ফি গ্রহণ ও রসিদ তৈরি করুন' },
+  { key: PERMISSIONS.FINANCE_REFUND, label: 'রিফান্ড করুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'রিফান্ড ও পেমেন্ট সমন্বয় করুন' },
+  { key: PERMISSIONS.FINANCE_MANUAL_PAID, label: 'পেইড স্ট্যাটাস পরিবর্তন করুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'ম্যানুয়াল পেইড বা মওকুফ মার্ক করুন' },
+  { key: PERMISSIONS.FINANCE_DELETE, label: 'পেমেন্ট ডিলিট করুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'ভুল পেমেন্ট রেকর্ড মুছে ফেলুন' },
+  { key: PERMISSIONS.FINANCE_EXPENSE_MANAGE, label: 'কোম্পানি খরচ ম্যানেজ করুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'খরচ যোগ, এডিট বা ডিলিট করুন' },
+  { key: PERMISSIONS.ATTENDANCE_VIEW, label: 'শিক্ষক হাজিরা দেখুন', category: 'শিক্ষক হাজিরা', description: 'শিক্ষক হাজিরার তালিকা ও ইতিহাস দেখুন' },
+  { key: PERMISSIONS.ATTENDANCE_MANAGE, label: 'শিক্ষক হাজিরা ম্যানেজ করুন', category: 'শিক্ষক হাজিরা', description: 'হাজিরা ও শিক্ষক পেমেন্ট পরিচালনা করুন' },
+  { key: PERMISSIONS.SETTINGS_MANAGE, label: 'সেটিংস ম্যানেজ করুন', category: 'অন্যান্য সেটিংস', description: 'সাইট সেটিংস ও Drive cleanup পরিচালনা করুন' },
+  { key: PERMISSIONS.AUDIT_LOGS_VIEW, label: 'অডিট লগ দেখুন', category: 'অডিট লগ', description: 'সংবেদনশীল কাজের ইতিহাস দেখুন' },
 ];
 
 // Default baseline permissions per role

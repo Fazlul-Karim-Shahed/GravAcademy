@@ -31,7 +31,7 @@ import {
   ROLES,
   UserRole,
   PermissionKey,
-  ALL_PERMISSIONS_METADATA,
+  DASHBOARD_PERMISSION_METADATA,
   ROLE_DEFAULT_PERMISSIONS,
   PERMISSIONS,
 } from '../types/roles';
@@ -53,7 +53,7 @@ export const getPermissionsCatalog = async (req: AuthenticatedRequest, res: Resp
     return res.status(200).json({
       success: true,
       data: {
-        permissions: ALL_PERMISSIONS_METADATA,
+        permissions: DASHBOARD_PERMISSION_METADATA,
         roleDefaults: ROLE_DEFAULT_PERMISSIONS,
         roles: Object.values(ROLES),
       },

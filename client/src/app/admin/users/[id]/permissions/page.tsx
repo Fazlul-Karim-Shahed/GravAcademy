@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { Card, Button } from '@/components/ui';
 import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
-  ALL_PERMISSIONS_METADATA,
+  DASHBOARD_PERMISSION_METADATA,
   ROLE_DEFAULT_PERMISSIONS,
   PermissionDefinition,
   PermissionKey,
@@ -143,15 +143,15 @@ export default function UserPermissionsEditPage() {
     }
   };
 
-  // Group permissions by category
+  // Each group is one visible Admin Dashboard card, never a technical subcategory.
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(ALL_PERMISSIONS_METADATA.map((p) => p.category)));
+    const cats = Array.from(new Set(DASHBOARD_PERMISSION_METADATA.map((p) => p.category)));
     return ['all', ...cats];
   }, []);
 
   const filteredPermissions = useMemo(() => {
-    if (activeCategory === 'all') return ALL_PERMISSIONS_METADATA;
-    return ALL_PERMISSIONS_METADATA.filter((p) => p.category === activeCategory);
+    if (activeCategory === 'all') return DASHBOARD_PERMISSION_METADATA;
+    return DASHBOARD_PERMISSION_METADATA.filter((p) => p.category === activeCategory);
   }, [activeCategory]);
 
   // Baseline permissions granted automatically by the currently selected role
@@ -164,12 +164,12 @@ export default function UserPermissionsEditPage() {
     || customPermissions.includes(permissionKey)
   );
 
-  const allPermissionsSelected = ALL_PERMISSIONS_METADATA.every((permission) => getPermissionGranted(permission.key));
+  const allPermissionsSelected = DASHBOARD_PERMISSION_METADATA.every((permission) => getPermissionGranted(permission.key));
 
   const setAllPermissionsSelected = (checked: boolean) => {
     if (selectedRole === ROLES.SUPERADMIN) return;
     if (checked) {
-      setCustomPermissions(ALL_PERMISSIONS_METADATA
+      setCustomPermissions(DASHBOARD_PERMISSION_METADATA
         .filter((permission) => !roleDefaultPerms.has(permission.key))
         .map((permission) => permission.key));
       setRevokedPermissions([]);
@@ -220,7 +220,7 @@ export default function UserPermissionsEditPage() {
           backLabel="Users"
           eyebrow="Access control"
           title={`${targetUser.name} - রোল ও পারমিশন`}
-          description="ব্যবহারকারীর প্রাইমারি রোল এবং সুনির্দিষ্ট গ্র্যানুলার পারমিশন পরিচালনা করুন।"
+          description="Admin Dashboard-এর প্রতিটি কার্ডে দেখা যায় এমন কাজ অনুযায়ী access দিন।"
           badge={
             <span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black uppercase text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
               {targetUser.role}
@@ -251,7 +251,7 @@ export default function UserPermissionsEditPage() {
             heading="Permission sections"
             items={[
               { id: 'role', label: 'Primary role' },
-              { id: 'granular', label: 'Granular permissions' },
+              { id: 'granular', label: 'Dashboard access' },
             ]}
           />
 
@@ -312,8 +312,8 @@ export default function UserPermissionsEditPage() {
             <FormSection
               id="granular"
               icon={<Key className="h-4 w-4" />}
-              title="ফিচারভিত্তিক কাস্টম পারমিশন (Granular Permissions Overrides)"
-              description="রোল ডিফল্টের বাইরে নির্দিষ্ট মডিউলের জন্য পারমিশন অন বা অফ করুন।"
+              title="Dashboard কার্ড অনুযায়ী Access"
+              description="প্রতিটি tab একটি Admin Dashboard card। ভেতরে শুধু ওই card-এ দেখা যায় এমন কাজগুলো আছে।"
             >
               <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4">
                 <span className="flex items-center gap-1.5">
@@ -353,7 +353,7 @@ export default function UserPermissionsEditPage() {
                         : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1a202c]'
                     }`}
                   >
-                    {cat === 'all' ? 'সকল ফিচার ক্যাটাগরি' : cat}
+                  {cat === 'all' ? 'সব Dashboard কার্ড' : cat}
                   </button>
                 ))}
               </div>
