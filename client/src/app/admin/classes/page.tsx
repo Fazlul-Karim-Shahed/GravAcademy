@@ -31,6 +31,7 @@ import {
 
 export default function AdminClassesPage() {
   const { user } = useAuth();
+  const base = user?.role === 'employee' ? '/employee' : '/admin';
   const [classes, setClasses] = useState<AcademicClass[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -252,14 +253,14 @@ export default function AdminClassesPage() {
         
         <AdminPageHeader title="Academic Classes" description="Academic class ও বিষয়ভিত্তিক তথ্য পরিচালনা করুন।" actions={<>
             <Link
-              href="/admin/courses"
+              href={`${base}/courses`}
               className="px-4 py-2 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] flex items-center gap-2 transition-colors shadow-2xs"
             >
               <BookOpen className="w-4 h-4 text-slate-500" />
               <span>Courses</span>
             </Link>
             <Link
-              href="/admin/classes/new"
+              href={`${base}/classes/new`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
             >
               <PlusCircle className="w-4 h-4" />
@@ -358,7 +359,7 @@ export default function AdminClassesPage() {
                       {/* Action buttons */}
                       <div className="flex items-center gap-1 shrink-0">
                         <Link
-                          href={`/admin/classes/${cls._id || cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/edit`}
+                          href={`${base}/classes/${cls._id || cls.slug || cls.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/edit`}
                           className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-all"
                           title="Edit Class Details"
                         >
@@ -401,7 +402,7 @@ export default function AdminClassesPage() {
                       <span>লাইভ পেজ</span>
                     </Link>
                     <Link
-                      href={`/admin/courses?grade=${encodeURIComponent(cls.name)}`}
+                      href={`${base}/courses?grade=${encodeURIComponent(cls.name)}`}
                       className="font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors"
                     >
                       <span>কোর্সগুলো দেখুন ({classCourses.length})</span>

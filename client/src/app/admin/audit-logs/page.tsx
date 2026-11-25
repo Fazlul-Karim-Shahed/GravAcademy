@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { formatBDDateTime } from '@/lib/dateUtils';
 import { ArrowLeft, ShieldCheck, Search, AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 
@@ -34,7 +35,7 @@ export default function AuditLogsPage() {
   const [actionFilter, setActionFilter] = useState('all');
 
   useEffect(() => {
-    if (user?.role === 'superadmin') {
+    if (hasPermission(user, PERMISSIONS.AUDIT_LOGS_VIEW)) {
       loadLogs();
     } else if (user) {
       setLoading(false);
@@ -73,7 +74,7 @@ export default function AuditLogsPage() {
     );
   });
 
-  if (user && user.role !== 'superadmin') {
+  if (user && !hasPermission(user, PERMISSIONS.AUDIT_LOGS_VIEW)) {
     return (
       <div className="ga-page min-h-screen flex items-center justify-center px-4">
         <div className="ga-card max-w-md text-center p-8">

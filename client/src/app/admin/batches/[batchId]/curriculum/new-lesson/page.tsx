@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui';
 import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
@@ -37,6 +37,7 @@ const lessonSections = [
 export default function NewLessonPage({ params }: { params: Promise<{ batchId: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const batchBase = usePathname().startsWith('/employee/') ? '/employee/batches' : '/admin/batches';
   const searchParams = useSearchParams();
 
   const moduleId = searchParams.get('moduleId') || '';
@@ -124,7 +125,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
       if (res.data?.success) {
         setMessage({ type: 'success', text: 'লেসন সফলভাবে তৈরি হয়েছে!' });
         setTimeout(() => {
-          router.push(`/admin/batches/${resolvedParams.batchId}/curriculum`);
+          router.push(`${batchBase}/${resolvedParams.batchId}/curriculum`);
         }, 1200);
       } else {
         setMessage({ type: 'error', text: res.data?.message || 'Failed to add lesson' });
@@ -145,7 +146,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref={`/admin/batches/${resolvedParams.batchId}/curriculum`}
+          backHref={`${batchBase}/${resolvedParams.batchId}/curriculum`}
           backLabel="Curriculum"
           eyebrow={parentTitle ? `Target: ${parentTitle}` : 'Curriculum setup'}
           title="নতুন লেসন তৈরি করুন"
@@ -297,7 +298,7 @@ export default function NewLessonPage({ params }: { params: Promise<{ batchId: s
                 লেসনটি কারিকুলামে যুক্ত করতে সেভ বাটনে চাপুন।
               </div>
               <div className="flex gap-2">
-                <Link href={`/admin/batches/${resolvedParams.batchId}/curriculum`}>
+                <Link href={`${batchBase}/${resolvedParams.batchId}/curriculum`}>
                   <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
                     বাতিল
                   </Button>

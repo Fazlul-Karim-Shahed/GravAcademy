@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import { Card, Button } from '@/components/ui';
 import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
 import {
@@ -46,6 +47,8 @@ interface UserDetail {
 export default function UserPermissionsEditPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
+  const base = user?.role === 'employee' ? '/employee/users' : '/admin/users';
   const gravId = params?.id as string;
 
   const [targetUser, setTargetUser] = useState<UserDetail | null>(null);
@@ -207,7 +210,7 @@ export default function UserPermissionsEditPage() {
     );
   }
 
-  if (!targetUser) {
+  if (!targetUser || (user?.role === 'employee' && targetUser.role !== 'employee')) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] py-16 flex items-center justify-center p-4">
         <div className="ga-card max-w-md w-full p-8 text-center">
@@ -217,7 +220,7 @@ export default function UserPermissionsEditPage() {
             এই আইডি সম্পন্ন কোনো অ্যাকাউন্ট ডাটাবেসে নেই বা মুছে ফেলা হয়েছে।
           </p>
           <Link
-            href="/admin/users"
+            href={base}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> ইউজার তালিকায় ফিরে যান
@@ -231,7 +234,7 @@ export default function UserPermissionsEditPage() {
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref="/admin/users"
+          backHref={base}
           backLabel="Users"
           eyebrow="Access control"
           title={`${targetUser.name} - রোল ও পারমিশন`}
@@ -285,7 +288,7 @@ export default function UserPermissionsEditPage() {
                   { role: 'admin', title: 'Admin (অপারেশনাল এডমিন)', desc: 'কোর্স, ব্যাচ ও অ্যাকাডেমিক ম্যানেজমেন্ট' },
                   { role: 'guardian', title: 'Guardian (অভিভাবক)', desc: 'সন্তানের উপস্থিতি ও ফলাফল পর্যবেক্ষণ' },
                   { role: 'employee', title: 'Employee (স্টাফ)', desc: 'সহায়তা কর্মী ও হাজিরা অপারেটর' },
-                ].map((item) => {
+                ].filter((item) => user?.role !== 'employee' || item.role === 'employee').map((item) => {
                   const isSelected = selectedRole === item.role;
                   return (
                     <div
@@ -451,7 +454,7 @@ export default function UserPermissionsEditPage() {
             <div className="ga-sticky-action-bar m-4 sm:m-5">
               <div className="flex items-center gap-2">
                 <Link
-                  href="/admin/settings"
+                  href={base}
                   className="rounded-xl border border-slate-300 px-4 py-2.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-[#262b34] dark:text-slate-200 dark:hover:bg-[#1a202c]"
                 >
                   বাতিল (Cancel)

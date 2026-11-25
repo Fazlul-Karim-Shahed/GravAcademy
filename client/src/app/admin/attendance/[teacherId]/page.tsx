@@ -73,6 +73,8 @@ export default function TeacherAttendanceDetailPage() {
   const teacherId = String(params?.teacherId || '');
   const { user } = useAuth();
   const canManage = hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE);
+  const canView = canManage || hasPermission(user, PERMISSIONS.ATTENDANCE_VIEW);
+  const base = user?.role === 'employee' ? '/employee/attendance' : '/admin/attendance';
   const [month, setMonth] = useState(() => toMonthKey(new Date()));
   const [selectedDate, setSelectedDate] = useState('');
   const [courseId, setCourseId] = useState('all');
@@ -326,7 +328,7 @@ export default function TeacherAttendanceDetailPage() {
   ];
   const scheduledDates = new Set(view?.scheduledDates || []);
 
-  if (!canManage) return <main className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] px-4 py-12 text-center text-slate-600 dark:text-slate-400">এই পেজ দেখার permission নেই।</main>;
+  if (!canView) return <main className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] px-4 py-12 text-center text-slate-600 dark:text-slate-400">এই পেজ দেখার permission নেই।</main>;
 
   return (
     <main className="ga-page ga-admin-page py-6 text-slate-900 dark:text-slate-100 sm:py-10">
@@ -340,7 +342,7 @@ export default function TeacherAttendanceDetailPage() {
               {view?.teacher?.gravId && <p className="mt-1 text-xs text-slate-500">Grav ID: {view.teacher.gravId}</p>}
             </div>
           </div>
-          <Link href="/admin/attendance" className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40 sm:self-auto">
+          <Link href={base} className="inline-flex min-h-10 items-center justify-center gap-2 self-start rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40 sm:self-auto">
             <ArrowLeft className="h-4 w-4" /> ফিরে যান
           </Link>
         </header>
@@ -412,7 +414,7 @@ export default function TeacherAttendanceDetailPage() {
               <h2 className="text-lg font-bold sm:text-xl">{selectedDate ? formatDate(selectedDate) : startDate && endDate ? 'নির্বাচিত সময়ের ক্লাস' : monthTitle}</h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">তারিখ অনুযায়ী নতুন class আগে</p>
             </div>
-            <button type="button" disabled={!bulkRows.length || loading} onClick={openBulkPayment} className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-4 text-sm font-bold text-white shadow-md shadow-orange-950/20 transition-all disabled:cursor-not-allowed disabled:opacity-50"><Banknote className="h-4 w-4" />Bulk Payment <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{bulkRows.length}</span></button>
+            {canManage && <button type="button" disabled={!bulkRows.length || loading} onClick={openBulkPayment} className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-4 text-sm font-bold text-white shadow-md shadow-orange-950/20 transition-all disabled:cursor-not-allowed disabled:opacity-50"><Banknote className="h-4 w-4" />Bulk Payment <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">{bulkRows.length}</span></button>}
           </div>
 
           {loading ? (
@@ -455,7 +457,7 @@ export default function TeacherAttendanceDetailPage() {
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                      {isPresent ? (
+                      {canManage && (isPresent ? (
                         <button
                           type="button"
                           disabled={Boolean(row.payment) || markingBatch === row.batchId}
@@ -474,8 +476,8 @@ export default function TeacherAttendanceDetailPage() {
                           {markingBatch === row.batchId ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}
                           {isFuture ? 'Future' : 'Mark as Present'}
                         </button>
-                      )}
-                      {row.payment ? (
+                      ))}
+                      {canManage && (row.payment ? (
                         <>
                           {!isPresent && (
                             <span role="alert" className="rounded-lg bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
@@ -514,7 +516,7 @@ export default function TeacherAttendanceDetailPage() {
                         >
                           <Banknote className="h-4 w-4" />Make Payment
                         </button>
-                      ) : null}
+                      ) : null)}
                     </div>
                   </article>
                 );
@@ -536,7 +538,7 @@ export default function TeacherAttendanceDetailPage() {
           {paymentHistory.length === 0 ? <p className="text-sm text-slate-500">এখনো কোনো payment নেই।</p> : <div className="divide-y divide-slate-100 dark:divide-[#262b34]">
             {paymentHistory.map((payment) => <div key={payment._id} className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
               <div><p className="font-semibold">{payment.receiptNo} <span className="ml-2 text-sm text-slate-500">৳{payment.amountPaid.toLocaleString('bn-BD')}</span></p><p className="mt-1 text-xs text-slate-500">{payment.classes.length}টি class · {formatBDDate(payment.paidAt, { day: 'numeric', month: 'short', year: 'numeric' })}{payment.voidedAt ? ' · বাতিল' : ''}</p></div>
-              <div className="flex flex-wrap gap-2"><button type="button" onClick={() => void openReceipt(payment._id)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-[#262b34] dark:text-slate-300 dark:hover:bg-[#151921]">Receipt</button>{!payment.voidedAt && <><button type="button" onClick={() => { setPaymentAction({ type: 'edit', payment }); setActionAmount(String(payment.amountPaid)); setActionReason(''); setError(''); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-[#262b34] dark:text-slate-300 dark:hover:bg-[#151921]">Edit</button><button type="button" onClick={() => { setPaymentAction({ type: 'void', payment }); setActionReason(''); setError(''); }} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:text-rose-300">Void</button></>}</div>
+              <div className="flex flex-wrap gap-2"><button type="button" onClick={() => void openReceipt(payment._id)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-[#262b34] dark:text-slate-300 dark:hover:bg-[#151921]">Receipt</button>{canManage && !payment.voidedAt && <><button type="button" onClick={() => { setPaymentAction({ type: 'edit', payment }); setActionAmount(String(payment.amountPaid)); setActionReason(''); setError(''); }} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold dark:border-[#262b34] dark:text-slate-300 dark:hover:bg-[#151921]">Edit</button><button type="button" onClick={() => { setPaymentAction({ type: 'void', payment }); setActionReason(''); setError(''); }} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:text-rose-300">Void</button></>}</div>
             </div>)}
           </div>}
           <div className="mt-4 flex items-center justify-end gap-3 text-xs text-slate-500"><button type="button" disabled={historyPage <= 1} onClick={() => setHistoryPage((value) => value - 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40 dark:border-[#262b34]">Previous</button><span>{historyPage} / {historyTotalPages}</span><button type="button" disabled={historyPage >= historyTotalPages} onClick={() => setHistoryPage((value) => value + 1)} className="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40 dark:border-[#262b34]">Next</button></div>

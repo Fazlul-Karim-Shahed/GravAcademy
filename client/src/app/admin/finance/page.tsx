@@ -671,7 +671,7 @@ export default function AdminFinancePage() {
         <AdminPageHeader title="ফাইন্যান্স ম্যানেজমেন্ট" description="Payment, income, expense এবং financial report পরিচালনা করুন।" actions={<>
             {can('finance.expense_manage') && (
               <Link
-                href="/admin/finance/company-expenses"
+                href={user?.role === 'employee' ? '/employee/finance/company-expenses' : '/admin/finance/company-expenses'}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] hover:border-orange-300 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
               >
                 <Building2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
@@ -1109,7 +1109,7 @@ export default function AdminFinancePage() {
                     </div>
 
                     <div className="flex items-center gap-2 pt-1">
-                      {group.totalDue > 0 && (
+                      {group.totalDue > 0 && can('finance.collect') && (
                         <button
                           onClick={() => {
                             if (group.gravId) {
@@ -1131,7 +1131,7 @@ export default function AdminFinancePage() {
                           <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
                         </button>
                       )}
-                      {group.totalDue < 0 && (
+                      {group.totalDue < 0 && can('finance.refund') && (
                         <button
                           onClick={() => {
                             setRefundTargetGroup(group);
@@ -1311,7 +1311,7 @@ export default function AdminFinancePage() {
 
                         {/* অ্যাকশন / জমা বা ফেরত (Separate column) */}
                         <td className="py-4 px-6 text-center">
-                          {group.totalDue > 0 ? (
+                          {group.totalDue > 0 && can('finance.collect') ? (
                             <button
                               onClick={() => {
                                 if (group.gravId) {
@@ -1333,7 +1333,7 @@ export default function AdminFinancePage() {
                             >
                               <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
                             </button>
-                          ) : group.totalDue < 0 ? (
+                          ) : group.totalDue < 0 && can('finance.refund') ? (
                             <button
                               onClick={() => {
                                 setRefundTargetGroup(group);

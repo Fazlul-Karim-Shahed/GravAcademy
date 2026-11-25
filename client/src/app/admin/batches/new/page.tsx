@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui';
 import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
@@ -49,6 +51,10 @@ const todayInDhaka = () =>
 
 function CreateBatchContent() {
   const router = useRouter();
+  const { user } = useAuth();
+  const canDuplicate = hasPermission(user, PERMISSIONS.BATCHES_DUPLICATE);
+  const canCreate = hasPermission(user, PERMISSIONS.BATCHES_MANAGE);
+  const batchesHref = usePathname().startsWith('/employee/') ? '/employee/batches' : '/admin/batches';
   const searchParams = useSearchParams();
   const cloneFromId = searchParams.get('cloneFrom') || '';
 
@@ -161,6 +167,10 @@ function CreateBatchContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if ((form.copyFromBatchId && !canDuplicate) || (!form.copyFromBatchId && !canCreate)) {
+      setError('এই কাজের অনুমতি নেই।');
+      return;
+    }
     if (!form.name || !form.courseId) {
       setError('ব্যাচের নাম এবং কোর্স নির্বাচন করা আবশ্যক');
       return;
@@ -193,7 +203,7 @@ function CreateBatchContent() {
       if (res.data?.success) {
         setSuccess('ব্যাচ সফলভাবে তৈরি হয়েছে!');
         setTimeout(() => {
-          router.push('/admin/batches');
+          router.push(batchesHref);
         }, 1200);
       }
     } catch (err: any) {
@@ -212,7 +222,7 @@ function CreateBatchContent() {
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref="/admin/batches"
+          backHref={batchesHref}
           backLabel="Batches"
           eyebrow={cloneFromId ? 'Batch duplication' : 'Batch configuration'}
           title={cloneFromId ? 'Duplicate & Create New Batch' : 'Create New Batch'}
@@ -442,7 +452,7 @@ function CreateBatchContent() {
             </FormSection>
 
             {/* Section 4: Curriculum Clone */}
-            <FormSection
+            {canDuplicate && <FormSection
               id="clone"
               icon={<Copy className="h-4 w-4" />}
               title="কারিকুলাম ক্লোনিং (ঐচ্ছিক)"
@@ -467,13 +477,14 @@ function CreateBatchContent() {
               </div>
             </FormSection>
 
+            }
             {/* Sticky Action Bar */}
             <div className="ga-sticky-action-bar m-4 sm:m-5">
               <div className="mr-auto text-xs text-slate-500 dark:text-slate-400">
                 সব তথ্য সঠিকভাবে পূরণ হয়েছে কিনা যাচাই করুন।
               </div>
               <div className="flex gap-2">
-                <Link href="/admin/batches">
+                <Link href={batchesHref}>
                   <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
                     Cancel
                   </Button>

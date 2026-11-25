@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import {
   Users,
   Search,
@@ -41,6 +42,9 @@ interface UserRecord {
 
 export default function AdminUsersPage() {
   const { user } = useAuth();
+  const canManage = hasPermission(user, PERMISSIONS.USERS_MANAGE);
+  const canEditPermissions = hasPermission(user, PERMISSIONS.PERMISSIONS_MANAGE);
+  const base = user?.role === 'employee' ? '/employee/users' : '/admin/users';
   const { loading: loadingSettings, isFeatureEnabled } = useSiteSettings();
 
   // Users state
@@ -86,7 +90,7 @@ export default function AdminUsersPage() {
   };
 
   const canDeleteUser = (target: UserRecord) =>
-    Boolean(user) &&
+    canManage && Boolean(user) &&
     target._id !== user?.id &&
     target.role !== 'superadmin' &&
     (target.role !== 'admin' || user?.role === 'superadmin');
@@ -278,21 +282,21 @@ export default function AdminUsersPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <AdminPageHeader title="ইউজার ম্যানেজমেন্ট" description="সকল user account, role এবং staff access পরিচালনা করুন।" actions={<>
-            <button
+            {canManage && <button
               type="button"
               onClick={() => setShowCreateStaffModal(true)}
               className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#151921] dark:hover:bg-[#1a202c] border border-slate-200 dark:border-[#262b34] text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
             >
               <UserPlus className="w-4 h-4 text-orange-500" />
               <span>নতুন মেম্বার তৈরি করুন</span>
-            </button>
-            <Link
-              href="/admin/admissions"
+            </button>}
+            {hasPermission(user, PERMISSIONS.ADMISSIONS_CREATE) && <Link
+              href={user?.role === 'employee' ? '/employee/admissions' : '/admin/admissions'}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 flex items-center gap-2 transition-all cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>নতুন শিক্ষার্থী ভর্তি</span>
-            </Link>
+            </Link>}
           </>} />
 
         {/* Role Quick Filters */}
@@ -372,7 +376,7 @@ export default function AdminUsersPage() {
                         size="md"
                       />
                       <div className="min-w-0">
-                        <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-400 truncate transition-colors">
+                        <Link href={`${base}/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-400 truncate transition-colors">
                           {u.name}
                         </Link>
                         <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
@@ -415,7 +419,7 @@ export default function AdminUsersPage() {
                     </span>
                   </div>
 
-                  {u.role === 'guardian' && (
+                  {canManage && u.role === 'guardian' && (
                     <button
                       type="button"
                       onClick={() => openLinkModal(u)}
@@ -426,19 +430,19 @@ export default function AdminUsersPage() {
                     </button>
                   )}
 
-                  <Link href={`/admin/users/${u._id}`} className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20">
+                  <Link href={`${base}/${u._id}`} className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20">
                     <Eye className="w-3.5 h-3.5" />
                     <span>প্রোফাইল</span>
                   </Link>
 
-                  <Link
-                    href={`/admin/users/${u._id}/permissions`}
+                  {canEditPermissions && (user?.role !== 'employee' || u.role === 'employee') && <Link
+                    href={`${base}/${u._id}/permissions`}
                     className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-200 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-[#262b34] shadow-2xs"
                   >
                     <Key className="w-3.5 h-3.5 text-orange-500" />
                     <span>পারমিশন ও অ্যাক্সেস কন্ট্রোল</span>
                     <ChevronRight className="w-3 h-3 ml-auto text-slate-400" />
-                  </Link>
+                  </Link>}
 
                   {canDeleteUser(u) && (
                     <button
@@ -501,7 +505,7 @@ export default function AdminUsersPage() {
                             size="md"
                           />
                           <div className="min-w-0">
-                            <Link href={`/admin/users/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-400 truncate transition-colors">
+                            <Link href={`${base}/${u._id}`} title="প্রোফাইল দেখুন" className="font-bold text-sm text-slate-900 hover:text-orange-600 dark:text-white dark:hover:text-orange-400 truncate transition-colors">
                               {u.name}
                             </Link>
                           </div>
@@ -567,7 +571,7 @@ export default function AdminUsersPage() {
                       {/* Button Column 1: Profile */}
                       <td className="py-3.5 px-2 whitespace-nowrap text-center">
                         <Link
-                          href={`/admin/users/${u._id}`}
+                          href={`${base}/${u._id}`}
                           title="প্রোফাইল দেখুন"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold text-xs transition-colors border border-orange-500/20 cursor-pointer"
                         >
@@ -578,7 +582,7 @@ export default function AdminUsersPage() {
 
                       {/* Button Column 2: Link Student (for guardian) */}
                       <td className="py-3.5 px-2 whitespace-nowrap text-center">
-                        {u.role === 'guardian' ? (
+                        {canManage && u.role === 'guardian' ? (
                           <button
                             type="button"
                             onClick={() => openLinkModal(u)}
@@ -593,14 +597,14 @@ export default function AdminUsersPage() {
 
                       {/* Button Column 3: Permissions */}
                       <td className="py-3.5 px-2 whitespace-nowrap text-center">
-                        <Link
-                          href={`/admin/users/${u._id}/permissions`}
+                        {canEditPermissions && (user?.role !== 'employee' || u.role === 'employee') && <Link
+                          href={`${base}/${u._id}/permissions`}
                           title="পারমিশন ও অ্যাক্সেস কন্ট্রোল"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-[#151921] dark:hover:bg-orange-950/30 text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 font-bold text-xs transition-colors border border-slate-200/70 dark:border-[#262b34] shadow-2xs cursor-pointer"
                         >
                           <Key className="w-3.5 h-3.5 text-orange-500" />
                           <span>পারমিশন</span>
-                        </Link>
+                        </Link>}
                       </td>
 
                       {/* Button Column 4: Delete */}

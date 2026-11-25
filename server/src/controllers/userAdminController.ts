@@ -170,6 +170,10 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
         message: 'Delegated permission editors cannot change account roles.',
       });
     }
+    if (!isSuperAdmin && !isAdmin && (user._id.toString() === caller._id.toString() ||
+      (Array.isArray(customPermissions) && customPermissions.some((permission: PermissionKey) => !hasPermission(caller, permission))))) {
+      return res.status(403).json({ success: false, message: 'You cannot change your own access or grant permissions you do not hold.' });
+    }
 
     // Only Superadmin can promote to or alter Superadmin
     if (role === ROLES.SUPERADMIN && !isSuperAdmin) {
@@ -591,14 +595,10 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
 };
 
 /**
- * Get Audit Logs (Superadmin only)
+ * Get audit logs for callers authorized by the route's permission guard.
  */
 export const getAuditLogs = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    if (req.user?.role !== ROLES.SUPERADMIN) {
-      return res.status(403).json({ success: false, message: 'Superadmin access required' });
-    }
-
     const logs = await AuditLog.find().sort({ createdAt: -1 }).limit(100);
     return res.status(200).json({ success: true, count: logs.length, data: logs });
   } catch (error) {

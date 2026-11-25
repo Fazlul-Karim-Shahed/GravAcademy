@@ -46,6 +46,8 @@ const timeLabel = (start: string, end: string) => end ? `${start} – ${end}` : 
 export default function AdminTeacherAttendancePage() {
   const { user } = useAuth();
   const canManage = hasPermission(user, PERMISSIONS.ATTENDANCE_MANAGE);
+  const canView = canManage || hasPermission(user, PERMISSIONS.ATTENDANCE_VIEW);
+  const base = user?.role === 'employee' ? '/employee/attendance' : '/admin/attendance';
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [running, setRunning] = useState<RunningClass[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,14 +84,14 @@ export default function AdminTeacherAttendancePage() {
   }, []);
 
   useEffect(() => {
-    if (!canManage) {
+    if (!canView) {
       setLoading(false);
       return;
     }
     Promise.all([loadTeachers(), loadQuick()]).finally(() => setLoading(false));
     const timer = window.setInterval(() => loadQuick(true), 30_000);
     return () => window.clearInterval(timer);
-  }, [canManage, loadTeachers, loadQuick]);
+  }, [canView, loadTeachers, loadQuick]);
 
   const markPresent = async (row: RunningClass) => {
     const key = `${row.teacher._id}:${row.batchId}`;
@@ -144,14 +146,14 @@ export default function AdminTeacherAttendancePage() {
     return groups;
   }, new Map<string, RunningClass[]>()).values());
 
-  if (!canManage) {
+  if (!canView) {
     return <main className="min-h-screen bg-slate-50 dark:bg-[#0b0d12] px-4 py-12 text-center text-slate-600 dark:text-slate-400">এই পেজ দেখার permission নেই।</main>;
   }
 
   return (
     <main className="ga-page ga-admin-page py-6 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <AdminPageHeader title="শিক্ষক হাজিরা" description="চলমান class-এর Quick Attendance নিন এবং পুরোনো হাজিরা দেখতে Manual Attendance ব্যবহার করুন।" actions={<><Link href="/admin/attendance/manual" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white transition hover:bg-orange-700"><CalendarCheck className="h-4 w-4" /> Manual Attendance</Link><button onClick={() => { loadQuick(); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40"><RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ</button></>} />
+        <AdminPageHeader title="শিক্ষক হাজিরা" description="চলমান class-এর Quick Attendance নিন এবং পুরোনো হাজিরা দেখতে Manual Attendance ব্যবহার করুন।" actions={<><Link href={`${base}/manual`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white transition hover:bg-orange-700"><CalendarCheck className="h-4 w-4" /> Manual Attendance</Link><button onClick={() => { loadQuick(); }} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-200 dark:hover:border-orange-500/40"><RefreshCw className={`h-4 w-4 ${quickLoading ? 'animate-spin' : ''}`} /> রিফ্রেশ</button></>} />
 
         {notice && <div role="status" className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">{notice}</div>}
         {error && <div role="alert" className="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">{error}</div>}
@@ -186,7 +188,7 @@ export default function AdminTeacherAttendancePage() {
                         return <div key={key} className="flex flex-wrap items-center gap-3 rounded-xl bg-slate-50 px-3 py-2 dark:bg-[#151921]">
                           <UserAvatar name={row.teacher.name} avatarUrl={row.teacher.avatarUrl} role="teacher" size="md" />
                           <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{row.teacher.name}</p>{row.teacher.gravId && <p className="text-xs text-slate-500">{row.teacher.gravId}</p>}</div>
-                          {row.attendance?.status === 'present' ? <div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300"><UserCheck className="h-4 w-4" /> Present</span><button type="button" onClick={() => markAbsent(row)} disabled={markingKey !== null} className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300">Absent করুন</button></div> : <button type="button" onClick={() => markPresent(row)} disabled={markingKey !== null || Boolean(selected)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-3 text-sm font-semibold text-white shadow-sm shadow-orange-950/20 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 dark:disabled:bg-slate-800"><UserCheck className="h-4 w-4" /> Mark as Present</button>}
+                          {canManage && (row.attendance?.status === 'present' ? <div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300"><UserCheck className="h-4 w-4" /> Present</span><button type="button" onClick={() => markAbsent(row)} disabled={markingKey !== null} className="min-h-10 rounded-xl border border-rose-200 px-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:text-rose-300">Absent করুন</button></div> : <button type="button" onClick={() => markPresent(row)} disabled={markingKey !== null || Boolean(selected)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 px-3 text-sm font-semibold text-white shadow-sm shadow-orange-950/20 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 dark:disabled:bg-slate-800"><UserCheck className="h-4 w-4" /> Mark as Present</button>)}
                         </div>;
                       })}
                     </div>

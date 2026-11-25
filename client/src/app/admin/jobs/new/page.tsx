@@ -50,6 +50,7 @@ const jobSections = [
 export default function AdminJobFormPage({ params }: JobPostFormProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const jobsBase = user?.role === 'employee' ? '/employee/jobs' : '/admin/jobs';
 
   // Resolve params if editing
   const resolvedParams = params ? use(params) : undefined;
@@ -114,7 +115,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
   const loadJobDetails = async (id: string) => {
     setLoading(true);
     try {
-      const res = await api.get(`/jobs/${id}`);
+      const res = await api.get(`/admin/jobs/${id}`);
       const j = res.data.data;
       if (j) {
         setTitle(j.title || '');
@@ -224,7 +225,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
         setSuccessMessage('নতুন জব সার্কুলার সফলভাবে তৈরি ও প্রকাশ করা হয়েছে!');
         setSavedSlug(res.data.data?.slug || '');
         setTimeout(() => {
-          router.push('/admin/jobs');
+          router.push(jobsBase);
         }, 1500);
       }
     } catch (err: any) {
@@ -246,7 +247,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref="/admin/jobs"
+          backHref={jobsBase}
           backLabel="Job circulars"
           eyebrow="Career management"
           title={isEditing ? 'জব সার্কুলার সম্পাদনা করুন' : 'নতুন জব সার্কুলার পোস্ট করুন'}
@@ -331,7 +332,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
                   <span>চাকরির ক্যাটাগরি / সেক্টর <span className="text-rose-500">*</span></span>
-                  <Link href="/admin/jobs" className="text-orange-600 dark:text-orange-400 text-2xs hover:underline font-normal">
+                  <Link href={jobsBase} className="text-orange-600 dark:text-orange-400 text-2xs hover:underline font-normal">
                     ক্যাটাগরি ম্যানেজ করুন
                   </Link>
                 </label>
@@ -737,7 +738,7 @@ export default function AdminJobFormPage({ params }: JobPostFormProps) {
               বিজ্ঞপ্তিটি সংরক্ষণ করতে নিচের বাটনে চাপুন।
             </div>
             <div className="flex gap-2">
-              <Link href="/admin/jobs">
+              <Link href={jobsBase}>
                 <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
                   বাতিল করুন
                 </Button>

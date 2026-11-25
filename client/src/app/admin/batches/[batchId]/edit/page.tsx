@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, usePathname } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui';
 import { FormPageHeader, FormSectionNav, FormSection } from '@/components/ui';
@@ -46,6 +46,7 @@ const todayInDhaka = () =>
 
 export default function EditBatchPage() {
   const router = useRouter();
+  const batchesHref = usePathname().startsWith('/employee/') ? '/employee/batches' : '/admin/batches';
   const params = useParams();
   const batchId = params?.batchId as string;
 
@@ -167,7 +168,7 @@ export default function EditBatchPage() {
       if (res.data?.success) {
         setSuccess('ব্যাচের তথ্য সফলভাবে আপডেট হয়েছে!');
         setTimeout(() => {
-          router.push('/admin/batches');
+          router.push(batchesHref);
         }, 1200);
       }
     } catch (err: any) {
@@ -197,7 +198,7 @@ export default function EditBatchPage() {
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref="/admin/batches"
+          backHref={batchesHref}
           backLabel="Batches"
           eyebrow="Batch Management"
           title="ব্যাচ সেটিংস এডিট"
@@ -426,7 +427,7 @@ export default function EditBatchPage() {
                 পরিবর্তনগুলো সংরক্ষণ করতে সেভ বাটনে চাপুন।
               </div>
               <div className="flex gap-2">
-                <Link href="/admin/batches">
+                <Link href={batchesHref}>
                   <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
                     Cancel
                   </Button>

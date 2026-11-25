@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Card, Button, DriveFileUpload } from '@/components/ui';
 import { FormSectionNav } from '@/components/ui/FormSectionNav';
@@ -222,6 +222,8 @@ function Section({ id, icon, title, description, children }: { id: string; icon:
 
 export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | 'edit'; courseId?: string }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const coursesHref = pathname.startsWith('/employee/') ? '/employee/courses' : '/admin/courses';
   const [form, setForm] = useState<CourseFormData>(() => getDefaultForm());
   const [teachers, setTeachers] = useState<TeacherUser[]>([]);
   const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
@@ -246,7 +248,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
     const load = async () => {
       setLoading(mode === 'edit');
       try {
-        const requests: Promise<any>[] = [api.get('/users'), getSharedAcademicClasses()];
+        const requests: Promise<any>[] = [api.get('/course-instructors'), getSharedAcademicClasses()];
         if (mode === 'edit' && courseId) requests.push(api.get(`/courses/${courseId}`));
         const [usersRes, classList, courseRes] = await Promise.all(requests);
         setAcademicClasses(classList || []);
@@ -319,7 +321,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
       const response = mode === 'create' ? await api.post('/courses', payload) : await api.put(`/courses/${courseId}`, payload);
       if (response.data?.success) {
         setSuccess(mode === 'create' ? 'Course তৈরি হয়েছে।' : 'Course update হয়েছে।');
-        setTimeout(() => router.push('/admin/courses'), 900);
+        setTimeout(() => router.push(coursesHref), 900);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Course save করা যায়নি।');
@@ -332,7 +334,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
 
   return <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="mb-7 flex items-center justify-between gap-3"><Link href="/admin/courses" className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400"><ArrowLeft className="h-4 w-4" /> Courses</Link><span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/50 dark:text-orange-300">{mode === 'create' ? 'New course' : 'Edit course'}</span></div>
+      <div className="mb-7 flex items-center justify-between gap-3"><Link href={coursesHref} className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-orange-600 dark:hover:text-orange-400"><ArrowLeft className="h-4 w-4" /> Courses</Link><span className="rounded-full bg-orange-50 px-3 py-1.5 text-[11px] font-black text-orange-700 dark:bg-orange-950/50 dark:text-orange-300">{mode === 'create' ? 'New course' : 'Edit course'}</span></div>
       <div className="mb-7"><p className="text-xs font-black uppercase tracking-[0.16em] text-orange-600 dark:text-orange-400">Course content</p><h1 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">{mode === 'create' ? 'Create course' : 'Edit course'}</h1><p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">Course details page-এ যা যা দেখা যায়, এখান থেকেই সব content manage করুন।</p></div>
       {error && <div className="mb-5 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-700 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-300"><AlertCircle className="h-5 w-5 shrink-0" />{error}</div>}
       {success && <div className="mb-5 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300"><CheckCircle2 className="h-5 w-5 shrink-0" />{success}</div>}
@@ -408,7 +410,7 @@ export default function CourseAdminForm({ mode, courseId }: { mode: 'create' | '
           <div className="mt-5 grid gap-4 lg:grid-cols-2">{form.promoCards.map((card, index) => <div key={card.key} className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-[#262b34] dark:bg-[#151921]/50"><div className="mb-3 flex items-center gap-2"><span className="rounded-full bg-orange-100 px-2 py-1 text-[10px] font-black uppercase text-orange-700 dark:bg-orange-950/50 dark:text-orange-300">{card.key}</span><span className="text-xs font-black">Promo card {index + 1}</span></div><div className="space-y-3"><Field label="Eyebrow"><input className={inputClass} value={card.eyebrow} onChange={(event) => updatePromo(index, 'eyebrow', event.target.value)} /></Field><Field label="Title"><input className={inputClass} value={card.title} onChange={(event) => updatePromo(index, 'title', event.target.value)} /></Field><Field label="Button text"><input className={inputClass} value={card.buttonLabel} onChange={(event) => updatePromo(index, 'buttonLabel', event.target.value)} /></Field><Field label="Button link"><input className={inputClass} value={card.buttonUrl} onChange={(event) => updatePromo(index, 'buttonUrl', event.target.value)} placeholder="/free-classes বা https://..." /></Field></div></div>)}</div>
         </Section>
 
-        <div className="ga-sticky-action-bar m-4 sm:m-5"><label className="mr-auto flex cursor-pointer items-start gap-3"><input type="checkbox" checked={form.isPublished} onChange={(event) => update('isPublished', event.target.checked)} className="mt-1 h-4 w-4 accent-orange-600" /><span><span className="block text-sm font-black">Publicly visible</span><span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">Unchecked রাখলে course draft হিসেবে থাকবে।</span></span></label><div className="flex gap-2"><Link href="/admin/courses"><Button type="button" variant="secondary" className="border border-slate-200 dark:border-[#262b34] hover:bg-slate-100 dark:hover:bg-[#151921]">Cancel</Button></Link><Button type="submit" isLoading={submitting} className="bg-orange-600 font-bold text-white hover:bg-orange-700"><Save className="mr-1 h-4 w-4" /> {mode === 'create' ? 'Create' : 'Save changes'}</Button></div></div>
+        <div className="ga-sticky-action-bar m-4 sm:m-5"><label className="mr-auto flex cursor-pointer items-start gap-3"><input type="checkbox" checked={form.isPublished} onChange={(event) => update('isPublished', event.target.checked)} className="mt-1 h-4 w-4 accent-orange-600" /><span><span className="block text-sm font-black">Publicly visible</span><span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">Unchecked রাখলে course draft হিসেবে থাকবে।</span></span></label><div className="flex gap-2"><Link href={coursesHref}><Button type="button" variant="secondary" className="border border-slate-200 dark:border-[#262b34] hover:bg-slate-100 dark:hover:bg-[#151921]">Cancel</Button></Link><Button type="submit" isLoading={submitting} className="bg-orange-600 font-bold text-white hover:bg-orange-700"><Save className="mr-1 h-4 w-4" /> {mode === 'create' ? 'Create' : 'Save changes'}</Button></div></div>
         </div>
       </form>
     </div>

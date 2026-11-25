@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { ComponentType } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { hasPermission, PERMISSIONS, type PermissionKey } from '@/lib/permissions';
-import { ArrowRight, BriefcaseBusiness, CircleDollarSign, FileCheck2, Video } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, CircleDollarSign, FileCheck2, Video, CalendarCheck, ShieldCheck, BookOpen, Layers } from 'lucide-react';
 
 interface EmployeeCard {
   title: string;
@@ -17,6 +17,41 @@ interface EmployeeCard {
 }
 
 const employeeCards: EmployeeCard[] = [
+  {
+    title: 'কোর্স ম্যানেজমেন্ট', description: 'কোর্সের তালিকা দেখুন।', href: '/employee/courses', icon: BookOpen,
+    iconClass: 'bg-orange-500/10 text-orange-600', routePermissions: [PERMISSIONS.COURSES_VIEW, PERMISSIONS.COURSES_CREATE, PERMISSIONS.COURSES_UPDATE, PERMISSIONS.COURSES_DELETE, PERMISSIONS.CLASSES_MANAGE],
+    permissions: [{ key: PERMISSIONS.COURSES_VIEW, label: 'কোর্স দেখুন' }, { key: PERMISSIONS.COURSES_CREATE, label: 'তৈরি' }, { key: PERMISSIONS.COURSES_UPDATE, label: 'এডিট' }, { key: PERMISSIONS.COURSES_DELETE, label: 'ডিলিট' }, { key: PERMISSIONS.CLASSES_MANAGE, label: 'ক্লাস ম্যানেজ' }],
+  },
+  {
+    title: 'ব্যাচ ম্যানেজমেন্ট', description: 'ব্যাচ ও ক্লাসরুম দেখুন।', href: '/employee/batches', icon: Layers,
+    iconClass: 'bg-blue-500/10 text-blue-600', routePermissions: [PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.LESSONS_MANAGE],
+    permissions: [{ key: PERMISSIONS.BATCHES_VIEW, label: 'ব্যাচ ও ক্লাসরুম' }, { key: PERMISSIONS.BATCHES_MANAGE, label: 'ব্যাচ ম্যানেজ' }, { key: PERMISSIONS.BATCHES_DUPLICATE, label: 'ডুপ্লিকেট' }, { key: PERMISSIONS.LESSONS_MANAGE, label: 'কারিকুলাম' }],
+  },
+  {
+    title: 'শিক্ষক হাজিরা', description: 'শিক্ষক হাজিরা ও ইতিহাস দেখুন।', href: '/employee/attendance', icon: CalendarCheck,
+    iconClass: 'bg-orange-500/10 text-orange-600', routePermissions: [PERMISSIONS.ATTENDANCE_VIEW, PERMISSIONS.ATTENDANCE_MANAGE],
+    permissions: [{ key: PERMISSIONS.ATTENDANCE_VIEW, label: 'হাজিরা দেখুন' }, { key: PERMISSIONS.ATTENDANCE_MANAGE, label: 'হাজিরা ম্যানেজ' }],
+  },
+  {
+    title: 'অডিট লগ', description: 'কার্যক্রমের ইতিহাস দেখুন।', href: '/employee/audit-logs', icon: ShieldCheck,
+    iconClass: 'bg-slate-500/10 text-slate-600', routePermissions: [PERMISSIONS.AUDIT_LOGS_VIEW],
+    permissions: [{ key: PERMISSIONS.AUDIT_LOGS_VIEW, label: 'অডিট লগ দেখুন' }],
+  },
+  {
+    title: 'জব সার্কুলার', description: 'অনুমোদিত নিয়োগ বিজ্ঞপ্তি দেখুন ও পরিচালনা করুন।', href: '/employee/jobs', icon: BriefcaseBusiness,
+    iconClass: 'bg-blue-500/10 text-blue-600', routePermissions: [PERMISSIONS.JOBS_VIEW, PERMISSIONS.JOBS_MANAGE],
+    permissions: [{ key: PERMISSIONS.JOBS_VIEW, label: 'বিজ্ঞপ্তি দেখুন' }, { key: PERMISSIONS.JOBS_MANAGE, label: 'বিজ্ঞপ্তি ম্যানেজ' }],
+  },
+  {
+    title: 'ইউজার ম্যানেজমেন্ট', description: 'অনুমোদিত ইউজার ও পারমিশন পরিচালনা করুন।', href: '/employee/users', icon: BriefcaseBusiness,
+    iconClass: 'bg-violet-500/10 text-violet-600', routePermissions: [PERMISSIONS.USERS_MANAGE, PERMISSIONS.PERMISSIONS_MANAGE],
+    permissions: [{ key: PERMISSIONS.USERS_MANAGE, label: 'ইউজার ম্যানেজ' }, { key: PERMISSIONS.PERMISSIONS_MANAGE, label: 'পারমিশন ম্যানেজ' }],
+  },
+  {
+    title: 'অন্যান্য সেটিংস', description: 'Drive Cleanup পরিচালনা করুন।', href: '/employee/settings', icon: ShieldCheck,
+    iconClass: 'bg-slate-500/10 text-slate-600', routePermissions: [PERMISSIONS.SETTINGS_MANAGE],
+    permissions: [{ key: PERMISSIONS.SETTINGS_MANAGE, label: 'Drive Cleanup' }],
+  },
   {
     title: 'এডমিশন', description: 'শিক্ষার্থী ভর্তি ও সাম্প্রতিক ভর্তি পরিচালনা করুন।', href: '/employee/admissions', icon: FileCheck2,
     iconClass: 'bg-orange-500/10 text-orange-600 dark:text-orange-400', routePermissions: [PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_CREATE],

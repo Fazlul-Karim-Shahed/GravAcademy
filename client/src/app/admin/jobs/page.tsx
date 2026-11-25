@@ -74,6 +74,7 @@ const sectorLabels: Record<string, { label: string; badgeClass: string }> = {
 
 export default function AdminJobsPage() {
   const { user } = useAuth();
+  const jobsBase = user?.role === 'employee' ? '/employee/jobs' : '/admin/jobs';
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -202,7 +203,7 @@ export default function AdminJobsPage() {
               <ExternalLink className="w-4 h-4 text-slate-500" /> পাবলিক পেজ ভিউ
             </Link>
             <Link
-              href="/admin/jobs/new"
+              href={`${jobsBase}/new`}
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-[0.98] text-white text-xs font-extrabold shadow-md shadow-orange-950/25 flex items-center gap-2 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" /> নতুন সার্কুলার পোস্ট করুন
@@ -301,7 +302,7 @@ export default function AdminJobsPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <Link
-                          href={`/admin/jobs/${job._id}`}
+                          href={`${jobsBase}/${job._id}`}
                           className="font-bold text-slate-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 line-clamp-1 text-sm block"
                         >
                           {job.title}
@@ -343,7 +344,7 @@ export default function AdminJobsPage() {
                         <ExternalLink className="w-3.5 h-3.5 text-slate-400" /> লাইভ ভিউ
                       </Link>
                       <Link
-                        href={`/admin/jobs/${job._id}`}
+                        href={`${jobsBase}/${job._id}`}
                         className="flex-1 py-2 px-3 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 text-xs font-bold flex items-center justify-center gap-1 border border-orange-200/60 dark:border-orange-800/60 transition-colors"
                       >
                         <Edit className="w-3.5 h-3.5" /> এডিট
@@ -410,7 +411,7 @@ export default function AdminJobsPage() {
                         {/* Title & Post */}
                         <td className="px-6 py-4 max-w-sm">
                           <Link
-                            href={`/admin/jobs/${job._id}`}
+                            href={`${jobsBase}/${job._id}`}
                             className="font-bold text-slate-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400 line-clamp-1 text-sm block"
                           >
                             {job.title}
@@ -508,7 +509,7 @@ export default function AdminJobsPage() {
 
                             {/* Edit Button */}
                             <Link
-                              href={`/admin/jobs/${job._id}`}
+                              href={`${jobsBase}/${job._id}`}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-slate-100 dark:hover:bg-[#151921] transition-colors"
                               title="সম্পাদনা করুন"
                             >

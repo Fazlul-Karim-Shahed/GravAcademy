@@ -186,7 +186,7 @@ export default function CompanyExpensesPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <header className="mb-6 grid gap-4 border-b border-slate-200 pb-5 dark:border-[#262b34] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
           <div className="flex items-center gap-3">
-            <Link href="/admin/finance" aria-label="ফাইন্যান্সে ফিরে যান" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300"><ArrowLeft className="h-4 w-4" /></Link>
+            <Link href={user?.role === 'employee' ? '/employee/finance' : '/admin/finance'} aria-label="ফাইন্যান্সে ফিরে যান" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:border-orange-300 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300"><ArrowLeft className="h-4 w-4" /></Link>
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-md shadow-orange-950/25"><Building2 className="h-5 w-5" /></span>
             <div className="min-w-0"><h1 className="text-xl font-black tracking-tight sm:text-2xl">Company Expense</h1><p className="mt-0.5 text-xs text-slate-500">Teacher payment ও business expense</p></div>
           </div>

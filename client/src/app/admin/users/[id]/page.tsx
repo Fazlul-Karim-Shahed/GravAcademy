@@ -79,7 +79,8 @@ export default function AdminUserProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const canManageUsers = hasPermission(currentUser, PERMISSIONS.USERS_MANAGE);
+  const canManageUsers = hasPermission(currentUser, PERMISSIONS.USERS_MANAGE) || hasPermission(currentUser, PERMISSIONS.PERMISSIONS_MANAGE);
+  const base = currentUser?.role === 'employee' ? '/employee/users' : '/admin/users';
 
   useEffect(() => {
     if (loadingSettings) return;
@@ -115,7 +116,7 @@ export default function AdminUserProfilePage() {
       <main className="min-h-screen bg-slate-50 px-4 py-12 dark:bg-[#0b0d12]">
         <div className="ga-card mx-auto max-w-3xl p-6 text-sm text-rose-700 dark:text-rose-300">
           {error || 'ইউজার পাওয়া যায়নি।'}
-          <Link href="/admin/users" className="ml-3 font-bold text-orange-600 dark:text-orange-400 underline underline-offset-4">ইউজার তালিকায় ফিরুন</Link>
+          <Link href={base} className="ml-3 font-bold text-orange-600 dark:text-orange-400 underline underline-offset-4">ইউজার তালিকায় ফিরুন</Link>
         </div>
       </main>
     );
@@ -131,10 +132,10 @@ export default function AdminUserProfilePage() {
     <main className="ga-page ga-admin-page py-6 text-slate-900 dark:text-slate-100 sm:py-10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between gap-3">
-          <Link href="/admin/users" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">
+          <Link href={base} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">
             <ArrowLeft className="h-4 w-4" /> ইউজার তালিকা
           </Link>
-          <Link href={`/admin/users/${profile._id}/permissions`} className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">Permissions</Link>
+          {hasPermission(currentUser, PERMISSIONS.PERMISSIONS_MANAGE) && (currentUser?.role !== 'employee' || profile.role === 'employee') && <Link href={`${base}/${profile._id}/permissions`} className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-orange-300 dark:hover:border-orange-500/40 hover:text-orange-600 dark:border-[#262b34] dark:bg-[#111318] dark:text-slate-300 dark:hover:text-orange-400">Permissions</Link>}
         </div>
 
         <section className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318] lg:grid-cols-[220px_1fr]">

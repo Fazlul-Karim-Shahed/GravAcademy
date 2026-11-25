@@ -633,6 +633,17 @@ export const getPublicTeachers = async (_req: any, res: Response) => {
   }
 };
 
+/** Minimal instructor choices for staff who can create or edit courses. */
+export const getCourseInstructors = async (_req: any, res: Response) => {
+  try {
+    const instructors = await User.find({ role: { $in: ['teacher', 'admin', 'superadmin'] }, status: 'active' })
+      .select('name role avatarUrl').sort({ name: 1 });
+    return res.status(200).json({ success: true, data: instructors });
+  } catch {
+    return res.status(500).json({ success: false, message: 'Failed to fetch instructors.' });
+  }
+};
+
 /**
  * Upload Profile Avatar Photo directly to Google Drive and update user's avatarUrl
  */

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, usePathname } from 'next/navigation';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui';
@@ -30,6 +30,7 @@ const classSections = [
 
 export default function EditClassPage() {
   const router = useRouter();
+  const classesHref = usePathname().startsWith('/employee/') ? '/employee/classes' : '/admin/classes';
   const params = useParams();
   const classId = (params?.id as string) || '';
   const { user } = useAuth();
@@ -165,7 +166,7 @@ export default function EditClassPage() {
 
       setSuccess(`ক্লাস "${payload.name}" সফলভাবে আপডেট হয়েছে!`);
       setTimeout(() => {
-        router.push('/admin/classes');
+        router.push(classesHref);
       }, 1200);
     } catch (err: any) {
       setError(
@@ -197,7 +198,7 @@ export default function EditClassPage() {
     <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-[#0b0d12] dark:text-white sm:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <FormPageHeader
-          backHref="/admin/classes"
+          backHref={classesHref}
           backLabel="Classes"
           eyebrow="Academic management"
           title={`‘${targetClass?.name || 'ক্লাস'}’ এডিট করুন`}
@@ -370,7 +371,7 @@ export default function EditClassPage() {
                 পরিবর্তনগুলো সংরক্ষণ করতে নিচের বাটনটি চাপুন।
               </div>
               <div className="flex gap-2">
-                <Link href="/admin/classes">
+                <Link href={classesHref}>
                   <Button type="button" variant="secondary" className="border border-slate-200 hover:bg-slate-100 dark:border-[#262b34] dark:hover:bg-[#151921]">
                     বাতিল করুন
                   </Button>

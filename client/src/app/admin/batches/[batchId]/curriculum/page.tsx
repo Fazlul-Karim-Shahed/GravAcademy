@@ -76,6 +76,7 @@ interface Module {
 export default function BatchCurriculumBuilderPage({ params }: { params: Promise<{ batchId: string }> }) {
   const resolvedParams = use(params);
   const { user } = useAuth();
+  const batchBase = user?.role === 'employee' ? '/employee/batches' : '/admin/batches';
   const [hierarchy, setHierarchy] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -458,7 +459,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 mb-6">
           <Link
-            href={user?.role === 'teacher' ? '/teacher' : '/admin/batches'}
+            href={user?.role === 'teacher' ? '/teacher' : batchBase}
             className="flex items-center gap-1.5 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> {user?.role === 'teacher' ? 'শিক্ষক প্যানেলে ফিরে যান' : 'Back to Batches'}
@@ -635,7 +636,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                       </button>
 
                       <Link
-                        href={`/admin/batches/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&parent=${encodeURIComponent(mod.title)}`}
+                        href={`${batchBase}/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&parent=${encodeURIComponent(mod.title)}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-950/60 text-orange-700 dark:text-orange-300 text-xs font-semibold border border-orange-200/80 dark:border-orange-800/50 shadow-2xs transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -676,7 +677,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                       {lesson.title}
                                     </h4>
                                     <Link
-                                      href={`/admin/batches/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
+                                      href={`${batchBase}/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
                                       className="opacity-60 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-all"
                                       title="Edit Lesson"
                                     >
@@ -746,7 +747,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
 
                               <div className="flex items-center gap-2">
                                 <Link
-                                  href={`/admin/batches/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&sectionId=${sec._id}&parent=${encodeURIComponent(`${mod.title} → ${sec.title}`)}`}
+                                  href={`${batchBase}/${resolvedParams.batchId}/curriculum/new-lesson?moduleId=${mod._id}&sectionId=${sec._id}&parent=${encodeURIComponent(`${mod.title} → ${sec.title}`)}`}
                                   className="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
                                 >
                                   <Plus className="w-3.5 h-3.5" /> Add Lesson
@@ -780,7 +781,7 @@ export default function BatchCurriculumBuilderPage({ params }: { params: Promise
                                             {lesson.title}
                                           </p>
                                           <Link
-                                            href={`/admin/batches/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
+                                            href={`${batchBase}/${resolvedParams.batchId}/curriculum/lessons/${lesson._id}/edit`}
                                             className="opacity-50 group-hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-all"
                                             title="Edit Lesson"
                                           >

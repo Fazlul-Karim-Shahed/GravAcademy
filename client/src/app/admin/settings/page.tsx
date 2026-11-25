@@ -67,6 +67,7 @@ const formatFileSize = (bytes: number) => {
 export default function AdminSettingsPage() {
   const { user } = useAuth();
   const canManageDriveCleanup = hasPermission(user, PERMISSIONS.SETTINGS_MANAGE);
+  const isEmployee = user?.role === 'employee';
   const { settings, updateSettings, loading: loadingSettings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<TabType>('users');
   const [whatsAppStatus, setWhatsAppStatus] = useState<WhatsAppStatus | null>(null);
@@ -294,10 +295,14 @@ export default function AdminSettingsPage() {
   const limit = 10;
 
   useEffect(() => {
-    if (activeTab === 'users') {
+    if (activeTab === 'users' && !isEmployee) {
       fetchUsers(page);
     }
-  }, [activeTab, selectedRole, page]);
+  }, [activeTab, selectedRole, page, isEmployee]);
+
+  useEffect(() => {
+    if (isEmployee) setActiveTab('drive');
+  }, [isEmployee]);
 
   const fetchUsers = async (targetPage = page) => {
     setLoadingUsers(true);
@@ -333,11 +338,10 @@ export default function AdminSettingsPage() {
   };
 
   const tabs = [
-    { id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length },
-    { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home },
+    ...(!isEmployee ? [{ id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length }, { id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home }] : []),
     ...(user?.role === 'superadmin' ? [{ id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }] : []),
     ...(canManageDriveCleanup ? [{ id: 'drive' as TabType, label: 'Drive Cleanup', icon: HardDrive }] : []),
-    { id: 'notifications' as TabType, label: 'নোটিফিকেশন', icon: Bell },
+    ...(!isEmployee ? [{ id: 'notifications' as TabType, label: 'নোটিফিকেশন', icon: Bell }] : []),
   ];
 
   const { usedDriveFiles, unusedDriveFiles } = useMemo(() => {
@@ -395,7 +399,7 @@ export default function AdminSettingsPage() {
           <div className="lg:col-span-9 min-w-0">
             
             {/* TAB: USERS */}
-            {activeTab === 'users' && (
+            {activeTab === 'users' && !isEmployee && (
               <div className="bg-white dark:bg-[#111318] rounded-2xl border border-slate-200/90 dark:border-[#262b34] shadow-2xs overflow-hidden">
                 {/* Panel Header */}
                 <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-[#262b34] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -652,7 +656,7 @@ export default function AdminSettingsPage() {
             )}
 
             {/* TAB: HOMEPAGE SETTINGS */}
-            {activeTab === 'homepage' && (
+            {activeTab === 'homepage' && !isEmployee && (
               <div className="space-y-6">
                 <div className="flex flex-col gap-4 rounded-2xl border border-orange-200 bg-orange-50/70 p-5 dark:border-orange-900/60 dark:bg-orange-950/20 sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -1211,7 +1215,7 @@ export default function AdminSettingsPage() {
             )}
 
             {/* TAB: NOTIFICATIONS */}
-            {activeTab === 'notifications' && (
+            {activeTab === 'notifications' && !isEmployee && (
               <div className="bg-white dark:bg-[#111318] rounded-2xl p-6 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-4">
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
                   WhatsApp সংযোগ

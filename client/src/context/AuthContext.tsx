@@ -61,7 +61,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const savedToken = Cookies.get('grav_token') || (typeof window !== 'undefined' ? localStorage.getItem('grav_token') : null);
     const savedUser = Cookies.get('grav_user') || (typeof window !== 'undefined' ? localStorage.getItem('grav_user') : null);
-    let cleanupRefresh: (() => void) | undefined;
 
     if (savedToken && savedUser) {
       try {
@@ -72,31 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         Cookies.set('grav_token', savedToken, { expires: 7, sameSite: 'lax' });
         Cookies.set('grav_user', savedUser, { expires: 7, sameSite: 'lax' });
 
-        // Login responses intentionally stay small, so refresh the profile here.
-        // This keeps role-specific fields (for example studentDetails) current
-        // after a refresh and lets forms safely prefill registered users.
-        const refreshProfile = async () => {
-          const meResponse = await api.get('/auth/me');
-          const freshUser = meResponse.data?.data?.user as User | undefined;
-          if (!freshUser) return;
-          setUser(freshUser);
-          const serializedUser = JSON.stringify(freshUser);
-          Cookies.set('grav_user', serializedUser, { expires: 7, sameSite: 'lax' });
-          localStorage.setItem('grav_user', serializedUser);
-        };
-
-        // API authorization is always fresh. Refresh the cached UI profile on
-        // tab focus and periodically so an admin's permission change appears
-        // without asking the employee to sign out and back in.
-        const safelyRefreshProfile = () => { void refreshProfile().catch(() => undefined); };
-        safelyRefreshProfile();
-        window.addEventListener('focus', safelyRefreshProfile);
-        const refreshInterval = window.setInterval(safelyRefreshProfile, 60_000);
-
-        cleanupRefresh = () => {
-          window.removeEventListener('focus', safelyRefreshProfile);
-          window.clearInterval(refreshInterval);
-        };
       } catch (e) {
         Cookies.remove('grav_token');
         Cookies.remove('grav_user');
@@ -107,8 +81,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     setLoading(false);
-    return () => cleanupRefresh?.();
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    let active = true;
+    const refresh = () => {
+      void api.get('/auth/me').then((response) => {
+        const freshUser = response.data?.data?.user as User | undefined;
+        if (!active || !freshUser || Cookies.get('grav_token') !== token) return;
+        setUser(freshUser);
+        const serialized = JSON.stringify(freshUser);
+        Cookies.set('grav_user', serialized, { expires: 7, sameSite: 'lax' });
+        localStorage.setItem('grav_user', serialized);
+      }).catch(() => undefined);
+    };
+    refresh();
+    window.addEventListener('focus', refresh);
+    const interval = window.setInterval(refresh, 60_000);
+    return () => { active = false; window.removeEventListener('focus', refresh); window.clearInterval(interval); };
+  }, [token]);
 
   const login = (newToken: string, newUser: User) => {
     Cookies.set('grav_token', newToken, { expires: 7, sameSite: 'lax' });
@@ -120,18 +112,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(newToken);
     setUser(newUser);
 
-    // Fetch the complete profile after login as well. The login payload is
-    // intentionally compact and may not include student-specific fields.
-    void api.get('/auth/me').then((response) => {
-      const freshUser = response.data?.data?.user as User | undefined;
-      if (!freshUser) return;
-      setUser(freshUser);
-      const serializedUser = JSON.stringify(freshUser);
-      Cookies.set('grav_user', serializedUser, { expires: 7, sameSite: 'lax' });
-      if (typeof window !== 'undefined') localStorage.setItem('grav_user', serializedUser);
-    }).catch(() => {
-      // The compact login user remains usable if profile refresh is unavailable.
-    });
   };
 
   const logout = () => {

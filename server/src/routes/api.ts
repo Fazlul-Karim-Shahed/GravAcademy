@@ -65,6 +65,7 @@ router.get('/auth/me', authenticate, authCtrl.getMe);
 router.put('/auth/profile', authenticate, authCtrl.updateProfile);
 router.post('/auth/avatar', authenticate, upload.single('avatar'), authCtrl.uploadAvatar);
 router.get('/teachers', authCtrl.getPublicTeachers);
+router.get('/course-instructors', authenticate, requireAnyPermission(PERMISSIONS.COURSES_CREATE, PERMISSIONS.COURSES_UPDATE), authCtrl.getCourseInstructors);
 
 // --- ACADEMIC CLASS & SUBJECT HIERARCHY ROUTES ---
 router.get('/classes', requireFeature(FEATURE_FLAGS.courses), academicClassCtrl.getAcademicClasses);
@@ -73,7 +74,7 @@ router.post(
   '/classes',
   authenticate,
   requireFeature(FEATURE_FLAGS.courses),
-  requirePermission(PERMISSIONS.COURSES_CREATE),
+  requireAnyPermission(PERMISSIONS.CLASSES_MANAGE, PERMISSIONS.COURSES_CREATE),
   validateRequest(academicClassCtrl.createClassSchema),
   academicClassCtrl.createAcademicClass
 );
@@ -81,7 +82,7 @@ router.put(
   '/classes/:id',
   authenticate,
   requireFeature(FEATURE_FLAGS.courses),
-  requirePermission(PERMISSIONS.COURSES_UPDATE),
+  requireAnyPermission(PERMISSIONS.CLASSES_MANAGE, PERMISSIONS.COURSES_UPDATE),
   validateRequest(academicClassCtrl.updateClassSchema),
   academicClassCtrl.updateAcademicClass
 );
@@ -89,7 +90,7 @@ router.delete(
   '/classes/:id',
   authenticate,
   requireFeature(FEATURE_FLAGS.courses),
-  requirePermission(PERMISSIONS.COURSES_DELETE),
+  requireAnyPermission(PERMISSIONS.CLASSES_MANAGE, PERMISSIONS.COURSES_DELETE),
   academicClassCtrl.deleteAcademicClass
 );
 
@@ -128,7 +129,7 @@ router.post(
   '/batches',
   authenticate,
   requireFeature(FEATURE_FLAGS.batches),
-  requirePermission(PERMISSIONS.BATCHES_MANAGE),
+  (req, res, next) => requirePermission(req.body?.copyFromBatchId ? PERMISSIONS.BATCHES_DUPLICATE : PERMISSIONS.BATCHES_MANAGE)(req, res, next),
   validateRequest(batchCtrl.createBatchSchema),
   batchCtrl.createBatch
 );
@@ -434,7 +435,7 @@ router.post(
 router.post(
   '/documents/upload',
   authenticate,
-  requirePermission(PERMISSIONS.DOCUMENTS_UPLOAD),
+  requireAnyPermission(PERMISSIONS.DOCUMENTS_UPLOAD, PERMISSIONS.LESSONS_MANAGE),
   upload.single('file'),
   docCtrl.uploadDocument
 );
@@ -643,9 +644,10 @@ router.get(
   '/admin/jobs',
   authenticate,
   requireFeature(FEATURE_FLAGS.jobs),
-  requirePermission(PERMISSIONS.JOBS_VIEW),
+  requireAnyPermission(PERMISSIONS.JOBS_VIEW, PERMISSIONS.JOBS_MANAGE),
   jobCtrl.getAdminJobPosts
 );
+router.get('/admin/jobs/:id', authenticate, requireFeature(FEATURE_FLAGS.jobs), requireAnyPermission(PERMISSIONS.JOBS_VIEW, PERMISSIONS.JOBS_MANAGE), jobCtrl.getAdminJobPost);
 router.post(
   '/admin/jobs',
   authenticate,

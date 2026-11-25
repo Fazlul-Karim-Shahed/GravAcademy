@@ -122,7 +122,7 @@ export const getJobPostBySlug = async (req: Request, res: Response) => {
       job = await JobPost.findOne({ slug }).populate('postedBy', 'name role');
     }
 
-    if (!job) {
+    if (!job || job.status !== 'published') {
       return res.status(404).json({ success: false, message: 'জব সার্কুলারটি পাওয়া যায়নি।' });
     }
 
@@ -139,6 +139,19 @@ export const getJobPostBySlug = async (req: Request, res: Response) => {
       success: false,
       message: 'জব সার্কুলার এর বিবরণ লোড করতে সমস্যা হয়েছে।',
     });
+  }
+};
+
+export const getAdminJobPost = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const job = mongoose.Types.ObjectId.isValid(id)
+      ? await JobPost.findById(id)
+      : await JobPost.findOne({ slug: id });
+    if (!job) return res.status(404).json({ success: false, message: 'জব সার্কুলারটি পাওয়া যায়নি।' });
+    return res.status(200).json({ success: true, data: job });
+  } catch {
+    return res.status(500).json({ success: false, message: 'জব সার্কুলার লোড করা যায়নি।' });
   }
 };
 
