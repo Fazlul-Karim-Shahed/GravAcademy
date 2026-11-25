@@ -239,6 +239,9 @@ export const createBatch = async (req: AuthenticatedRequest, res: Response) => {
     const course = await Course.findById(courseId).select('durationMonths');
     if (!course) return res.status(404).json({ success: false, message: 'Course পাওয়া যায়নি।' });
     if (!course.durationMonths) return res.status(400).json({ success: false, message: 'আগে course edit করে মেয়াদ (মাস) নির্ধারণ করুন।' });
+    if (copyFromBatchId && !(await Batch.exists({ _id: copyFromBatchId }))) {
+      return res.status(404).json({ success: false, message: 'Source batch not found for copying' });
+    }
     const normalizedStartDate = new Date(`${startDate}T00:00:00.000Z`);
     const calculatedEndDate = addCalendarMonths(normalizedStartDate, course.durationMonths);
     const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());

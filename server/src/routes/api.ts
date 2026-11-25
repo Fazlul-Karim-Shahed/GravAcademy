@@ -436,7 +436,7 @@ router.post(
 router.post(
   '/documents/upload',
   authenticate,
-  requireAnyPermission(PERMISSIONS.DOCUMENTS_UPLOAD, PERMISSIONS.LESSONS_MANAGE),
+  requireAnyPermission(PERMISSIONS.DOCUMENTS_UPLOAD, PERMISSIONS.LESSONS_MANAGE, PERMISSIONS.SETTINGS_MANAGE),
   upload.single('file'),
   docCtrl.uploadDocument
 );
@@ -692,7 +692,7 @@ router.post('/admin/drive-cleanup/trash', authenticate, requirePermission(PERMIS
 router.put(
   '/admin/settings',
   authenticate,
-  requireRole('superadmin'),
+  requirePermission(PERMISSIONS.SETTINGS_MANAGE),
   settingCtrl.updateSiteSettings
 );
 

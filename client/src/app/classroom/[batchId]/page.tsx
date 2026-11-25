@@ -686,7 +686,7 @@ export default function BatchClassroomPage({
               </div>
 
               {/* Message Input Box */}
-              <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-[#262b34] mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
+              {user?.role !== 'employee' && <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-[#262b34] mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
                 <input
                   type="text"
                   value={newMessage}
@@ -703,7 +703,7 @@ export default function BatchClassroomPage({
                   <span className="hidden xs:inline sm:inline">পাঠান</span>
                   <Send className="w-3.5 h-3.5" />
                 </button>
-              </form>
+              </form>}
 
             </div>
 

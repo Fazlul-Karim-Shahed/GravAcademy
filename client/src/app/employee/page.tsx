@@ -48,9 +48,9 @@ const employeeCards: EmployeeCard[] = [
     permissions: [{ key: PERMISSIONS.USERS_MANAGE, label: 'ইউজার ম্যানেজ' }, { key: PERMISSIONS.PERMISSIONS_MANAGE, label: 'পারমিশন ম্যানেজ' }],
   },
   {
-    title: 'অন্যান্য সেটিংস', description: 'Drive Cleanup পরিচালনা করুন।', href: '/employee/settings', icon: ShieldCheck,
+    title: 'অন্যান্য সেটিংস', description: 'সাইট, হোমপেজ ও Drive Cleanup পরিচালনা করুন।', href: '/employee/settings', icon: ShieldCheck,
     iconClass: 'bg-slate-500/10 text-slate-600', routePermissions: [PERMISSIONS.SETTINGS_MANAGE],
-    permissions: [{ key: PERMISSIONS.SETTINGS_MANAGE, label: 'Drive Cleanup' }],
+    permissions: [{ key: PERMISSIONS.SETTINGS_MANAGE, label: 'সেটিংস ম্যানেজ' }],
   },
   {
     title: 'এডমিশন', description: 'শিক্ষার্থী ভর্তি ও সাম্প্রতিক ভর্তি পরিচালনা করুন।', href: '/employee/admissions', icon: FileCheck2,
