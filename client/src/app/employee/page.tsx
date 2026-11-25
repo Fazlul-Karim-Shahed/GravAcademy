@@ -1,5 +1,7 @@
 'use client';
 
+// Keep the employee dashboard deployment path active.
+
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
