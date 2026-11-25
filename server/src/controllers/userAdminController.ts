@@ -20,7 +20,7 @@ import { EmailVerificationToken } from '../models/EmailVerificationToken';
 import { createEmailVerification } from '../services/emailVerification';
 import { JobPost } from '../models/JobPost';
 import { Payment } from '../models/Payment';
-import { AuthenticatedRequest } from '../middleware/auth';
+import { AuthenticatedRequest, hasPermission } from '../middleware/auth';
 import { generateUniquegravId } from './authController';
 import {
   sendWelcomeRegistrationEmail,
@@ -143,7 +143,7 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
     // Permissions check: Superadmin, Admin, or user with PERMISSIONS_MANAGE
     const isSuperAdmin = caller.role === ROLES.SUPERADMIN;
     const isAdmin = caller.role === ROLES.ADMIN;
-    const hasPermManage = caller.customPermissions?.includes(PERMISSIONS.PERMISSIONS_MANAGE);
+    const hasPermManage = hasPermission(caller, PERMISSIONS.PERMISSIONS_MANAGE);
 
     if (!isSuperAdmin && !isAdmin && !hasPermManage) {
       return res.status(403).json({
@@ -154,6 +154,22 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
 
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    // A delegated permission editor may configure employee access, but must
+    // never be able to turn an account into an admin (or alter non-employees).
+    // Full administrators retain the existing user-management behaviour.
+    if (!isSuperAdmin && !isAdmin && user.role !== ROLES.EMPLOYEE) {
+      return res.status(403).json({
+        success: false,
+        message: 'Delegated permission editors can manage employee access only.',
+      });
+    }
+    if (!isSuperAdmin && !isAdmin && role && role !== ROLES.EMPLOYEE) {
+      return res.status(403).json({
+        success: false,
+        message: 'Delegated permission editors cannot change account roles.',
+      });
+    }
 
     // Only Superadmin can promote to or alter Superadmin
     if (role === ROLES.SUPERADMIN && !isSuperAdmin) {
@@ -216,7 +232,7 @@ export const updateUserRole = async (req: AuthenticatedRequest, res: Response) =
 };
 
 /**
- * Create a Teacher, Guardian, or Employee account (Superadmin, Admin, or user with permissions.manage).
+ * Create a Teacher, Guardian, or Employee account (Superadmin or user-management staff).
  * Deliberately excludes 'admin'/'superadmin' here â€” role escalation stays on the dedicated
  * role-change endpoint (updateUserRole), which already enforces the superadmin-only check.
  */
@@ -227,8 +243,8 @@ export const createStaffAccount = async (req: AuthenticatedRequest, res: Respons
 
     const isSuperAdmin = caller.role === ROLES.SUPERADMIN;
     const isAdmin = caller.role === ROLES.ADMIN;
-    const hasPermManage = caller.customPermissions?.includes(PERMISSIONS.PERMISSIONS_MANAGE);
-    if (!isSuperAdmin && !isAdmin && !hasPermManage) {
+    const hasUsersManage = hasPermission(caller, PERMISSIONS.USERS_MANAGE);
+    if (!isSuperAdmin && !isAdmin && !hasUsersManage) {
       return res.status(403).json({
         success: false,
         message: 'Only Administrators can create staff accounts.',
@@ -497,7 +513,7 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 /**
- * Link / Unlink students a guardian can view (Superadmin, Admin, or user with permissions.manage)
+ * Link / Unlink students a guardian can view (Superadmin or user-management staff)
  */
 export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -509,8 +525,8 @@ export const linkGuardianStudents = async (req: AuthenticatedRequest, res: Respo
 
     const isSuperAdmin = caller.role === ROLES.SUPERADMIN;
     const isAdmin = caller.role === ROLES.ADMIN;
-    const hasPermManage = caller.customPermissions?.includes(PERMISSIONS.PERMISSIONS_MANAGE);
-    if (!isSuperAdmin && !isAdmin && !hasPermManage) {
+    const hasUsersManage = hasPermission(caller, PERMISSIONS.USERS_MANAGE);
+    if (!isSuperAdmin && !isAdmin && !hasUsersManage) {
       return res.status(403).json({
         success: false,
         message: 'Only Administrators can link guardians to students.',

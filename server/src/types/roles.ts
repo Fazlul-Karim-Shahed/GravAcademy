@@ -442,14 +442,8 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
     PERMISSIONS.BATCHES_VIEW,
     PERMISSIONS.RESULTS_VIEW_SELF,
   ],
-  [ROLES.EMPLOYEE]: [
-    PERMISSIONS.COURSES_VIEW,
-    PERMISSIONS.BATCHES_VIEW,
-    PERMISSIONS.DOCUMENTS_VIEW,
-    PERMISSIONS.ADMISSIONS_VIEW,
-    PERMISSIONS.ADMISSIONS_CREATE,
-    PERMISSIONS.JOBS_VIEW,
-  ],
+  // Employees receive only the access explicitly assigned by an administrator.
+  [ROLES.EMPLOYEE]: [],
 };
 
 /**

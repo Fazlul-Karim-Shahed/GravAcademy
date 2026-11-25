@@ -446,14 +446,9 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<UserRole, PermissionKey[]> = {
     PERMISSIONS.BATCHES_VIEW,
     PERMISSIONS.RESULTS_VIEW_SELF,
   ],
-  [ROLES.EMPLOYEE]: [
-    PERMISSIONS.COURSES_VIEW,
-    PERMISSIONS.BATCHES_VIEW,
-    PERMISSIONS.DOCUMENTS_VIEW,
-    PERMISSIONS.ADMISSIONS_VIEW,
-    PERMISSIONS.ADMISSIONS_CREATE,
-    PERMISSIONS.JOBS_VIEW,
-  ],
+  // Employee access is assigned from the Admin Dashboard permission cards.
+  // Nothing operational is granted merely by selecting the employee role.
+  [ROLES.EMPLOYEE]: [],
 };
 
 /**

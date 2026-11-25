@@ -154,6 +154,21 @@ export default function UserPermissionsEditPage() {
     return DASHBOARD_PERMISSION_METADATA.filter((p) => p.category === activeCategory);
   }, [activeCategory]);
 
+  // These are intentionally the same groups as the visible Admin Dashboard
+  // cards.  There is no separate technical permission category in this picker.
+  const visiblePermissionGroups = useMemo(() => {
+    if (activeCategory !== 'all') {
+      return [{ category: activeCategory, permissions: filteredPermissions }];
+    }
+
+    return categories
+      .filter((category) => category !== 'all')
+      .map((category) => ({
+        category,
+        permissions: DASHBOARD_PERMISSION_METADATA.filter((permission) => permission.category === category),
+      }));
+  }, [activeCategory, categories, filteredPermissions]);
+
   // Baseline permissions granted automatically by the currently selected role
   const roleDefaultPerms = useMemo(() => {
     return new Set(ROLE_DEFAULT_PERMISSIONS[selectedRole] || []);
@@ -340,27 +355,40 @@ export default function UserPermissionsEditPage() {
                 </span>
               </label>
 
-              {/* Category Filter Tabs */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
+              {/* Each choice below represents one Admin Dashboard card. */}
+              <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     type="button"
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize shrink-0 transition-all cursor-pointer ${
+                    className={`rounded-xl border px-3 py-3 text-left text-xs font-bold transition-all cursor-pointer ${
                       activeCategory === cat
-                        ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-xs'
-                        : 'bg-slate-100 dark:bg-[#151921] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1a202c]'
+                        ? 'border-orange-600 bg-gradient-to-br from-orange-600 to-orange-700 text-white shadow-sm shadow-orange-950/20'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:bg-orange-50 dark:border-[#262b34] dark:bg-[#151921] dark:text-slate-200 dark:hover:border-orange-700 dark:hover:bg-orange-950/20'
                     }`}
                   >
-                  {cat === 'all' ? 'সব Dashboard কার্ড' : cat}
+                    <span className="block truncate">{cat === 'all' ? 'সব Dashboard কার্ড' : cat}</span>
+                    {cat !== 'all' && (
+                      <span className={`mt-1 block text-[10px] font-medium ${activeCategory === cat ? 'text-orange-100' : 'text-slate-400 dark:text-slate-500'}`}>
+                        {DASHBOARD_PERMISSION_METADATA.filter((permission) => permission.category === cat).length}টি কাজ
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
 
-              {/* Permission matrix */}
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
-                {filteredPermissions.map((perm) => {
+              {/* Permission rows stay directly under their dashboard card. */}
+              <div className="space-y-4">
+                {visiblePermissionGroups.map(({ category, permissions }) => (
+                  <section key={category} className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
+                    {activeCategory === 'all' && (
+                      <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-3 dark:border-[#262b34] dark:bg-[#151921]">
+                        <h3 className="text-xs font-extrabold text-slate-800 dark:text-slate-100">{category}</h3>
+                        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Dashboard card</span>
+                      </div>
+                    )}
+                    {permissions.map((perm) => {
                   const isDefaultByRole = roleDefaultPerms.has(perm.key);
                   const isRevoked = revokedPermissions.includes(perm.key);
                   const isGrantedCustom = customPermissions.includes(perm.key);
@@ -413,8 +441,10 @@ export default function UserPermissionsEditPage() {
                         />
                       </div>
                     </div>
-                  );
-                })}
+                      );
+                    })}
+                  </section>
+                ))}
               </div>
             </FormSection>
 

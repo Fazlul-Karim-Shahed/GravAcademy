@@ -1,11 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User';
-import { UserRole, PermissionKey, ROLE_DEFAULT_PERMISSIONS, ROLES } from '../types/roles';
+import { UserRole, PermissionKey, getEffectivePermissions as resolveEffectivePermissions, ROLES } from '../types/roles';
 
 export interface AuthenticatedRequest extends Request {
   user?: IUser;
 }
+
+/**
+ * Resolve a user's current permissions in one place.  `authenticate` reloads
+ * the user for every request, so permission grants and revocations take
+ * effect immediately without requiring the employee to sign in again.
+ */
+export const getEffectivePermissions = (user: IUser): Set<PermissionKey> => {
+  return new Set(resolveEffectivePermissions(user.role, user.customPermissions, user.revokedPermissions));
+};
+
+export const hasPermission = (user: IUser, permission: PermissionKey): boolean =>
+  user.role === ROLES.SUPERADMIN || getEffectivePermissions(user).has(permission);
 
 export const authenticate = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
@@ -122,18 +134,30 @@ export const requirePermission = (...permissions: PermissionKey[]) => {
       return next();
     }
 
-    const userDefaultPermissions = ROLE_DEFAULT_PERMISSIONS[req.user.role] || [];
-    const userAllPermissions = new Set([
-      ...userDefaultPermissions,
-      ...(req.user.customPermissions || []),
-    ]);
-    for (const revokedPermission of req.user.revokedPermissions || []) {
-      userAllPermissions.delete(revokedPermission);
-    }
+    const userAllPermissions = getEffectivePermissions(req.user);
 
     const hasAllRequired = permissions.every((p) => userAllPermissions.has(p));
 
     if (!hasAllRequired) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden. You do not have the required permissions to perform this action.',
+      });
+    }
+
+    next();
+  };
+};
+
+/** Require at least one of the listed permissions. */
+export const requireAnyPermission = (...permissions: PermissionKey[]) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Authentication required.' });
+    }
+
+    const userPermissions = getEffectivePermissions(req.user);
+    if (!permissions.some((permission) => userPermissions.has(permission))) {
       return res.status(403).json({
         success: false,
         message: 'Forbidden. You do not have the required permissions to perform this action.',

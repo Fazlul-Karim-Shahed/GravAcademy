@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { authenticate, optionalAuthenticate, requireRole, requirePermission } from '../middleware/auth';
+import { authenticate, optionalAuthenticate, requireRole, requirePermission, requireAnyPermission } from '../middleware/auth';
 import { validateRequest } from '../middleware/validate';
 import { ROLES, PERMISSIONS } from '../types/roles';
 
@@ -41,17 +41,18 @@ const upload = multer({
 });
 
 // --- TEACHER ATTENDANCE (admin-managed) ---
-router.get('/teacher-attendance/quick', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getQuickAttendance);
-router.get('/teacher-attendance/teachers', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getAttendanceTeachers);
-router.get('/teacher-attendance/teachers/:teacherId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherAttendance);
-router.post('/teacher-attendance/mark', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherPresent);
-router.post('/teacher-attendance/mark-absent', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherAbsent);
-router.post('/teacher-attendance/payments', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.createTeacherPayment);
-router.get('/teacher-attendance/teachers/:teacherId/payments', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherPaymentHistory);
-router.get('/teacher-attendance/payments/:paymentId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.getTeacherPaymentReceipt);
-router.patch('/teacher-attendance/payments/:paymentId', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.updateTeacherPayment);
-router.post('/teacher-attendance/payments/:paymentId/void', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.voidTeacherPayment);
-router.post('/teacher-attendance/payments/:paymentId/undo-class', authenticate, requireRole(ROLES.ADMIN, ROLES.SUPERADMIN), requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.undoClassTeacherPayment);
+const requireAttendanceRead = requireAnyPermission(PERMISSIONS.ATTENDANCE_VIEW, PERMISSIONS.ATTENDANCE_MANAGE);
+router.get('/teacher-attendance/quick', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getQuickAttendance);
+router.get('/teacher-attendance/teachers', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getAttendanceTeachers);
+router.get('/teacher-attendance/teachers/:teacherId', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getTeacherAttendance);
+router.post('/teacher-attendance/mark', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherPresent);
+router.post('/teacher-attendance/mark-absent', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherAbsent);
+router.post('/teacher-attendance/payments', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.createTeacherPayment);
+router.get('/teacher-attendance/teachers/:teacherId/payments', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getTeacherPaymentHistory);
+router.get('/teacher-attendance/payments/:paymentId', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getTeacherPaymentReceipt);
+router.patch('/teacher-attendance/payments/:paymentId', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.updateTeacherPayment);
+router.post('/teacher-attendance/payments/:paymentId/void', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.voidTeacherPayment);
+router.post('/teacher-attendance/payments/:paymentId/undo-class', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.undoClassTeacherPayment);
 
 // --- AUTH & PROFILE ROUTES ---
 router.post('/auth/register', validateRequest(authCtrl.registerSchema), authCtrl.register);
@@ -577,28 +578,28 @@ router.get(
   '/users/permissions-catalog',
   authenticate,
   requireFeature(FEATURE_FLAGS.userManagement),
-  requirePermission(PERMISSIONS.USERS_MANAGE),
+  requireAnyPermission(PERMISSIONS.USERS_MANAGE, PERMISSIONS.PERMISSIONS_MANAGE),
   userAdminCtrl.getPermissionsCatalog
 );
 router.get(
   '/users',
   authenticate,
   requireFeature(FEATURE_FLAGS.userManagement),
-  requirePermission(PERMISSIONS.USERS_MANAGE),
+  requireAnyPermission(PERMISSIONS.USERS_MANAGE, PERMISSIONS.PERMISSIONS_MANAGE),
   userAdminCtrl.getUsers
 );
 router.get(
   '/users/:id',
   authenticate,
   requireFeature(FEATURE_FLAGS.userManagement),
-  requirePermission(PERMISSIONS.USERS_MANAGE),
+  requireAnyPermission(PERMISSIONS.USERS_MANAGE, PERMISSIONS.PERMISSIONS_MANAGE),
   userAdminCtrl.getUserById
 );
 router.put(
   '/users/:id/role',
   authenticate,
   requireFeature(FEATURE_FLAGS.userManagement),
-  requirePermission(PERMISSIONS.USERS_MANAGE),
+  requirePermission(PERMISSIONS.PERMISSIONS_MANAGE),
   userAdminCtrl.updateUserRole
 );
 router.put(
