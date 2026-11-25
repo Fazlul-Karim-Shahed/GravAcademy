@@ -59,9 +59,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const restoreSession = async () => {
     const savedToken = Cookies.get('grav_token') || (typeof window !== 'undefined' ? localStorage.getItem('grav_token') : null);
     const savedUser = Cookies.get('grav_user') || (typeof window !== 'undefined' ? localStorage.getItem('grav_user') : null);
+    let cleanupRefresh: (() => void) | undefined;
 
     if (savedToken && savedUser) {
       try {
@@ -75,18 +75,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Login responses intentionally stay small, so refresh the profile here.
         // This keeps role-specific fields (for example studentDetails) current
         // after a refresh and lets forms safely prefill registered users.
-        try {
+        const refreshProfile = async () => {
           const meResponse = await api.get('/auth/me');
           const freshUser = meResponse.data?.data?.user as User | undefined;
-          if (freshUser) {
-            setUser(freshUser);
-            const serializedUser = JSON.stringify(freshUser);
-            Cookies.set('grav_user', serializedUser, { expires: 7, sameSite: 'lax' });
-            localStorage.setItem('grav_user', serializedUser);
-          }
-        } catch {
-          // Keep the cached user if a temporary profile refresh fails.
-        }
+          if (!freshUser) return;
+          setUser(freshUser);
+          const serializedUser = JSON.stringify(freshUser);
+          Cookies.set('grav_user', serializedUser, { expires: 7, sameSite: 'lax' });
+          localStorage.setItem('grav_user', serializedUser);
+        };
+
+        // API authorization is always fresh. Refresh the cached UI profile on
+        // tab focus and periodically so an admin's permission change appears
+        // without asking the employee to sign out and back in.
+        const safelyRefreshProfile = () => { void refreshProfile().catch(() => undefined); };
+        safelyRefreshProfile();
+        window.addEventListener('focus', safelyRefreshProfile);
+        const refreshInterval = window.setInterval(safelyRefreshProfile, 60_000);
+
+        cleanupRefresh = () => {
+          window.removeEventListener('focus', safelyRefreshProfile);
+          window.clearInterval(refreshInterval);
+        };
       } catch (e) {
         Cookies.remove('grav_token');
         Cookies.remove('grav_user');
@@ -97,9 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
     setLoading(false);
-    };
-
-    void restoreSession();
+    return () => cleanupRefresh?.();
   }, []);
 
   const login = (newToken: string, newUser: User) => {
