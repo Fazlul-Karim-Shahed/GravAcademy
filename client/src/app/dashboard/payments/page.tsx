@@ -30,6 +30,7 @@ export default function StudentPaymentsPage() {
   const [summary, setSummary] = useState<StudentFinanceSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeReceipt, setActiveReceipt] = useState<PaymentReceiptData | null>(null);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     fetchMyPayments();
@@ -37,6 +38,7 @@ export default function StudentPaymentsPage() {
 
   const fetchMyPayments = async () => {
     setLoading(true);
+    setLoadError('');
     try {
       const res = await api.get('/finance/my-payments');
       if (res.data?.success) {
@@ -45,6 +47,7 @@ export default function StudentPaymentsPage() {
       }
     } catch (err) {
       console.error('Failed to load my payments:', err);
+      setLoadError('পেমেন্টের তথ্য লোড করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।');
     } finally {
       setLoading(false);
     }
@@ -130,6 +133,12 @@ export default function StudentPaymentsPage() {
               <div className="py-16 text-center text-slate-400 text-xs">
                 <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-orange-500" />
                 পেমেন্ট তথ্য লোড হচ্ছে...
+              </div>
+            ) : loadError ? (
+              <div className="py-16 text-center text-xs">
+                <AlertCircle className="mx-auto mb-2 h-7 w-7 text-rose-500" />
+                <p className="font-bold text-rose-600 dark:text-rose-400">{loadError}</p>
+                <button onClick={fetchMyPayments} className="mt-4 rounded-lg bg-orange-600 px-4 py-2 font-bold text-white hover:bg-orange-700">আবার চেষ্টা করুন</button>
               </div>
             ) : payments.length === 0 ? (
               <div className="py-16 text-center text-slate-400 text-xs">

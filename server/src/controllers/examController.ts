@@ -12,6 +12,30 @@ import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 import { classroomLink, dispatchNotification, notifyExamPublished, notifyStudent } from '../services/classroomNotificationService';
 import { formatBulkMcqWithGemini } from '../services/geminiService';
 
+const hasExplicitPermission = (user: any, permission: string) =>
+  (user?.customPermissions || []).includes(permission) && !(user?.revokedPermissions || []).includes(permission);
+
+async function canAccessExamBatch(user: any, batchId: string, permissions: string[] = [PERMISSIONS.EXAMS_MANAGE, PERMISSIONS.EXAMS_EVALUATE]) {
+  if (!user) return false;
+  if ([ROLES.SUPERADMIN, ROLES.ADMIN].includes(user.role)) return true;
+
+  if (user.role === ROLES.EMPLOYEE) {
+    return permissions.some((permission) => hasUserPermission(user, permission as any));
+  }
+
+  if (user.role !== ROLES.TEACHER) return false;
+
+  // A permission added explicitly by an admin is intentionally platform-wide.
+  if (permissions.some((permission) => hasExplicitPermission(user, permission))) return true;
+
+  // Default teacher permissions are limited to batches assigned to that teacher.
+  const batch = await Batch.findById(batchId).select('assignedTeachers courseId').lean();
+  if (!batch) return false;
+  if ((batch.assignedTeachers || []).some((teacherId: any) => teacherId.toString() === user._id.toString())) return true;
+  const course = await Course.findById(batch.courseId).select('instructors').lean();
+  return (course?.instructors || []).some((teacherId: any) => teacherId.toString() === user._id.toString());
+}
+
 export const formatBulkQuestions = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const text = String(req.body?.text || '').trim();
@@ -130,6 +154,9 @@ export const updateExam = async (req: AuthenticatedRequest, res: Response) => {
     if (!exam) {
       return res.status(404).json({ success: false, message: 'এক্সাম পাওয়া যায়নি' });
     }
+    if (!await canAccessExamBatch(req.user, exam.batchId.toString(), [PERMISSIONS.EXAMS_MANAGE])) {
+      return res.status(403).json({ success: false, message: 'এই ব্যাচের পরীক্ষা পরিবর্তনের অনুমতি নেই' });
+    }
     const wasPublished = exam.isPublished;
 
     if (body.title !== undefined) exam.title = body.title.trim();
@@ -241,6 +268,10 @@ export const createExam = async (req: AuthenticatedRequest, res: Response) => {
     const user = req.user;
     const body = createExamSchema.parse(req.body);
 
+    if (!await canAccessExamBatch(user, body.batchId, [PERMISSIONS.EXAMS_MANAGE])) {
+      return res.status(403).json({ success: false, message: 'এই ব্যাচে পরীক্ষা তৈরির অনুমতি নেই' });
+    }
+
     const exam = await Examination.create({
       batchId: body.batchId,
       title: body.title,
@@ -319,9 +350,14 @@ export const getBatchExams = async (req: AuthenticatedRequest, res: Response) =>
       if (!enrollment || !batch || !courseAccess || !hasActiveStudentBatchAccess(batch, enrollment, courseAccess)) {
         return res.status(403).json({ success: false, message: 'এই batch-এর access period শেষ হয়েছে।' });
       }
+    } else if (!await canAccessExamBatch(user, batchId)) {
+      return res.status(403).json({ success: false, message: 'এই ব্যাচের পরীক্ষা দেখার অনুমতি নেই' });
     }
 
-    const exams = await Examination.find({ batchId }).sort({ startWindow: 1 });
+    const exams = await Examination.find({
+      batchId,
+      ...(user?.role === ROLES.STUDENT ? { isPublished: true } : {}),
+    }).sort({ startWindow: 1 });
 
     // If user is a student, check their submission status for each exam
     let userAttemptsMap: Record<string, any> = {};
@@ -371,6 +407,9 @@ export const getExamDetails = async (req: AuthenticatedRequest, res: Response) =
     if (!exam) {
       return res.status(404).json({ success: false, message: 'এক্সাম পাওয়া যায়নি' });
     }
+    if (!await canAccessExamBatch(req.user, exam.batchId.toString(), [PERMISSIONS.EXAMS_MANAGE])) {
+      return res.status(403).json({ success: false, message: 'এই পরীক্ষাটি দেখার অনুমতি নেই' });
+    }
 
     // Also fetch questions if teacher/admin wants to edit/view
     const questions = await Question.find({ examId })
@@ -407,18 +446,13 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
     const enrollment = await Enrollment.findOne({
       gravId: user?.gravId,
       batchId: exam.batchId,
-      status: 'enrolled',
+      status: { $in: ['enrolled', 'completed'] },
     });
     const batch = await Batch.findById(exam.batchId);
     const courseAccess = batch ? await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths') : null;
     const isEnrolled = !!enrollment && !!batch && !!courseAccess && hasActiveStudentBatchAccess(batch, enrollment, courseAccess);
 
-    const isTeacherOrAdmin =
-      user?.role === ROLES.SUPERADMIN ||
-      user?.role === ROLES.ADMIN ||
-      user?.role === ROLES.TEACHER ||
-      hasUserPermission(user, PERMISSIONS.EXAMS_MANAGE) ||
-      hasUserPermission(user, PERMISSIONS.EXAMS_EVALUATE);
+    const isTeacherOrAdmin = await canAccessExamBatch(user, exam.batchId.toString());
 
     if (!isEnrolled && !isTeacherOrAdmin) {
       return res.status(403).json({ success: false, message: 'Not enrolled in this batch' });
@@ -531,7 +565,7 @@ export const submitExam = async (req: AuthenticatedRequest, res: Response) => {
       const enrollment = await Enrollment.findOne({
         gravId: user?.gravId,
         batchId: exam.batchId,
-        status: 'enrolled',
+        status: { $in: ['enrolled', 'completed'] },
       });
       const batch = await Batch.findById(exam.batchId);
       const courseAccess = batch ? await Course.findById(batch.courseId).select('studentAccessMode studentAccessMonths') : null;
@@ -667,6 +701,9 @@ export const getExamSubmissions = async (req: AuthenticatedRequest, res: Respons
 
     const exam = await Examination.findById(examId);
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
+    if (!await canAccessExamBatch(req.user, exam.batchId.toString())) {
+      return res.status(403).json({ success: false, message: 'এই ব্যাচের সাবমিশন দেখার অনুমতি নেই' });
+    }
 
     const attempts = await ExamAttempt.find({ examId })
       .sort({ submittedAt: -1 });
@@ -712,6 +749,9 @@ export const evaluateStudentAttempt = async (req: AuthenticatedRequest, res: Res
     }
 
     const exam: any = attempt.examId;
+    if (!exam || !await canAccessExamBatch(user, exam.batchId.toString())) {
+      return res.status(403).json({ success: false, message: 'এই পরীক্ষাটি মূল্যায়নের অনুমতি নেই' });
+    }
 
     const cqMaxMarks = Array.isArray(exam?.cqQuestions) && exam.cqQuestions.length > 0
       ? exam.cqQuestions.reduce((sum: number, q: any) => sum + (Number(q.marks) || 0), 0)

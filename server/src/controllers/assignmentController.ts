@@ -249,6 +249,10 @@ export const getAssignmentDetails = async (req: AuthenticatedRequest, res: Respo
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
+    if (user.role === ROLES.STUDENT && !assignment.isPublished) {
+      return res.status(404).json({ success: false, message: 'Assignment not found' });
+    }
+
     let mySubmission = null;
     if (user.role === ROLES.STUDENT) {
       mySubmission = await AssignmentSubmission.findOne({

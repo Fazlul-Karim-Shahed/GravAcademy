@@ -14,7 +14,7 @@ const EmailVerificationTokenSchema = new Schema<IEmailVerificationToken>(
     accountId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
     enrollmentRequestId: { type: Schema.Types.ObjectId, ref: 'EnrollmentRequest', index: true },
     tokenHash: { type: String, required: true, unique: true, index: true },
-    expiresAt: { type: Date, required: true, index: true },
+    expiresAt: { type: Date, required: true },
     usedAt: { type: Date },
   },
   { timestamps: true }

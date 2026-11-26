@@ -44,6 +44,7 @@ export default function TeacherPanelPage() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [selectedBatchId, setSelectedBatchId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     if (authLoading) return;
@@ -67,6 +68,7 @@ export default function TeacherPanelPage() {
 
   const loadTeacherBatches = async (teacherId: string, showSpinner = true) => {
     if (showSpinner) setLoading(true);
+    setLoadError('');
     try {
       // Add timestamp query parameter to bypass browser/axios cache on page switch
       const res = await api.get(`/batches?teacherId=${teacherId}&_t=${Date.now()}`);
@@ -77,6 +79,7 @@ export default function TeacherPanelPage() {
       }
     } catch (err) {
       console.error('Error fetching teacher batches:', err);
+      setLoadError('ব্যাচের তথ্য লোড করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।');
     } finally {
       if (showSpinner) setLoading(false);
     }
@@ -162,6 +165,12 @@ export default function TeacherPanelPage() {
             {[1, 2].map((i) => (
               <div key={i} className="h-44 rounded-2xl bg-slate-200/60 dark:bg-[#111318]/60 animate-pulse border border-slate-200/80 dark:border-[#262b34]" />
             ))}
+          </div>
+        ) : loadError ? (
+          <div className="ga-card p-10 text-center">
+            <h3 className="text-base font-bold text-rose-600 dark:text-rose-400">তথ্য লোড করা যায়নি</h3>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{loadError}</p>
+            <button onClick={() => user?.id && loadTeacherBatches(user.id, true)} className="mt-4 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold text-white hover:bg-orange-700">আবার চেষ্টা করুন</button>
           </div>
         ) : batches.length === 0 ? (
           <div className="ga-card p-12 text-center">

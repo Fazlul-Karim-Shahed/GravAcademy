@@ -48,6 +48,7 @@ export default function StudentDashboard() {
   const [batches, setBatches] = useState<BatchInfo[]>([]);
   const [selectedBatchId, setSelectedBatchId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     fetchDashboardData();
@@ -55,6 +56,7 @@ export default function StudentDashboard() {
 
   const fetchDashboardData = async () => {
     setLoading(true);
+    setLoadError('');
     try {
       // Fetch only batches the student has actually enrolled in
       const res = await api.get('/enrollments/my-batches');
@@ -69,6 +71,7 @@ export default function StudentDashboard() {
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
+      setLoadError('আপনার ব্যাচের তথ্য লোড করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।');
     } finally {
       setLoading(false);
     }
@@ -240,6 +243,13 @@ export default function StudentDashboard() {
                   <div className="h-4 w-full bg-slate-200 dark:bg-slate-800 rounded" />
                 </div>
               ))}
+            </div>
+          ) : loadError ? (
+            <div className="ga-card p-10 text-center">
+              <AlertCircle className="mx-auto h-8 w-8 text-rose-500" />
+              <h3 className="mt-3 text-sm font-bold text-rose-600 dark:text-rose-400">তথ্য লোড করা যায়নি</h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{loadError}</p>
+              <button onClick={fetchDashboardData} className="mt-4 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold text-white hover:bg-orange-700">আবার চেষ্টা করুন</button>
             </div>
           ) : batches.length === 0 ? (
             <div className="rounded-2xl p-10 bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#262b34] text-center max-w-md mx-auto">
