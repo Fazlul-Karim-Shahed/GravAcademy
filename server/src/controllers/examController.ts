@@ -705,7 +705,10 @@ export const getExamSubmissions = async (req: AuthenticatedRequest, res: Respons
       return res.status(403).json({ success: false, message: 'এই ব্যাচের সাবমিশন দেখার অনুমতি নেই' });
     }
 
-    const attempts = await ExamAttempt.find({ examId })
+    const attempts = await ExamAttempt.find({
+      examId,
+      status: { $in: ['submitted', 'evaluated', 'timeout'] },
+    })
       .sort({ submittedAt: -1 });
     const attemptGravIds = attempts.map((attempt) => attempt.gravId).filter(Boolean);
     const students = await User.find({ gravId: { $in: attemptGravIds }, role: ROLES.STUDENT })

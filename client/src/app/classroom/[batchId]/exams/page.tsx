@@ -371,8 +371,22 @@ export default function ExamRoomPage({
                           <span>এডিট</span>
                         </Link>
                       </div>
+                    ) : attempt?.status === 'in_progress' ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between rounded-xl border border-orange-200 bg-orange-50 p-2.5 text-xs text-orange-800 dark:border-orange-800 dark:bg-orange-950/40 dark:text-orange-300">
+                          <span className="font-bold">পরীক্ষাটি এখনো জমা হয়নি</span>
+                          <span className="font-semibold">চলমান</span>
+                        </div>
+                        <Link
+                          href={`/classroom/${batchId}/exams/${exam._id}/take`}
+                          className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-black shadow-lg shadow-orange-950/25 active:scale-95 transition-all"
+                        >
+                          <FileCheck className="w-4 h-4" />
+                          <span>পরীক্ষা চালিয়ে যান</span>
+                        </Link>
+                      </div>
                     ) : attempt ? (
-                      // Student already attempted
+                      // Student submitted, timed out, or received a result
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300">
                           <span className="font-bold flex items-center gap-1.5">
