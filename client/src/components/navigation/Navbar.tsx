@@ -148,6 +148,9 @@ export const Navbar: React.FC = () => {
     }
   };
 
+  const isExamTakingRoute = /^\/classroom\/[^/]+\/exams\/[^/]+\/take\/?$/.test(pathname || '');
+  if (isExamTakingRoute) return null;
+
   // Determine if the current route is part of any dashboard or internal portal
   const isDashboardRoute =
     pathname?.startsWith('/dashboard') ||
