@@ -186,6 +186,9 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
 
   const courseLink = `/courses/${data.batch.courseId?.slug || data.batch.courseId?._id}`;
   const canEditCurriculum = data.canManageCurriculum === true;
+  const curriculumEditHref = user?.role === 'employee'
+    ? `/employee/batches/${data.batch._id}/curriculum`
+    : `/admin/batches/${data.batch._id}/curriculum`;
 
   return (
     <div className="ga-page ga-classroom-page text-slate-900 dark:text-slate-100 transition-colors">
@@ -215,7 +218,7 @@ export default function LearningRoomPage({ params }: { params: Promise<{ batchId
             <div className="flex flex-wrap items-center gap-2.5 self-end sm:self-auto shrink-0">
               {canEditCurriculum && (
                 <Link
-                  href={`/admin/batches/${data.batch._id}/curriculum`}
+                  href={curriculumEditHref}
                   className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-orange-700"
                 >
                   <Pencil className="w-3.5 h-3.5" />
