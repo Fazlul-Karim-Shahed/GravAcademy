@@ -86,6 +86,7 @@ export default function AdminFinancePage() {
   const { user } = useAuth();
   const { loading: loadingSettings, isFeatureEnabled } = useSiteSettings();
   const can = (permission: string) => user?.effectivePermissions?.includes(permission) ?? false;
+  const canCollectPayment = can('finance.collect');
   const [payments, setPayments] = useState<PaymentReceiptData[]>([]);
   const [stats, setStats] = useState<FinancialStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -471,8 +472,8 @@ export default function AdminFinancePage() {
 
   useEffect(() => {
     fetchPayments();
-    if (can('finance.collect')) fetchStudentsAndBatches();
-  }, [selectedMethod, cardFilterType, dateRangePreset, startDate, endDate, currentPage]);
+    if (canCollectPayment) fetchStudentsAndBatches();
+  }, [selectedMethod, cardFilterType, dateRangePreset, startDate, endDate, currentPage, canCollectPayment]);
 
   const fetchPayments = async () => {
     setLoading(true);
@@ -678,14 +679,22 @@ export default function AdminFinancePage() {
                 Company Expense
               </Link>
             )}
-            {can('admissions.create') && (
-              <Link
-                href={user?.role === 'employee' ? '/employee/admissions' : '/admin/admissions'}
+            {canCollectPayment && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedStudent(null);
+                  setCollectBatchId('');
+                  setCollectAmount('');
+                  setCollectError('');
+                  setStudentSearch('');
+                  setIsCollectModalOpen(true);
+                }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:scale-[0.98] text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4" />
                 নতুন পেমেন্ট / বকেয়া গ্রহণ
-              </Link>
+              </button>
             )}
           </>} />
 
