@@ -76,6 +76,9 @@ export default function DedicatedClassPage() {
   }
 
   const className = academicClass?.name || 'Class';
+  const isClassTen = slugParam.toLowerCase() === 'class-10' || getClassSlug(academicClass || ({} as AcademicClassItem)).toLowerCase() === 'class-10';
+  const pageTitle = isClassTen ? 'ক্লাস ১০ একাডেমিক প্রোগ্রাম' : (academicClass?.subtitle || `${className}-এর শিক্ষার্থীদের জন্য পরিকল্পিত পূর্ণাঙ্গ একাডেমিক প্রোগ্রাম`);
+  const pageSubtitle = isClassTen ? 'বোর্ড পরীক্ষার পূর্ণাঙ্গ প্রস্তুতি ও সাফল্যের লক্ষ্য।' : null;
   return (
     <main className="ga-page ga-public-page text-slate-900 dark:text-slate-100 pb-20">
       <section className="border-b border-slate-200 bg-white dark:border-[#262b34] dark:bg-[#111318]">
@@ -83,9 +86,8 @@ export default function DedicatedClassPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-3xl border-l-4 border-orange-500 pl-5">
               <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-                <span>
-                  {academicClass?.subtitle || `${className}-এর শিক্ষার্থীদের জন্য পরিকল্পিত পূর্ণাঙ্গ একাডেমিক প্রোগ্রাম`}
-                </span>
+                <span>{pageTitle}</span>
+                {pageSubtitle && <p className="mt-2 text-sm font-medium leading-6 text-slate-600 dark:text-slate-300 sm:text-base">{pageSubtitle}</p>}
               </h1>
             </div>
             <div className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 dark:border-[#262b34] dark:bg-[#151921] dark:text-slate-300">
