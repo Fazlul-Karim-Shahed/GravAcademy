@@ -773,10 +773,15 @@ export default function AdminSettingsPage() {
                     ];
 
                     return (
-                      <div
+                      <details
                         key={card.id || index}
-                        className="bg-white dark:bg-[#111318] rounded-2xl p-5 sm:p-6 border border-slate-200/90 dark:border-[#262b34] shadow-2xs space-y-5 flex flex-col justify-between"
+                        className="group bg-white dark:bg-[#111318] rounded-2xl border border-slate-200/90 dark:border-[#262b34] shadow-2xs"
                       >
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 sm:p-6 [&::-webkit-details-marker]:hidden">
+                          <span className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white"><span className="grid h-6 w-6 place-items-center rounded-lg bg-orange-500/10 text-xs text-orange-600 dark:bg-orange-950/40 dark:text-orange-300">{index + 1}</span>{card.title || `কার্ড ${index + 1}`}</span>
+                          <span className="text-xs font-bold text-orange-600 transition-transform group-open:rotate-180">⌄</span>
+                        </summary>
+                        <div className="space-y-5 border-t border-slate-100 p-5 dark:border-[#262b34] sm:p-6">
                         {/* Card Header & Live Mini Preview */}
                         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 pb-4 border-b border-slate-100 dark:border-[#262b34]">
                           <div className="space-y-1 text-center sm:text-left">
@@ -982,7 +987,8 @@ export default function AdminSettingsPage() {
                             )}
                           </div>
                         </div>
-                      </div>
+                        </div>
+                      </details>
                     );
                   })}
                 </div>
