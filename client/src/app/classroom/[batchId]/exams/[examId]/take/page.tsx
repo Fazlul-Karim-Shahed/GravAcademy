@@ -384,7 +384,7 @@ export default function TakeExamPage({
   return (
     <div className="ga-page ga-classroom-page ga-form-page text-slate-900 dark:text-slate-100 pb-28">
       {/* Sticky Exam Top Bar with Timer */}
-        <div className="ga-card sticky top-[4.5rem] z-40 mx-auto w-[98%] scroll-mt-24 bg-white/95 py-3 backdrop-blur-md dark:bg-[#111318]/95 sm:top-20">
+        <div className="ga-card sticky top-0 z-50 mx-auto w-[98%] bg-white/95 py-3 backdrop-blur-md dark:bg-[#111318]/95">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
