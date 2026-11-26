@@ -584,7 +584,19 @@ export default function UserPermissionsEditPage() {
                   </p>
 
                   <div className="mt-5">
-                    <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">এই পারমিশন দিলে যা হবে</h3>
+                    <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">কর্মীর স্ক্রিনে যা দেখা যাবে</h3>
+                    <ul className="mt-3 space-y-2.5">
+                      {(details?.visible || [detailPermission.description]).map((item) => (
+                        <li key={item} className="flex items-start gap-2.5 text-sm leading-5 text-slate-600 dark:text-slate-300">
+                          <Info className="mt-0.5 h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-5">
+                    <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">কর্মী যা করতে পারবে</h3>
                     <ul className="mt-3 space-y-2.5">
                       {(details?.grants || [detailPermission.description]).map((item) => (
                         <li key={item} className="flex items-start gap-2.5 text-sm leading-5 text-slate-600 dark:text-slate-300">
