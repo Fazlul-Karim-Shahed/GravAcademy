@@ -1135,49 +1135,45 @@ export default function HomePage() {
       </section>
 
       {/* 11. FOOTER (Matching Bottom Banner) */}
-      <footer className="relative bg-[#090a0d] text-slate-400 py-12 text-xs border-t border-[#181b20]">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-[#181b20]">
-            <div>
-              <div className="flex items-center gap-2.5 text-white font-extrabold text-base mb-3">
+      <footer className="relative bg-[#090a0d] text-slate-400 py-14 text-xs border-t border-[#181b20]">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 grid grid-cols-1 gap-10 border-b border-[#181b20] pb-10 md:grid-cols-[1.35fr_1fr_1fr_1.15fr] md:gap-12">
+            <div className="max-w-sm">
+              <div className="mb-4 flex items-center gap-3 text-white">
                 <SiteLogo size="sm" showText={false} />
-                <span className="tracking-tight">Grav Academy</span>
+                <div><span className="block text-base font-extrabold tracking-tight">{settings.siteName || 'Grav Academy'}</span><span className="mt-0.5 block text-[10px] font-medium text-slate-500">{settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার'}</span></div>
               </div>
-              <p className="text-slate-400 leading-relaxed mb-4">
-                ক্লাস ৬ থেকে ১২ শ্রেণির শিক্ষার্থীদের জন্য আধুনিক অনলাইন একাডেমিক কোচিং প্ল্যাটফর্ম।
+              <p className="max-w-xs leading-7 text-slate-400">
+                {settings.footerDescription || 'ক্লাস ৬ থেকে ১২ শ্রেণির শিক্ষার্থীদের জন্য আধুনিক অনলাইন একাডেমিক কোচিং প্ল্যাটফর্ম।'}
               </p>
+              <Link href="/courses" className="mt-5 inline-flex items-center gap-2 rounded-xl border border-orange-500/30 px-3.5 py-2.5 text-[11px] font-bold text-orange-300 transition hover:border-orange-400 hover:bg-orange-500/10 hover:text-orange-200">শেখা শুরু করুন <ArrowRight className="h-3.5 w-3.5" /></Link>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-orange-400/90">কোর্সসমূহ</h4>
-              <ul className="space-y-2">
-                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">Class 6 - 8 Foundation</Link></li>
-                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">Class 9 - 10 SSC Special</Link></li>
-                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">Class 11 - 12 HSC Prep</Link></li>
-                <li><Link href="/free-classes" className="hover:text-orange-400 transition-colors">ফ্রি ক্লাস ও সেমিনার</Link></li>
+              <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-orange-400/90">কোর্সসমূহ</h4>
+              <ul className="space-y-3">
+                <li><Link href="/courses" className="transition-colors hover:text-orange-400">Class 6 - 8 Foundation</Link></li><li><Link href="/courses" className="transition-colors hover:text-orange-400">Class 9 - 10 SSC Special</Link></li><li><Link href="/courses" className="transition-colors hover:text-orange-400">Class 11 - 12 HSC Prep</Link></li><li><Link href="/free-classes" className="transition-colors hover:text-orange-400">ফ্রি ক্লাস ও সেমিনার</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-orange-400/90">কুইক লিংকস</h4>
-              <ul className="space-y-2">
-                <li><Link href="/login" className="hover:text-orange-400 transition-colors">লগইন</Link></li>
-                <li><Link href="/register" className="hover:text-orange-400 transition-colors">রেজিস্ট্রেশন</Link></li>
-                <li><Link href="/courses" className="hover:text-orange-400 transition-colors">সকল ব্যাচ</Link></li>
+              <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-orange-400/90">কুইক লিংকস</h4>
+              <ul className="space-y-3">
+                <li><Link href="/login" className="transition-colors hover:text-orange-400">লগইন</Link></li><li><Link href="/register" className="transition-colors hover:text-orange-400">রেজিস্ট্রেশন</Link></li><li><Link href="/courses" className="transition-colors hover:text-orange-400">সকল ব্যাচ</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-bold text-white uppercase tracking-wider mb-3 text-[11px] text-orange-400/90">যোগাযোগ ও হেল্পলাইন</h4>
-              <p className="leading-relaxed mb-2">সকাল ৯টা থেকে রাত ১০টা পর্যন্ত যেকোনো সহায়তায়:</p>
-              <p className="text-white font-bold text-sm text-orange-300">📞 16910 / 01700-000000</p>
-              <p className="text-slate-400 mt-1">ইমেইল: support@gravacademy.com</p>
+              <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-orange-400/90">যোগাযোগ ও হেল্পলাইন</h4>
+              <p className="mb-3 leading-relaxed">সকাল ৯টা থেকে রাত ১০টা পর্যন্ত সহায়তা:</p>
+              <p className="text-sm font-bold text-orange-300">📞 {settings.footerPhone || '16910 / 01700-000000'}</p>
+              <p className="mt-2 break-all text-slate-400">✉ {settings.footerEmail || 'support@gravacademy.com'}</p>
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-slate-500 gap-2">
+          <div className="flex flex-col items-center justify-between gap-2 text-slate-500 sm:flex-row">
             <div>© {new Date().getFullYear()} Grav Academy. সর্বস্বত্ব সংরক্ষিত।</div>
-            <div className="text-orange-400/60 font-medium">Bangladeshi Academic Coaching Platform</div>
+            <div className="font-medium text-orange-400/60">Bangladeshi Academic Coaching Platform</div>
           </div>
         </div>
       </footer>

@@ -7,6 +7,9 @@ export interface SiteSettings {
   siteName: string;
   siteTagline: string;
   logoUrl: string;
+  footerDescription?: string;
+  footerPhone?: string;
+  footerEmail?: string;
   [key: string]: any;
 }
 

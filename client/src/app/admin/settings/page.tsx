@@ -180,6 +180,9 @@ export default function AdminSettingsPage() {
   const [logoPreviewUrl, setLogoPreviewUrl] = useState('');
   const [siteName, setSiteName] = useState(settings.siteName || '');
   const [siteTagline, setSiteTagline] = useState(settings.siteTagline || '');
+  const [footerDescription, setFooterDescription] = useState(settings.footerDescription || '');
+  const [footerPhone, setFooterPhone] = useState(settings.footerPhone || '');
+  const [footerEmail, setFooterEmail] = useState(settings.footerEmail || '');
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -232,6 +235,9 @@ export default function AdminSettingsPage() {
       setLogoUrl(settings.logoUrl || '');
       setSiteName(settings.siteName || 'Grav Academy');
       setSiteTagline(settings.siteTagline || 'ক্লাস ৬ – ১২ একাডেমিক কেয়ার');
+      setFooterDescription(settings.footerDescription || 'ক্লাস ৬ থেকে ১২ শ্রেণির শিক্ষার্থীদের জন্য আধুনিক অনলাইন একাডেমিক কোচিং প্ল্যাটফর্ম।');
+      setFooterPhone(settings.footerPhone || '16910 / 01700-000000');
+      setFooterEmail(settings.footerEmail || 'support@gravacademy.com');
       if (settings.heroCards && Array.isArray(settings.heroCards) && settings.heroCards.length > 0) {
         setHeroCards(settings.heroCards);
       } else {
@@ -268,6 +274,9 @@ export default function AdminSettingsPage() {
         logoUrl: nextLogoUrl,
         siteName,
         siteTagline,
+        footerDescription,
+        footerPhone,
+        footerEmail,
       });
       if (ok) {
         setSaveSuccess(true);
@@ -1187,6 +1196,14 @@ export default function AdminSettingsPage() {
                         placeholder="ক্লাস ৬ – ১২ একাডেমিক কেয়ার"
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#262b34] bg-white dark:bg-[#151921] text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
+                    </div>
+                  </div>
+
+                  <div className="mt-5 border-t border-slate-200 pt-5 dark:border-[#262b34]">
+                    <p className="mb-3 text-xs font-black text-slate-800 dark:text-slate-100">Footer content</p>
+                    <div className="space-y-4">
+                      <div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Footer description</label><textarea value={footerDescription} onChange={(e) => setFooterDescription(e.target.value)} rows={2} maxLength={240} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Support phone</label><input value={footerPhone} onChange={(e) => setFooterPhone(e.target.value)} maxLength={80} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div><div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Support email</label><input value={footerEmail} onChange={(e) => setFooterEmail(e.target.value)} maxLength={120} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div></div>
                     </div>
                   </div>
 
