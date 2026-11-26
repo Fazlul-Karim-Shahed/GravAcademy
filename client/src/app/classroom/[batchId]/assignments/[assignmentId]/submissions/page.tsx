@@ -749,8 +749,10 @@ export default function AssignmentSubmissionsPage({
               }
               onSaveAnnotated={(blob, previewUrl) => {
                 setAnnotatedBlob(blob);
-                setAnnotatedPreviewUrl(previewUrl);
-                setShowAnnotator(false);
+                setAnnotatedPreviewUrl((currentUrl) => {
+                  if (currentUrl.startsWith('blob:')) URL.revokeObjectURL(currentUrl);
+                  return previewUrl;
+                });
               }}
               onCancel={() => setShowAnnotator(false)}
             />

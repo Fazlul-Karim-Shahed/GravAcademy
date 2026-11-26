@@ -10,7 +10,6 @@ import {
   Type,
   Eraser,
   Download,
-  Save,
   CheckCircle,
   XCircle,
   HelpCircle,
@@ -54,6 +53,8 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const backgroundImageRef = useRef<HTMLImageElement | null>(null);
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const onSaveAnnotatedRef = useRef(onSaveAnnotated);
+  const autoSaveVersionRef = useRef(0);
 
   // Tools: 'pen' | 'highlighter' | 'text' | 'tick' | 'cross' | 'eraser'
   const [activeTool, setActiveTool] = useState<'pen' | 'highlighter' | 'text' | 'tick' | 'cross' | 'eraser'>('pen');
@@ -66,6 +67,11 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
   const [historyStep, setHistoryStep] = useState(-1);
   const [isPdf, setIsPdf] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  useEffect(() => {
+    onSaveAnnotatedRef.current = onSaveAnnotated;
+  }, [onSaveAnnotated]);
 
   // Text comment tool state
   const [textInput, setTextInput] = useState('');
@@ -365,18 +371,45 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
     setTextInput('');
   };
 
-  // Export merged annotated document
-  const handleConfirmAnnotation = () => {
+  const exportAnnotation = (closeAfterSave = false) => {
+    if (historyStep <= 0) {
+      if (closeAfterSave) onCancel();
+      return;
+    }
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      if (closeAfterSave) onCancel();
+      return;
+    }
 
     canvas.toBlob((blob) => {
       if (blob) {
         const previewUrl = URL.createObjectURL(blob);
-        onSaveAnnotated(blob, previewUrl);
+        onSaveAnnotatedRef.current(blob, previewUrl);
+        setAutoSaveStatus('saved');
       }
+      if (closeAfterSave) onCancel();
     }, 'image/png', 0.95);
   };
+
+  // Keep the latest marked copy ready automatically. This updates the
+  // parent draft only; the final evaluation action performs the Drive upload.
+  useEffect(() => {
+    if (!imageLoaded || historyStep <= 0) return;
+    const version = ++autoSaveVersionRef.current;
+    setAutoSaveStatus('saving');
+    const timer = window.setTimeout(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.toBlob((blob) => {
+        if (!blob || version !== autoSaveVersionRef.current) return;
+        const previewUrl = URL.createObjectURL(blob);
+        onSaveAnnotatedRef.current(blob, previewUrl);
+        setAutoSaveStatus('saved');
+      }, 'image/png', 0.95);
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [historyStep, imageLoaded]);
 
   return (
     <div className="flex flex-col h-full bg-slate-900 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
@@ -497,22 +530,17 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
           </button>
         </div>
 
-        {/* Finish & Save Annotated Copy */}
+        {/* Auto-save status and close */}
         <div className="flex items-center gap-2">
+          <span className={`text-[10px] font-bold ${autoSaveStatus === 'saving' ? 'text-amber-300' : 'text-emerald-300'}`}>
+            {autoSaveStatus === 'saving' ? 'সেভ হচ্ছে…' : autoSaveStatus === 'saved' ? 'অটো সেভ হয়েছে' : 'অটো সেভ চালু'}
+          </span>
           <button
             type="button"
-            onClick={onCancel}
+            onClick={() => exportAnnotation(true)}
             className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all"
           >
-            বাতিল
-          </button>
-          <button
-            type="button"
-            onClick={handleConfirmAnnotation}
-            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold shadow-md shadow-rose-600/30 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>চেক করা কপি সংযুক্ত করুন</span>
+            বন্ধ করুন
           </button>
         </div>
       </div>
@@ -597,7 +625,7 @@ export const DocumentAnnotator: React.FC<DocumentAnnotatorProps> = ({
           <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
           <span>খাতার যেকোনো লাইনে কলম দিয়ে দাগ দিন, টিক/ভুল চিহ্ন বসান অথবা ক্লিক করে লাল কালিতে নোট লিখে দিন।</span>
         </span>
-        <span className="text-slate-500">মূল্যায়ন শেষে "চেক করা কপি সংযুক্ত করুন" বাটনে ক্লিক করুন।</span>
+        <span className="text-emerald-400">প্রতিটি পরিবর্তন নিজে থেকেই সেভ হচ্ছে।</span>
       </div>
     </div>
   );
