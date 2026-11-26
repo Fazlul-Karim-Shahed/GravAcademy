@@ -360,7 +360,7 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
     sendClassroomEmailNotification({
       toEmails: recipientEmails,
       batchName: batch.name,
-      announcerName: `${author?.name} (${userRole === 'teacher' ? 'শিক্ষক' : userRole === 'admin' ? 'এডমিন' : 'শিক্ষার্থী'})`,
+      announcerName: `${author?.name} (${userRole === 'teacher' ? 'শিক্ষক' : userRole === 'admin' || userRole === 'superadmin' ? 'এডমিন' : userRole === 'employee' ? 'অফিস এমপ্লয়ি' : 'শিক্ষার্থী'})`,
       announcementTitle: title,
       announcementContent: content,
     })
