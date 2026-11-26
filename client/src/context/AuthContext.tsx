@@ -86,20 +86,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!token) return;
     let active = true;
-    const refresh = () => {
-      void api.get('/auth/me').then((response) => {
+    let refreshInFlight = false;
+    const refresh = async () => {
+      if (refreshInFlight) return;
+      refreshInFlight = true;
+      try {
+        const response = await api.get('/auth/me');
         const freshUser = response.data?.data?.user as User | undefined;
         if (!active || !freshUser || Cookies.get('grav_token') !== token) return;
-        setUser(freshUser);
         const serialized = JSON.stringify(freshUser);
-        Cookies.set('grav_user', serialized, { expires: 7, sameSite: 'lax' });
-        localStorage.setItem('grav_user', serialized);
-      }).catch(() => undefined);
+        setUser((currentUser) => {
+          // Background auth checks must not make every page think the user
+          // changed. Only publish a new object when the account data or
+          // permissions actually changed.
+          if (currentUser && JSON.stringify(currentUser) === serialized) return currentUser;
+          Cookies.set('grav_user', serialized, { expires: 7, sameSite: 'lax' });
+          localStorage.setItem('grav_user', serialized);
+          return freshUser;
+        });
+      } catch {
+        // A temporary background refresh failure should not interrupt the UI.
+      } finally {
+        refreshInFlight = false;
+      }
     };
-    refresh();
-    window.addEventListener('focus', refresh);
-    const interval = window.setInterval(refresh, 60_000);
-    return () => { active = false; window.removeEventListener('focus', refresh); window.clearInterval(interval); };
+    void refresh();
+    const handleFocus = () => { void refresh(); };
+    window.addEventListener('focus', handleFocus);
+    const interval = window.setInterval(() => { void refresh(); }, 60_000);
+    return () => { active = false; window.removeEventListener('focus', handleFocus); window.clearInterval(interval); };
   }, [token]);
 
   const login = (newToken: string, newUser: User) => {
