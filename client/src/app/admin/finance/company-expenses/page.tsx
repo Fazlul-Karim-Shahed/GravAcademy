@@ -57,7 +57,7 @@ const formatMoney = (amount = 0) => `৳${Number(amount).toLocaleString('bn-BD')
 export default function CompanyExpensesPage() {
   const { user } = useAuth();
   const { loading: settingsLoading, isFeatureEnabled } = useSiteSettings();
-  const canView = hasPermission(user, PERMISSIONS.FINANCE_VIEW);
+  const canView = hasPermission(user, PERMISSIONS.FINANCE_VIEW) || hasPermission(user, PERMISSIONS.FINANCE_EXPENSE_MANAGE);
   const canAdd = hasPermission(user, PERMISSIONS.FINANCE_EXPENSE_MANAGE);
   const [rows, setRows] = useState<ExpenseRow[]>([]);
   const [summary, setSummary] = useState<ExpenseSummary>({ totalExpenses: 0, teacherPayments: 0, manualExpenses: 0, count: 0 });

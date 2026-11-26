@@ -128,16 +128,6 @@ export default function UserPermissionsEditPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const financeActions = [PERMISSIONS.FINANCE_COLLECT, PERMISSIONS.FINANCE_REFUND, PERMISSIONS.FINANCE_DELETE, PERMISSIONS.FINANCE_MANUAL_PAID, PERMISSIONS.FINANCE_EXPENSE_MANAGE];
-    const admissionActions = [PERMISSIONS.ADMISSIONS_SHIFT, PERMISSIONS.ADMISSIONS_REMOVE];
-    if (financeActions.some(getPermissionGranted) && !getPermissionGranted(PERMISSIONS.FINANCE_VIEW)) {
-      setStatusMessage({ type: 'error', text: 'পেমেন্ট বা খরচ পরিচালনার জন্য ফাইন্যান্স রিপোর্ট দেখার অনুমতিও চালু করুন।' });
-      return;
-    }
-    if (admissionActions.some(getPermissionGranted) && !getPermissionGranted(PERMISSIONS.ADMISSIONS_VIEW)) {
-      setStatusMessage({ type: 'error', text: 'ব্যাচ পরিবর্তন বা ভর্তি বাতিলের জন্য সাম্প্রতিক ভর্তি দেখার অনুমতিও চালু করুন।' });
-      return;
-    }
     setSubmitting(true);
     setStatusMessage(null);
 

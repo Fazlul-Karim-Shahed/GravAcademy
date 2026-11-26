@@ -12,6 +12,13 @@ import { sendClassroomEmailNotification } from '../services/emailService';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 import { getEffectivePermissions, PERMISSIONS } from '../types/roles';
 
+const employeeCanManageClassroom = (user?: AuthenticatedRequest['user']) =>
+  !!user && user.role === 'employee' && getEffectivePermissions(
+    user.role,
+    user.customPermissions,
+    user.revokedPermissions,
+  ).includes(PERMISSIONS.EXAMS_MANAGE);
+
 export const createAnnouncementSchema = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters').max(200),
   content: z.string().min(5, 'Content must be at least 5 characters').max(3000),
@@ -91,7 +98,7 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const canViewEmployee = employeeCanManageClassroom(req.user);
     const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({
@@ -139,7 +146,7 @@ export const getClassroomOverview = async (req: AuthenticatedRequest, res: Respo
       req.user?.revokedPermissions as any,
     );
     const canViewAllMembers = ['admin', 'superadmin', 'teacher'].includes(userRole)
-      || effectivePermissions.includes(PERMISSIONS.BATCHES_VIEW);
+      || effectivePermissions.includes(PERMISSIONS.EXAMS_MANAGE);
 
     const studentCount = canViewAllMembers
       ? await Enrollment.countDocuments({
@@ -178,7 +185,7 @@ export const getClassroomMembers = async (req: AuthenticatedRequest, res: Respon
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const canViewEmployee = employeeCanManageClassroom(req.user);
     const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
@@ -255,7 +262,7 @@ export const getAnnouncements = async (req: AuthenticatedRequest, res: Response)
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const canViewEmployee = employeeCanManageClassroom(req.user);
     const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
@@ -287,14 +294,15 @@ export const createAnnouncement = async (req: AuthenticatedRequest, res: Respons
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    if (!['superadmin', 'admin', 'teacher'].includes(userRole)) {
+    const canManageEmployee = employeeCanManageClassroom(req.user);
+    if (!['superadmin', 'admin', 'teacher'].includes(userRole) && !canManageEmployee) {
       return res.status(403).json({
         success: false,
         message: 'শুধুমাত্র শিক্ষক ও অ্যাডমিন নোটিশ/অ্যানাউন্সমেন্ট প্রকাশ করতে পারবেন।',
       });
     }
 
-    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canManageEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied to post announcements' });
     }
@@ -382,7 +390,7 @@ export const getDiscussionMessages = async (req: AuthenticatedRequest, res: Resp
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const canViewEmployee = !!req.user && getEffectivePermissions(req.user.role, req.user.customPermissions, req.user.revokedPermissions).includes(PERMISSIONS.BATCHES_VIEW);
+    const canViewEmployee = employeeCanManageClassroom(req.user);
     const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canViewEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
@@ -415,7 +423,8 @@ export const postDiscussionMessage = async (req: AuthenticatedRequest, res: Resp
     const gravId = req.user?.role === 'student' ? req.user.gravId : req.user?._id?.toString() || '';
     const userRole = req.user?.role || 'student';
 
-    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId);
+    const canManageEmployee = employeeCanManageClassroom(req.user);
+    const hasAccess = await verifyClassroomAccess(gravId, userRole, batchId, canManageEmployee);
     if (!hasAccess) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }

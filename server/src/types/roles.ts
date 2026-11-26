@@ -135,6 +135,12 @@ export const ALL_PERMISSIONS_METADATA: PermissionDefinition[] = [
     description: 'নতুন ব্যাচ খোলা, ফি ও সময়সূচী নির্ধারণ করা',
   },
   {
+    key: PERMISSIONS.BATCHES_DELETE,
+    label: 'ব্যাচ মুছুন (Delete Batch)',
+    category: 'Batches & Curriculum',
+    description: 'বিদ্যমান ব্যাচ স্থায়ীভাবে মুছে ফেলার ক্ষমতা',
+  },
+  {
     key: PERMISSIONS.BATCHES_DUPLICATE,
     label: 'ব্যাচ ক্লোনিং / ডুপ্লিকেট (Clone Batch)',
     category: 'Batches & Curriculum',
@@ -344,8 +350,8 @@ export const ALL_PERMISSIONS_METADATA: PermissionDefinition[] = [
 
 /** Permission picker groups mapped directly to the visible admin-dashboard cards. */
 export const DASHBOARD_PERMISSION_METADATA: PermissionDefinition[] = [
-  { key: PERMISSIONS.ADMISSIONS_VIEW, label: 'সাম্প্রতিক ভর্তি দেখুন', category: 'এডমিশন', description: 'ভর্তি তালিকা, আবেদন এবং সাম্প্রতিক ভর্তি দেখুন' },
-  { key: PERMISSIONS.ADMISSIONS_CREATE, label: 'শিক্ষার্থী ভর্তি নিন', category: 'এডমিশন', description: 'নতুন শিক্ষার্থী ভর্তি ও আবেদন অনুমোদন করুন' },
+  { key: PERMISSIONS.ADMISSIONS_VIEW, label: 'সাম্প্রতিক ভর্তি দেখুন', category: 'এডমিশন', description: 'ভর্তি তালিকা, ভর্তি Requests এবং সাম্প্রতিক ভর্তি দেখুন' },
+  { key: PERMISSIONS.ADMISSIONS_CREATE, label: 'শিক্ষার্থী ভর্তি নিন', category: 'এডমিশন', description: 'নতুন শিক্ষার্থী ভর্তি ও ভর্তি Request অনুমোদন বা বাতিল করুন' },
   { key: PERMISSIONS.ADMISSIONS_SHIFT, label: 'ব্যাচ পরিবর্তন করুন', category: 'এডমিশন', description: 'ভর্তি হওয়া শিক্ষার্থীকে অন্য ব্যাচে সরান' },
   { key: PERMISSIONS.ADMISSIONS_REMOVE, label: 'ভর্তি বাতিল করুন', category: 'এডমিশন', description: 'ভর্তি বাতিল বা শিক্ষার্থী অপসারণ করুন' },
   { key: PERMISSIONS.COURSES_VIEW, label: 'কোর্স দেখুন', category: 'কোর্স ম্যানেজমেন্ট', description: 'কোর্স তালিকা ও বিস্তারিত দেখুন' },
@@ -372,7 +378,7 @@ export const DASHBOARD_PERMISSION_METADATA: PermissionDefinition[] = [
   { key: PERMISSIONS.FINANCE_EXPENSE_MANAGE, label: 'কোম্পানি খরচ ম্যানেজ করুন', category: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'খরচ যোগ, এডিট বা ডিলিট করুন' },
   { key: PERMISSIONS.ATTENDANCE_VIEW, label: 'শিক্ষক হাজিরা দেখুন', category: 'শিক্ষক হাজিরা', description: 'শিক্ষক হাজিরার তালিকা ও ইতিহাস দেখুন' },
   { key: PERMISSIONS.ATTENDANCE_MANAGE, label: 'শিক্ষক হাজিরা ম্যানেজ করুন', category: 'শিক্ষক হাজিরা', description: 'হাজিরা ও শিক্ষক পেমেন্ট পরিচালনা করুন' },
-  { key: PERMISSIONS.SETTINGS_MANAGE, label: 'সেটিংস ম্যানেজ করুন', category: 'অন্যান্য সেটিংস', description: 'সাইট সেটিংস ও Drive cleanup পরিচালনা করুন' },
+  { key: PERMISSIONS.SETTINGS_MANAGE, label: 'সেটিংস ম্যানেজ করুন', category: 'অন্যান্য সেটিংস', description: 'সাইট, হোমপেজ সেটিংস ও Drive cleanup পরিচালনা করুন' },
   { key: PERMISSIONS.AUDIT_LOGS_VIEW, label: 'অডিট লগ দেখুন', category: 'অডিট লগ', description: 'সংবেদনশীল কাজের ইতিহাস দেখুন' },
 ];
 

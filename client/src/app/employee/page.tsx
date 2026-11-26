@@ -68,7 +68,7 @@ const employeeCards: EmployeeCard[] = [
   },
   {
     title: 'এডমিশন', description: 'শিক্ষার্থী ভর্তি ও সাম্প্রতিক ভর্তি পরিচালনা করুন।', href: '/employee/admissions', icon: FileCheck2,
-    iconClass: 'bg-orange-500/10 text-orange-600 dark:text-orange-400', routePermissions: [PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_CREATE],
+    iconClass: 'bg-orange-500/10 text-orange-600 dark:text-orange-400', routePermissions: [PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_CREATE, PERMISSIONS.ADMISSIONS_SHIFT, PERMISSIONS.ADMISSIONS_REMOVE],
     permissions: [
       { key: PERMISSIONS.ADMISSIONS_CREATE, label: 'শিক্ষার্থী ভর্তি' }, { key: PERMISSIONS.ADMISSIONS_VIEW, label: 'সাম্প্রতিক ভর্তি' },
       { key: PERMISSIONS.ADMISSIONS_SHIFT, label: 'ব্যাচ পরিবর্তন' }, { key: PERMISSIONS.ADMISSIONS_REMOVE, label: 'ভর্তি বাতিল' },
@@ -76,7 +76,7 @@ const employeeCards: EmployeeCard[] = [
   },
   {
     title: 'ফাইন্যান্স ম্যানেজমেন্ট', description: 'অনুমোদিত পেমেন্ট ও খরচের কাজ এক জায়গা থেকে করুন।', href: '/employee/finance', icon: CircleDollarSign,
-    iconClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400', routePermissions: [PERMISSIONS.FINANCE_VIEW],
+    iconClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400', routePermissions: [PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_COLLECT, PERMISSIONS.FINANCE_REFUND, PERMISSIONS.FINANCE_DELETE, PERMISSIONS.FINANCE_MANUAL_PAID, PERMISSIONS.FINANCE_EXPENSE_MANAGE],
     permissions: [
       { key: PERMISSIONS.FINANCE_VIEW, label: 'ফাইন্যান্স রিপোর্ট' }, { key: PERMISSIONS.FINANCE_COLLECT, label: 'পেমেন্ট গ্রহণ' },
       { key: PERMISSIONS.FINANCE_REFUND, label: 'রিফান্ড' }, { key: PERMISSIONS.FINANCE_MANUAL_PAID, label: 'পেইড স্ট্যাটাস' },
@@ -118,8 +118,13 @@ export default function EmployeePanelPage() {
           {allowedCards.map((card) => {
             const Icon = card.icon;
             const grantedActions = card.permissions.filter(({ key }) => hasPermission(user, key));
+            const hasPaymentAccess = [PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_COLLECT, PERMISSIONS.FINANCE_REFUND, PERMISSIONS.FINANCE_DELETE, PERMISSIONS.FINANCE_MANUAL_PAID]
+              .some((permission) => hasPermission(user, permission));
+            const cardHref = card.href === '/employee/finance' && !hasPaymentAccess && hasPermission(user, PERMISSIONS.FINANCE_EXPENSE_MANAGE)
+              ? '/employee/finance/company-expenses'
+              : card.href;
             return (
-              <Link key={card.href} href={card.href} className="group ga-card flex min-h-[244px] flex-col p-5 transition duration-200 hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-lg dark:hover:border-orange-500/40">
+              <Link key={card.href} href={cardHref} className="group ga-card flex min-h-[244px] flex-col p-5 transition duration-200 hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-lg dark:hover:border-orange-500/40">
                 <div className="flex items-start justify-between gap-4"><span className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${card.iconClass}`}><Icon className="h-5 w-5" /></span><ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-1 group-hover:text-orange-600 dark:group-hover:text-orange-400" /></div>
                 <h2 className="mt-5 text-lg font-bold text-slate-950 dark:text-white">{card.title}</h2>
                 <p className="mt-1.5 text-sm leading-6 text-slate-600 dark:text-slate-400">{card.description}</p>

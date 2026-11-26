@@ -239,7 +239,7 @@ export default function AdminTeacherAttendancePage() {
                       <span>{teacher.historyCount} attendance</span>
                     </div>
                   </div>
-                  <Link href={`/admin/attendance/${teacher._id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 dark:border-[#262b34] dark:text-slate-200 dark:hover:bg-orange-950/30 dark:hover:text-orange-400">
+                  <Link href={`${base}/${teacher._id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 dark:border-[#262b34] dark:text-slate-200 dark:hover:bg-orange-950/30 dark:hover:text-orange-400">
                     Attendance & Payment <ArrowRight className="h-4 w-4" />
                   </Link>
                 </article>

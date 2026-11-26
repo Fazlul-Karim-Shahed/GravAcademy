@@ -133,7 +133,11 @@ interface EnrollmentRecord {
 export default function AdminAdmissionsPage() {
   const { user } = useAuth();
   const canCreateAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.create'));
-  const canViewAdmissions = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.view'));
+  const canViewAdmissions = Boolean(
+    user?.role === 'superadmin' ||
+    user?.role === 'admin' ||
+    user?.effectivePermissions?.some((permission) => ['admissions.view', 'admissions.shift', 'admissions.remove'].includes(permission))
+  );
   const canRemoveAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.remove'));
   const canShiftAdmission = Boolean(user?.role === 'superadmin' || user?.role === 'admin' || user?.effectivePermissions?.includes('admissions.shift'));
   const [shiftTarget, setShiftTarget] = useState<EnrollmentRecord | null>(null);

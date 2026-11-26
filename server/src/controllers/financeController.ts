@@ -9,6 +9,7 @@ import { User } from '../models/User';
 import { AuditLog } from '../models/AuditLog';
 import { ReceiptCounter } from '../models/ReceiptCounter';
 import { AuthenticatedRequest } from '../middleware/auth';
+import { hasUserPermission, PERMISSIONS } from '../types/roles';
 
 /**
  * Generate unique receipt number: REC-YYMMDD-XXXX
@@ -887,6 +888,13 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
     const paymentGravId = payment.gravId?.toString();
     const isOwner = user?.role === 'student' && user.gravId === paymentGravId;
     const isAdmin = ['superadmin', 'admin'].includes(user?.role || '');
+    const canManageFinance = user?.role === 'employee' && [
+      PERMISSIONS.FINANCE_VIEW,
+      PERMISSIONS.FINANCE_COLLECT,
+      PERMISSIONS.FINANCE_REFUND,
+      PERMISSIONS.FINANCE_DELETE,
+      PERMISSIONS.FINANCE_MANUAL_PAID,
+    ].some((permission) => hasUserPermission(user, permission));
 
     let isLinkedGuardian = false;
     if (!isOwner && !isAdmin && user?.role === 'guardian' && paymentGravId) {
@@ -898,7 +906,7 @@ export const getPaymentReceipt = async (req: AuthenticatedRequest, res: Response
       );
     }
 
-    if (!isOwner && !isAdmin && !isLinkedGuardian) {
+    if (!isOwner && !isAdmin && !isLinkedGuardian && !canManageFinance) {
       return res.status(403).json({ success: false, message: 'এই রিসিট দেখার অনুমতি আপনার নেই' });
     }
 

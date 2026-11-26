@@ -135,6 +135,12 @@ export const ALL_PERMISSIONS_METADATA: PermissionDefinition[] = [
     description: 'নতুন ব্যাচ খোলা, ফি ও সময়সূচী নির্ধারণ করা',
   },
   {
+    key: PERMISSIONS.BATCHES_DELETE,
+    label: 'ব্যাচ মুছুন (Delete Batch)',
+    category: 'Batches & Curriculum',
+    description: 'বিদ্যমান ব্যাচ স্থায়ীভাবে মুছে ফেলার ক্ষমতা',
+  },
+  {
     key: PERMISSIONS.BATCHES_DUPLICATE,
     label: 'ব্যাচ ক্লোনিং / ডুপ্লিকেট (Clone Batch)',
     category: 'Batches & Curriculum',

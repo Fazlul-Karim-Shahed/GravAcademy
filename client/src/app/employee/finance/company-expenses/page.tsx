@@ -5,5 +5,5 @@ import PermissionRouteGuard from '@/components/common/PermissionRouteGuard';
 import { PERMISSIONS } from '@/lib/permissions';
 
 export default function EmployeeCompanyExpensesPage() {
-  return <PermissionRouteGuard anyOf={[PERMISSIONS.FINANCE_VIEW]}><CompanyExpensesPage /></PermissionRouteGuard>;
+  return <PermissionRouteGuard anyOf={[PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_EXPENSE_MANAGE]}><CompanyExpensesPage /></PermissionRouteGuard>;
 }

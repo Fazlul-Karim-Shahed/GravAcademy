@@ -6,7 +6,7 @@ import { PERMISSIONS } from '@/lib/permissions';
 
 export default function EmployeeFinancePage() {
   return (
-    <PermissionRouteGuard anyOf={[PERMISSIONS.FINANCE_VIEW]}>
+    <PermissionRouteGuard anyOf={[PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_COLLECT, PERMISSIONS.FINANCE_REFUND, PERMISSIONS.FINANCE_DELETE, PERMISSIONS.FINANCE_MANUAL_PAID]}>
       <AdminFinancePage />
     </PermissionRouteGuard>
   );

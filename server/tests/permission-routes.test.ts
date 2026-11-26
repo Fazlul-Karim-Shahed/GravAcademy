@@ -17,6 +17,10 @@ const testedRoutes: Array<[string, string]> = [
   ['delete', '/finance/payments/:id'],
   ['get', '/audit-logs'],
   ['get', '/users'],
+  ['post', '/assignments'],
+  ['get', '/finance/admin-payments'],
+  ['get', '/enrollments/admin-list'],
+  ['get', '/enrollment-requests/admin'],
 ];
 for (const [method, path] of testedRoutes) {
   const layer = (router as any).stack.find((entry: any) => entry.route?.path === path && entry.route.methods[method]);
@@ -78,6 +82,26 @@ test('actual protected API routes reject absent and revoked permissions', async 
     assert.equal((await request('/audit-logs')).status, 403);
     currentUser.customPermissions = [PERMISSIONS.AUDIT_LOGS_VIEW];
     assert.equal((await request('/audit-logs')).status, 204);
+    currentUser = { ...currentUser, customPermissions: [PERMISSIONS.BATCHES_VIEW], revokedPermissions: [] };
+    assert.equal((await request('/assignments', 'POST')).status, 403);
+    currentUser.customPermissions = [PERMISSIONS.EXAMS_MANAGE];
+    assert.equal((await request('/assignments', 'POST')).status, 204);
+    currentUser.revokedPermissions = [PERMISSIONS.EXAMS_MANAGE];
+    assert.equal((await request('/assignments', 'POST')).status, 403);
+    currentUser = { ...currentUser, customPermissions: [PERMISSIONS.BATCHES_VIEW], revokedPermissions: [] };
+    assert.equal((await request('/finance/admin-payments')).status, 403);
+    currentUser.customPermissions = [PERMISSIONS.FINANCE_COLLECT];
+    assert.equal((await request('/finance/admin-payments')).status, 204);
+    currentUser.revokedPermissions = [PERMISSIONS.FINANCE_COLLECT];
+    assert.equal((await request('/finance/admin-payments')).status, 403);
+    currentUser = { ...currentUser, customPermissions: [PERMISSIONS.ADMISSIONS_SHIFT], revokedPermissions: [] };
+    assert.equal((await request('/enrollments/admin-list')).status, 204);
+    currentUser.revokedPermissions = [PERMISSIONS.ADMISSIONS_SHIFT];
+    assert.equal((await request('/enrollments/admin-list')).status, 403);
+    currentUser = { ...currentUser, customPermissions: [PERMISSIONS.ADMISSIONS_CREATE], revokedPermissions: [] };
+    assert.equal((await request('/enrollment-requests/admin')).status, 204);
+    currentUser.revokedPermissions = [PERMISSIONS.ADMISSIONS_CREATE];
+    assert.equal((await request('/enrollment-requests/admin')).status, 403);
   } finally {
     await new Promise<void>((resolve, reject) => server.close((err) => err ? reject(err) : resolve()));
     (User as any).findById = originalFindById;

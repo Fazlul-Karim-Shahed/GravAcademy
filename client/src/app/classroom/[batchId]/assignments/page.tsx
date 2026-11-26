@@ -155,7 +155,8 @@ export default function AssignmentRoomPage({
     user?.role === 'teacher' ||
     user?.role === 'admin' ||
     user?.role === 'superadmin' ||
-    hasPermission(user, PERMISSIONS.ASSIGNMENTS_MANAGE);
+    hasPermission(user, PERMISSIONS.ASSIGNMENTS_MANAGE) ||
+    hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);

@@ -79,9 +79,9 @@ export default function AuditLogsPage() {
       <div className="ga-page min-h-screen flex items-center justify-center px-4">
         <div className="ga-card max-w-md text-center p-8">
           <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-4" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">শুধুমাত্র সুপারএডমিন অ্যাক্সেস</h2>
-          <p className="text-xs text-slate-500 mb-6">অডিট লগ দেখার অনুমতি শুধুমাত্র সুপারএডমিনের আছে।</p>
-          <Link href="/admin" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">অ্যাক্সেস অনুমোদিত নয়</h2>
+          <p className="text-xs text-slate-500 mb-6">অডিট লগ দেখার অনুমতি আপনার অ্যাকাউন্টে নেই।</p>
+          <Link href={user?.role === 'employee' ? '/employee' : '/admin'} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all">
             <ArrowLeft className="w-4 h-4" /> ড্যাশবোর্ডে ফিরে যান
           </Link>
         </div>

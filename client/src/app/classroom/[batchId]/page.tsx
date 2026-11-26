@@ -170,7 +170,8 @@ export default function BatchClassroomPage({
 
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
   const isTeacher = user?.role === 'teacher';
-  const canViewStudentMembers = isAdmin || isTeacher || hasPermission(user, PERMISSIONS.BATCHES_VIEW);
+  const canManageClassroom = isAdmin || isTeacher || hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
+  const canViewStudentMembers = canManageClassroom;
   const batchEmails = Array.from(new Set(
     [...members.teachers, ...(canViewStudentMembers ? members.students : [])]
       .map((member) => member.email?.trim().toLowerCase())
@@ -686,7 +687,7 @@ export default function BatchClassroomPage({
               </div>
 
               {/* Message Input Box */}
-              {user?.role !== 'employee' && <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-[#262b34] mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
+              {(user?.role !== 'employee' || canManageClassroom) && <form onSubmit={handleSendMessage} className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-[#262b34] mt-3 sm:mt-4 flex items-center gap-2 w-full min-w-0">
                 <input
                   type="text"
                   value={newMessage}
@@ -794,13 +795,13 @@ export default function BatchClassroomPage({
                 </p>
               </div>
 
-              <button
+              {canManageClassroom && <button
                 onClick={() => setShowAnnounceModal(true)}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>নতুন নোটিশ</span>
-              </button>
+              </button>}
             </div>
 
             {/* Announcements List */}
@@ -811,13 +812,13 @@ export default function BatchClassroomPage({
                 <p className="text-xs text-slate-500 mt-1 mb-4">
                   শিক্ষক বা শিক্ষার্থী যেকোনো গুরুত্বপূর্ণ নোটিশ এখানে ঘোষণা করতে পারেন।
                 </p>
-                <button
+                {canManageClassroom && <button
                   onClick={() => setShowAnnounceModal(true)}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-colors"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>নোটিশ দিন</span>
-                </button>
+                </button>}
               </div>
             ) : (
               <div className="space-y-4">

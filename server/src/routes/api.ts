@@ -178,14 +178,14 @@ router.get(
   '/enrollment-requests/admin',
   authenticate,
   requireFeature(FEATURE_FLAGS.admissions),
-  requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
+  requireAnyPermission(PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_CREATE),
   enrollmentCtrl.getAdminEnrollmentRequests
 );
 router.get(
   '/enrollment-requests/:requestId',
   authenticate,
   requireFeature(FEATURE_FLAGS.admissions),
-  requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
+  requireAnyPermission(PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_CREATE),
   enrollmentCtrl.getEnrollmentRequestById
 );
 router.post(
@@ -214,7 +214,7 @@ router.get(
   '/enrollments/admin-list',
   authenticate,
   requireFeature(FEATURE_FLAGS.admissions),
-  requirePermission(PERMISSIONS.ADMISSIONS_VIEW),
+  requireAnyPermission(PERMISSIONS.ADMISSIONS_VIEW, PERMISSIONS.ADMISSIONS_SHIFT, PERMISSIONS.ADMISSIONS_REMOVE),
   enrollmentCtrl.getAdminEnrollments
 );
 router.delete(
@@ -252,7 +252,7 @@ router.get(
   '/finance/company-expenses',
   authenticate,
   requireFeature(FEATURE_FLAGS.finance),
-  requirePermission(PERMISSIONS.FINANCE_VIEW),
+  requireAnyPermission(PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_EXPENSE_MANAGE),
   companyExpenseCtrl.getCompanyExpenses
 );
 router.post(
@@ -282,7 +282,7 @@ router.get(
   '/finance/admin-payments',
   authenticate,
   requireFeature(FEATURE_FLAGS.finance),
-  requirePermission(PERMISSIONS.FINANCE_VIEW),
+  requireAnyPermission(PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_COLLECT, PERMISSIONS.FINANCE_REFUND, PERMISSIONS.FINANCE_DELETE, PERMISSIONS.FINANCE_MANUAL_PAID),
   financeCtrl.getAdminPayments
 );
 router.get(
@@ -294,7 +294,7 @@ router.get(
   '/finance/student-batch-payments',
   authenticate,
   requireFeature(FEATURE_FLAGS.finance),
-  requirePermission(PERMISSIONS.FINANCE_VIEW),
+  requireAnyPermission(PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_COLLECT, PERMISSIONS.FINANCE_REFUND, PERMISSIONS.FINANCE_DELETE, PERMISSIONS.FINANCE_MANUAL_PAID),
   financeCtrl.getStudentBatchPayments
 );
 router.get(
@@ -436,7 +436,7 @@ router.post(
 router.post(
   '/documents/upload',
   authenticate,
-  requireAnyPermission(PERMISSIONS.DOCUMENTS_UPLOAD, PERMISSIONS.LESSONS_MANAGE, PERMISSIONS.SETTINGS_MANAGE),
+  requireAnyPermission(PERMISSIONS.DOCUMENTS_UPLOAD, PERMISSIONS.LESSONS_MANAGE, PERMISSIONS.SETTINGS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   upload.single('file'),
   docCtrl.uploadDocument
 );
@@ -479,14 +479,14 @@ router.get(
   '/exams/:examId/submissions',
   authenticate,
   requireFeature(FEATURE_FLAGS.exams),
-  requirePermission(PERMISSIONS.EXAMS_EVALUATE),
+  requireAnyPermission(PERMISSIONS.EXAMS_EVALUATE, PERMISSIONS.EXAMS_MANAGE),
   examCtrl.getExamSubmissions
 );
 router.put(
   '/exams/attempts/:attemptId/evaluate',
   authenticate,
   requireFeature(FEATURE_FLAGS.exams),
-  requirePermission(PERMISSIONS.EXAMS_EVALUATE),
+  requireAnyPermission(PERMISSIONS.EXAMS_EVALUATE, PERMISSIONS.EXAMS_MANAGE),
   examCtrl.evaluateStudentAttempt
 );
 router.get('/exams/:examId/my-result', authenticate, requireFeature(FEATURE_FLAGS.exams), examCtrl.getStudentExamResult);
@@ -496,7 +496,7 @@ router.post(
   '/assignments',
   authenticate,
   requireFeature(FEATURE_FLAGS.assignments),
-  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  requireAnyPermission(PERMISSIONS.ASSIGNMENTS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   assignmentCtrl.createAssignment
 );
 router.get('/batches/:batchId/assignments', authenticate, requireFeature(FEATURE_FLAGS.assignments), assignmentCtrl.getBatchAssignments);
@@ -505,14 +505,14 @@ router.put(
   '/assignments/:assignmentId',
   authenticate,
   requireFeature(FEATURE_FLAGS.assignments),
-  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  requireAnyPermission(PERMISSIONS.ASSIGNMENTS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   assignmentCtrl.updateAssignment
 );
 router.delete(
   '/assignments/:assignmentId',
   authenticate,
   requireFeature(FEATURE_FLAGS.assignments),
-  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  requireAnyPermission(PERMISSIONS.ASSIGNMENTS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   assignmentCtrl.deleteAssignment
 );
 router.post(
@@ -526,21 +526,21 @@ router.get(
   '/assignments/:assignmentId/submissions',
   authenticate,
   requireFeature(FEATURE_FLAGS.assignments),
-  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  requireAnyPermission(PERMISSIONS.ASSIGNMENTS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   assignmentCtrl.getAssignmentSubmissions
 );
 router.put(
   '/assignments/submissions/:submissionId/grade',
   authenticate,
   requireFeature(FEATURE_FLAGS.assignments),
-  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  requireAnyPermission(PERMISSIONS.ASSIGNMENTS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   assignmentCtrl.gradeAssignmentSubmission
 );
 router.put(
   '/assignments/:assignmentId/grade/:submissionId',
   authenticate,
   requireFeature(FEATURE_FLAGS.assignments),
-  requirePermission(PERMISSIONS.ASSIGNMENTS_MANAGE),
+  requireAnyPermission(PERMISSIONS.ASSIGNMENTS_MANAGE, PERMISSIONS.EXAMS_MANAGE),
   assignmentCtrl.gradeAssignmentSubmission
 );
 
