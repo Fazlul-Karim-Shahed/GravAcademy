@@ -97,6 +97,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
   if (!isOpen || !data) return null;
 
   const logoUrl = settings?.logoUrl ? formatDriveImageUrl(settings.logoUrl) : '';
+  const companyName = settings?.siteName?.trim() || 'Grav Academy';
   const rawGravId = (data as any).gravId;
   const student = rawGravId && typeof rawGravId === 'object'
     ? rawGravId
@@ -278,7 +279,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                   {logoUrl && !logoFailed ? (
                     <img
                       src={logoUrl}
-                      alt="Grav Academy logo"
+                      alt={`${companyName} logo`}
                       onError={() => setLogoFailed(true)}
                       className="h-full w-full object-cover"
                     />
@@ -286,7 +287,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
                 </div>
                 <div>
                   <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white print:text-black">
-                    GravAcademy
+                    {companyName}
                   </h1>
                   <p className="text-xs text-slate-500 dark:text-slate-400 print:text-slate-600 font-medium">
                     অফিসিয়াল পেমেন্ট ও এডমিশন রিসিট
