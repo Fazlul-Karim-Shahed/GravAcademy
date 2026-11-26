@@ -27,6 +27,7 @@ import DailyScheduleView from '@/components/schedule/DailyScheduleView';
 import { ScheduleSlot } from '@/lib/schedule';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 
 interface Batch {
   _id: string;
@@ -56,6 +57,18 @@ function AdminBatchesContent() {
   const initialCourseId = searchParams.get('courseId') || 'all';
 
   const { user } = useAuth();
+  const isEmployee = user?.role === 'employee';
+  const basePath = isEmployee ? '/employee' : '/admin';
+  const canViewClassroom = hasPermission(user, PERMISSIONS.BATCHES_VIEW) || hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
+  const canManageBatches = hasPermission(user, PERMISSIONS.BATCHES_MANAGE);
+  const canDuplicateBatch = hasPermission(user, PERMISSIONS.BATCHES_DUPLICATE);
+  const canManageCurriculum = hasPermission(user, PERMISSIONS.LESSONS_MANAGE);
+  const canSeeCoursesLink =
+    hasPermission(user, PERMISSIONS.COURSES_VIEW) ||
+    hasPermission(user, PERMISSIONS.COURSES_CREATE) ||
+    hasPermission(user, PERMISSIONS.COURSES_UPDATE) ||
+    hasPermission(user, PERMISSIONS.COURSES_DELETE) ||
+    hasPermission(user, PERMISSIONS.CLASSES_MANAGE);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [academicClasses, setAcademicClasses] = useState<AcademicClassItem[]>([]);
@@ -166,20 +179,30 @@ function AdminBatchesContent() {
   return (
     <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AdminPageHeader title="Batch Management" description="কোর্সভিত্তিক batch, শিক্ষক এবং class schedule পরিচালনা করুন।" actions={<>
-            <Link
-              href="/admin/courses"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
-            >
-              Manage Courses
-            </Link>
-            <Link
-              href="/admin/batches/new"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
-            >
-              <PlusCircle className="w-4 h-4" /> Create New Batch
-            </Link>
-          </>} />
+        <AdminPageHeader
+          title="Batch Management"
+          description="কোর্সভিত্তিক batch, শিক্ষক এবং class schedule পরিচালনা করুন।"
+          backHref={isEmployee ? '/employee' : '/admin'}
+          backLabel="ড্যাশবোর্ড"
+          actions={<>
+            {canSeeCoursesLink && (
+              <Link
+                href={`${basePath}/courses`}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
+              >
+                Manage Courses
+              </Link>
+            )}
+            {canManageBatches && (
+              <Link
+                href={`${basePath}/batches/new`}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
+              >
+                <PlusCircle className="w-4 h-4" /> Create New Batch
+              </Link>
+            )}
+          </>}
+        />
 
         {message && (
           <div
@@ -322,12 +345,14 @@ function AdminBatchesContent() {
                   সকল ব্যাচ দেখুন
                 </button>
               )}
-              <Link
-                href={`/admin/batches/new${selectedCourseId !== 'all' ? `?courseId=${selectedCourseId}` : ''}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
-              >
-                <PlusCircle className="w-4 h-4" /> Create Batch
-              </Link>
+              {canManageBatches && (
+                <Link
+                  href={`${basePath}/batches/new${selectedCourseId !== 'all' ? `?courseId=${selectedCourseId}` : ''}`}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
+                >
+                  <PlusCircle className="w-4 h-4" /> Create Batch
+                </Link>
+              )}
             </div>
           </div>
         ) : (
@@ -416,48 +441,58 @@ function AdminBatchesContent() {
                   {/* Card Action Footer */}
                   <div className="flex items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/80 px-6 py-4 dark:border-[#262b34] dark:bg-[#151921]/50 sm:flex-col sm:items-end sm:justify-center sm:border-l sm:border-t-0">
                     <div className="flex items-center gap-2">
-                      <Link
-                        href={`/classroom/${batch._id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors"
-                        title="ক্লাসরুম ও ডিসকাশন গ্রুপ"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        <span>ক্লাসরুম</span>
-                      </Link>
+                      {canViewClassroom && (
+                        <Link
+                          href={`/classroom/${batch._id}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors"
+                          title="ক্লাসরুম ও ডিসকাশন গ্রুপ"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>ক্লাসরুম</span>
+                        </Link>
+                      )}
 
-                      <Link
-                        href={`/admin/batches/${batch._id}/curriculum`}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs transition-colors"
-                      >
-                        <Layers className="w-3.5 h-3.5" />
-                        <span>কারিকুলাম</span>
-                      </Link>
+                      {canManageCurriculum && (
+                        <Link
+                          href={`${basePath}/batches/${batch._id}/curriculum`}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-xs transition-colors"
+                        >
+                          <Layers className="w-3.5 h-3.5" />
+                          <span>কারিকুলাম</span>
+                        </Link>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <Link
-                        href={`/admin/batches/${batch._id}/edit`}
-                        className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
-                        title="Edit Batch Details"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </Link>
+                      {canManageBatches && (
+                        <Link
+                          href={`${basePath}/batches/${batch._id}/edit`}
+                          className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
+                          title="Edit Batch Details"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </Link>
+                      )}
 
-                      <Link
-                        href={`/admin/batches/new?cloneFrom=${batch._id}`}
-                        className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
-                        title="Duplicate & Create New Batch"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Link>
+                      {canDuplicateBatch && (
+                        <Link
+                          href={`${basePath}/batches/new?cloneFrom=${batch._id}`}
+                          className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-[#151921] transition-colors"
+                          title="Duplicate & Create New Batch"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Link>
+                      )}
 
-                      <button
-                        onClick={() => handleDeleteBatch(batch._id, batch.name)}
-                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-[#151921] transition-colors"
-                        title="Delete Batch"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {canManageBatches && (
+                        <button
+                          onClick={() => handleDeleteBatch(batch._id, batch.name)}
+                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-[#151921] transition-colors"
+                          title="Delete Batch"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
