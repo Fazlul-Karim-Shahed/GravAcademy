@@ -492,21 +492,21 @@ export default function UserPermissionsEditPage() {
                         <p className="text-[11px] text-slate-500 dark:text-slate-400">
                           {perm.description}
                         </p>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-2 pt-0.5">
                         <button
                           type="button"
                           onClick={(event) => {
                             event.stopPropagation();
                             setDetailPermission(perm);
                           }}
-                          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:border-[#303640] dark:bg-[#151921] dark:text-slate-300 dark:hover:border-orange-700 dark:hover:bg-orange-950/30 dark:hover:text-orange-300"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:border-[#303640] dark:bg-[#151921] dark:text-slate-300 dark:hover:border-orange-700 dark:hover:bg-orange-950/30 dark:hover:text-orange-300"
                           aria-label={`${perm.label} পারমিশনের বিস্তারিত দেখুন`}
                         >
                           <Info className="h-3.5 w-3.5" />
                           বিস্তারিত
                         </button>
-                      </div>
-
-                      <div className="shrink-0 pt-0.5">
                         <input
                           type="checkbox"
                           checked={isGranted}
