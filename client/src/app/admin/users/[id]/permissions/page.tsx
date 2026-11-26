@@ -213,19 +213,37 @@ export default function UserPermissionsEditPage() {
     && (roleDefaultPerms.has(permissionKey) || customPermissions.includes(permissionKey))
   );
 
-  const allPermissionsSelected = DASHBOARD_PERMISSION_METADATA.every((permission) => getPermissionGranted(permission.key));
+  const allPermissionsSelected =
+    filteredPermissions.length > 0 &&
+    filteredPermissions.every((permission) => getPermissionGranted(permission.key));
 
   const setAllPermissionsSelected = (checked: boolean) => {
     if (selectedRole === ROLES.SUPERADMIN) return;
+    const bundledClassroomKeys: PermissionKey[] = [
+      PERMISSIONS.EXAMS_MANAGE,
+      PERMISSIONS.EXAMS_EVALUATE,
+      PERMISSIONS.ASSIGNMENTS_MANAGE,
+      PERMISSIONS.RESULTS_VIEW_ALL,
+    ];
+    const targetKeys = new Set<PermissionKey>(filteredPermissions.map((permission) => permission.key));
+    if (targetKeys.has(PERMISSIONS.EXAMS_MANAGE)) {
+      bundledClassroomKeys.forEach((key) => targetKeys.add(key));
+    }
+
     if (checked) {
-      setCustomPermissions(DASHBOARD_PERMISSION_METADATA
-        .filter((permission) => !roleDefaultPerms.has(permission.key))
-        .map((permission) => permission.key));
-      setRevokedPermissions([]);
+      setRevokedPermissions((prev) => prev.filter((key) => !targetKeys.has(key as PermissionKey)));
+      setCustomPermissions((prev) => Array.from(new Set([
+        ...prev,
+        ...Array.from(targetKeys).filter((key) => !roleDefaultPerms.has(key)),
+      ])));
       return;
     }
-    setCustomPermissions([]);
-    setRevokedPermissions(Array.from(roleDefaultPerms));
+
+    setCustomPermissions((prev) => prev.filter((key) => !targetKeys.has(key as PermissionKey)));
+    setRevokedPermissions((prev) => Array.from(new Set([
+      ...prev,
+      ...Array.from(targetKeys).filter((key) => roleDefaultPerms.has(key)),
+    ])));
   };
 
   if (loading) {
@@ -375,7 +393,9 @@ export default function UserPermissionsEditPage() {
 
               <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-950/20 p-3">
                 <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-                  সব permission একসাথে চালু বা বন্ধ করুন
+                  {activeCategory === 'all'
+                    ? 'সব Dashboard কার্ডের permission একসাথে চালু বা বন্ধ করুন'
+                    : `${activeCategory}-এর সব permission একসাথে চালু বা বন্ধ করুন`}
                 </span>
                 <span className="flex shrink-0 items-center gap-2 text-[11px] font-bold text-orange-700 dark:text-orange-400">
                   <span>সব নির্বাচন</span>
