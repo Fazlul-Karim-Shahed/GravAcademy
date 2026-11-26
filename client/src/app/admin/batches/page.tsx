@@ -59,8 +59,9 @@ function AdminBatchesContent() {
   const { user } = useAuth();
   const isEmployee = user?.role === 'employee';
   const basePath = isEmployee ? '/employee' : '/admin';
-  const canViewClassroom = hasPermission(user, PERMISSIONS.BATCHES_VIEW) || hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
+  const canViewClassroom = hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
   const canManageBatches = hasPermission(user, PERMISSIONS.BATCHES_MANAGE);
+  const canDeleteBatch = hasPermission(user, PERMISSIONS.BATCHES_DELETE);
   const canDuplicateBatch = hasPermission(user, PERMISSIONS.BATCHES_DUPLICATE);
   const canManageCurriculum = hasPermission(user, PERMISSIONS.LESSONS_MANAGE);
   const canSeeCoursesLink =
@@ -484,7 +485,7 @@ function AdminBatchesContent() {
                         </Link>
                       )}
 
-                      {canManageBatches && (
+                      {canDeleteBatch && (
                         <button
                           onClick={() => handleDeleteBatch(batch._id, batch.name)}
                           className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-[#151921] transition-colors"

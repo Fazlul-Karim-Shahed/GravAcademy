@@ -145,7 +145,7 @@ router.delete(
   '/batches/:id',
   authenticate,
   requireFeature(FEATURE_FLAGS.batches),
-  requirePermission(PERMISSIONS.BATCHES_MANAGE),
+  requirePermission(PERMISSIONS.BATCHES_DELETE),
   batchCtrl.deleteBatch
 );
 

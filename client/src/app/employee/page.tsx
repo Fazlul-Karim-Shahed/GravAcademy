@@ -23,9 +23,16 @@ const employeeCards: EmployeeCard[] = [
     permissions: [{ key: PERMISSIONS.COURSES_VIEW, label: 'কোর্স দেখুন' }, { key: PERMISSIONS.COURSES_CREATE, label: 'তৈরি' }, { key: PERMISSIONS.COURSES_UPDATE, label: 'এডিট' }, { key: PERMISSIONS.COURSES_DELETE, label: 'ডিলিট' }, { key: PERMISSIONS.CLASSES_MANAGE, label: 'ক্লাস ম্যানেজ' }],
   },
   {
-    title: 'ব্যাচ ম্যানেজমেন্ট', description: 'ব্যাচ, ক্লাসরুম, কারিকুলাম ও পরীক্ষা পরিচালনা করুন।', href: '/employee/batches', icon: Layers,
-    iconClass: 'bg-blue-500/10 text-blue-600', routePermissions: [PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.LESSONS_MANAGE, PERMISSIONS.EXAMS_MANAGE],
-    permissions: [{ key: PERMISSIONS.BATCHES_VIEW, label: 'ব্যাচ ও ক্লাসরুম' }, { key: PERMISSIONS.BATCHES_MANAGE, label: 'ব্যাচ ম্যানেজ' }, { key: PERMISSIONS.BATCHES_DUPLICATE, label: 'ডুপ্লিকেট' }, { key: PERMISSIONS.LESSONS_MANAGE, label: 'কারিকুলাম' }, { key: PERMISSIONS.EXAMS_MANAGE, label: 'পরীক্ষা ও অ্যাসাইনমেন্ট' }],
+    title: 'ব্যাচ ম্যানেজমেন্ট', description: 'ব্যাচ, ক্লাসরুম ও কারিকুলাম পরিচালনা করুন।', href: '/employee/batches', icon: Layers,
+    iconClass: 'bg-blue-500/10 text-blue-600', routePermissions: [PERMISSIONS.BATCHES_VIEW, PERMISSIONS.BATCHES_MANAGE, PERMISSIONS.BATCHES_DELETE, PERMISSIONS.BATCHES_DUPLICATE, PERMISSIONS.EXAMS_MANAGE, PERMISSIONS.LESSONS_MANAGE],
+    permissions: [
+      { key: PERMISSIONS.BATCHES_VIEW, label: 'শুধুমাত্র দেখা' },
+      { key: PERMISSIONS.BATCHES_MANAGE, label: 'তৈরি ও এডিট' },
+      { key: PERMISSIONS.BATCHES_DELETE, label: 'ডিলিট' },
+      { key: PERMISSIONS.BATCHES_DUPLICATE, label: 'ডুপ্লিকেট' },
+      { key: PERMISSIONS.EXAMS_MANAGE, label: 'ক্লাসরুম ম্যানেজ' },
+      { key: PERMISSIONS.LESSONS_MANAGE, label: 'কারিকুলাম ম্যানেজ' },
+    ],
   },
   {
     title: 'শিক্ষক হাজিরা', description: 'শিক্ষক হাজিরা ও ইতিহাস দেখুন।', href: '/employee/attendance', icon: CalendarCheck,
