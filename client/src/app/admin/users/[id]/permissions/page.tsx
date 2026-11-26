@@ -391,11 +391,6 @@ export default function UserPermissionsEditPage() {
                 </span>
               </div>
 
-              <div className="mb-4 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3 text-[11px] leading-5 text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
-                <Info className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>একই পেজে কাজ করার জন্য সম্পর্কিত কোনো অনুমতি দরকার হলে সেটি নিজে থেকেই চালু হবে। এমন অনুমতির পাশে “নিজে থেকে চালু” লেখা দেখা যাবে।</span>
-              </div>
-
               <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-950/20 p-3">
                 <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
                   {activeCategory === 'all'
