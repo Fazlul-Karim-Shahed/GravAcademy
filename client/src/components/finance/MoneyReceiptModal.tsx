@@ -275,7 +275,7 @@ export const MoneyReceiptModal: React.FC<MoneyReceiptModalProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b-2 border-dashed border-slate-200 dark:border-slate-800 print:border-slate-400">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20 print:border print:border-black overflow-hidden">
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-transparent text-xl font-black text-slate-700 dark:text-slate-200 print:border-0 print:text-black">
                   {logoUrl && !logoFailed ? (
                     <img
                       src={logoUrl}
