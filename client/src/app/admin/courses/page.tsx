@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { getSharedAcademicClasses, AcademicClassItem } from '@/lib/classes';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 
 interface Course {
   _id: string;
@@ -54,6 +55,15 @@ interface BatchInfo {
 
 function AdminCoursesContent() {
   const { user } = useAuth();
+  const isEmployee = user?.role === 'employee';
+  const basePath = isEmployee ? '/employee' : '/admin';
+  const canViewCourses = hasPermission(user, PERMISSIONS.COURSES_VIEW);
+  const canCreateCourse = hasPermission(user, PERMISSIONS.COURSES_CREATE);
+  const canEditCourse = hasPermission(user, PERMISSIONS.COURSES_UPDATE);
+  const canDeleteCourse = hasPermission(user, PERMISSIONS.COURSES_DELETE);
+  const canManageClasses = hasPermission(user, PERMISSIONS.CLASSES_MANAGE);
+  const canSeeBatchLink = hasPermission(user, PERMISSIONS.BATCHES_VIEW) || hasPermission(user, PERMISSIONS.BATCHES_MANAGE);
+  const canSeeList = canViewCourses || canEditCourse || canDeleteCourse;
   const searchParams = useSearchParams();
   const gradeQuery = searchParams.get('grade') || 'all';
 
@@ -86,10 +96,18 @@ function AdminCoursesContent() {
   };
 
   useEffect(() => {
+    if (!canSeeList) {
+      setLoading(false);
+      return;
+    }
     fetchCoursesAndBatches();
-  }, [selectedGrade]);
+  }, [selectedGrade, canSeeList]);
 
   const fetchCoursesAndBatches = async () => {
+    if (!canSeeList) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const params: any = {};
@@ -137,20 +155,30 @@ function AdminCoursesContent() {
     <div className="ga-page ga-admin-page py-10 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <AdminPageHeader title="Course Management" description="কোর্স, শিক্ষক, syllabus এবং প্রকাশের অবস্থা পরিচালনা করুন।" actions={<>
-            <Link
-              href="/admin/classes"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
-            >
-              <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" /> Manage Classes
-            </Link>
-            <Link
-              href="/admin/courses/new"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:from-orange-800 active:to-orange-900 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
-            >
-              <PlusCircle className="w-4 h-4" /> Add New Course
-            </Link>
-          </>} />
+        <AdminPageHeader
+          title="Course Management"
+          description="কোর্স, শিক্ষক, syllabus এবং প্রকাশের অবস্থা পরিচালনা করুন।"
+          backHref={isEmployee ? '/employee' : '/admin'}
+          backLabel="ড্যাশবোর্ড"
+          actions={<>
+            {canManageClasses && (
+              <Link
+                href={`${basePath}/classes`}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] shadow-2xs transition-colors"
+              >
+                <GraduationCap className="w-4 h-4 text-orange-600 dark:text-orange-400" /> Manage Classes
+              </Link>
+            )}
+            {canCreateCourse && (
+              <Link
+                href={`${basePath}/courses/new`}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 active:from-orange-800 active:to-orange-900 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
+              >
+                <PlusCircle className="w-4 h-4" /> Add New Course
+              </Link>
+            )}
+          </>}
+        />
 
         {message && (
           <div
@@ -170,6 +198,16 @@ function AdminCoursesContent() {
         )}
 
         {/* Filter / Search Bar */}
+        {!canSeeList ? (
+          <div className="bg-white dark:bg-[#111318] rounded-2xl text-center py-14 px-4 border border-slate-200 dark:border-[#262b34] shadow-xs">
+            <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">উপরের অনুমোদিত বাটন ব্যবহার করুন</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              কোর্সের তালিকা দেখার অনুমতি না থাকায় তালিকা প্রদর্শন করা হচ্ছে না।
+            </p>
+          </div>
+        ) : (
+        <>
         <div className="ga-operation-toolbar mb-8 justify-between p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
@@ -238,12 +276,14 @@ function AdminCoursesContent() {
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">
               Click &apos;Add New Course&apos; to create your first dynamic curriculum.
             </p>
-            <Link
-              href="/admin/courses/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
-            >
-              <PlusCircle className="w-4 h-4" /> Add Course
-            </Link>
+            {canCreateCourse && (
+              <Link
+                href={`${basePath}/courses/new`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold shadow-md shadow-orange-950/25 transition-all"
+              >
+                <PlusCircle className="w-4 h-4" /> Add Course
+              </Link>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -381,16 +421,25 @@ function AdminCoursesContent() {
                             </div>
 
                             {/* Batches */}
-                            <Link
-                              href={`/admin/batches?courseId=${course._id}`}
-                              className="group/batch block px-2 min-w-0 rounded-xl hover:bg-white dark:hover:bg-[#151921] transition-colors"
-                              title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
-                            >
-                              <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight mb-0.5">মোট ব্যাচ</span>
-                              <span className="text-xs font-black text-orange-600 dark:text-orange-400 group-hover/batch:underline truncate block">
-                                {batchCount} টি ব্যাচ
-                              </span>
-                            </Link>
+                            {canSeeBatchLink ? (
+                              <Link
+                                href={`${basePath}/batches?courseId=${course._id}`}
+                                className="group/batch block px-2 min-w-0 rounded-xl hover:bg-white dark:hover:bg-[#151921] transition-colors"
+                                title="ক্লিক করে এই কোর্সের ব্যাচসমূহ দেখুন বা ম্যানেজ করুন"
+                              >
+                                <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight mb-0.5">মোট ব্যাচ</span>
+                                <span className="text-xs font-black text-orange-600 dark:text-orange-400 group-hover/batch:underline truncate block">
+                                  {batchCount} টি ব্যাচ
+                                </span>
+                              </Link>
+                            ) : (
+                              <div className="px-2 min-w-0">
+                                <span className="text-[10px] uppercase font-bold text-slate-400 block leading-tight mb-0.5">মোট ব্যাচ</span>
+                                <span className="text-xs font-black text-slate-700 dark:text-slate-300 truncate block">
+                                  {batchCount} টি ব্যাচ
+                                </span>
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
@@ -399,38 +448,46 @@ function AdminCoursesContent() {
 
                   {/* Card Action Footer */}
                   <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-[#151921]/50 border-t border-slate-100 dark:border-[#262b34] flex items-center justify-between gap-3">
-                    <Link
-                      href={`/courses/${course.slug || course._id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] transition-all shadow-2xs hover:shadow-xs group/btn"
-                    >
-                      <span>ভিউ পেজ</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-orange-500 transition-colors" />
-                    </Link>
+                    {canViewCourses ? (
+                      <Link
+                        href={`/courses/${course.slug || course._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-[#262b34] transition-all shadow-2xs hover:shadow-xs group/btn"
+                      >
+                        <span>ভিউ পেজ</span>
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-orange-500 transition-colors" />
+                      </Link>
+                    ) : <span />}
 
                     <div className="flex items-center gap-1.5">
-                      <Link
-                        href={`/admin/courses/${course._id}/edit`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/50 dark:hover:bg-orange-900/50 text-orange-700 dark:text-orange-300 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60 transition-colors"
-                        title="Edit Course Details"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>এডিট</span>
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(course._id, course.title)}
-                        className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                        title="Delete Course"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {canEditCourse && (
+                        <Link
+                          href={`${basePath}/courses/${course._id}/edit`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/50 dark:hover:bg-orange-900/50 text-orange-700 dark:text-orange-300 text-xs font-bold border border-orange-200/60 dark:border-orange-800/60 transition-colors"
+                          title="Edit Course Details"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>এডিট</span>
+                        </Link>
+                      )}
+                      {canDeleteCourse && (
+                        <button
+                          onClick={() => handleDelete(course._id, course.title)}
+                          className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                          title="Delete Course"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
+        )}
+        </>
         )}
       </div>
     </div>
