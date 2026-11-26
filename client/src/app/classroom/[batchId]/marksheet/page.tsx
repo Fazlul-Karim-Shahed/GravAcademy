@@ -484,7 +484,7 @@ export default function MarksheetPage({
                             </td>
                             <td className="py-3 px-4 text-right">
                               <Link
-                                href={`/classroom/${batchId}/marksheet/${row.student._id}`}
+                                href={`/classroom/${batchId}/marksheet/${encodeURIComponent(row.student.gravId || row.student._id)}`}
                                 className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold transition-all shadow-sm shadow-orange-950/20"
                               >
                                 বিস্তারিত দেখুন

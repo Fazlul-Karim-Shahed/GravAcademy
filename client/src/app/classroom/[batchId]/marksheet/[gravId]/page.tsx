@@ -96,7 +96,10 @@ export default function StudentMarksheetPage({
       const res = await api.get(`/batches/${batchId}/marksheet`);
       if (!res.data?.success) throw new Error('Marksheet load করা যায়নি');
       setBatchName(res.data.batch?.name || 'Classroom');
-      const row = (res.data.data || []).find((item: StudentRow) => item.student?.gravId === gravId);
+      const studentKey = decodeURIComponent(gravId);
+      const row = (res.data.data || []).find((item: StudentRow) =>
+        item.student?.gravId === studentKey || item.student?._id === studentKey
+      );
       if (!row) throw new Error('এই student-এর marksheet পাওয়া যায়নি');
       setStudent(row);
     } catch (err: any) {
