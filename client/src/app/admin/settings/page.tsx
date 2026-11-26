@@ -667,6 +667,12 @@ export default function AdminSettingsPage() {
             {/* TAB: HOMEPAGE SETTINGS */}
             {activeTab === 'homepage' && canManageDriveCleanup && (
               <div className="space-y-6">
+                <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xs dark:border-[#262b34] dark:bg-[#111318] sm:p-8">
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">Footer content</h3>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Homepage-এর নিচের footer এখান থেকে আপডেট করুন।</p>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Description</label><textarea value={footerDescription} onChange={(e) => setFooterDescription(e.target.value)} rows={2} maxLength={240} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div><div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Phone</label><input value={footerPhone} onChange={(e) => setFooterPhone(e.target.value)} maxLength={80} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div><div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Email</label><input value={footerEmail} onChange={(e) => setFooterEmail(e.target.value)} maxLength={120} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div></div>
+                  <div className="mt-5 flex justify-end"><button type="button" onClick={async () => { const ok = await updateSettings({ footerDescription, footerPhone, footerEmail }); setSaveSuccess(ok); if (ok) window.setTimeout(() => setSaveSuccess(false), 3000); }} className="rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-orange-700">Save footer</button></div>
+                </div>
                 {!isEmployee && <div className="flex flex-col gap-4 rounded-2xl border border-orange-200 bg-orange-50/70 p-5 dark:border-orange-900/60 dark:bg-orange-950/20 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h3 className="text-base font-black text-slate-900 dark:text-white">সাফল্য ও রিভিউ</h3>
