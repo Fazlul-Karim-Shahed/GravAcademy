@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { toDateTimeLocalValue } from '@/lib/dateTimeLocal';
 import { useAuth } from '@/context/AuthContext';
+import { hasPermission, PERMISSIONS } from '@/lib/permissions';
 import TextEditor from '@/components/ui/TextEditor';
 import DocumentPreviewModal from '@/components/ui/DocumentPreviewModal';
 import { FileUploadField } from '@/components/ui/FileUploadField';
@@ -38,6 +39,12 @@ export default function EditAssignmentPage({
   const { batchId, assignmentId } = resolvedParams;
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const canManageAssignments =
+    user?.role === 'superadmin' ||
+    user?.role === 'admin' ||
+    user?.role === 'teacher' ||
+    hasPermission(user, PERMISSIONS.ASSIGNMENTS_MANAGE) ||
+    hasPermission(user, PERMISSIONS.EXAMS_MANAGE);
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -70,14 +77,14 @@ export default function EditAssignmentPage({
       router.push(`/login?redirect=/classroom/${batchId}/assignments/${assignmentId}/edit`);
       return;
     }
-    if (user && !['superadmin', 'admin', 'teacher'].includes(user.role)) {
+    if (user && !canManageAssignments) {
       router.push(`/classroom/${batchId}/assignments`);
       return;
     }
-    if (user && assignmentId) {
+    if (user && canManageAssignments && assignmentId) {
       loadData();
     }
-  }, [batchId, assignmentId, user, authLoading]);
+  }, [batchId, assignmentId, user, authLoading, canManageAssignments, router]);
 
   const loadData = async () => {
     setLoading(true);
