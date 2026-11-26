@@ -49,6 +49,7 @@ router.post('/teacher-attendance/mark', authenticate, requirePermission(PERMISSI
 router.post('/teacher-attendance/mark-absent', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.markTeacherAbsent);
 router.post('/teacher-attendance/payments', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.createTeacherPayment);
 router.get('/teacher-attendance/teachers/:teacherId/payments', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getTeacherPaymentHistory);
+router.get('/teacher-attendance/my-payments', authenticate, requireRole(ROLES.TEACHER), teacherAttendanceCtrl.getMyTeacherPaymentHistory);
 router.get('/teacher-attendance/payments/:paymentId', authenticate, requireAttendanceRead, teacherAttendanceCtrl.getTeacherPaymentReceipt);
 router.patch('/teacher-attendance/payments/:paymentId', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.updateTeacherPayment);
 router.post('/teacher-attendance/payments/:paymentId/void', authenticate, requirePermission(PERMISSIONS.ATTENDANCE_MANAGE), teacherAttendanceCtrl.voidTeacherPayment);

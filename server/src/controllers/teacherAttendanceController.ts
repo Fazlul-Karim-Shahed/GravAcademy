@@ -456,6 +456,27 @@ export const getTeacherPaymentHistory = async (req: AuthenticatedRequest, res: R
   }
 };
 
+/** Payment history for the signed-in teacher. Teachers can only see their own records. */
+export const getMyTeacherPaymentHistory = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (req.user?.role !== 'teacher') return res.status(403).json({ success: false, message: 'শুধু শিক্ষক এই তথ্য দেখতে পারবেন।' });
+    const teacherId = req.user._id;
+    const page = Math.max(1, Number.parseInt(String(req.query.page || '1'), 10) || 1);
+    const limit = 50;
+    const filter = { teacherId, voidedAt: { $exists: false } };
+    const [data, total, teacher] = await Promise.all([
+      TeacherPayment.find(filter).select('receiptNo amountPaid paidAt notes classes courseBreakdown').sort({ paidAt: -1, _id: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      TeacherPayment.countDocuments(filter),
+      User.findById(teacherId).select('name gravId email createdAt').lean(),
+    ]);
+    const totalPaid = await TeacherPayment.aggregate([{ $match: filter }, { $group: { _id: null, total: { $sum: '$amountPaid' } } }]);
+    return res.json({ success: true, teacher, totalPaid: totalPaid[0]?.total || 0, data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
+  } catch (error) {
+    console.error('getMyTeacherPaymentHistory error:', error);
+    return res.status(500).json({ success: false, message: 'Payment history load করা যায়নি।' });
+  }
+};
+
 export const updateTeacherPayment = async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.paymentId)) return res.status(400).json({ success: false, message: 'Payment ID সঠিক নয়।' });

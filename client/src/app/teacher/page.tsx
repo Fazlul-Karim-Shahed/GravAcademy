@@ -19,6 +19,7 @@ import {
   MessageSquare,
   RefreshCw,
   User,
+  Banknote,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import DailyScheduleView from '@/components/schedule/DailyScheduleView';
@@ -101,6 +102,13 @@ export default function TeacherPanelPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+            <Link
+              href="/teacher/payments"
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-all shadow-sm"
+            >
+              <Banknote className="w-4 h-4" />
+              <span>Payment</span>
+            </Link>
             <Link
               href="/profile"
               className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#111318] hover:bg-slate-100 dark:hover:bg-[#151921] text-slate-800 dark:text-slate-200 text-xs font-bold transition-all border border-slate-200 dark:border-[#262b34] shadow-2xs"
