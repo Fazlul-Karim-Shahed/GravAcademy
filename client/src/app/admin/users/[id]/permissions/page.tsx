@@ -16,6 +16,7 @@ import {
   UserRole,
   ROLES,
 } from '@/lib/permissions';
+import { DASHBOARD_PERMISSION_DETAILS } from '@/lib/permissionDetails';
 import {
   Key,
   ArrowLeft,
@@ -30,6 +31,8 @@ import {
   Calendar,
   Lock,
   Save,
+  X,
+  CircleCheck,
 } from 'lucide-react';
 
 interface UserDetail {
@@ -60,12 +63,29 @@ export default function UserPermissionsEditPage() {
   const [revokedPermissions, setRevokedPermissions] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [detailPermission, setDetailPermission] = useState<PermissionDefinition | null>(null);
 
   useEffect(() => {
     if (gravId) {
       loadUserDetails();
     }
   }, [gravId]);
+
+  useEffect(() => {
+    if (!detailPermission) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDetailPermission(null);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [detailPermission]);
 
   const loadUserDetails = async () => {
     setLoading(true);
@@ -472,6 +492,18 @@ export default function UserPermissionsEditPage() {
                         <p className="text-[11px] text-slate-500 dark:text-slate-400">
                           {perm.description}
                         </p>
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setDetailPermission(perm);
+                          }}
+                          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-bold text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:border-[#303640] dark:bg-[#151921] dark:text-slate-300 dark:hover:border-orange-700 dark:hover:bg-orange-950/30 dark:hover:text-orange-300"
+                          aria-label={`${perm.label} পারমিশনের বিস্তারিত দেখুন`}
+                        >
+                          <Info className="h-3.5 w-3.5" />
+                          বিস্তারিত
+                        </button>
                       </div>
 
                       <div className="shrink-0 pt-0.5">
@@ -513,6 +545,82 @@ export default function UserPermissionsEditPage() {
           </div>
 
         </form>
+
+        {detailPermission && (() => {
+          const details = DASHBOARD_PERMISSION_DETAILS[detailPermission.key];
+          return (
+            <div
+              className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="permission-detail-title"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) setDetailPermission(null);
+              }}
+            >
+              <section className="my-auto w-full max-w-xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#303640] dark:bg-[#111318]">
+                <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/80 px-4 py-4 dark:border-[#262b34] dark:bg-[#151921] sm:px-6">
+                  <div className="min-w-0">
+                    <span className="mb-2 inline-flex rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-bold text-orange-800 dark:bg-orange-950/50 dark:text-orange-300">
+                      {detailPermission.category}
+                    </span>
+                    <h2 id="permission-detail-title" className="text-base font-extrabold text-slate-900 dark:text-white sm:text-lg">
+                      {detailPermission.label}
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDetailPermission(null)}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 dark:border-[#303640] dark:bg-[#111318] dark:text-slate-400 dark:hover:bg-[#20252e] dark:hover:text-white"
+                    aria-label="বিস্তারিত বন্ধ করুন"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="max-h-[65vh] overflow-y-auto px-4 py-5 sm:px-6">
+                  <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
+                    {details?.summary || detailPermission.description}
+                  </p>
+
+                  <div className="mt-5">
+                    <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">এই পারমিশন দিলে যা হবে</h3>
+                    <ul className="mt-3 space-y-2.5">
+                      {(details?.grants || [detailPermission.description]).map((item) => (
+                        <li key={item} className="flex items-start gap-2.5 text-sm leading-5 text-slate-600 dark:text-slate-300">
+                          <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {details?.note && (
+                    <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 dark:border-amber-900/60 dark:bg-amber-950/25">
+                      <div className="flex items-start gap-2.5">
+                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-400" />
+                        <div>
+                          <p className="text-xs font-extrabold text-amber-900 dark:text-amber-200">মনে রাখুন</p>
+                          <p className="mt-1 text-xs leading-5 text-amber-800 dark:text-amber-300">{details.note}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end border-t border-slate-100 bg-slate-50/80 px-4 py-3 dark:border-[#262b34] dark:bg-[#151921] sm:px-6">
+                  <button
+                    type="button"
+                    onClick={() => setDetailPermission(null)}
+                    className="rounded-xl bg-orange-600 px-5 py-2.5 text-xs font-bold text-white transition hover:bg-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+                  >
+                    বুঝেছি
+                  </button>
+                </div>
+              </section>
+            </div>
+          );
+        })()}
 
       </div>
     </div>
