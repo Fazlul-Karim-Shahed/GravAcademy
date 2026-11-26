@@ -74,6 +74,54 @@ export const PERMISSIONS = {
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
+/** Shared-screen and hidden technical permissions granted automatically. */
+export const PERMISSION_AUTO_GRANTS: Partial<Record<PermissionKey, PermissionKey[]>> = {
+  [PERMISSIONS.ADMISSIONS_CREATE]: [PERMISSIONS.FINANCE_COLLECT],
+  [PERMISSIONS.FINANCE_COLLECT]: [PERMISSIONS.ADMISSIONS_CREATE, PERMISSIONS.FINANCE_VIEW],
+  [PERMISSIONS.ADMISSIONS_SHIFT]: [PERMISSIONS.ADMISSIONS_VIEW],
+  [PERMISSIONS.ADMISSIONS_REMOVE]: [PERMISSIONS.ADMISSIONS_VIEW],
+
+  [PERMISSIONS.COURSES_CREATE]: [PERMISSIONS.COURSES_VIEW],
+  [PERMISSIONS.COURSES_UPDATE]: [PERMISSIONS.COURSES_VIEW, PERMISSIONS.COURSES_PUBLISH],
+  [PERMISSIONS.COURSES_DELETE]: [PERMISSIONS.COURSES_VIEW],
+  [PERMISSIONS.CLASSES_MANAGE]: [PERMISSIONS.COURSES_VIEW],
+
+  [PERMISSIONS.BATCHES_MANAGE]: [PERMISSIONS.BATCHES_VIEW],
+  [PERMISSIONS.BATCHES_DELETE]: [PERMISSIONS.BATCHES_VIEW],
+  [PERMISSIONS.BATCHES_DUPLICATE]: [PERMISSIONS.BATCHES_VIEW],
+  [PERMISSIONS.LESSONS_MANAGE]: [PERMISSIONS.BATCHES_VIEW],
+  [PERMISSIONS.EXAMS_MANAGE]: [
+    PERMISSIONS.BATCHES_VIEW,
+    PERMISSIONS.EXAMS_EVALUATE,
+    PERMISSIONS.ASSIGNMENTS_MANAGE,
+    PERMISSIONS.RESULTS_VIEW_ALL,
+  ],
+
+  [PERMISSIONS.FINANCE_REFUND]: [PERMISSIONS.FINANCE_VIEW],
+  [PERMISSIONS.FINANCE_DELETE]: [PERMISSIONS.FINANCE_VIEW],
+  [PERMISSIONS.FINANCE_MANUAL_PAID]: [PERMISSIONS.FINANCE_VIEW],
+  [PERMISSIONS.ATTENDANCE_MANAGE]: [PERMISSIONS.ATTENDANCE_VIEW],
+  [PERMISSIONS.JOBS_MANAGE]: [PERMISSIONS.JOBS_VIEW],
+  [PERMISSIONS.PERMISSIONS_MANAGE]: [PERMISSIONS.USERS_MANAGE],
+};
+
+export function expandPermissionAutoGrants(permissions: Iterable<PermissionKey>): PermissionKey[] {
+  const expanded = new Set(permissions);
+  const queue = Array.from(expanded);
+
+  while (queue.length > 0) {
+    const permission = queue.shift()!;
+    for (const automaticPermission of PERMISSION_AUTO_GRANTS[permission] || []) {
+      if (!expanded.has(automaticPermission)) {
+        expanded.add(automaticPermission);
+        queue.push(automaticPermission);
+      }
+    }
+  }
+
+  return Array.from(expanded);
+}
+
 export interface PermissionDefinition {
   key: PermissionKey;
   label: string;
@@ -474,7 +522,7 @@ export function getEffectivePermissions(
     ...(customPermissions || []),
   ]);
   revoked.forEach((permission) => permissions.delete(permission));
-  return Array.from(permissions);
+  return expandPermissionAutoGrants(permissions);
 }
 
 export function hasUserPermission(

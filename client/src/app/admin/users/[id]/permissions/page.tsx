@@ -15,6 +15,7 @@ import {
   PermissionKey,
   UserRole,
   ROLES,
+  expandPermissionAutoGrants,
 } from '@/lib/permissions';
 import { DASHBOARD_PERMISSION_DETAILS } from '@/lib/permissionDetails';
 import {
@@ -111,39 +112,21 @@ export default function UserPermissionsEditPage() {
 
   const toggleCustomPermission = (permKey: PermissionKey) => {
     if (selectedRole === ROLES.SUPERADMIN) return;
-    const bundledClassroomKeys: PermissionKey[] = [
-      PERMISSIONS.EXAMS_MANAGE,
-      PERMISSIONS.EXAMS_EVALUATE,
-      PERMISSIONS.ASSIGNMENTS_MANAGE,
-      PERMISSIONS.RESULTS_VIEW_ALL,
-    ];
-    if (permKey === PERMISSIONS.EXAMS_MANAGE) {
-      const enabling = !(
-        (roleDefaultPerms.has(PERMISSIONS.EXAMS_MANAGE) && !revokedPermissions.includes(PERMISSIONS.EXAMS_MANAGE)) ||
-        customPermissions.includes(PERMISSIONS.EXAMS_MANAGE)
-      );
-      if (enabling) {
-        setRevokedPermissions((prev) => prev.filter((p) => !bundledClassroomKeys.includes(p as PermissionKey)));
-        setCustomPermissions((prev) => Array.from(new Set([...prev, ...bundledClassroomKeys.filter((k) => !roleDefaultPerms.has(k))])));
-      } else {
-        setCustomPermissions((prev) => prev.filter((p) => !bundledClassroomKeys.includes(p as PermissionKey)));
-        setRevokedPermissions((prev) => Array.from(new Set([...prev, ...bundledClassroomKeys.filter((k) => roleDefaultPerms.has(k))])));
+    const nextRawPermissions = new Set(rawSelectedPermissions);
+
+    if (effectiveSelectedPermissions.has(permKey)) {
+      // Remove the selected permission and every directly selected permission
+      // that would otherwise grant it again automatically.
+      for (const selectedPermission of Array.from(nextRawPermissions)) {
+        if (expandPermissionAutoGrants([selectedPermission]).includes(permKey)) {
+          nextRawPermissions.delete(selectedPermission);
+        }
       }
-      return;
+    } else {
+      nextRawPermissions.add(permKey);
     }
-    if (roleDefaultPerms.has(permKey)) {
-      setRevokedPermissions((previous) => previous.includes(permKey)
-        ? previous.filter((permission) => permission !== permKey)
-        : [...previous, permKey]);
-      return;
-    }
-    setCustomPermissions((prev) => {
-      if (prev.includes(permKey)) {
-        return prev.filter((p) => p !== permKey);
-      } else {
-        return [...prev, permKey];
-      }
-    });
+
+    applyRawPermissionSelection(nextRawPermissions);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -218,10 +201,26 @@ export default function UserPermissionsEditPage() {
     return new Set(ROLE_DEFAULT_PERMISSIONS[selectedRole] || []);
   }, [selectedRole]);
 
-  const getPermissionGranted = (permissionKey: PermissionKey) => (
-    !revokedPermissions.includes(permissionKey)
-    && (roleDefaultPerms.has(permissionKey) || customPermissions.includes(permissionKey))
+  const rawSelectedPermissions = useMemo(() => {
+    const selected = new Set<PermissionKey>([
+      ...Array.from(roleDefaultPerms),
+      ...(customPermissions as PermissionKey[]),
+    ]);
+    revokedPermissions.forEach((permission) => selected.delete(permission as PermissionKey));
+    return selected;
+  }, [customPermissions, revokedPermissions, roleDefaultPerms]);
+
+  const effectiveSelectedPermissions = useMemo(
+    () => new Set(expandPermissionAutoGrants(rawSelectedPermissions)),
+    [rawSelectedPermissions],
   );
+
+  const applyRawPermissionSelection = (selected: Set<PermissionKey>) => {
+    setCustomPermissions(Array.from(selected).filter((permission) => !roleDefaultPerms.has(permission)));
+    setRevokedPermissions(Array.from(roleDefaultPerms).filter((permission) => !selected.has(permission)));
+  };
+
+  const getPermissionGranted = (permissionKey: PermissionKey) => effectiveSelectedPermissions.has(permissionKey);
 
   const allPermissionsSelected =
     filteredPermissions.length > 0 &&
@@ -229,31 +228,22 @@ export default function UserPermissionsEditPage() {
 
   const setAllPermissionsSelected = (checked: boolean) => {
     if (selectedRole === ROLES.SUPERADMIN) return;
-    const bundledClassroomKeys: PermissionKey[] = [
-      PERMISSIONS.EXAMS_MANAGE,
-      PERMISSIONS.EXAMS_EVALUATE,
-      PERMISSIONS.ASSIGNMENTS_MANAGE,
-      PERMISSIONS.RESULTS_VIEW_ALL,
-    ];
-    const targetKeys = new Set<PermissionKey>(filteredPermissions.map((permission) => permission.key));
-    if (targetKeys.has(PERMISSIONS.EXAMS_MANAGE)) {
-      bundledClassroomKeys.forEach((key) => targetKeys.add(key));
-    }
+    const targetKeys = filteredPermissions.map((permission) => permission.key);
+    const nextRawPermissions = new Set(rawSelectedPermissions);
 
     if (checked) {
-      setRevokedPermissions((prev) => prev.filter((key) => !targetKeys.has(key as PermissionKey)));
-      setCustomPermissions((prev) => Array.from(new Set([
-        ...prev,
-        ...Array.from(targetKeys).filter((key) => !roleDefaultPerms.has(key)),
-      ])));
-      return;
+      targetKeys.forEach((permission) => nextRawPermissions.add(permission));
+    } else {
+      for (const targetPermission of targetKeys) {
+        for (const selectedPermission of Array.from(nextRawPermissions)) {
+          if (expandPermissionAutoGrants([selectedPermission]).includes(targetPermission)) {
+            nextRawPermissions.delete(selectedPermission);
+          }
+        }
+      }
     }
 
-    setCustomPermissions((prev) => prev.filter((key) => !targetKeys.has(key as PermissionKey)));
-    setRevokedPermissions((prev) => Array.from(new Set([
-      ...prev,
-      ...Array.from(targetKeys).filter((key) => roleDefaultPerms.has(key)),
-    ])));
+    applyRawPermissionSelection(nextRawPermissions);
   };
 
   if (loading) {
@@ -401,6 +391,11 @@ export default function UserPermissionsEditPage() {
                 </span>
               </div>
 
+              <div className="mb-4 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3 text-[11px] leading-5 text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
+                <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>একই পেজে কাজ করার জন্য সম্পর্কিত কোনো অনুমতি দরকার হলে সেটি নিজে থেকেই চালু হবে। এমন অনুমতির পাশে “নিজে থেকে চালু” লেখা দেখা যাবে।</span>
+              </div>
+
               <label className="mb-5 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 dark:bg-orange-950/20 p-3">
                 <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
                   {activeCategory === 'all'
@@ -457,6 +452,7 @@ export default function UserPermissionsEditPage() {
                   const isRevoked = revokedPermissions.includes(perm.key);
                   const isGrantedCustom = customPermissions.includes(perm.key);
                   const isGranted = getPermissionGranted(perm.key);
+                  const isAutomaticallyGranted = isGranted && !rawSelectedPermissions.has(perm.key);
 
                   return (
                     <div
@@ -475,7 +471,11 @@ export default function UserPermissionsEditPage() {
                           <span className="font-bold text-xs text-slate-900 dark:text-white">
                             {perm.label}
                           </span>
-                          {isRevoked ? (
+                          {isAutomaticallyGranted ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200">
+                              নিজে থেকে চালু
+                            </span>
+                          ) : isRevoked ? (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">
                               ডিফল্ট বন্ধ
                             </span>
