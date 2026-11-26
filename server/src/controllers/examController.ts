@@ -5,7 +5,7 @@ import { AuthenticatedRequest } from '../middleware/auth';
 import { Examination, Question, ExamAttempt } from '../models/Examination';
 import { Enrollment } from '../models/Enrollment';
 import { Batch } from '../models/Batch';
-import { ROLES } from '../types/roles';
+import { ROLES, PERMISSIONS, hasUserPermission } from '../types/roles';
 import { User } from '../models/User';
 import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
@@ -416,7 +416,9 @@ export const getStudentExamQuestions = async (req: AuthenticatedRequest, res: Re
     const isTeacherOrAdmin =
       user?.role === ROLES.SUPERADMIN ||
       user?.role === ROLES.ADMIN ||
-      user?.role === ROLES.TEACHER;
+      user?.role === ROLES.TEACHER ||
+      hasUserPermission(user, PERMISSIONS.EXAMS_MANAGE) ||
+      hasUserPermission(user, PERMISSIONS.EXAMS_EVALUATE);
 
     if (!isEnrolled && !isTeacherOrAdmin) {
       return res.status(403).json({ success: false, message: 'Not enrolled in this batch' });

@@ -7,7 +7,7 @@ import { Course } from '../models/Course';
 import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
-import { ROLES } from '../types/roles';
+import { ROLES, PERMISSIONS, hasUserPermission } from '../types/roles';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
 import { classroomLink, dispatchNotification, notifyAssignmentPublished, notifyBatchTeachers, notifyStudent } from '../services/classroomNotificationService';
 
@@ -68,6 +68,11 @@ async function verifyAssignmentBatchAccess(
 ) {
   if (userRole === ROLES.ADMIN || userRole === ROLES.SUPERADMIN) {
     return true;
+  }
+
+  if (userRole === ROLES.EMPLOYEE && !requireEnrolledStudent) {
+    const emp = await User.findById(gravId).select('role customPermissions revokedPermissions').lean();
+    return hasUserPermission(emp, PERMISSIONS.ASSIGNMENTS_MANAGE) || hasUserPermission(emp, PERMISSIONS.EXAMS_MANAGE);
   }
 
   const batch = await Batch.findById(batchId);

@@ -470,3 +470,15 @@ export function getEffectivePermissions(
   revoked.forEach((permission) => permissions.delete(permission));
   return Array.from(permissions);
 }
+
+export function hasUserPermission(
+  user: { role?: UserRole | string; customPermissions?: PermissionKey[] | string[]; revokedPermissions?: PermissionKey[] | string[] } | null | undefined,
+  permission: PermissionKey,
+): boolean {
+  if (!user?.role) return false;
+  return getEffectivePermissions(
+    user.role as UserRole,
+    user.customPermissions as PermissionKey[] | undefined,
+    user.revokedPermissions as PermissionKey[] | undefined,
+  ).includes(permission);
+}

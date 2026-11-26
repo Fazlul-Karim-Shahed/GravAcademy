@@ -6,7 +6,7 @@ import { Enrollment } from '../models/Enrollment';
 import { Examination, ExamAttempt } from '../models/Examination';
 import { Assignment, AssignmentSubmission } from '../models/Assignment';
 import { User } from '../models/User';
-import { ROLES } from '../types/roles';
+import { ROLES, PERMISSIONS, hasUserPermission } from '../types/roles';
 
 /**
  * Get Marksheet for a Batch
@@ -26,7 +26,12 @@ export const getBatchMarksheet = async (req: AuthenticatedRequest, res: Response
     const batch = await Batch.findById(batchId).populate('courseId', 'title gradeLevel subject').lean();
     if (!batch) return res.status(404).json({ success: false, message: 'Batch not found' });
 
-    const isStaff = user.role === ROLES.ADMIN || user.role === ROLES.SUPERADMIN || user.role === ROLES.TEACHER;
+    const isStaff =
+      user.role === ROLES.ADMIN ||
+      user.role === ROLES.SUPERADMIN ||
+      user.role === ROLES.TEACHER ||
+      hasUserPermission(user, PERMISSIONS.RESULTS_VIEW_ALL) ||
+      hasUserPermission(user, PERMISSIONS.EXAMS_MANAGE);
 
     // Verify user authorization for this batch
     if (user.role === ROLES.TEACHER) {

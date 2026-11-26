@@ -6,7 +6,7 @@ import { Batch } from '../models/Batch';
 import { Enrollment } from '../models/Enrollment';
 import { User } from '../models/User';
 import { Course } from '../models/Course';
-import { ROLES } from '../types/roles';
+import { ROLES, PERMISSIONS, hasUserPermission } from '../types/roles';
 
 /**
  * Verify if the caller can manage (take/update) attendance for the specified batch.
@@ -15,6 +15,12 @@ import { ROLES } from '../types/roles';
 async function canManageBatchAttendance(user: any, batch: any): Promise<boolean> {
   if (!user || !batch) return false;
   if ([ROLES.SUPERADMIN, ROLES.ADMIN].includes(user.role)) return true;
+  if (
+    user.role === ROLES.EMPLOYEE &&
+    (hasUserPermission(user, PERMISSIONS.EXAMS_MANAGE) || hasUserPermission(user, PERMISSIONS.ATTENDANCE_MANAGE))
+  ) {
+    return true;
+  }
   if (user.role === ROLES.TEACHER) {
     const directTeachers = (batch.assignedTeachers || []).map((t: any) => t.toString());
     // If the batch has explicitly assigned teachers, ONLY they are authorized

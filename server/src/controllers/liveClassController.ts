@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { LiveClass } from '../models/LiveClass';
 import { Enrollment } from '../models/Enrollment';
 import { AuthenticatedRequest } from '../middleware/auth';
-import { ROLES } from '../types/roles';
+import { ROLES, PERMISSIONS, hasUserPermission } from '../types/roles';
 import { Batch } from '../models/Batch';
 import { Course } from '../models/Course';
 import { hasActiveStudentBatchAccess } from '../services/batchAccessService';
@@ -18,7 +18,12 @@ export const authorizeClassroomLiveJoin = async (req: AuthenticatedRequest, res:
       return res.status(400).json({ success: false, message: 'Invalid classroom request.' });
     }
 
-    if (user.role === ROLES.ADMIN || user.role === ROLES.SUPERADMIN) {
+    if (
+      user.role === ROLES.ADMIN ||
+      user.role === ROLES.SUPERADMIN ||
+      (user.role === ROLES.EMPLOYEE &&
+        (hasUserPermission(user, PERMISSIONS.EXAMS_MANAGE) || hasUserPermission(user, PERMISSIONS.LIVE_CLASSES_MANAGE)))
+    ) {
       return res.json({ success: true, data: { name: user.name } });
     }
 
