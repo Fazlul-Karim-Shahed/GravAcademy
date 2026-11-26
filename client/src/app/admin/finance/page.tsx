@@ -679,7 +679,7 @@ export default function AdminFinancePage() {
                 Company Expense
               </Link>
             )}
-            {canCollectPayment && (
+            {(canCollectPayment || can('finance.manual_paid')) && (
               <button
                 type="button"
                 onClick={() => {
@@ -1118,7 +1118,7 @@ export default function AdminFinancePage() {
                     </div>
 
                     <div className="flex items-center gap-2 pt-1">
-                      {group.totalDue > 0 && can('finance.collect') && (
+                      {group.totalDue > 0 && (can('finance.collect') || can('finance.manual_paid')) && (
                         <button
                           onClick={() => {
                             if (group.gravId) {
@@ -1137,7 +1137,7 @@ export default function AdminFinancePage() {
                           }}
                           className="flex-1 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-bold flex items-center justify-center gap-1 shadow-xs cursor-pointer"
                         >
-                          <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
+                          <PlusCircle className="w-3.5 h-3.5" /> {can('finance.collect') ? 'বকেয়া জমা' : 'বকেয়া পরিচালনা'}
                         </button>
                       )}
                       {group.totalDue < 0 && can('finance.refund') && (
@@ -1320,7 +1320,7 @@ export default function AdminFinancePage() {
 
                         {/* অ্যাকশন / জমা বা ফেরত (Separate column) */}
                         <td className="py-4 px-6 text-center">
-                          {group.totalDue > 0 && can('finance.collect') ? (
+                          {group.totalDue > 0 && (can('finance.collect') || can('finance.manual_paid')) ? (
                             <button
                               onClick={() => {
                                 if (group.gravId) {
@@ -1340,7 +1340,7 @@ export default function AdminFinancePage() {
                               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/60 dark:border-emerald-800/60 transition-colors cursor-pointer"
                               title="বকেয়া কিস্তি গ্রহণ করুন"
                             >
-                              <PlusCircle className="w-3.5 h-3.5" /> বকেয়া জমা
+                              <PlusCircle className="w-3.5 h-3.5" /> {can('finance.collect') ? 'বকেয়া জমা' : 'বকেয়া পরিচালনা'}
                             </button>
                           ) : group.totalDue < 0 && can('finance.refund') ? (
                             <button
@@ -1443,7 +1443,7 @@ export default function AdminFinancePage() {
               </div>
             )}
 
-            <form onSubmit={handleCollectPaymentSubmit} className="space-y-4">
+            <form onSubmit={canCollectPayment ? handleCollectPaymentSubmit : (event) => event.preventDefault()} className="space-y-4">
               {/* Select Student */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
@@ -1512,9 +1512,10 @@ export default function AdminFinancePage() {
                     setCollectBatchId(bId);
                     if (selectedStudent && bId) {
                       const matched = groupedPayments.find((g) => {
-                        const sId = g.gravId?.toString();
+                        const sId = g.gravId?._id || (g.gravId as any);
+                        const studentMatches = sId === selectedStudent._id || g.gravId?.gravId === selectedStudent.gravId;
                         const batId = g.batchId?._id || (g.batchId as any);
-                        return sId === selectedStudent.gravId && batId === bId;
+                        return studentMatches && batId === bId;
                       });
                       if (matched && matched.totalDue > 0) {
                         setCollectAmount(matched.totalDue);
@@ -1535,9 +1536,10 @@ export default function AdminFinancePage() {
               {/* Student Financial Preview (If selected) */}
               {selectedStudent && (() => {
                 const matchedGroup = groupedPayments.find((g) => {
-                  const sId = g.gravId?.toString();
+                  const sId = g.gravId?._id || (g.gravId as any);
+                  const studentMatches = sId === selectedStudent._id || g.gravId?.gravId === selectedStudent.gravId;
                   const batId = g.batchId?._id || (g.batchId as any);
-                  return sId === selectedStudent.gravId && (!collectBatchId || batId === collectBatchId);
+                  return studentMatches && (!collectBatchId || batId === collectBatchId);
                 });
 
                 if (!matchedGroup) return null;
@@ -1546,7 +1548,7 @@ export default function AdminFinancePage() {
                 const isDue = matchedGroup.totalDue > 0;
 
                 return (
-                  <div className={`p-3 rounded-2xl border text-xs flex items-center justify-between transition-all ${
+                  <div className={`p-3 rounded-2xl border text-xs flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between transition-all ${
                     isExcess
                       ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200'
                       : isDue
@@ -1577,19 +1579,40 @@ export default function AdminFinancePage() {
                       </div>
                     </div>
 
-                    {isDue && (
-                      <button
-                        type="button"
-                        onClick={() => setCollectAmount(matchedGroup.totalDue)}
-                        className="text-[11px] font-black underline hover:opacity-80 shrink-0 cursor-pointer text-rose-700 dark:text-rose-300"
-                      >
-                        বকেয়া বসান
-                      </button>
-                    )}
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      {isDue && canCollectPayment && (
+                        <button
+                          type="button"
+                          onClick={() => setCollectAmount(matchedGroup.totalDue)}
+                          className="text-[11px] font-black underline hover:opacity-80 cursor-pointer text-rose-700 dark:text-rose-300"
+                        >
+                          বকেয়া বসান
+                        </button>
+                      )}
+                      {matchedGroup.totalDue !== 0 && can('finance.manual_paid') && (
+                        <button
+                          type="button"
+                          disabled={togglingPaidKey === matchedGroup.key}
+                          onClick={() => handleToggleManualPaid(matchedGroup)}
+                          className={`rounded-lg px-2.5 py-1.5 text-[10px] font-black transition-all disabled:opacity-50 ${
+                            matchedGroup.latestPayment.isManualPaid
+                              ? 'border border-amber-300 bg-amber-100 text-amber-800 hover:bg-amber-200'
+                              : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                          }`}
+                        >
+                          {togglingPaidKey === matchedGroup.key
+                            ? 'আপডেট হচ্ছে...'
+                            : matchedGroup.latestPayment.isManualPaid
+                            ? 'পেইড প্রত্যাহার করুন'
+                            : 'পেইড করে দিন'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })()}
 
+              {canCollectPayment && <>
               {/* Amount & Method */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -1705,6 +1728,7 @@ export default function AdminFinancePage() {
                   className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#151921] border border-slate-200 dark:border-[#262b34] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
+              </>}
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#262b34]">
@@ -1715,13 +1739,15 @@ export default function AdminFinancePage() {
                 >
                   বাতিল
                 </button>
-                <button
-                  type="submit"
-                  disabled={collectSubmitting}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-extrabold shadow-md shadow-orange-950/25 transition-all disabled:opacity-60 cursor-pointer"
-                >
-                  {collectSubmitting ? 'পেমেন্ট জমা হচ্ছে...' : 'পেমেন্ট নিশ্চিত করুন ও রিসিট দিন'}
-                </button>
+                {canCollectPayment && (
+                  <button
+                    type="submit"
+                    disabled={collectSubmitting}
+                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white text-xs font-extrabold shadow-md shadow-orange-950/25 transition-all disabled:opacity-60 cursor-pointer"
+                  >
+                    {collectSubmitting ? 'পেমেন্ট জমা হচ্ছে...' : 'পেমেন্ট নিশ্চিত করুন ও রিসিট দিন'}
+                  </button>
+                )}
               </div>
             </form>
           </div>
@@ -2058,24 +2084,6 @@ export default function AdminFinancePage() {
                           className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-white transition-all cursor-pointer shadow-2xs flex items-center gap-1"
                         >
                           <RotateCcw className="w-3 h-3" /> টাকা ফেরত দিন
-                        </button>
-                      )}
-                      {activeDetailsGroup.totalDue !== 0 && can('finance.manual_paid') && (
-                        <button
-                          type="button"
-                          disabled={togglingPaidKey === activeDetailsGroup.key}
-                          onClick={() => handleToggleManualPaid(activeDetailsGroup)}
-                          className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer shadow-2xs ${
-                            activeDetailsGroup.latestPayment.isManualPaid
-                              ? 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
-                              : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                          }`}
-                        >
-                          {togglingPaidKey === activeDetailsGroup.key
-                            ? 'আপডেট হচ্ছে...'
-                            : activeDetailsGroup.latestPayment.isManualPaid
-                            ? 'পেইড প্রত্যাহার করুন'
-                            : 'পেইড করে দিন'}
                         </button>
                       )}
                     </div>
