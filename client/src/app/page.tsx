@@ -1153,7 +1153,7 @@ export default function HomePage() {
             <div>
               <h4 className="mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-orange-400/90">কুইক লিংকস</h4>
               <ul className="space-y-3">
-                <li><Link href="/login" className="transition-colors hover:text-orange-400">লগইন</Link></li><li><Link href="/register" className="transition-colors hover:text-orange-400">রেজিস্ট্রেশন</Link></li><li><Link href="/courses" className="transition-colors hover:text-orange-400">সকল ব্যাচ</Link></li>
+                <li><Link href="/login" className="transition-colors hover:text-orange-400">লগইন</Link></li><li><Link href="/register" className="transition-colors hover:text-orange-400">রেজিস্ট্রেশন</Link></li><li><Link href="/courses" className="transition-colors hover:text-orange-400">সকল ব্যাচ</Link></li><li><Link href="/contact" className="transition-colors hover:text-orange-400">যোগাযোগ (Contact)</Link></li><li><Link href="/privacy" className="transition-colors hover:text-orange-400">Privacy Policy</Link></li>
               </ul>
             </div>
 
