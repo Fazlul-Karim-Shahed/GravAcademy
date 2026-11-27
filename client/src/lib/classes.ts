@@ -141,14 +141,16 @@ export const DEFAULT_ACADEMIC_CLASSES: AcademicClassItem[] = [
 /**
  * Single source of truth to fetch academic classes across the whole app.
  * If backend responds with classes, it caches them in localStorage and returns them.
- * If backend is 404/down or empty, it returns the locally persisted classes.
+ * An empty backend response is authoritative: after a database reset we must not
+ * resurrect old browser-cached or hard-coded class records.
  */
 export async function getSharedAcademicClasses(): Promise<AcademicClassItem[]> {
   try {
     const res = await api.get('/classes');
-    if (res.data?.success && Array.isArray(res.data.data) && res.data.data.length > 0) {
+    if (res.data?.success && Array.isArray(res.data.data)) {
       if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data.data));
+        if (res.data.data.length > 0) localStorage.setItem(STORAGE_KEY, JSON.stringify(res.data.data));
+        else localStorage.removeItem(STORAGE_KEY);
       }
       return res.data.data;
     }
@@ -156,22 +158,9 @@ export async function getSharedAcademicClasses(): Promise<AcademicClassItem[]> {
     // Backend offline / 404 before git push
   }
 
-  // Fallback to single shared storage
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to read classes from localStorage:', e);
-    }
-  }
-
-  return DEFAULT_ACADEMIC_CLASSES;
+  // If the API is temporarily unavailable, do not show stale demo content.
+  if (typeof window !== 'undefined') localStorage.removeItem(STORAGE_KEY);
+  return [];
 }
 
 /**
