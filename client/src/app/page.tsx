@@ -602,7 +602,7 @@ export default function HomePage() {
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400">কোর্সগুলো সাজানো হচ্ছে...</p>
             </div>
           ) : popularCourses.length === 0 ? (
-            <div className="text-center py-16 bg-white/70 dark:bg-[#111318]/70 backdrop-blur-xl rounded-[32px] border border-slate-200/80 dark:border-[#262b34] p-8 sm:p-12 max-w-md mx-auto shadow-sm">
+            <div className="mx-auto max-w-md px-4 py-16 text-center sm:px-8 sm:py-12">
               <div className="w-16 h-16 rounded-2xl bg-orange-50 dark:bg-orange-950/40 flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-800">
                 <BookOpen className="w-8 h-8 text-orange-600 dark:text-orange-400" />
               </div>
