@@ -24,6 +24,8 @@ import {
   FileCheck2,
   FileX2,
   Trash2,
+  Database,
+  RefreshCw as RefreshIcon,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { SiteLogo } from '@/components/common/SiteLogo';
@@ -53,9 +55,12 @@ interface UserRecord {
   avatarUrl?: string;
 }
 
-type TabType = 'users' | 'homepage' | 'general' | 'notifications' | 'drive';
+type TabType = 'users' | 'homepage' | 'general' | 'notifications' | 'drive' | 'database';
 type WhatsAppStatus = { state: 'starting' | 'qr' | 'ready' | 'disconnected' | 'error'; qrImage: string | null; lastError: string | null };
 type DriveCleanupFile = { id: string; name: string; mimeType: string; sizeBytes: number; createdTime: string | null; modifiedTime: string | null; webViewLink: string };
+type DatabaseUsage = { database: string; collections: Array<{ name: string; documents: number; totalSize: number; dataSize: number; indexSize: number }>; documents: number; usedBytes: number; capacityBytes: number; usagePercent: number; checkedAt: string };
+
+const formatBytes = (bytes: number) => { if (!bytes) return '0 B'; const units = ['B', 'KB', 'MB', 'GB']; const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1); return `${(bytes / 1024 ** i).toFixed(i ? 1 : 0)} ${units[i]}`; };
 
 const formatFileSize = (bytes: number) => {
   if (!bytes) return '0 B';
@@ -86,6 +91,9 @@ export default function AdminSettingsPage() {
   const [driveCleanupView, setDriveCleanupView] = useState<'unused' | 'used'>('unused');
   const [selectedDriveFileIds, setSelectedDriveFileIds] = useState<string[]>([]);
   const [trashingDriveFiles, setTrashingDriveFiles] = useState(false);
+  const [databaseUsage, setDatabaseUsage] = useState<DatabaseUsage | null>(null);
+  const [databaseUsageLoading, setDatabaseUsageLoading] = useState(false);
+  const [databaseUsageError, setDatabaseUsageError] = useState('');
 
   const scanDriveCleanup = async () => {
     setLoadingDriveCleanup(true);
@@ -174,6 +182,15 @@ export default function AdminSettingsPage() {
     const timer = window.setInterval(() => { void refresh(); }, 15000);
     return () => { active = false; window.clearInterval(timer); };
   }, [activeTab, user?.role]);
+
+  const loadDatabaseUsage = async () => {
+    setDatabaseUsageLoading(true); setDatabaseUsageError('');
+    try { const res = await api.get('/admin/database-usage'); if (res.data?.success) setDatabaseUsage(res.data.data); else throw new Error(); }
+    catch { setDatabaseUsageError('Database usage load করা যায়নি।'); }
+    finally { setDatabaseUsageLoading(false); }
+  };
+
+  useEffect(() => { if (activeTab === 'database' && canManageDriveCleanup) void loadDatabaseUsage(); }, [activeTab, canManageDriveCleanup]);
 
   // Site Settings state
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl || '');
@@ -349,7 +366,7 @@ export default function AdminSettingsPage() {
   const tabs = [
     ...(!isEmployee ? [{ id: 'users' as TabType, label: 'ইউজার সেটিংস', icon: Users, count: users.length }] : []),
     ...(canManageDriveCleanup ? [{ id: 'homepage' as TabType, label: 'হোম পেজ সেটিংস', icon: Home }, { id: 'general' as TabType, label: 'সাধারণ সেটিংস', icon: Sliders }] : []),
-    ...(canManageDriveCleanup ? [{ id: 'drive' as TabType, label: 'Drive Cleanup', icon: HardDrive }] : []),
+    ...(canManageDriveCleanup ? [{ id: 'drive' as TabType, label: 'Drive Cleanup', icon: HardDrive }, { id: 'database' as TabType, label: 'Database Monitor', icon: Database }] : []),
     ...(!isEmployee ? [{ id: 'notifications' as TabType, label: 'নোটিফিকেশন', icon: Bell }] : []),
   ];
 
@@ -1049,6 +1066,16 @@ export default function AdminSettingsPage() {
                       <span>{savingHeroCards ? 'সংরক্ষণ হচ্ছে...' : 'সব পরিবর্তন সংরক্ষণ করুন'}</span>
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'database' && canManageDriveCleanup && (
+              <div className="space-y-5">
+                <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs dark:border-[#262b34] dark:bg-[#111318] sm:p-7">
+                  <div className="flex flex-wrap items-start justify-between gap-4"><div><h2 className="text-lg font-black">Database Monitor</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">প্রতিবার refresh করলে MongoDB থেকে সরাসরি বর্তমান usage দেখাবে। কোনো history সংরক্ষণ করা হয় না।</p></div><button type="button" onClick={() => void loadDatabaseUsage()} disabled={databaseUsageLoading} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-bold dark:border-[#262b34] disabled:opacity-50"><RefreshIcon className={`h-3.5 w-3.5 ${databaseUsageLoading ? 'animate-spin' : ''}`} />Refresh</button></div>
+                  {databaseUsageError && <p className="mt-5 rounded-xl bg-rose-50 px-3 py-2.5 text-xs font-bold text-rose-700 dark:bg-rose-950/30 dark:text-rose-300">{databaseUsageError}</p>}
+                  {databaseUsage && <><div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="rounded-xl bg-slate-50 p-4 dark:bg-[#151921]"><p className="text-[11px] font-bold text-slate-500">Used storage</p><p className="mt-1 text-2xl font-black">{formatBytes(databaseUsage.usedBytes)}</p><p className="mt-1 text-[11px] text-slate-500">of {formatBytes(databaseUsage.capacityBytes)}</p></div><div className="rounded-xl bg-slate-50 p-4 dark:bg-[#151921]"><p className="text-[11px] font-bold text-slate-500">Usage</p><p className="mt-1 text-2xl font-black text-orange-600">{databaseUsage.usagePercent}%</p><div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"><div className="h-full rounded-full bg-orange-500" style={{ width: `${Math.min(databaseUsage.usagePercent, 100)}%` }} /></div></div><div className="rounded-xl bg-slate-50 p-4 dark:bg-[#151921]"><p className="text-[11px] font-bold text-slate-500">Documents</p><p className="mt-1 text-2xl font-black">{databaseUsage.documents.toLocaleString()}</p><p className="mt-1 text-[11px] text-slate-500">{databaseUsage.collections.length} collections</p></div></div><div className="mt-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-[#262b34]"><table className="w-full min-w-[560px] text-left text-xs"><thead className="bg-slate-50 text-slate-500 dark:bg-[#151921]"><tr><th className="px-4 py-3 font-bold">Collection</th><th className="px-4 py-3 font-bold">Documents</th><th className="px-4 py-3 font-bold">Data</th><th className="px-4 py-3 font-bold">Indexes</th><th className="px-4 py-3 font-bold">Total</th></tr></thead><tbody className="divide-y divide-slate-100 dark:divide-[#262b34]">{databaseUsage.collections.map((item) => <tr key={item.name}><td className="px-4 py-3 font-bold">{item.name}</td><td className="px-4 py-3">{item.documents.toLocaleString()}</td><td className="px-4 py-3">{formatBytes(item.dataSize)}</td><td className="px-4 py-3">{formatBytes(item.indexSize)}</td><td className="px-4 py-3 font-black">{formatBytes(item.totalSize)}</td></tr>)}</tbody></table></div><p className="mt-4 text-[11px] text-slate-500">Last checked: {new Date(databaseUsage.checkedAt).toLocaleString('bn-BD')}</p></>}
                 </div>
               </div>
             )}

@@ -21,6 +21,7 @@ import * as financeCtrl from '../controllers/financeController';
 import { requireFeature } from '../middleware/featureFlag';
 import { FEATURE_FLAGS } from '../config/featureFlags';
 import * as settingCtrl from '../controllers/settingController';
+import * as databaseMonitorCtrl from '../controllers/databaseMonitorController';
 import * as guardianCtrl from '../controllers/guardianController';
 import * as assignmentCtrl from '../controllers/assignmentController';
 import * as marksheetCtrl from '../controllers/marksheetController';
@@ -689,6 +690,7 @@ router.delete(
 // --- SYSTEM & SITE SETTINGS ROUTES ---
 router.get('/settings', settingCtrl.getSiteSettings);
 router.get('/admin/drive-cleanup', authenticate, requirePermission(PERMISSIONS.SETTINGS_MANAGE), driveCleanupCtrl.scanDriveCleanup);
+router.get('/admin/database-usage', authenticate, requirePermission(PERMISSIONS.SETTINGS_MANAGE), databaseMonitorCtrl.getDatabaseUsage);
 router.post('/admin/drive-cleanup/trash', authenticate, requirePermission(PERMISSIONS.SETTINGS_MANAGE), driveCleanupCtrl.trashUnusedDriveFiles);
 router.put(
   '/admin/settings',
