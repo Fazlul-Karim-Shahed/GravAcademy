@@ -6,27 +6,6 @@ import { AuthenticatedRequest } from '../middleware/auth';
 import { AuditLog } from '../models/AuditLog';
 import { clearPublicCache, getCached } from '../services/publicCache';
 
-// Default initial academic classes with common subjects
-export const DEFAULT_CLASSES = [
-  { name: 'Class 6', order: 1, subjects: [] },
-  { name: 'Class 7', order: 2, subjects: [] },
-  { name: 'Class 8', order: 3, subjects: [] },
-  { name: 'Class 9', order: 4, subjects: [] },
-  { name: 'Class 10', order: 5, subjects: [] },
-  { name: 'Class 11', order: 6, subjects: [] },
-  { name: 'Class 12', order: 7, subjects: [] },
-];
-
-/**
- * Seed initial classes if database table is empty
- */
-async function ensureDefaultClasses() {
-  const count = await AcademicClass.countDocuments();
-  if (count === 0) {
-    await AcademicClass.insertMany(DEFAULT_CLASSES);
-  }
-}
-
 export const createClassSchema = z.object({
   name: z.string().min(1, 'Class name is required').max(80),
   slug: z.string().optional(),
@@ -72,7 +51,6 @@ export const updateClassSchema = z.object({
  */
 export const getAcademicClasses = async (req: Request, res: Response) => {
   try {
-    await ensureDefaultClasses();
     const classes = await getCached('classes:list', () => AcademicClass.find().sort({ order: 1, name: 1 }).lean());
     return res.status(200).json({
       success: true,
