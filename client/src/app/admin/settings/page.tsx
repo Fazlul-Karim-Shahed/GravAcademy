@@ -200,6 +200,11 @@ export default function AdminSettingsPage() {
   const [footerDescription, setFooterDescription] = useState(settings.footerDescription || '');
   const [footerPhone, setFooterPhone] = useState(settings.footerPhone || '');
   const [footerEmail, setFooterEmail] = useState(settings.footerEmail || '');
+  const [contactWhatsapp, setContactWhatsapp] = useState(settings.contactWhatsapp || '');
+  const [contactHours, setContactHours] = useState(settings.contactHours || '');
+  const [contactAddress, setContactAddress] = useState(settings.contactAddress || '');
+  const [contactTitle, setContactTitle] = useState(settings.contactTitle || '');
+  const [contactDescription, setContactDescription] = useState(settings.contactDescription || '');
   const [savingSettings, setSavingSettings] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -255,6 +260,11 @@ export default function AdminSettingsPage() {
       setFooterDescription(settings.footerDescription || 'ক্লাস ৬ থেকে ১২ শ্রেণির শিক্ষার্থীদের জন্য আধুনিক অনলাইন একাডেমিক কোচিং প্ল্যাটফর্ম।');
       setFooterPhone(settings.footerPhone || '16910 / 01700-000000');
       setFooterEmail(settings.footerEmail || 'support@gravacademy.com');
+      setContactWhatsapp(settings.contactWhatsapp || '');
+      setContactHours(settings.contactHours || 'সকাল ৯টা – রাত ১০টা (প্রতিদিন)');
+      setContactAddress(settings.contactAddress || 'ঢাকা, বাংলাদেশ (অনলাইন একাডেমিক প্ল্যাটফর্ম)');
+      setContactTitle(settings.contactTitle || 'Grav Academy-এর সাথে যোগাযোগ করুন');
+      setContactDescription(settings.contactDescription || 'ভর্তি, ব্যাচ সময়সূচি, কোর্স ফি কিংবা টেকনিক্যাল যেকোনো সহায়তার জন্য আমাদের সাথে সরাসরি যোগাযোগ করতে পারেন।');
       if (settings.heroCards && Array.isArray(settings.heroCards) && settings.heroCards.length > 0) {
         setHeroCards(settings.heroCards);
       } else {
@@ -685,10 +695,43 @@ export default function AdminSettingsPage() {
             {activeTab === 'homepage' && canManageDriveCleanup && (
               <div className="space-y-6">
                 <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xs dark:border-[#262b34] dark:bg-[#111318] sm:p-8">
-                  <h3 className="text-base font-black text-slate-900 dark:text-white">Footer content</h3>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Homepage-এর নিচের footer এখান থেকে আপডেট করুন।</p>
-                  <div className="mt-5 grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Description</label><textarea value={footerDescription} onChange={(e) => setFooterDescription(e.target.value)} rows={2} maxLength={240} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div><div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Phone</label><input value={footerPhone} onChange={(e) => setFooterPhone(e.target.value)} maxLength={80} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div><div><label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Email</label><input value={footerEmail} onChange={(e) => setFooterEmail(e.target.value)} maxLength={120} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" /></div></div>
-                  <div className="mt-5 flex justify-end"><button type="button" onClick={async () => { const ok = await updateSettings({ footerDescription, footerPhone, footerEmail }); setSaveSuccess(ok); if (ok) window.setTimeout(() => setSaveSuccess(false), 3000); }} className="rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-orange-700">Save footer</button></div>
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">Footer &amp; Contact Page</h3>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Homepage-এর footer এবং <span className="font-semibold">/contact</span> পেজের সব তথ্য এখান থেকে আপডেট করুন।</p>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Footer Description</label>
+                      <textarea value={footerDescription} onChange={(e) => setFooterDescription(e.target.value)} rows={2} maxLength={240} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Phone / Helpline</label>
+                      <input value={footerPhone} onChange={(e) => setFooterPhone(e.target.value)} maxLength={80} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Support Email</label>
+                      <input value={footerEmail} onChange={(e) => setFooterEmail(e.target.value)} maxLength={120} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">WhatsApp Number (যেমন: 8801700000000)</label>
+                      <input value={contactWhatsapp} onChange={(e) => setContactWhatsapp(e.target.value)} placeholder="88017XXXXXXXX" maxLength={30} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Support Hours</label>
+                      <input value={contactHours} onChange={(e) => setContactHours(e.target.value)} maxLength={100} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Address / Location</label>
+                      <input value={contactAddress} onChange={(e) => setContactAddress(e.target.value)} maxLength={180} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Contact Page Title</label>
+                      <input value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} maxLength={120} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">Contact Page Description</label>
+                      <textarea value={contactDescription} onChange={(e) => setContactDescription(e.target.value)} rows={2} maxLength={260} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold dark:border-[#262b34] dark:bg-[#151921] dark:text-white" />
+                    </div>
+                  </div>
+                  <div className="mt-5 flex justify-end"><button type="button" onClick={async () => { const ok = await updateSettings({ footerDescription, footerPhone, footerEmail, contactWhatsapp, contactHours, contactAddress, contactTitle, contactDescription }); setSaveSuccess(ok); if (ok) window.setTimeout(() => setSaveSuccess(false), 3000); }} className="rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-orange-700">Save footer &amp; contact</button></div>
                 </div>
                 {!isEmployee && <div className="flex flex-col gap-4 rounded-2xl border border-orange-200 bg-orange-50/70 p-5 dark:border-orange-900/60 dark:bg-orange-950/20 sm:flex-row sm:items-center sm:justify-between">
                   <div>

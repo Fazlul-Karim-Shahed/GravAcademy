@@ -10,18 +10,25 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://gravapi.138.2.92.18
 interface PublicSettings {
   siteName?: string;
   siteTagline?: string;
+  footerPhone?: string;
+  footerEmail?: string;
   supportPhone?: string;
   contactPhone?: string;
   supportEmail?: string;
   contactEmail?: string;
+  contactWhatsapp?: string;
   whatsappNumber?: string;
+  contactAddress?: string;
   address?: string;
+  contactHours?: string;
   supportHours?: string;
+  contactTitle?: string;
+  contactDescription?: string;
 }
 
 async function getLiveSettings(): Promise<PublicSettings> {
   try {
-    const res = await fetch(`${API_BASE}/settings`, { next: { revalidate: 300 } });
+    const res = await fetch(`${API_BASE}/settings`, { cache: 'no-store' });
     if (!res.ok) return {};
     const json = await res.json();
     return json?.data || {};
@@ -33,12 +40,13 @@ async function getLiveSettings(): Promise<PublicSettings> {
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getLiveSettings();
   const siteName = settings.siteName || 'Grav Academy';
-  const email = settings.contactEmail || settings.supportEmail || 'support@gravacademy.com';
-  const phone = settings.contactPhone || settings.supportPhone || '16910 / 01700-000000';
+  const email = settings.footerEmail || settings.contactEmail || settings.supportEmail || 'support@gravacademy.com';
+  const phone = settings.footerPhone || settings.contactPhone || settings.supportPhone || '16910 / 01700-000000';
+  const description = settings.contactDescription || `${siteName}-এর সাথে যোগাযোগ করুন — ভর্তি, কোর্স, ব্যাচ ও টেকনিক্যাল সহায়তার জন্য কল করুন (${phone}) অথবা ইমেইল করুন (${email})।`;
 
   return {
-    title: `যোগাযোগ করুন | ${siteName}`,
-    description: `${siteName}-এর সাথে যোগাযোগ করুন — ভর্তি, কোর্স, ব্যাচ ও টেকনিক্যাল সহায়তার জন্য কল করুন (${phone}) অথবা ইমেইল করুন (${email})।`,
+    title: `${settings.contactTitle || 'যোগাযোগ করুন'} | ${siteName}`,
+    description,
     alternates: {
       canonical: 'https://gravacademy.com/contact',
     },
@@ -54,11 +62,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage() {
   const settings = await getLiveSettings();
   const siteName = settings.siteName || 'Grav Academy';
-  const phone = settings.contactPhone || settings.supportPhone || '16910 / 01700-000000';
-  const email = settings.contactEmail || settings.supportEmail || 'support@gravacademy.com';
-  const hours = settings.supportHours || 'সকাল ৯টা – রাত ১০টা (প্রতিদিন)';
-  const address = settings.address || 'ঢাকা, বাংলাদেশ (অনলাইন একাডেমিক প্ল্যাটফর্ম)';
-  const whatsappDigits = (settings.whatsappNumber || '').replace(/[^\d]/g, '');
+  const phone = settings.footerPhone || settings.contactPhone || settings.supportPhone || '16910 / 01700-000000';
+  const email = settings.footerEmail || settings.contactEmail || settings.supportEmail || 'support@gravacademy.com';
+  const hours = settings.contactHours || settings.supportHours || 'সকাল ৯টা – রাত ১০টা (প্রতিদিন)';
+  const address = settings.contactAddress || settings.address || 'ঢাকা, বাংলাদেশ (অনলাইন একাডেমিক প্ল্যাটফর্ম)';
+  const title = settings.contactTitle || `${siteName}-এর সাথে যোগাযোগ করুন`;
+  const description = settings.contactDescription || 'ভর্তি, ব্যাচ সময়সূচি, কোর্স ফি কিংবা টেকনিক্যাল যেকোনো সহায়তার জন্য আমাদের সাথে সরাসরি যোগাযোগ করতে পারেন।';
+  const whatsappDigits = (settings.contactWhatsapp || settings.whatsappNumber || '').replace(/[^\d]/g, '');
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -91,10 +101,10 @@ export default async function ContactPage() {
             <MessageCircle className="h-3.5 w-3.5" /> হেল্পলাইন ও যোগাযোগ
           </span>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
-            {siteName}-এর সাথে যোগাযোগ করুন
+            {title}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-            ভর্তি, ব্যাচ সময়সূচি, কোর্স ফি কিংবা টেকনিক্যাল যেকোনো সহায়তার জন্য আমাদের সাথে সরাসরি যোগাযোগ করতে পারেন।
+            {description}
           </p>
         </header>
 
