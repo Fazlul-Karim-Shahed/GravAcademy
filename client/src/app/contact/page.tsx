@@ -120,6 +120,16 @@ export default async function ContactPage() {
               </div>
             </div>
 
+            {whatsappDigits && <div className="ga-card flex items-start gap-4 p-5">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <ContactIcon name="MessageCircle" className="h-5 w-5" />
+              </span>
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">WhatsApp</h2>
+                <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noreferrer" className="mt-1 block text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400">{whatsappDigits}</a>
+              </div>
+            </div>}
+
             <div className="ga-card flex items-start gap-4 p-5">
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
                 <ContactIcon name="Mail" className="h-5 w-5" />
