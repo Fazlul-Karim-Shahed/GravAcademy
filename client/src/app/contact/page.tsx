@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Phone, Mail, Clock, MapPin, MessageCircle } from 'lucide-react';
+import ContactIcon from '@/components/contact/ContactIcon';
 import ContactForm from '@/components/contact/ContactForm';
 
 export const dynamic = 'force-dynamic';
@@ -98,7 +98,7 @@ export default async function ContactPage() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <header className="ga-card mb-8 p-6 sm:p-8">
           <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
-            <MessageCircle className="h-3.5 w-3.5" /> হেল্পলাইন ও যোগাযোগ
+            <ContactIcon name="MessageCircle" className="h-3.5 w-3.5" /> হেল্পলাইন ও যোগাযোগ
           </span>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
             {title}
@@ -112,7 +112,7 @@ export default async function ContactPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <div className="ga-card flex items-start gap-4 p-5">
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
-                <Phone className="h-5 w-5" />
+                <ContactIcon name="Phone" className="h-5 w-5" />
               </span>
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">হেল্পলাইন নম্বর</h2>
@@ -122,7 +122,7 @@ export default async function ContactPage() {
 
             <div className="ga-card flex items-start gap-4 p-5">
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                <Mail className="h-5 w-5" />
+                <ContactIcon name="Mail" className="h-5 w-5" />
               </span>
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">ইমেইল</h2>
@@ -134,7 +134,7 @@ export default async function ContactPage() {
 
             <div className="ga-card flex items-start gap-4 p-5">
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                <Clock className="h-5 w-5" />
+                <ContactIcon name="Clock" className="h-5 w-5" />
               </span>
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">সাপোর্ট সময়</h2>
@@ -144,7 +144,7 @@ export default async function ContactPage() {
 
             <div className="ga-card flex items-start gap-4 p-5">
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400">
-                <MapPin className="h-5 w-5" />
+                <ContactIcon name="MapPin" className="h-5 w-5" />
               </span>
               <div>
                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">অবস্থান</h2>

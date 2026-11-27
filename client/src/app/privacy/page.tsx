@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ShieldCheck, Mail, Lock, FileText, Database, UserCheck } from 'lucide-react';
+import PrivacyIcon from '@/components/privacy/PrivacyIcon';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Grav Academy',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 const sections = [
   {
-    icon: Database,
+    icon: 'Database' as const,
     title: '1. Information We Collect',
     items: [
       'Account and profile information such as your full name, email address, phone number, role (student, guardian, teacher, or staff), and academic grade level.',
@@ -30,7 +30,7 @@ const sections = [
     ],
   },
   {
-    icon: FileText,
+    icon: 'FileText' as const,
     title: '2. How We Use Your Information',
     items: [
       'To create and manage your Grav Academy account, enroll students in batches, and provide access to classes, exams, and study materials.',
@@ -40,7 +40,7 @@ const sections = [
     ],
   },
   {
-    icon: Lock,
+    icon: 'Lock' as const,
     title: '3. Google API Services & Data Protection',
     items: [
       'Grav Academy uses Google Drive and Gmail APIs strictly for authorized administrative document storage and sending platform-related transactional emails.',
@@ -49,7 +49,7 @@ const sections = [
     ],
   },
   {
-    icon: UserCheck,
+    icon: 'UserCheck' as const,
     title: '4. Data Retention & Your Rights',
     items: [
       'We retain your personal and academic records only for as long as your account is active or as required to provide educational services and comply with legal obligations.',
@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <header className="ga-card mb-8 p-6 sm:p-8">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
-            <ShieldCheck className="h-3.5 w-3.5" />
+            <PrivacyIcon name="ShieldCheck" className="h-3.5 w-3.5" />
             <span>Legal &amp; Data Protection</span>
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
@@ -81,12 +81,11 @@ export default function PrivacyPolicyPage() {
 
         <div className="space-y-5">
           {sections.map((section) => {
-            const Icon = section.icon;
             return (
               <section key={section.title} className="ga-card p-6 sm:p-7">
                 <div className="mb-3 flex items-center gap-3">
                   <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
-                    <Icon className="h-4 w-4" />
+                    <PrivacyIcon name={section.icon} className="h-4 w-4" />
                   </span>
                   <h2 className="text-lg font-bold text-slate-950 dark:text-white">{section.title}</h2>
                 </div>
@@ -105,7 +104,7 @@ export default function PrivacyPolicyPage() {
           <section className="ga-card p-6 sm:p-7">
             <div className="mb-2 flex items-center gap-3">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
-                <Mail className="h-4 w-4" />
+                <PrivacyIcon name="Mail" className="h-4 w-4" />
               </span>
               <h2 className="text-lg font-bold text-slate-950 dark:text-white">5. Contact Us</h2>
             </div>
