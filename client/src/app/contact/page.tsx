@@ -96,7 +96,7 @@ export default async function ContactPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-8 border-b border-slate-200 pb-8 dark:border-[#262b34] sm:mb-10 sm:pb-10">
+        <header className="mb-8 sm:mb-10">
           <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-bold text-orange-700 dark:text-orange-300">
             <ContactIcon name="MessageCircle" className="h-3.5 w-3.5" /> হেল্পলাইন ও যোগাযোগ
           </span>
