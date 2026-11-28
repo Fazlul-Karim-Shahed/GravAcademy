@@ -1129,9 +1129,9 @@ export default function HomePage() {
       </section>
 
       {/* 11. FOOTER (Matching Bottom Banner) */}
-      <footer className="relative bg-[#090a0d] text-slate-400 py-14 text-xs border-t border-[#181b20]">
+      <footer className="relative bg-[#090a0d] text-slate-400 py-14 text-xs">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 grid grid-cols-1 gap-10 border-b border-[#181b20] pb-10 md:grid-cols-[1.35fr_1fr_1fr_1.15fr] md:gap-12">
+          <div className="mb-10 grid grid-cols-1 gap-10 pb-10 md:grid-cols-[1.35fr_1fr_1fr_1.15fr] md:gap-12">
             <div className="max-w-sm">
               <div className="mb-4 flex items-center gap-3 text-white">
                 <SiteLogo size="sm" showText={false} />
