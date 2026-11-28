@@ -266,11 +266,9 @@ export default function CoursesCatalogPage() {
                 ))}
               </div>
             ) : filteredCourses.length === 0 ? (
-              <div className="ga-card mx-auto my-8 max-w-lg px-6 py-16 text-center">
-                <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-orange-200 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400"><BookOpen className="h-5 w-5" /></span>
+              <div className="mx-auto my-8 max-w-lg px-6 py-16 text-center">
                 <h3 className="text-base font-black">কোনো কোর্স পাওয়া যায়নি</h3>
-                <p className="mx-auto mb-5 mt-2 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">আপনার ফিল্টারের সাথে মিলে এমন কোনো কোর্স পাওয়া যায়নি। ফিল্টার রিসেট করে সব কোর্স দেখতে পারেন।</p>
-                <button type="button" onClick={clearFilters} className="ga-primary-button text-xs">সকল কোর্স দেখুন</button>
+                <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">আপনার ফিল্টারের সাথে মিলে এমন কোনো কোর্স পাওয়া যায়নি। ফিল্টার রিসেট করে সব কোর্স দেখতে পারেন।</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
